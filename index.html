@@ -1,81 +1,163 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Character encoding -->
   <meta charset="UTF-8">
-
-  <!-- Page title shown in browser tab -->
   <title>ArtiCYa | Erasmus Youth+</title>
-
-  <!-- Makes the site responsive on mobile devices -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- Short description for search engines -->
   <meta name="description" content="ArtiCYa is a Cyprus-based organization supporting youth participation in Erasmus+ projects.">
-
-  <!-- Link to the main CSS file -->
-  <link rel="stylesheet" href="css/style.css">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/home.css">
 </head>
 <body>
 
-  <!-- Header area with navigation -->
   <header>
     <nav>
-      <!-- Organization name / logo -->
-      <h1>ArtiCYa</h1>
-
-      <!-- Main navigation menu -->
+      <a href="index.html" class="logo">
+        <img src="images/logo.png" alt="ArtiCYa logo">
+      </a>
       <ul>
-        <li><a href="#">About</a></li>
-        <li><a href="#">Erasmus+</a></li>
-        <li><a href="#">Projects</a></li>
-        <li><a href="#">Contact</a></li>
+        <li><a href="index.html" class="active">Home</a></li>
+        <li><a href="opportunities.html">Opportunities</a></li>
+        <li><a href="faq.html">FAQ</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="about.html">About</a></li>
       </ul>
     </nav>
   </header>
 
-  <!-- Main content of the page -->
   <main>
+    <section class="hero-slider">
+      <div class="slide active" style="background-image: url('images/hero-1.jpg');"></div>
+      <div class="slide" style="background-image: url('images/hero-2.jpg');"></div>
+      <div class="slide" style="background-image: url('images/hero-3.jpg');"></div>
 
-    <!-- Hero section: first thing users see -->
-    <section class="hero">
-      <h2>Empowering young people through Erasmus+</h2>
+      <div class="hero-overlay"></div>
 
-      <!-- Short explanation of what ArtiCYa does -->
-      <p>
-        A Cyprus-based organization supporting youth participation
-        in European projects and partnerships.
-      </p>
+      <div class="hero-content">
+        <span class="hero-location">ArtiCYa · Cyprus</span>
+        <h1>We are ArtiCYa</h1>
+        <p>
+          A youth organization connecting young people in Cyprus with Erasmus+ opportunities,
+          meaningful learning and real impact.
+        </p>
 
-      <!-- Call to action button -->
-      <a href="#" class="cta">Explore Opportunities</a>
+        <div class="hero-cta">
+          <a href="contact.html" class="btn primary">Contact Us</a>
+        </div>
+      </div>
     </section>
 
-    <!-- About section -->
-    <section class="about">
-      <h3>Who we are</h3>
-      <p>
-        ArtiCYa is a non-profit organization based in Cyprus,
-        actively involved in Erasmus+ Youth projects and European cooperation.
-      </p>
+    <section class="home-section reveal">
+      <div class="container">
+        <h2 class="section-title">What we do</h2>
+
+        <p class="section-lead">
+          We work with young people in Cyprus and across Europe through Erasmus+ projects
+          that bring people together to learn, share experiences and participate actively.
+        </p>
+
+        <div class="exp-grid">
+          <article class="exp-card reveal">
+            <div class="exp-media" style="background-image:url('images/home-youth.jpg');">
+              <span class="exp-badge" aria-hidden="true">🌍</span>
+            </div>
+            <div class="exp-body">
+              <h3>Youth Exchanges</h3>
+              <p>
+                International group experiences for young people aged 
+                <span class="no-break">13–30</span> lasting 5 to 21 days.
+                Participate through workshops, cultural activities and shared living experiences. 
+                No prior experience needed. Travel, accommodation and meals are fully covered. 
+                Receive a Youthpass certificate recognizing your learning.
+              </p>
+            </div>
+          </article>
+
+          <article class="exp-card reveal">
+            <div class="exp-media" style="background-image:url('images/home-training.jpg');">
+              <span class="exp-badge" aria-hidden="true">🎓</span>
+            </div>
+            <div class="exp-body">
+              <h3>Training Courses</h3>
+              <p>
+                Professional development programs for youth workers aged 18+ with no upper age limit, 
+                lasting 2 to 14 days. Focused on skill-building through workshops, simulations 
+                and networking opportunities. Open to educators, trainers and young people involved 
+                in youth work on topics like inclusion, digital tools and community engagement. 
+              </p>
+            </div>
+          </article>
+        </div>
+      </div>
     </section>
 
-    <!-- Activities / services section -->
-    <section class="activities">
-      <h3>What we do</h3>
-      <ul>
-        <li>Youth Exchanges</li>
-        <li>Training Courses</li>
-        <li>European Partnerships</li>
-      </ul>
-    </section>
+    <section class="gain-section">
+      <div class="gain-inner">
+        <h2 class="gain-title">What you gain</h2>
 
+        <div class="gain-grid">
+          <div class="gain-item">Real-world skills</div>
+          <div class="gain-item">International friends</div>
+          <div class="gain-item">Certified learning</div>
+          <div class="gain-item">All expenses covered</div>
+        </div>
+
+        <p class="gain-text">
+          Travel across Europe with all expenses covered through Erasmus+ funding.
+        </p>
+
+        <div class="gain-highlight">
+          Your adventure starts here.
+        </div>
+
+        <a href="opportunities.html" class="gain-btn">
+          Explore Opportunities
+        </a>
+      </div>
+    </section>
   </main>
 
-  <!-- Footer with copyright -->
   <footer>
-    <p>&copy; 2025 ArtiCYa – Erasmus Youth+</p>
+    <div class="footer-content">
+      <div class="social-media">
+        <a href="https://www.facebook.com/p/Articya-61560558245829/" target="_blank" class="social-facebook" aria-label="Facebook">
+          <svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        </a>
+        <a href="https://www.instagram.com/articya4youth/" target="_blank" class="social-instagram" aria-label="Instagram">
+          <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        </a>
+      </div>
+      <p class="footer-copyright">&copy; 2025 ArtiCYa – Erasmus Youth+</p>
+    </div>
   </footer>
+
+  <script>
+    const slides = document.querySelectorAll('.hero-slider .slide');
+    let currentSlide = 0;
+    const slideInterval = 6000;
+
+    setInterval(() => {
+      slides[currentSlide].classList.remove('active');
+      currentSlide = (currentSlide + 1) % slides.length;
+      slides[currentSlide].classList.add('active');
+    }, slideInterval);
+
+    const revealEls = document.querySelectorAll('.reveal');
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          e.target.classList.add('is-visible');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    revealEls.forEach(el => io.observe(el));
+  </script>
 
 </body>
 </html>

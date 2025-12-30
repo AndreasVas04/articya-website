@@ -2,153 +2,233 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-
-  <!-- Page title shown in browser tab -->
   <title>FAQ | ArtiCYa</title>
-
-  <!-- Responsive layout for mobile -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- SEO description -->
   <meta name="description" content="Frequently asked questions about Erasmus+ opportunities with ArtiCYa.">
-
-  <!-- Main stylesheet -->
-  <link rel="stylesheet" href="css/style.css">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/faq.css">
 </head>
 <body>
 
-  <!-- Header with main navigation -->
   <header>
     <nav>
-      <h1><a href="index.html">ArtiCYa</a></h1>
+      <a href="index.html" class="logo">
+        <img src="images/logo.png" alt="ArtiCYa logo">
+      </a>
       <ul>
-        <li><a href="about.html">About</a></li>
+        <li><a href="index.html">Home</a></li>
         <li><a href="opportunities.html">Opportunities</a></li>
-        <li><a href="faq.html">FAQ</a></li>
+        <li><a href="faq.html" class="active">FAQ</a></li>
         <li><a href="contact.html">Contact</a></li>
+        <li><a href="about.html">About</a></li>
       </ul>
     </nav>
   </header>
 
   <main>
-
-    <!-- Intro text for the FAQ page -->
-    <section class="page-intro">
-      <h2>Frequently Asked Questions</h2>
-      <p>
-        Here you can find answers to the most common questions
-        about Erasmus+ opportunities and participation with ArtiCYa.
-      </p>
+    <!-- Hero Section with image -->
+    <section class="page-hero" style="background-image: url('images/FAQ.jpg');">
+      <div class="page-hero-content">
+        <h1>Frequently Asked Questions</h1>
+        <p>
+          Here you can find answers to the most common questions about Erasmus+ 
+          opportunities and participation with ArtiCYa.
+        </p>
+      </div>
     </section>
 
-    <!-- FAQ CATEGORY: Erasmus+ -->
-    <section class="faq-section">
+    <section class="faq-section reveal">
       <h3>Erasmus+</h3>
 
-      <!-- Single FAQ item -->
       <div class="faq-item">
-        <h4>What is Erasmus+?</h4>
-        <p>
-          Erasmus+ is a European Union programme that supports education,
-          training, youth, and sport activities across Europe.
-        </p>
+        <div class="faq-question">
+          <h4>What is Erasmus+?</h4>
+          <div class="faq-arrow">▼</div>
+        </div>
+        <div class="faq-answer">
+          <p>
+            Erasmus+ is a European Union programme that supports education,
+            training, youth and sport activities across Europe.
+          </p>
+        </div>
       </div>
 
       <div class="faq-item">
-        <h4>Who can participate?</h4>
-        <p>
-          Erasmus+ opportunities are open to young people usually aged 18–30,
-          depending on the specific project.
-        </p>
+        <div class="faq-question">
+          <h4>Who can participate?</h4>
+          <div class="faq-arrow">▼</div>
+        </div>
+        <div class="faq-answer">
+          <p>
+            Erasmus+ opportunities are open to young people usually aged 18–30,
+            depending on the specific project.
+          </p>
+        </div>
       </div>
     </section>
 
-    <!-- FAQ CATEGORY: Costs and safety -->
-    <section class="faq-section">
+    <section class="faq-section reveal">
       <h3>Costs & safety</h3>
 
       <div class="faq-item">
-        <h4>Do I need to pay?</h4>
-        <p>
-          No. Erasmus+ projects cover the main costs such as accommodation,
-          food, and travel, according to programme rules.
-        </p>
+        <div class="faq-question">
+          <h4>Do I need to pay?</h4>
+          <div class="faq-arrow">▼</div>
+        </div>
+        <div class="faq-answer">
+          <p>
+            No. Erasmus+ projects cover the main costs such as accommodation,
+            food and travel, according to programme rules.Participants may 
+            need to pay travel costs in advance (such as flights or transport to 
+            the venue). These expenses are reimbursed after the project, according 
+            to Erasmus+ rules and the approved travel budget.
+          </p>
+        </div>
       </div>
 
       <div class="faq-item">
-        <h4>Is it safe to participate?</h4>
-        <p>
-          Yes. Projects are organised by accredited organisations
-          and follow Erasmus+ quality and safety standards.
-        </p>
+        <div class="faq-question">
+          <h4>Is it safe to participate?</h4>
+          <div class="faq-arrow">▼</div>
+        </div>
+        <div class="faq-answer">
+          <p>
+            Yes. Projects are organised by accredited organisations
+            and follow Erasmus+ quality and safety standards.
+          </p>
+        </div>
       </div>
       
       <div class="faq-item">
-        <h4>Who handles the travel arrangements?</h4>
-        <p>
-          Travel arrangements are usually organised by the participants,
-          following guidelines provided by the hosting or coordinating organisation.
-          Costs are reimbursed according to Erasmus+ rules.
-        </p>
+        <div class="faq-question">
+          <h4>Who handles the travel arrangements?</h4>
+          <div class="faq-arrow">▼</div>
+        </div>
+        <div class="faq-answer">
+          <p>
+            Travel arrangements are usually organised by the participants,
+            following guidelines provided by the hosting or coordinating organisation.
+            Costs are reimbursed according to Erasmus+ rules.
+          </p>
+        </div>
       </div>
     </section>
 
-    <!-- FAQ CATEGORY: Experience -->
-    <section class="faq-section">
+    <section class="faq-section reveal">
       <h3>Experience & participation</h3>
 
       <div class="faq-item">
-        <h4>Do I need previous experience?</h4>
-        <p>
-          No previous experience is required. Motivation and interest
-          are usually more important than skills.
-        </p>
+        <div class="faq-question">
+          <h4>Do I need previous experience?</h4>
+          <div class="faq-arrow">▼</div>
+        </div>
+        <div class="faq-answer">
+          <p>
+            No previous experience is required. Motivation and interest
+            are usually more important than skills.
+          </p>
+        </div>
       </div>
 
       <div class="faq-item">
-        <h4>What will I gain from participating?</h4>
-        <p>
-          Participants gain international experience, new skills,
-          cultural understanding, and opportunities for personal growth.
-        </p>
+        <div class="faq-question">
+          <h4>What will I gain from participating?</h4>
+          <div class="faq-arrow">▼</div>
+        </div>
+        <div class="faq-answer">
+          <p>
+            Participants gain international experience, new skills,
+            cultural understanding and opportunities for personal growth.
+          </p>
+        </div>
       </div>
 
       <div class="faq-item">
-        <h4>Will I receive any proof of my participation?</h4>
-        <p>
-          At the end of the project, participants receive a Youthpass certificate 
-          that recognises the learning outcomes and skills gained through their participation.
-        </p>
+        <div class="faq-question">
+          <h4>Will I receive any proof of my participation?</h4>
+          <div class="faq-arrow">▼</div>
+        </div>
+        <div class="faq-answer">
+          <p>
+            At the end of the project, participants receive a Youthpass certificate 
+            that recognises the learning outcomes and skills gained through their participation.
+          </p>
+        </div>
       </div>
     </section>
 
-    <!-- FAQ CATEGORY: Applications -->
-    <section class="faq-section">
+    <section class="faq-section reveal">
       <h3>Applications</h3>
 
       <div class="faq-item">
-        <h4>How do I apply?</h4>
-        <p>
-          Each opportunity has its own application process.
-          You can find details on the Opportunities page or contact us directly.
-        </p>
+        <div class="faq-question">
+          <h4>How do I apply?</h4>
+          <div class="faq-arrow">▼</div>
+        </div>
+        <div class="faq-answer">
+          <p>
+            Each opportunity has its own application process.
+            You can find details on the Opportunities page or contact us directly.
+          </p>
+        </div>
       </div>
 
       <div class="faq-item">
-        <h4>What happens if I am selected?</h4>
-        <p>
-          If selected, you will receive detailed information
-          about preparation, travel, and participation.
-        </p>
+        <div class="faq-question">
+          <h4>What happens if I am selected?</h4>
+          <div class="faq-arrow">▼</div>
+        </div>
+        <div class="faq-answer">
+          <p>
+            If selected, you will receive detailed information
+            about preparation, travel and participation.
+          </p>
+        </div>
       </div>
     </section>
-
   </main>
 
-  <!-- Footer -->
   <footer>
-    <p>&copy; 2025 ArtiCYa – Erasmus Youth+</p>
+    <div class="footer-content">
+      <div class="social-media">
+        <a href="https://www.facebook.com/p/Articya-61560558245829/" target="_blank" class="social-facebook" aria-label="Facebook">
+          <svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        </a>
+        <a href="https://www.instagram.com/articya4youth/" target="_blank" class="social-instagram" aria-label="Instagram">
+          <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        </a>
+      </div>
+      <p class="footer-copyright">&copy; 2025 ArtiCYa – Erasmus Youth+</p>
+    </div>
   </footer>
+
+  <script>
+    const faqItems = document.querySelectorAll('.faq-item');
+    faqItems.forEach(item => {
+      const question = item.querySelector('.faq-question');
+      question.addEventListener('click', () => {
+        const isActive = item.classList.contains('active');
+        faqItems.forEach(otherItem => otherItem.classList.remove('active'));
+        if (!isActive) item.classList.add('active');
+      });
+    });
+
+    const revealEls = document.querySelectorAll('.reveal');
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          e.target.classList.add('is-visible');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    revealEls.forEach(el => io.observe(el));
+  </script>
 
 </body>
 </html>

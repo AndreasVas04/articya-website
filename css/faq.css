@@ -1,0 +1,149 @@
+/* ========================================================================
+   FAQ.CSS - Professional accordion design
+   ======================================================================== */
+
+.faq-section {
+  max-width: 900px;
+  margin: 50px auto 60px;
+  padding: 0 40px;
+}
+
+.faq-section h3 {
+  font-size: 1.8rem;
+  margin-bottom: 28px;
+  color: var(--text-main);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  position: relative;
+  padding-left: 20px;
+}
+
+.faq-section h3::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 28px;
+  background: linear-gradient(180deg, #2d3748 0%, #1a202c 100%);
+  border-radius: 3px;
+}
+
+/* ========================================================================
+   FAQ ACCORDION ITEMS
+   ======================================================================== */
+
+.faq-item {
+  background: linear-gradient(135deg, rgba(45, 55, 72, 0.03) 0%, rgba(26, 32, 44, 0.06) 100%);
+  border-radius: 14px;
+  margin-bottom: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(45, 55, 72, 0.15);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+}
+
+.faq-item:hover {
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1);
+  border-color: rgba(45, 55, 72, 0.25);
+  transform: translateX(4px);
+}
+
+.faq-item.active {
+  background: linear-gradient(135deg, rgba(45, 55, 72, 0.08) 0%, rgba(26, 32, 44, 0.12) 100%);
+  border-color: rgba(45, 55, 72, 0.3);
+}
+
+/* Question header - clickable */
+.faq-question {
+  padding: 22px 26px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  user-select: none;
+  transition: all 0.25s ease;
+}
+
+.faq-question:hover {
+  background: rgba(45, 55, 72, 0.04);
+}
+
+.faq-question h4 {
+  font-size: 1.12rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin: 0;
+  flex: 1;
+  letter-spacing: -0.01em;
+}
+
+/* Arrow icon */
+.faq-arrow {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+  display: grid;
+  place-items: center;
+  font-size: 0.9rem;
+  color: #ffffff;
+  transition: transform 0.3s ease, background 0.3s ease;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(45, 55, 72, 0.3);
+}
+
+.faq-item.active .faq-arrow {
+  transform: rotate(180deg);
+  background: linear-gradient(135deg, #1a202c 0%, #000000 100%);
+}
+
+/* Answer content - hidden by default */
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), padding 0.4s ease;
+}
+
+.faq-answer p {
+  padding: 0 26px 22px;
+  color: var(--text-muted);
+  line-height: 1.8;
+  margin: 0;
+  font-size: 1.02rem;
+}
+
+/* When accordion is open */
+.faq-item.active .faq-answer {
+  max-height: 600px;
+}
+
+/* ========================================================================
+   RESPONSIVE
+   ======================================================================== */
+
+@media (max-width: 860px) {
+  .faq-section {
+    padding: 0 20px;
+  }
+  
+  .faq-question {
+    padding: 18px 20px;
+  }
+  
+  .faq-answer p {
+    padding: 0 20px 18px;
+  }
+  
+  .faq-question h4 {
+    font-size: 1.05rem;
+  }
+  
+  .faq-arrow {
+    width: 28px;
+    height: 28px;
+  }
+}

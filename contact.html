@@ -2,66 +2,92 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-
-  <!-- Page title -->
   <title>Contact | ArtiCYa</title>
-
-  <!-- Responsive layout -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- SEO description -->
   <meta name="description" content="Get in touch with ArtiCYa for Erasmus+ opportunities and partnerships.">
-
-  <!-- Main stylesheet -->
-  <link rel="stylesheet" href="css/style.css">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/contact.css">
 </head>
 <body>
 
-  <!-- Header with navigation -->
   <header>
     <nav>
-      <h1><a href="index.html">ArtiCYa</a></h1>
+      <a href="index.html" class="logo">
+        <img src="images/logo.png" alt="ArtiCYa logo">
+      </a>
       <ul>
-        <li><a href="about.html">About</a></li>
+        <li><a href="index.html">Home</a></li>
         <li><a href="opportunities.html">Opportunities</a></li>
         <li><a href="faq.html">FAQ</a></li>
-        <li><a href="contact.html">Contact</a></li>
+        <li><a href="contact.html" class="active">Contact</a></li>
+        <li><a href="about.html">About</a></li>
       </ul>
     </nav>
   </header>
 
   <main>
-
-    <!-- Contact page introduction -->
-    <section class="page-intro">
-      <h2>Contact</h2>
-      <p>
-        If you are interested in Erasmus+ opportunities, collaboration,
-        or have any questions, feel free to get in touch with us.
-      </p>
+   <!-- Hero Section with image -->
+    <section class="page-hero" style="background-image: url('images/Contact.jpg');">
+      <div class="page-hero-content">
+        <h1>Contact</h1>
+        <p>
+          If you are interested in Erasmus+ opportunities, collaboration, or have 
+          any questions, feel free to get in touch with us.
+        </p>
+      </div>
     </section>
 
-    <!-- Contact information -->
-    <section class="contact-section">
+    <section class="contact-section reveal">
       <h3>Get in touch</h3>
 
       <p>
         <strong>Email:</strong>
-        <a href="mailto:info@articya.org">info@articya.org</a>
+        <span class="email-text">articya4youth@gmail.com</span>
       </p>
 
       <p>
         <strong>Instagram:</strong>
-        <a href="https://instagram.com/articya" target="_blank">@articya</a>
+        <a href="https://www.instagram.com/articya4youth/" target="_blank">@articya4youth</a>
+      </p>
+
+      <p>
+        <strong>Facebook:</strong>
+        <a href="https://www.facebook.com/p/Articya-61560558245829/" target="_blank">Articya</a>
       </p>
     </section>
-
   </main>
 
-  <!-- Footer -->
   <footer>
-    <p>&copy; 2025 ArtiCYa – Erasmus Youth+</p>
+    <div class="footer-content">
+      <div class="social-media">
+        <a href="https://www.facebook.com/p/Articya-61560558245829/" target="_blank" class="social-facebook" aria-label="Facebook">
+          <svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        </a>
+        <a href="https://www.instagram.com/articya4youth/" target="_blank" class="social-instagram" aria-label="Instagram">
+          <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        </a>
+      </div>
+      <p class="footer-copyright">&copy; 2025 ArtiCYa – Erasmus Youth+</p>
+    </div>
   </footer>
+
+  <script>
+    const revealEls = document.querySelectorAll('.reveal');
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          e.target.classList.add('is-visible');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    revealEls.forEach(el => io.observe(el));
+  </script>
 
 </body>
 </html>
