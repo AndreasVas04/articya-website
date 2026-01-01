@@ -1,56 +1,86 @@
 /* ========================================================================
-   HOME.CSS - Styles specific to home page (index.html)
+   HOME.CSS - Styles specific to the homepage (index.html)
+   Contains: hero slider, what we do section, experience cards, gain section
    ======================================================================== */
 
 /* ========================================================================
-   1. HERO SLIDER
+   BACKGROUND IMAGE FOR HOME PAGE
+   Semi-transparent fixed background image behind all content
    ======================================================================== */
+main {
+  position: relative;
+}
 
+/* Pseudo-element creates the background image effect */
+main::before {
+  content: "";
+  position: fixed;              /* Stays in place when scrolling */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('../images/HomeBack.jpg');
+  background-size: cover;       /* Image covers entire area */
+  background-position: center;
+  background-attachment: fixed; /* Parallax effect */
+  opacity: 0.20;               /* Makes it subtle (20% visible) */
+  z-index: -1;                 /* Behind all content */
+}
+
+/* ========================================================================
+   1. HERO SLIDER
+   Auto-rotating image slider at the top of homepage
+   ======================================================================== */
 .hero-slider {
   position: relative;
   width: 100%;
-  height: 81vh;
-  min-height: 500px;
-  max-height: 750px;
-  overflow: hidden;
+  height: 81vh;                 /* 81% of viewport height */
+  min-height: 500px;            /* Minimum height */
+  max-height: 750px;            /* Maximum height */
+  overflow: hidden;             /* Hide slides outside container */
 }
 
+/* Individual slides (background images) */
 .slide {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-size: cover;
+  background-size: cover;       /* Image covers entire area */
   background-position: center;
-  opacity: 0;
-  transition: opacity 1.5s ease-in-out;
+  opacity: 0;                   /* Hidden by default */
+  transition: opacity 1.5s ease-in-out; /* Smooth fade transition */
 }
 
+/* Active slide is visible */
 .slide.active {
   opacity: 1;
 }
 
+/* Dark overlay on all slides for text readability */
 .hero-overlay {
   position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.45);
-  z-index: 1;
+  inset: 0;                     /* Cover entire slider */
+  background: rgba(0, 0, 0, 0.45); /* 45% black overlay */
+  z-index: 1;                   /* Above images, below text */
 }
 
+/* Hero text content */
 .hero-content {
   position: relative;
-  z-index: 2;
+  z-index: 2;                   /* Above overlay */
   max-width: 1100px;
   margin: 0 auto;
   padding: 0 40px;
   height: 100%;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  flex-direction: column;       /* Stack items vertically */
+  justify-content: center;      /* Center vertically */
   color: #fff;
 }
 
+/* Location label above main heading */
 .hero-location {
   font-size: 0.9rem;
   letter-spacing: 1px;
@@ -58,22 +88,26 @@
   margin-bottom: 12px;
 }
 
+/* Main heading */
 .hero-content h1 {
   font-size: 3rem;
   margin-bottom: 20px;
 }
 
+/* Paragraph text */
 .hero-content p {
   font-size: 1.15rem;
   max-width: 600px;
   margin-bottom: 35px;
 }
 
+/* Button container */
 .hero-cta {
   display: flex;
-  gap: 18px;
+  gap: 18px;                    /* Space between buttons */
 }
 
+/* Button styling */
 .btn {
   padding: 14px 30px;
   font-size: 0.95rem;
@@ -85,11 +119,13 @@
   transition: all 0.25s ease;
 }
 
+/* Primary button hover effect */
 .btn.primary:hover {
   background: #fff;
   color: #000;
 }
 
+/* Secondary button hover effect */
 .btn.secondary:hover {
   background: #fff;
   color: #000;
@@ -97,9 +133,9 @@
 }
 
 /* ========================================================================
-   2. HOME SECTION (What we do)
+   2. HOME SECTION ("What we do")
+   Main content section with intro card, stats, and experience cards
    ======================================================================== */
-
 .home-section {
   position: relative;
   background: transparent;
@@ -107,67 +143,137 @@
   padding-bottom: 35px;
 }
 
+/* Gradient fade at bottom of section (smooth transition) */
 .home-section::after {
   content: "";
   position: absolute;
   left: 0;
   bottom: 0;
   width: 100%;
-  height: 200px;
+  height: 200px;               /* Height of gradient fade */
   background: linear-gradient(
     to bottom,
-    rgba(215, 221, 227, 0) 0%,
+    rgba(215, 221, 227, 0) 0%,      /* Transparent at top */
     rgba(215, 221, 227, 0.3) 40%,
     rgba(215, 221, 227, 0.7) 70%,
-    rgba(215, 221, 227, 1) 100%
+    rgba(215, 221, 227, 1) 100%     /* Solid at bottom */
   );
-  pointer-events: none;
+  pointer-events: none;        /* Allow clicking through gradient */
   z-index: 0;
 }
 
+/* Introduction card with glassmorphism effect */
+.section-intro-card {
+  background: linear-gradient(
+    135deg,
+    rgba(220, 225, 230, 0.88) 0%,
+    rgba(205, 212, 220, 0.92) 100%
+  );
+  border: 1px solid rgba(190, 198, 208, 0.6);
+  box-shadow: 
+    0 8px 28px rgba(0, 0, 0, 0.12),           /* Main shadow */
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);  /* Inner highlight */
+  backdrop-filter: blur(12px);     /* Glassmorphism blur */
+  border-radius: 18px;
+  padding: 40px 45px 45px;
+  margin-bottom: 35px;
+  text-align: center;
+}
+
+/* Content inside intro card */
+.intro-content {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+/* Section title */
 .section-title {
   font-size: 2.1rem;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.02em;         /* Tighter letter spacing */
   margin-bottom: 14px;
   color: var(--text-main);
 }
 
+/* Lead paragraph */
 .section-lead {
   max-width: 780px;
+  margin: 0 auto 16px auto;
   font-size: 1.08rem;
   line-height: 1.8;
   color: var(--text-muted);
-  margin-bottom: 16px;
+  text-align: center;
+}
+
+/* Statistics row (20+ Projects, 500+ Youth, 15+ Countries) */
+.intro-stats {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;                       /* Space between stat boxes */
+  padding-top: 8px;
+}
+
+/* Individual stat box */
+.stat-box {
+  text-align: center;
+  transition: transform 0.25s ease;
+}
+
+/* Large number (e.g., "20+") */
+.stat-num {
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: #1a202c;
+  margin-bottom: 4px;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+/* Label below number (e.g., "PROJECTS") */
+.stat-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #4a5568;
+  text-transform: uppercase;       /* All caps */
+  letter-spacing: 0.8px;
+  opacity: 0.8;
 }
 
 /* ========================================================================
    3. EXPERIENCE GRID & CARDS
+   Two cards: Youth Exchanges and Training Courses
    ======================================================================== */
-
 .exp-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 22px;
-  margin-top: 22px;
+  grid-template-columns: repeat(2, minmax(0, 1fr)); /* 2 equal columns */
+  gap: 22px;                       /* Space between cards */
+  max-width: 1022px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
+/* Individual experience card */
 .exp-card {
   position: relative;
   z-index: 1;
   border-radius: 18px;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-  overflow: hidden;
-  background: #ffffff;
+  overflow: hidden;                /* Contains image and content */
+  
+  /* Glassmorphism background */
+  background: linear-gradient(
+    135deg,
+    rgba(220, 225, 230, 0.88) 0%,
+    rgba(205, 212, 220, 0.92) 100%
+  );
+  border: 1px solid rgba(190, 198, 208, 0.6);
+  box-shadow: 
+    0 8px 28px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  
   transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
 
-.exp-card:hover {
-  transform: translateY(-6px);
-  border-color: rgba(30, 92, 255, 0.25);
-  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.14);
-}
-
+/* Card image section */
 .exp-media {
   position: relative;
   height: 210px;
@@ -175,33 +281,41 @@
   background-position: center;
 }
 
+/* Gradient overlay on image for better badge visibility */
 .exp-media::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.05), rgba(0,0,0,0.45));
+  background: linear-gradient(
+    to bottom, 
+    rgba(0,0,0,0.05),              /* Light at top */
+    rgba(0,0,0,0.45)               /* Darker at bottom */
+  );
 }
 
+/* Emoji badge on image (🌍, 🎓) */
 .exp-badge {
   position: absolute;
   left: 16px;
   bottom: 16px;
-  z-index: 1;
+  z-index: 1;                      /* Above gradient */
   width: 44px;
   height: 44px;
   border-radius: 14px;
   display: grid;
-  place-items: center;
+  place-items: center;             /* Center emoji */
   background: rgba(255, 255, 255, 0.75);
   backdrop-filter: blur(6px);
   border: 1px solid rgba(255, 255, 255, 0.6);
   font-size: 1.2rem;
 }
 
+/* Card text content */
 .exp-body {
   padding: 22px 22px 24px;
 }
 
+/* Card heading */
 .exp-body h3 {
   font-size: 1.28rem;
   letter-spacing: -0.01em;
@@ -209,19 +323,21 @@
   color: var(--text-main);
 }
 
+/* Card paragraph */
 .exp-body p {
   color: var(--text-muted);
   line-height: 1.75;
 }
 
+/* Prevents text like "13–30" from breaking across lines */
 .no-break {
   white-space: nowrap;
 }
 
 /* ========================================================================
-   4. GAIN SECTION
+   4. GAIN SECTION ("What you gain")
+   Bottom section with benefits and CTA button
    ======================================================================== */
-
 .gain-section {
   position: relative;
   background: var(--bg-medium);
@@ -230,12 +346,14 @@
   z-index: 2;
 }
 
+/* Inner container */
 .gain-inner {
   max-width: 780px;
   margin: 0 auto;
   padding: 0 20px;
 }
 
+/* Section title */
 .gain-title {
   font-size: 2.7rem;
   font-weight: 700;
@@ -244,14 +362,16 @@
   color: var(--text-main);
 }
 
+/* Benefits grid (2x2 layout) */
 .gain-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 18px 40px;
+  grid-template-columns: repeat(2, 1fr); /* 2 equal columns */
+  gap: 18px 40px;              /* Vertical and horizontal gaps */
   max-width: 520px;
   margin: 0 auto 34px;
 }
 
+/* Individual benefit item */
 .gain-item {
   font-size: 1.05rem;
   font-weight: 500;
@@ -260,55 +380,67 @@
   gap: 10px;
 }
 
+/* Checkmark before each benefit */
 .gain-item::before {
   content: "✓";
-  color: #389f5c;
+  color: #389f5c;              /* Green checkmark */
   font-weight: 700;
 }
 
+/* Additional text paragraph */
 .gain-text {
   font-size: 1.05rem;
   opacity: 0.95;
   margin-bottom: 16px;
 }
 
+/* Highlighted text */
 .gain-highlight {
   font-size: 1.5rem;
   font-weight: 600;
   margin-bottom: 34px;
 }
 
+/* Call-to-action button */
 .gain-btn {
   display: inline-block;
   padding: 14px 36px;
-  border-radius: 999px;
+  border-radius: 999px;        /* Fully rounded (pill shape) */
   font-size: 0.95rem;
   font-weight: 600;
   text-decoration: none;
   background: linear-gradient(135deg, #111827 0%, #1f2933 50%, #374151 100%);
   color: #ffffff;
-  box-shadow: 0 12px 30px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.08);
+  box-shadow: 
+    0 12px 30px rgba(0,0,0,0.25), 
+    inset 0 1px 0 rgba(255,255,255,0.08);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
+/* Button hover effect: lifts up with stronger shadow */
 .gain-btn:hover {
   transform: translateY(-3px);
-  box-shadow: 0 18px 45px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.12);
+  box-shadow: 
+    0 18px 45px rgba(0,0,0,0.35), 
+    inset 0 1px 0 rgba(255,255,255,0.12);
 }
 
 /* ========================================================================
-   5. RESPONSIVE
+   5. RESPONSIVE DESIGN
+   Adjustments for mobile and tablet screens
    ======================================================================== */
-
 @media (max-width: 860px) {
+  /* Stack experience cards vertically on mobile */
   .exp-grid {
     grid-template-columns: 1fr;
   }
 
+  /* Slightly shorter image on mobile */
   .exp-media {
     height: 200px;
   }
 
+  /* Much shorter hero slider on mobile */
   .hero-slider {
     height: 280px;
   }

@@ -1,25 +1,39 @@
+<!-- ========================================================================
+     FAQ.HTML - Frequently Asked Questions page
+     Accordion-style Q&A sections about Erasmus+ opportunities
+     ======================================================================== -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Meta tags for character encoding, page title, and responsive design -->
   <meta charset="UTF-8">
   <title>FAQ | ArtiCYa</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Frequently asked questions about Erasmus+ opportunities with ArtiCYa.">
   
+  <!-- Google Fonts: Inter font family with multiple weights -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   
+  <!-- Stylesheets: base.css contains global styles, faq.css contains page-specific styles -->
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/faq.css">
 </head>
 <body>
 
+  <!-- ========================================================================
+       HEADER & NAVIGATION
+       Common navigation bar used across all pages
+       ======================================================================== -->
   <header>
     <nav>
+      <!-- Logo linking to homepage -->
       <a href="index.html" class="logo">
         <img src="images/logo.png" alt="ArtiCYa logo">
       </a>
+      
+      <!-- Main navigation menu - "active" class highlights current page -->
       <ul>
         <li><a href="index.html">Home</a></li>
         <li><a href="opportunities.html">Opportunities</a></li>
@@ -30,8 +44,11 @@
     </nav>
   </header>
 
+  <!-- ========================================================================
+       MAIN CONTENT
+       ======================================================================== -->
   <main>
-    <!-- Hero Section with image -->
+    <!-- Hero Section: Large banner with background image and page title -->
     <section class="page-hero" style="background-image: url('images/FAQ.jpg');">
       <div class="page-hero-content">
         <h1>Frequently Asked Questions</h1>
@@ -42,14 +59,21 @@
       </div>
     </section>
 
+    <!-- ========================================================================
+         FAQ SECTION 1: ERASMUS+
+         General questions about the Erasmus+ program
+         ======================================================================== -->
     <section class="faq-section reveal">
       <h3>Erasmus+</h3>
 
+      <!-- FAQ Item 1: What is Erasmus+? -->
       <div class="faq-item">
+        <!-- Question (clickable to expand/collapse) -->
         <div class="faq-question">
           <h4>What is Erasmus+?</h4>
           <div class="faq-arrow">▼</div>
         </div>
+        <!-- Answer (hidden by default, shown when clicked) -->
         <div class="faq-answer">
           <p>
             Erasmus+ is a European Union programme that supports education,
@@ -58,6 +82,7 @@
         </div>
       </div>
 
+      <!-- FAQ Item 2: Who can participate? -->
       <div class="faq-item">
         <div class="faq-question">
           <h4>Who can participate?</h4>
@@ -72,9 +97,14 @@
       </div>
     </section>
 
+    <!-- ========================================================================
+         FAQ SECTION 2: COSTS & SAFETY
+         Questions about expenses and safety concerns
+         ======================================================================== -->
     <section class="faq-section reveal">
       <h3>Costs & safety</h3>
 
+      <!-- FAQ Item 3: Do I need to pay? -->
       <div class="faq-item">
         <div class="faq-question">
           <h4>Do I need to pay?</h4>
@@ -83,7 +113,7 @@
         <div class="faq-answer">
           <p>
             No. Erasmus+ projects cover the main costs such as accommodation,
-            food and travel, according to programme rules.Participants may 
+            food and travel, according to programme rules. Participants may 
             need to pay travel costs in advance (such as flights or transport to 
             the venue). These expenses are reimbursed after the project, according 
             to Erasmus+ rules and the approved travel budget.
@@ -91,6 +121,7 @@
         </div>
       </div>
 
+      <!-- FAQ Item 4: Is it safe to participate? -->
       <div class="faq-item">
         <div class="faq-question">
           <h4>Is it safe to participate?</h4>
@@ -104,6 +135,7 @@
         </div>
       </div>
       
+      <!-- FAQ Item 5: Who handles the travel arrangements? -->
       <div class="faq-item">
         <div class="faq-question">
           <h4>Who handles the travel arrangements?</h4>
@@ -119,9 +151,14 @@
       </div>
     </section>
 
+    <!-- ========================================================================
+         FAQ SECTION 3: EXPERIENCE & PARTICIPATION
+         Questions about requirements and benefits
+         ======================================================================== -->
     <section class="faq-section reveal">
       <h3>Experience & participation</h3>
 
+      <!-- FAQ Item 6: Do I need previous experience? -->
       <div class="faq-item">
         <div class="faq-question">
           <h4>Do I need previous experience?</h4>
@@ -135,6 +172,7 @@
         </div>
       </div>
 
+      <!-- FAQ Item 7: What will I gain from participating? -->
       <div class="faq-item">
         <div class="faq-question">
           <h4>What will I gain from participating?</h4>
@@ -148,6 +186,7 @@
         </div>
       </div>
 
+      <!-- FAQ Item 8: Will I receive any proof of my participation? -->
       <div class="faq-item">
         <div class="faq-question">
           <h4>Will I receive any proof of my participation?</h4>
@@ -162,9 +201,14 @@
       </div>
     </section>
 
+    <!-- ========================================================================
+         FAQ SECTION 4: APPLICATIONS
+         Questions about applying and selection process
+         ======================================================================== -->
     <section class="faq-section reveal">
       <h3>Applications</h3>
 
+      <!-- FAQ Item 9: How do I apply? -->
       <div class="faq-item">
         <div class="faq-question">
           <h4>How do I apply?</h4>
@@ -178,6 +222,7 @@
         </div>
       </div>
 
+      <!-- FAQ Item 10: What happens if I am selected? -->
       <div class="faq-item">
         <div class="faq-question">
           <h4>What happens if I am selected?</h4>
@@ -193,40 +238,76 @@
     </section>
   </main>
 
+  <!-- ========================================================================
+       FOOTER
+       Contains social media icons and copyright notice
+       ======================================================================== -->
   <footer>
     <div class="footer-content">
+      <!-- Social Media Icons -->
       <div class="social-media">
+        <!-- Facebook icon with SVG graphic -->
         <a href="https://www.facebook.com/p/Articya-61560558245829/" target="_blank" class="social-facebook" aria-label="Facebook">
           <svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
         </a>
+        
+        <!-- Instagram icon with SVG graphic -->
         <a href="https://www.instagram.com/articya4youth/" target="_blank" class="social-instagram" aria-label="Instagram">
           <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
         </a>
       </div>
+      
+      <!-- Copyright text -->
       <p class="footer-copyright">&copy; 2025 ArtiCYa – Erasmus Youth+</p>
     </div>
   </footer>
 
+  <!-- ========================================================================
+       JAVASCRIPT
+       ======================================================================== -->
   <script>
+    /* ========================================================================
+       FAQ ACCORDION FUNCTIONALITY
+       Clicking a question expands/collapses the answer
+       Only one FAQ item can be open at a time
+       ======================================================================== */
     const faqItems = document.querySelectorAll('.faq-item');
+    
     faqItems.forEach(item => {
       const question = item.querySelector('.faq-question');
+      
+      // Add click event listener to each question
       question.addEventListener('click', () => {
+        // Check if this item is currently active
         const isActive = item.classList.contains('active');
+        
+        // Close all FAQ items
         faqItems.forEach(otherItem => otherItem.classList.remove('active'));
+        
+        // If this item wasn't active, open it
         if (!isActive) item.classList.add('active');
       });
     });
 
+    /* ========================================================================
+       SCROLL REVEAL ANIMATION
+       Fades in FAQ sections when they come into view
+       ======================================================================== */
     const revealEls = document.querySelectorAll('.reveal');
+    
+    // Create an Intersection Observer to detect when elements enter viewport
     const io = new IntersectionObserver((entries) => {
       entries.forEach((e) => {
         if (e.isIntersecting) {
+          // Add "is-visible" class to trigger fade-in animation
           e.target.classList.add('is-visible');
+          // Stop observing this element once it's been revealed
           io.unobserve(e.target);
         }
       });
-    }, { threshold: 0.12 });
+    }, { threshold: 0.12 }); // Trigger when 12% of element is visible
+    
+    // Apply observer to all reveal elements
     revealEls.forEach(el => io.observe(el));
   </script>
 

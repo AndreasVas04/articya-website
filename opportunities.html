@@ -1,25 +1,39 @@
+<!-- ========================================================================
+     OPPORTUNITIES.HTML - Current Erasmus+ opportunities page
+     Displays available youth exchanges and training courses
+     ======================================================================== -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Meta tags for character encoding, page title, and responsive design -->
   <meta charset="UTF-8">
   <title>Opportunities | ArtiCYa</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Explore current Erasmus+ opportunities with ArtiCYa.">
   
+  <!-- Google Fonts: Inter font family with multiple weights -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   
+  <!-- Stylesheets: base.css contains global styles, opportunities.css contains page-specific styles -->
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/opportunities.css">
 </head>
 <body>
 
+  <!-- ========================================================================
+       HEADER & NAVIGATION
+       Common navigation bar used across all pages
+       ======================================================================== -->
   <header>
     <nav>
+      <!-- Logo linking to homepage -->
       <a href="index.html" class="logo">
         <img src="images/logo.png" alt="ArtiCYa logo">
       </a>
+      
+      <!-- Main navigation menu - "active" class highlights current page -->
       <ul>
         <li><a href="index.html">Home</a></li>
         <li><a href="opportunities.html" class="active">Opportunities</a></li>
@@ -30,8 +44,11 @@
     </nav>
   </header>
 
+  <!-- ========================================================================
+       MAIN CONTENT
+       ======================================================================== -->
   <main>
-    <!-- Hero Section with image -->
+    <!-- Hero Section: Large banner with background image and page title -->
     <section class="page-hero" style="background-image: url('images/Opportunities.jpg');">
       <div class="page-hero-content">
         <h1>Opportunities</h1>
@@ -42,11 +59,18 @@
       </div>
     </section>
 
-    <!-- Projects Content -->
+    <!-- ========================================================================
+         PROJECTS CONTENT SECTION
+         Contains all available opportunities displayed as cards
+         ======================================================================== -->
     <section class="opportunities-content">
       
-      <!-- Project 1: Italy -->
+      <!-- ========================================================================
+           PROJECT 1: YOUTH EXCHANGE IN ITALY
+           Each project is an <article> with the "reveal" class for scroll animation
+           ======================================================================== -->
       <article class="project-item reveal">
+        <!-- Project Header: Flag emoji and title -->
         <div class="project-header">
           <span class="project-flag">🇮🇹</span>
           <div class="project-title">
@@ -55,28 +79,34 @@
           </div>
         </div>
         
+        <!-- Project Details: Key information in a structured layout -->
         <div class="project-details">
+          <!-- Location -->
           <div class="project-detail-row">
             <span class="project-detail-label">Location:</span>
             <span class="project-detail-value">Rome, Italy</span>
           </div>
           
+          <!-- Dates -->
           <div class="project-detail-row">
             <span class="project-detail-label">Dates:</span>
             <span class="project-detail-value">June 15 - June 25, 2025</span>
           </div>
           
+          <!-- Age Range -->
           <div class="project-detail-row">
             <span class="project-detail-label">Age Range:</span>
             <span class="project-detail-value">18-30 years old</span>
           </div>
           
+          <!-- Number of Participants -->
           <div class="project-detail-row">
             <span class="project-detail-label">Participants:</span>
             <span class="project-detail-value">30 young people from 6 countries</span>
           </div>
         </div>
         
+        <!-- Project Description: Detailed information about the opportunity -->
         <div class="project-description">
           <h4>About the Project</h4>
           <p>
@@ -88,8 +118,11 @@
         </div>
       </article>
 
-      <!-- Project 2: Spain -->
+      <!-- ========================================================================
+           PROJECT 2: TRAINING COURSE IN SPAIN
+           ======================================================================== -->
       <article class="project-item reveal">
+        <!-- Project Header -->
         <div class="project-header">
           <span class="project-flag">🇪🇸</span>
           <div class="project-title">
@@ -98,6 +131,7 @@
           </div>
         </div>
         
+        <!-- Project Details -->
         <div class="project-details">
           <div class="project-detail-row">
             <span class="project-detail-label">Location:</span>
@@ -120,6 +154,7 @@
           </div>
         </div>
         
+        <!-- Project Description -->
         <div class="project-description">
           <h4>About the Project</h4>
           <p>
@@ -131,76 +166,54 @@
         </div>
       </article>
 
-      <!-- Project 3: Poland -->
-      <article class="project-item reveal">
-        <div class="project-header">
-          <span class="project-flag">🇵🇱</span>
-          <div class="project-title">
-            <h3>Youth Exchange – Poland</h3>
-            <p class="project-type">Youth Exchange</p>
-          </div>
-        </div>
-        
-        <div class="project-details">
-          <div class="project-detail-row">
-            <span class="project-detail-label">Location:</span>
-            <span class="project-detail-value">Krakow, Poland</span>
-          </div>
-          
-          <div class="project-detail-row">
-            <span class="project-detail-label">Dates:</span>
-            <span class="project-detail-value">August 20 - August 30, 2025</span>
-          </div>
-          
-          <div class="project-detail-row">
-            <span class="project-detail-label">Age Range:</span>
-            <span class="project-detail-value">16-25 years old</span>
-          </div>
-          
-          <div class="project-detail-row">
-            <span class="project-detail-label">Participants:</span>
-            <span class="project-detail-value">35 young people from 7 countries</span>
-          </div>
-        </div>
-        
-        <div class="project-description">
-          <h4>About the Project</h4>
-          <p>
-            An exchange focused on environmental sustainability and climate action. 
-            Through workshops, outdoor activities and creative projects, participants 
-            will develop awareness and practical skills for a sustainable future. 
-            All expenses covered.
-          </p>
-        </div>
-      </article>
-
     </section>
   </main>
 
+  <!-- ========================================================================
+       FOOTER
+       Contains social media icons and copyright notice
+       ======================================================================== -->
   <footer>
     <div class="footer-content">
+      <!-- Social Media Icons -->
       <div class="social-media">
+        <!-- Facebook icon with SVG graphic -->
         <a href="https://www.facebook.com/p/Articya-61560558245829/" target="_blank" class="social-facebook" aria-label="Facebook">
           <svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
         </a>
+        
+        <!-- Instagram icon with SVG graphic -->
         <a href="https://www.instagram.com/articya4youth/" target="_blank" class="social-instagram" aria-label="Instagram">
           <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
         </a>
       </div>
+      
+      <!-- Copyright text -->
       <p class="footer-copyright">&copy; 2025 ArtiCYa – Erasmus Youth+</p>
     </div>
   </footer>
 
+  <!-- ========================================================================
+       JAVASCRIPT - Scroll Animation
+       Reveals project cards with "reveal" class when they come into view
+       ======================================================================== -->
   <script>
+    // Select all elements with the "reveal" class
     const revealEls = document.querySelectorAll('.reveal');
+    
+    // Create an Intersection Observer to detect when elements enter viewport
     const io = new IntersectionObserver((entries) => {
       entries.forEach((e) => {
         if (e.isIntersecting) {
+          // Add "is-visible" class to trigger fade-in animation
           e.target.classList.add('is-visible');
+          // Stop observing this element once it's been revealed
           io.unobserve(e.target);
         }
       });
-    }, { threshold: 0.12 });
+    }, { threshold: 0.12 }); // Trigger when 12% of element is visible
+    
+    // Apply observer to all reveal elements
     revealEls.forEach(el => io.observe(el));
   </script>
 

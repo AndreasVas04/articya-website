@@ -1,117 +1,166 @@
 /* ========================================================================
-   OPPORTUNITIES.CSS - Project details layout
+   OPPORTUNITIES.CSS - Styles for the Opportunities page
+   Project details layout with card-based design
    ======================================================================== */
 
+/* ========================================================================
+   1. BACKGROUND IMAGE
+   Fixed background image for the opportunities page
+   ======================================================================== */
 .opportunities-content {
-  max-width: 900px;
-  margin: 60px auto;
-  padding: 0 40px;
+  position: relative;
+}
+
+/* Pseudo-element that creates the fixed background image effect */
+.opportunities-content::before {
+  content: "";
+  position: fixed;           /* Stays in place when scrolling */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('../images/OpportunitiesBack.jpg');
+  background-size: cover;    /* Image covers entire area */
+  background-position: center;
+  background-attachment: fixed; /* Parallax effect */
+  opacity: 0.20;            /* Makes background subtle */
+  z-index: -1;              /* Behind all content */
 }
 
 /* ========================================================================
-   PROJECT ITEM (Stacked vertically)
+   2. OPPORTUNITIES CONTENT CONTAINER
+   Main container holding all project cards
    ======================================================================== */
-
-.project-item {
-  background: linear-gradient(135deg, rgba(45, 55, 72, 0.04) 0%, rgba(26, 32, 44, 0.08) 100%);
-  border: 1px solid rgba(45, 55, 72, 0.15);
-  border-radius: 18px;
-  padding: 40px 45px;
-  margin-bottom: 40px;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
+.opportunities-content {
+  max-width: 900px;                   /* Maximum width for readability */
+  margin: 60px auto;                  /* Vertical and horizontal centering */
+  padding: 0 40px;                    /* Horizontal padding */
 }
 
+/* ========================================================================
+   3. PROJECT ITEM CARD
+   Each project (Italy, Spain, Poland) is displayed as a card
+   Cards are stacked vertically with spacing between them
+   ======================================================================== */
+.project-item {
+  /* Glassmorphism effect: semi-transparent gradient background */
+  background: linear-gradient(
+    135deg,
+    rgba(220, 225, 230, 0.88) 0%,
+    rgba(205, 212, 220, 0.92) 100%
+  );
+  
+  /* Multiple borders and shadows for depth */
+  border: 1px solid rgba(190, 198, 208, 0.6);
+  box-shadow: 
+    0 8px 28px rgba(0, 0, 0, 0.12),           /* Main shadow */
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);  /* Inner highlight */
+  
+  border-radius: 18px;                /* Rounded corners */
+  padding: 40px 45px;                 /* Internal spacing */
+  margin-bottom: 40px;                /* Space between cards */
+  
+  backdrop-filter: blur(10px);        /* Blur effect behind card */
+  transition: all 0.3s ease;          /* Smooth transitions for hover */
+  position: relative;
+  overflow: hidden;                   /* Contains the top border decoration */
+}
+
+/* Decorative top border (gradient line) - appears on hover */
 .project-item::before {
   content: "";
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  height: 5px;
+  height: 5px;                        /* Height of decorative line */
   background: linear-gradient(90deg, #2d3748 0%, #1a202c 50%, #2d3748 100%);
-  opacity: 0;
+  opacity: 0;                         /* Hidden by default */
   transition: opacity 0.3s ease;
 }
 
-.project-item:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
-  border-color: rgba(45, 55, 72, 0.25);
-}
-
-.project-item:hover::before {
-  opacity: 1;
-}
-
-/* Project header with flag emoji */
+/* ========================================================================
+   4. PROJECT HEADER
+   Top section of each card with flag emoji and title
+   ======================================================================== */
 .project-header {
-  display: flex;
-  align-items: center;
-  gap: 20px;
+  display: flex;                      /* Horizontal layout */
+  align-items: center;                /* Vertically center items */
+  gap: 20px;                         /* Space between flag and title */
   margin-bottom: 25px;
   padding-bottom: 20px;
-  border-bottom: 2px solid rgba(45, 55, 72, 0.1);
+  border-bottom: 2px solid rgba(45, 55, 72, 0.1); /* Separator line */
 }
 
+/* Flag emoji (🇮🇹, 🇪🇸, 🇵🇱) */
 .project-flag {
-  font-size: 3rem;
-  line-height: 1;
+  font-size: 3rem;                    /* Large emoji size */
+  line-height: 1;                     /* Tight line height */
 }
 
+/* Title container */
 .project-title {
-  flex: 1;
+  flex: 1;                            /* Takes remaining space */
 }
 
+/* Main project title (e.g., "Youth Exchange – Italy") */
 .project-title h3 {
   font-size: 1.6rem;
   font-weight: 700;
-  color: var(--text-main);
+  color: var(--text-main);            /* Uses CSS variable from base.css */
   margin-bottom: 6px;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.01em;            /* Tighter letter spacing */
 }
 
+/* Project type subtitle (e.g., "Youth Exchange", "Training Course") */
 .project-type {
   font-size: 0.95rem;
-  color: var(--text-muted);
+  color: var(--text-muted);           /* Muted color for subtitle */
   font-weight: 500;
 }
 
-/* Project details */
+/* ========================================================================
+   5. PROJECT DETAILS SECTION
+   Grid layout showing Location, Dates, Age Range, Participants
+   ======================================================================== */
 .project-details {
-  display: grid;
-  gap: 18px;
+  display: grid;                      /* Grid layout */
+  gap: 18px;                         /* Vertical spacing between rows */
 }
 
+/* Individual detail row (e.g., "Location: Rome, Italy") */
 .project-detail-row {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
+  display: flex;                      /* Horizontal layout */
+  align-items: flex-start;            /* Top-align items */
+  gap: 12px;                         /* Space between label and value */
 }
 
+/* Detail label (e.g., "Location:", "Dates:") */
 .project-detail-label {
   font-weight: 600;
-  color: var(--accent);
-  min-width: 120px;
+  color: var(--accent);               /* Accent color for labels */
+  min-width: 120px;                  /* Fixed width to align all labels */
   font-size: 0.95rem;
 }
 
+/* Detail value (e.g., "Rome, Italy", "June 15 - June 25, 2025") */
 .project-detail-value {
-  color: var(--text-muted);
+  color: var(--text-muted);           /* Muted color for values */
   line-height: 1.7;
-  flex: 1;
+  flex: 1;                            /* Takes remaining space */
 }
 
-/* Description styling */
+/* ========================================================================
+   6. PROJECT DESCRIPTION SECTION
+   "About the Project" text at the bottom of each card
+   ======================================================================== */
 .project-description {
   margin-top: 25px;
   padding-top: 25px;
-  border-top: 1px solid rgba(45, 55, 72, 0.1);
+  border-top: 1px solid rgba(45, 55, 72, 0.1); /* Separator line */
 }
 
+/* "About the Project" heading */
 .project-description h4 {
   font-size: 1.1rem;
   font-weight: 600;
@@ -119,44 +168,52 @@
   margin-bottom: 12px;
 }
 
+/* Description paragraph */
 .project-description p {
   color: var(--text-muted);
-  line-height: 1.8;
+  line-height: 1.8;                   /* Generous line height for readability */
 }
 
 /* ========================================================================
-   RESPONSIVE
+   7. RESPONSIVE DESIGN
+   Adjustments for mobile and tablet screens
    ======================================================================== */
-
 @media (max-width: 860px) {
+  /* Container adjustments */
   .opportunities-content {
-    padding: 0 20px;
-    margin: 40px auto;
+    padding: 0 20px;                 /* Less horizontal padding */
+    margin: 40px auto;               /* Less vertical spacing */
   }
   
+  /* Card adjustments */
   .project-item {
-    padding: 30px 24px;
+    padding: 30px 24px;              /* Less padding on smaller screens */
   }
   
+  /* Stack header vertically on mobile */
   .project-header {
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: column;          /* Vertical layout */
+    align-items: flex-start;         /* Left-align items */
     gap: 15px;
   }
   
+  /* Smaller flag on mobile */
   .project-flag {
     font-size: 2.5rem;
   }
   
+  /* Smaller title on mobile */
   .project-title h3 {
     font-size: 1.4rem;
   }
   
+  /* Stack detail rows vertically on mobile */
   .project-detail-row {
-    flex-direction: column;
+    flex-direction: column;          /* Vertical layout */
     gap: 6px;
   }
   
+  /* Remove fixed width on mobile */
   .project-detail-label {
     min-width: auto;
   }

@@ -1,147 +1,204 @@
 /* ========================================================================
-   CONTACT.CSS - Modern premium contact design
+   CONTACT.CSS - Styles specific to the Contact page
+   Modern premium contact design with glassmorphism effects
    ======================================================================== */
 
-.contact-section {
-  max-width: 750px;
-  margin: 50px auto 60px;
-  padding: 45px 50px;
-  background: linear-gradient(135deg, rgba(45, 55, 72, 0.04) 0%, rgba(26, 32, 44, 0.08) 100%);
-  border-radius: 20px;
-  border: 1px solid rgba(45, 55, 72, 0.15);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.1);
+/* ========================================================================
+   1. BACKGROUND IMAGE
+   Fixed background image for the entire contact page
+   ======================================================================== */
+main {
   position: relative;
-  overflow: hidden;
 }
 
+/* Pseudo-element that creates the fixed background image effect */
+main::before {
+  content: "";
+  position: fixed;           /* Stays in place when scrolling */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('../images/ContactBack.jpg');
+  background-size: cover;    /* Image covers entire area */
+  background-position: center;
+  background-attachment: fixed; /* Parallax effect */
+  opacity: 0.20;            /* Makes background subtle */
+  z-index: -1;              /* Behind all content */
+}
+
+/* ========================================================================
+   2. CONTACT SECTION CONTAINER
+   Main card containing all contact information
+   ======================================================================== */
+.contact-section {
+  max-width: 750px;                    /* Maximum width for readability */
+  margin: 50px auto 60px;              /* Vertical spacing and horizontal centering */
+  padding: 45px 50px;                  /* Internal spacing */
+  
+  /* Glassmorphism effect: semi-transparent gradient background */
+  background: linear-gradient(
+    135deg,
+    rgba(220, 225, 230, 0.88) 0%,
+    rgba(205, 212, 220, 0.92) 100%
+  );
+  
+  /* Multiple borders and shadows for depth */
+  border: 1px solid rgba(190, 198, 208, 0.6);
+  box-shadow: 
+    0 8px 28px rgba(0, 0, 0, 0.12),           /* Main shadow */
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);  /* Inner highlight */
+  
+  border-radius: 20px;                 /* Rounded corners */
+  backdrop-filter: blur(10px);         /* Blur effect behind card */
+  position: relative;
+  overflow: hidden;                    /* Contains the top border decoration */
+}
+
+/* Decorative top border that appears as a gradient line */
 .contact-section::before {
   content: "";
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  height: 5px;
+  height: 5px;                         /* Height of decorative line */
   background: linear-gradient(90deg, #2d3748 0%, #1a202c 50%, #2d3748 100%);
 }
 
+/* ========================================================================
+   3. SECTION HEADING
+   ======================================================================== */
 .contact-section h3 {
   font-size: 1.7rem;
   margin-bottom: 32px;
-  color: var(--text-main);
+  color: var(--text-main);            /* Uses CSS variable from base.css */
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.02em;            /* Tighter letter spacing for modern look */
   text-align: center;
 }
 
+/* ========================================================================
+   4. CONTACT INFORMATION ROWS
+   Each <p> tag represents one contact method (email, Instagram, Facebook)
+   ======================================================================== */
 .contact-section p {
   margin-bottom: 22px;
-  color: var(--text-muted);
+  color: var(--text-muted);           /* Muted color for body text */
   line-height: 1.8;
   font-size: 1.08rem;
   padding: 18px 24px;
+  
+  /* Subtle background for each contact row */
   background: rgba(45, 55, 72, 0.03);
   border-radius: 12px;
-  border-left: 4px solid transparent;
-  transition: all 0.3s ease;
-  display: flex;
+  border-left: 4px solid transparent;  /* Space for potential colored accent */
+  
+  transition: all 0.3s ease;           /* Smooth transitions for hover effects */
+  display: flex;                       /* Flexbox for label-value layout */
   align-items: center;
-  gap: 16px;
+  gap: 16px;                          /* Space between label and value */
 }
 
-.contact-section p:hover {
-  background: rgba(45, 55, 72, 0.06);
-  border-left-color: var(--accent);
-  transform: translateX(4px);
-}
-
+/* ========================================================================
+   5. CONTACT LABELS (Email:, Instagram:, Facebook:)
+   ======================================================================== */
 .contact-section strong {
   color: var(--text-main);
   font-weight: 700;
   display: inline-flex;
   align-items: center;
-  min-width: 100px;
+  min-width: 100px;                   /* Aligns all labels to same width */
   font-size: 1.05rem;
 }
 
-/* Icon before labels */
+/* Decorative dot before each label */
 .contact-section strong::before {
   content: "";
   width: 8px;
   height: 8px;
   background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
-  border-radius: 50%;
+  border-radius: 50%;                 /* Makes it circular */
   margin-right: 12px;
-  box-shadow: 0 0 0 3px rgba(45, 55, 72, 0.15);
+  box-shadow: 0 0 0 3px rgba(45, 55, 72, 0.15); /* Glowing ring effect */
 }
 
-/* Plain email text (not clickable) */
+/* ========================================================================
+   6. EMAIL TEXT (Plain text, not clickable)
+   ======================================================================== */
 .contact-section .email-text {
   color: var(--text-muted);
   font-weight: 500;
 }
 
-/* Link styling with elegant animation (only for social links) */
+/* ========================================================================
+   7. SOCIAL MEDIA LINKS (Instagram & Facebook)
+   Links with hover animations and underline effect
+   ======================================================================== */
 .contact-section a {
   color: var(--accent);
   text-decoration: none;
-  position: relative;
+  position: relative;                 /* For positioning the underline */
   font-weight: 600;
   transition: all 0.25s ease;
   display: inline-block;
 }
 
+/* Animated underline that grows on hover */
 .contact-section a::after {
   content: "";
   position: absolute;
   left: 0;
   bottom: -3px;
-  width: 0;
+  width: 0;                          /* Starts with no width */
   height: 2px;
   background: linear-gradient(90deg, #2d3748 0%, #1a202c 100%);
-  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Smooth easing */
 }
 
+/* Hover state: darker color and slight movement */
 .contact-section a:hover {
   color: var(--accent-hover);
-  transform: translateX(2px);
+  transform: translateX(2px);        /* Moves link 2px to the right */
 }
 
+/* Expand underline to full width on hover */
 .contact-section a:hover::after {
   width: 100%;
 }
 
-/* Arrow icon on hover */
+/* Arrow icon that appears before link on hover */
 .contact-section a::before {
   content: "→";
-  opacity: 0;
+  opacity: 0;                        /* Hidden by default */
   margin-right: 0;
   transition: all 0.25s ease;
   display: inline-block;
 }
 
+/* Show arrow and add spacing on hover */
 .contact-section a:hover::before {
   opacity: 1;
   margin-right: 6px;
 }
 
 /* ========================================================================
-   RESPONSIVE
+   8. RESPONSIVE DESIGN
+   Adjustments for mobile and tablet screens
    ======================================================================== */
-
 @media (max-width: 860px) {
   .contact-section {
-    padding: 35px 28px;
-    margin: 0 20px 40px;
+    padding: 35px 28px;              /* Less padding on smaller screens */
+    margin: 0 20px 40px;             /* Side margins for mobile */
   }
   
   .contact-section p {
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: column;          /* Stack label and value vertically */
+    align-items: flex-start;         /* Left-align content */
     gap: 8px;
   }
   
   .contact-section strong {
-    min-width: auto;
+    min-width: auto;                 /* Remove fixed width on mobile */
   }
 }
