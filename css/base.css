@@ -10,37 +10,34 @@
    ======================================================================== */
 :root {
   /* Background colors (lightest to darkest) */
-  --bg-lightest: #f8f9fa;      /* Very light gray - top of gradient */
-  --bg-light: #edf2f7;         /* Light gray */
-  --bg-medium: #d7dde3;        /* Medium gray - most common background */
-  --bg-dark: #c5ccd4;          /* Dark gray */
-  --bg-darkest: #b4bcc6;       /* Darkest gray - bottom of gradient */
+  --bg-lightest: #f8f9fa;
+  --bg-light: #edf2f7;
+  --bg-medium: #d7dde3;
+  --bg-dark: #c5ccd4;
+  --bg-darkest: #b4bcc6;
   
   /* Text colors */
-  --text-main: #1a202c;        /* Main text color (dark) */
-  --text-muted: #4a5568;       /* Secondary text color (muted) */
+  --text-main: #1a202c;
+  --text-muted: #4a5568;
   
-  /* Accent colors (for buttons, links, highlights) */
-  --accent: #2d3748;           /* Primary accent color */
-  --accent-hover: #1a202c;     /* Darker accent for hover states */
+  /* Accent colors */
+  --accent: #2d3748;
+  --accent-hover: #1a202c;
 }
 
 /* ========================================================================
    2. BASIC RESET & DEFAULTS
-   Removes browser default styling for consistent appearance
    ======================================================================== */
 * {
-  margin: 0;                   /* Remove default margins */
-  padding: 0;                  /* Remove default padding */
-  box-sizing: border-box;      /* Include padding/border in element width/height */
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-  font-family: 'Inter', Arial, Helvetica, sans-serif; /* Primary font */
-  line-height: 1.6;                                   /* Comfortable reading line height */
-  color: var(--text-main);                            /* Default text color */
-  
-  /* Gradient background that goes from light to dark (top to bottom) */
+  font-family: 'Inter', Arial, Helvetica, sans-serif;
+  line-height: 1.6;
+  color: var(--text-main);
   background: linear-gradient(
     to bottom,
     var(--bg-lightest) 0%,
@@ -49,182 +46,223 @@ body {
     var(--bg-dark) 70%,
     var(--bg-darkest) 100%
   );
-  background-attachment: fixed;  /* Background stays in place when scrolling */
+  background-attachment: fixed;
+  overflow-x: hidden; /* Prevent horizontal scroll */
 }
 
 a {
-  text-decoration: none;       /* Remove underlines from links */
-  color: inherit;              /* Links inherit text color from parent */
+  text-decoration: none;
+  color: inherit;
 }
 
 ul {
-  list-style: none;            /* Remove bullet points from lists */
+  list-style: none;
+}
+
+/* ========================================================================
+   PAGE LOAD ANIMATION
+   Smooth fade-in effect when page loads
+   ======================================================================== */
+body {
+  animation: pageLoadFade 0.6s ease-out;
+}
+
+@keyframes pageLoadFade {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* ========================================================================
    3. HEADER & NAVIGATION BAR
-   Sticky navigation at the top of every page
    ======================================================================== */
 header {
   padding: 0;
   background: none;
+  position: relative;
+  z-index: 1000;
 }
 
-/* Navigation bar with glassmorphism effect */
 header nav {
   background: linear-gradient(
     to bottom,
-    rgba(234, 238, 242, 0.88) 0%,      /* Semi-transparent light gray */
+    rgba(234, 238, 242, 0.88) 0%,
     rgba(242, 245, 248, 0.95) 100%
   );
-  backdrop-filter: blur(10px);         /* Blur effect for glassmorphism */
+  backdrop-filter: blur(10px);
   padding: 18px 40px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
 nav {
-  display: flex;                       /* Horizontal layout */
-  justify-content: space-between;      /* Logo on left, menu on right */
-  align-items: center;                 /* Vertically center items */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
 }
 
-/* Navigation menu list */
 nav ul {
-  margin-right: 40px;                  /* Space from right edge */
-  display: flex;                       /* Horizontal layout */
-  gap: 28px;                          /* Space between menu items */
+  margin-right: 40px;
+  display: flex;
+  gap: 28px;
 }
 
-/* Logo styling */
 .logo img {
-  height: 65px;                        /* Fixed height (width auto-scales) */
+  height: 65px;
   width: auto;
   display: block;
   background: transparent;
 }
 
-/* Navigation links */
 nav ul li a {
   font-size: 1.05rem;
   font-weight: 500;
-  color: rgba(0, 0, 0, 0.85);         /* Slightly transparent black */
+  color: rgba(0, 0, 0, 0.85);
   padding: 6px 4px;
-  position: relative;                  /* For positioning the underline */
+  position: relative;
   transition: color 0.25s ease;
 }
 
-/* Animated underline for navigation links */
 nav ul li a::after {
   content: "";
   position: absolute;
   left: 0;
   bottom: -4px;
-  width: 0;                            /* Starts with no width */
+  width: 0;
   height: 2px;
   background-color: #000000;
-  transition: width 0.25s ease;        /* Smooth width transition */
+  transition: width 0.25s ease;
 }
 
-/* Show full underline on hover or when link is active (current page) */
 nav ul li a:hover::after,
 nav ul li a.active::after {
   width: 100%;
 }
 
-/* Darken link text on hover or when active */
 nav ul li a:hover,
 nav ul li a.active {
   color: #000000;
 }
 
 /* ========================================================================
+   MOBILE HAMBURGER MENU
+   Hidden on desktop, visible on mobile
+   ======================================================================== */
+.mobile-menu-toggle {
+  display: none; /* Hidden by default (desktop) */
+  flex-direction: column;
+  gap: 6px;
+  cursor: pointer;
+  padding: 8px;
+  z-index: 1001;
+  background: transparent;
+  border: none;
+}
+
+.mobile-menu-toggle span {
+  width: 28px;
+  height: 3px;
+  background: #1a202c;
+  border-radius: 3px;
+  transition: all 0.3s ease;
+}
+
+/* Hamburger animation when menu is open */
+.mobile-menu-toggle.active span:nth-child(1) {
+  transform: rotate(45deg) translate(8px, 8px);
+}
+
+.mobile-menu-toggle.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.mobile-menu-toggle.active span:nth-child(3) {
+  transform: rotate(-45deg) translate(7px, -7px);
+}
+
+/* ========================================================================
    4. CONTAINER
-   Centered container with max-width for content
    ======================================================================== */
 .container {
-  max-width: 1100px;                   /* Maximum width for large screens */
-  margin: 0 auto;                      /* Center horizontally */
-  padding: 0 40px;                     /* Horizontal padding */
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 40px;
 }
 
 /* ========================================================================
    5. PAGE HERO SECTION
-   Large banner with background image (used on non-home pages)
    ======================================================================== */
 .page-hero {
   position: relative;
   width: 100%;
-  height: 300px;                       /* Fixed height */
-  background-size: cover;              /* Image covers entire area */
-  background-position: center;         /* Center the image */
+  height: 300px;
+  background-size: cover;
+  background-position: center;
   display: flex;
-  align-items: center;                 /* Vertically center content */
-  justify-content: center;             /* Horizontally center content */
+  align-items: center;
+  justify-content: center;
   overflow: hidden;
 }
 
-/* Dark overlay for better text readability */
 .page-hero::before {
   content: "";
   position: absolute;
-  inset: 0;                            /* Cover entire hero section */
-  background: rgba(0, 0, 0, 0.5);     /* 50% black overlay */
-  z-index: 1;                          /* Below text, above image */
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1;
 }
 
-/* Hero text content */
 .page-hero-content {
   position: relative;
-  z-index: 2;                          /* Above overlay */
+  z-index: 2;
   text-align: center;
-  color: #ffffff;                      /* White text */
+  color: #ffffff;
   max-width: 900px;
   padding: 0 40px;
 }
 
-/* Hero heading */
 .page-hero h1 {
   font-size: 3rem;
   font-weight: 700;
   margin-bottom: 20px;
-  letter-spacing: -0.02em;             /* Tighter letter spacing */
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3); /* Shadow for readability */
+  letter-spacing: -0.02em;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
-/* Hero paragraph */
 .page-hero p {
   font-size: 1.2rem;
   line-height: 1.8;
-  opacity: 0.95;                       /* Slightly transparent */
+  opacity: 0.95;
   text-shadow: 0 1px 5px rgba(0, 0, 0, 0.3);
 }
 
 /* ========================================================================
    6. SCROLL REVEAL ANIMATION
-   Elements with "reveal" class fade in when scrolling into view
-   Applied by JavaScript Intersection Observer
    ======================================================================== */
 .reveal {
-  opacity: 0;                          /* Hidden initially */
-  transform: translateY(18px);         /* Starts 18px below normal position */
+  opacity: 0;
+  transform: translateY(18px);
   transition: opacity 0.7s ease, transform 0.7s ease;
 }
 
-/* When element becomes visible */
 .reveal.is-visible {
-  opacity: 1;                          /* Fully visible */
-  transform: translateY(0);            /* Moves to normal position */
+  opacity: 1;
+  transform: translateY(0);
 }
 
 /* ========================================================================
    7. FOOTER
-   Site footer with social media icons and copyright
    ======================================================================== */
 footer {
-  background: rgba(26, 32, 44, 0.95);  /* Dark semi-transparent background */
+  background: rgba(26, 32, 44, 0.95);
   padding: 50px 40px 30px;
-  color: rgba(255, 255, 255, 0.7);     /* Light gray text */
+  color: rgba(255, 255, 255, 0.7);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -232,25 +270,21 @@ footer {
   max-width: 1100px;
   margin: 0 auto;
   display: flex;
-  flex-direction: column;              /* Stack items vertically */
-  align-items: center;                 /* Center horizontally */
-  gap: 30px;                          /* Space between items */
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
 }
 
-/* ========================================================================
-   SOCIAL MEDIA ICONS
-   Circular buttons with brand colors
-   ======================================================================== */
 .social-media {
   display: flex;
-  gap: 20px;                          /* Space between icons */
+  gap: 20px;
   align-items: center;
 }
 
 .social-media a {
   width: 50px;
   height: 50px;
-  border-radius: 50%;                  /* Makes them circular */
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -258,88 +292,145 @@ footer {
   text-decoration: none;
 }
 
-/* Hover effect: lift up and add shadow */
 .social-media a:hover {
-  transform: translateY(-4px);         /* Moves up 4px */
+  transform: translateY(-4px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
 }
 
-/* Facebook brand color */
 .social-facebook {
   background: #3b5998;
 }
 
-/* Instagram brand gradient */
 .social-instagram {
-  background: radial-gradient(
-    circle at 30% 107%, 
-    #fdf497 0%, #fdf497 5%, 
-    #fd5949 45%, #d6249f 60%, 
-    #285AEB 90%
-  );
+  background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
 }
 
-/* SVG icon styling */
 .social-media svg {
   width: 24px;
   height: 24px;
-  fill: white;                         /* White icons */
+  fill: white;
 }
 
-/* Copyright text */
 .footer-copyright {
   font-size: 0.9rem;
   text-align: center;
-  color: rgba(255, 255, 255, 0.5);     /* Muted white */
+  color: rgba(255, 255, 255, 0.5);
 }
 
 /* ========================================================================
-   8. RESPONSIVE DESIGN
-   Adjustments for mobile and tablet screens (860px and below)
+   8. RESPONSIVE DESIGN - MOBILE
    ======================================================================== */
 @media (max-width: 860px) {
-  /* Container: less padding on small screens */
+  /* Show hamburger menu on mobile */
+  .mobile-menu-toggle {
+    display: flex;
+  }
+
+  /* Hide desktop navigation */
+  nav ul {
+    position: fixed;
+    top: 0;
+    right: -100%; /* Hidden off-screen by default */
+    width: 280px;
+    height: 100vh;
+    background: linear-gradient(
+      to bottom,
+      rgba(234, 238, 242, 0.98) 0%,
+      rgba(242, 245, 248, 0.98) 100%
+    );
+    backdrop-filter: blur(20px);
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding: 100px 30px 40px;
+    margin: 0;
+    gap: 0;
+    box-shadow: -4px 0 30px rgba(0, 0, 0, 0.2);
+    transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 999;
+  }
+
+  /* Show menu when active */
+  nav ul.mobile-menu-open {
+    right: 0;
+  }
+
+  /* Mobile menu items styling */
+  nav ul li {
+    width: 100%;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  nav ul li a {
+    display: block;
+    width: 100%;
+    padding: 18px 12px;
+    font-size: 1.1rem;
+    color: rgba(0, 0, 0, 0.85);
+  }
+
+  nav ul li a::after {
+    display: none; /* Remove underline animation on mobile */
+  }
+
+  nav ul li a.active {
+    background: rgba(45, 55, 72, 0.08);
+    color: #000000;
+    font-weight: 600;
+  }
+
+  /* Overlay when menu is open */
+  body.menu-open::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 998;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* Prevent body scroll when menu is open */
+  body.menu-open {
+    overflow: hidden;
+  }
+
+  header nav {
+    padding: 16px 20px;
+  }
+
+  .logo img {
+    height: 55px;
+  }
+
   .container {
     padding: 0 20px;
   }
-  
-  /* Header: tighter spacing */
-  header {
-    padding: 16px 20px !important;
-  }
-  
-  /* Navigation: smaller gaps between menu items */
-  nav ul {
-    gap: 16px;
-    margin-right: 0;
-  }
-  
-  /* Navigation links: smaller text */
-  nav ul li a {
-    font-size: 0.95rem;
-  }
-  
-  /* Page hero: same height on mobile */
+
   .page-hero {
-    height: 300px;
+    height: 250px;
   }
-  
-  /* Page hero heading: smaller text on mobile */
+
   .page-hero h1 {
-    font-size: 2.2rem;
+    font-size: 2rem;
   }
-  
-  /* Page hero paragraph: smaller text on mobile */
+
   .page-hero p {
-    font-size: 1.05rem;
+    font-size: 1rem;
   }
-  
-  /* Footer: less padding on mobile */
+
+  .page-hero-content {
+    padding: 0 20px;
+  }
+
   footer {
     padding: 40px 20px 20px;
   }
-  
-  /* Social media icons: slightly smaller on mobile */
+
   .social-media a {
     width: 45px;
     height: 45px;

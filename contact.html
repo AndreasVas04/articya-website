@@ -1,38 +1,36 @@
 <!-- ========================================================================
-     CONTACT.HTML - Contact page with social media links and email
+     CONTACT.HTML - With mobile-friendly navigation
      ======================================================================== -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Meta tags for character encoding, page title, and responsive design -->
   <meta charset="UTF-8">
   <title>Contact | ArtiCYa</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Get in touch with ArtiCYa for Erasmus+ opportunities and partnerships.">
   
-  <!-- Google Fonts: Inter font family with multiple weights -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   
-  <!-- Stylesheets: base.css contains global styles, contact.css contains page-specific styles -->
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/contact.css">
 </head>
 <body>
 
-  <!-- ========================================================================
-       HEADER & NAVIGATION
-       Common navigation bar used across all pages
-       ======================================================================== -->
   <header>
     <nav>
-      <!-- Logo linking to homepage -->
       <a href="index.html" class="logo">
         <img src="images/logo.png" alt="ArtiCYa logo">
       </a>
       
-      <!-- Main navigation menu - "active" class highlights current page -->
+      <!-- Mobile hamburger menu button -->
+      <button class="mobile-menu-toggle" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      
       <ul>
         <li><a href="index.html">Home</a></li>
         <li><a href="opportunities.html">Opportunities</a></li>
@@ -43,11 +41,7 @@
     </nav>
   </header>
 
-  <!-- ========================================================================
-       MAIN CONTENT
-       ======================================================================== -->
   <main>
-    <!-- Hero Section: Large banner with background image and title -->
     <section class="page-hero" style="background-image: url('images/Contact.jpg');">
       <div class="page-hero-content">
         <h1>Contact</h1>
@@ -58,24 +52,19 @@
       </div>
     </section>
 
-    <!-- Contact Information Section -->
-    <!-- The "reveal" class is used for scroll animation (fade-in effect) -->
     <section class="contact-section reveal">
       <h3>Get in touch</h3>
 
-      <!-- Email (plain text, not clickable) -->
       <p>
         <strong>Email:</strong>
         <span class="email-text">articya4youth@gmail.com</span>
       </p>
 
-      <!-- Instagram link (clickable with hover effects) -->
       <p>
         <strong>Instagram:</strong>
         <a href="https://www.instagram.com/articya4youth/" target="_blank">@articya4youth</a>
       </p>
 
-      <!-- Facebook link (clickable with hover effects) -->
       <p>
         <strong>Facebook:</strong>
         <a href="https://www.facebook.com/p/Articya-61560558245829/" target="_blank">Articya</a>
@@ -83,51 +72,62 @@
     </section>
   </main>
 
-  <!-- ========================================================================
-       FOOTER
-       Contains social media icons and copyright notice
-       ======================================================================== -->
   <footer>
     <div class="footer-content">
-      <!-- Social Media Icons -->
       <div class="social-media">
-        <!-- Facebook icon with SVG graphic -->
         <a href="https://www.facebook.com/p/Articya-61560558245829/" target="_blank" class="social-facebook" aria-label="Facebook">
           <svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
         </a>
-        
-        <!-- Instagram icon with SVG graphic -->
         <a href="https://www.instagram.com/articya4youth/" target="_blank" class="social-instagram" aria-label="Instagram">
           <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
         </a>
       </div>
-      
-      <!-- Copyright text -->
       <p class="footer-copyright">&copy; 2025 ArtiCYa – Erasmus Youth+</p>
     </div>
   </footer>
 
-  <!-- ========================================================================
-       JAVASCRIPT - Scroll Animation
-       Reveals elements with "reveal" class when they come into view
-       ======================================================================== -->
   <script>
-    // Select all elements with the "reveal" class
+    // Mobile menu toggle
+    const menuToggle = document.querySelector('.mobile-menu-toggle');
+    const navMenu = document.querySelector('nav ul');
+    const body = document.body;
+
+    menuToggle.addEventListener('click', () => {
+      menuToggle.classList.toggle('active');
+      navMenu.classList.toggle('mobile-menu-open');
+      body.classList.toggle('menu-open');
+    });
+
+    // Close menu when clicking outside
+    document.addEventListener('click', (e) => {
+      if (body.classList.contains('menu-open') && 
+          !navMenu.contains(e.target) && 
+          !menuToggle.contains(e.target)) {
+        menuToggle.classList.remove('active');
+        navMenu.classList.remove('mobile-menu-open');
+        body.classList.remove('menu-open');
+      }
+    });
+
+    // Close menu when clicking a link
+    navMenu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        menuToggle.classList.remove('active');
+        navMenu.classList.remove('mobile-menu-open');
+        body.classList.remove('menu-open');
+      });
+    });
+
+    // Scroll reveal
     const revealEls = document.querySelectorAll('.reveal');
-    
-    // Create an Intersection Observer to detect when elements enter viewport
     const io = new IntersectionObserver((entries) => {
       entries.forEach((e) => {
         if (e.isIntersecting) {
-          // Add "is-visible" class to trigger fade-in animation
           e.target.classList.add('is-visible');
-          // Stop observing this element once it's been revealed
           io.unobserve(e.target);
         }
       });
-    }, { threshold: 0.12 }); // Trigger when 12% of element is visible
-    
-    // Apply observer to all reveal elements
+    }, { threshold: 0.12 });
     revealEls.forEach(el => io.observe(el));
   </script>
 

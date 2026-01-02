@@ -1,60 +1,48 @@
 /* ========================================================================
-   FAQ.CSS - Styles for the FAQ page
-   Professional accordion design with expandable Q&A sections
+   FAQ.CSS - Mobile optimized accordion
    ======================================================================== */
 
-/* ========================================================================
-   1. BACKGROUND IMAGE
-   Fixed background image for the FAQ page
-   ======================================================================== */
 main {
   position: relative;
 }
 
-/* Pseudo-element that creates the fixed background image effect */
 main::before {
   content: "";
-  position: fixed;           /* Stays in place when scrolling */
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   background-image: url('../images/FAQBack.jpg');
-  background-size: cover;    /* Image covers entire area */
+  background-size: cover;
   background-position: center;
-  background-attachment: fixed; /* Parallax effect */
-  opacity: 0.20;            /* Makes background subtle */
-  z-index: -1;              /* Behind all content */
+  background-attachment: fixed;
+  opacity: 0.20;
+  z-index: -1;
 }
 
-/* ========================================================================
-   2. FAQ SECTION CONTAINER
-   Main container for each FAQ category (Erasmus+, Costs & safety, etc.)
-   ======================================================================== */
 .faq-section {
-  max-width: 900px;                   /* Maximum width for readability */
-  margin: 50px auto 60px;             /* Vertical spacing and horizontal centering */
-  padding: 0 40px;                    /* Horizontal padding */
+  max-width: 900px;
+  margin: 50px auto 60px;
+  padding: 0 40px;
 }
 
-/* Section heading (e.g., "Erasmus+", "Costs & safety") */
 .faq-section h3 {
   font-size: 1.8rem;
   margin-bottom: 28px;
-  color: var(--text-main);            /* Uses CSS variable from base.css */
+  color: var(--text-main);
   font-weight: 700;
-  letter-spacing: -0.02em;            /* Tighter letter spacing */
+  letter-spacing: -0.02em;
   position: relative;
-  padding-left: 20px;                 /* Space for decorative bar */
+  padding-left: 20px;
 }
 
-/* Decorative vertical bar before section heading */
 .faq-section h3::before {
   content: "";
   position: absolute;
   left: 0;
   top: 50%;
-  transform: translateY(-50%);        /* Center vertically */
+  transform: translateY(-50%);
   width: 6px;
   height: 28px;
   background: linear-gradient(180deg, #2d3748 0%, #1a202c 100%);
@@ -62,39 +50,31 @@ main::before {
 }
 
 /* ========================================================================
-   3. FAQ ACCORDION ITEMS
-   Each question-answer pair is an accordion item
+   FAQ ACCORDION
    ======================================================================== */
 .faq-item {
-  /* Glassmorphism effect: semi-transparent gradient background */
   background: linear-gradient(
     135deg,
     rgba(220, 225, 230, 0.88) 0%,
     rgba(205, 212, 220, 0.92) 100%
   );
-  
-  /* Multiple borders and shadows for depth */
   border: 1px solid rgba(190, 198, 208, 0.6);
   box-shadow: 
-    0 8px 28px rgba(0, 0, 0, 0.12),           /* Main shadow */
-    inset 0 1px 0 rgba(255, 255, 255, 0.4);  /* Inner highlight */
-  
-  border-radius: 14px;                /* Rounded corners */
-  margin-bottom: 16px;                /* Space between accordion items */
-  overflow: hidden;                   /* Hides content that expands beyond border */
-  backdrop-filter: blur(10px);        /* Blur effect behind card */
-  transition: all 0.3s ease;          /* Smooth transitions for hover */
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+    0 8px 28px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  border-radius: 14px;
+  margin-bottom: 16px;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
 }
 
-/* Hover effect: increase shadow and slide slightly to the right */
 .faq-item:hover {
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1);
   border-color: rgba(45, 55, 72, 0.25);
-  transform: translateX(4px);         /* Moves card 4px to the right */
+  transform: translateX(4px);
 }
 
-/* When accordion is open (active state) */
 .faq-item.active {
   background: linear-gradient(
     135deg,
@@ -104,114 +84,115 @@ main::before {
   border-color: rgba(45, 55, 72, 0.3);
 }
 
-/* ========================================================================
-   4. FAQ QUESTION (Clickable Header)
-   The question part that you click to expand/collapse the answer
-   ======================================================================== */
 .faq-question {
   padding: 22px 26px;
-  cursor: pointer;                    /* Show hand cursor to indicate clickability */
-  display: flex;                      /* Horizontal layout */
-  justify-content: space-between;     /* Question on left, arrow on right */
-  align-items: center;                /* Vertically center items */
-  gap: 20px;                         /* Space between question and arrow */
-  user-select: none;                  /* Prevent text selection when clicking */
-  transition: all 0.25s ease;         /* Smooth hover transitions */
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  user-select: none;
+  transition: all 0.25s ease;
 }
 
-/* Hover effect on question */
 .faq-question:hover {
-  background: rgba(45, 55, 72, 0.04); /* Subtle background on hover */
+  background: rgba(45, 55, 72, 0.04);
 }
 
-/* Question text */
 .faq-question h4 {
   font-size: 1.12rem;
   font-weight: 600;
   color: var(--text-main);
   margin: 0;
-  flex: 1;                            /* Takes remaining space */
+  flex: 1;
   letter-spacing: -0.01em;
 }
 
-/* ========================================================================
-   5. ARROW ICON
-   Rotates 180° when accordion is open
-   ======================================================================== */
 .faq-arrow {
   width: 32px;
   height: 32px;
   border-radius: 8px;
   background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
   display: grid;
-  place-items: center;                /* Center content horizontally and vertically */
+  place-items: center;
   font-size: 0.9rem;
   color: #ffffff;
   transition: transform 0.3s ease, background 0.3s ease;
-  flex-shrink: 0;                     /* Prevent arrow from shrinking */
+  flex-shrink: 0;
   box-shadow: 0 2px 8px rgba(45, 55, 72, 0.3);
 }
 
-/* Rotate arrow 180° when accordion is open */
 .faq-item.active .faq-arrow {
   transform: rotate(180deg);
   background: linear-gradient(135deg, #1a202c 0%, #000000 100%);
 }
 
-/* ========================================================================
-   6. FAQ ANSWER (Expandable Content)
-   Hidden by default, expands when accordion is clicked
-   ======================================================================== */
 .faq-answer {
-  max-height: 0;                      /* Hidden by default */
-  overflow: hidden;                   /* Hide overflowing content */
-  /* Smooth expansion animation with cubic-bezier easing */
+  max-height: 0;
+  overflow: hidden;
   transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), padding 0.4s ease;
 }
 
-/* Answer paragraph */
 .faq-answer p {
-  padding: 0 26px 22px;              /* No top padding, bottom and side padding */
-  color: var(--text-muted);           /* Muted color for readability */
-  line-height: 1.8;                   /* Generous line height */
+  padding: 0 26px 22px;
+  color: var(--text-muted);
+  line-height: 1.8;
   margin: 0;
   font-size: 1.02rem;
 }
 
-/* When accordion is open, allow content to expand */
 .faq-item.active .faq-answer {
-  max-height: 600px;                 /* Large enough for most answers */
-  /* Note: This is a fixed height. For very long answers, increase this value. */
+  max-height: 600px;
 }
 
 /* ========================================================================
-   7. RESPONSIVE DESIGN
-   Adjustments for mobile and tablet screens
+   RESPONSIVE - MOBILE OPTIMIZATIONS
    ======================================================================== */
 @media (max-width: 860px) {
-  /* Container adjustments */
   .faq-section {
-    padding: 0 20px;                 /* Less horizontal padding */
+    padding: 0 20px;
+    margin: 40px auto 50px;
   }
-  
-  /* Question adjustments */
+
+  .faq-section h3 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    padding-left: 16px;
+  }
+
+  .faq-section h3::before {
+    width: 5px;
+    height: 24px;
+  }
+
+  .faq-item {
+    margin-bottom: 14px;
+    border-radius: 12px;
+  }
+
+  .faq-item:hover {
+    transform: translateX(0);
+  }
+
   .faq-question {
-    padding: 18px 20px;              /* Less padding on smaller screens */
+    padding: 18px 20px;
+    gap: 12px;
   }
-  
-  /* Answer adjustments */
-  .faq-answer p {
-    padding: 0 20px 18px;            /* Less padding on smaller screens */
-  }
-  
-  /* Smaller question text on mobile */
+
   .faq-question h4 {
-    font-size: 1.05rem;
+    font-size: 1rem;
+    line-height: 1.4;
   }
-  
-  /* Smaller arrow on mobile */
+
   .faq-arrow {
     width: 28px;
     height: 28px;
+    font-size: 0.85rem;
+  }
+
+  .faq-answer p {
+    padding: 0 20px 18px;
+    font-size: 0.95rem;
+    line-height: 1.7;
   }
 }
