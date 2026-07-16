@@ -1,60 +1,76 @@
 # ArtiCYa Website
 
-Static multi-page website for **ArtiCYa**, a Cyprus-based Erasmus+ youth organization focused on non-formal education and social inclusion.
+Website for **ArtiCYa**, a Cyprus-based Erasmus+ youth organization focused on non-formal education and social inclusion.
+
+Built with Next.js 15 (App Router, static export), TypeScript and Tailwind CSS v4.
 
 ## Live Demo
 🔗 https://andreasvas04.github.io/articya-website/
 
-## Features
-- Responsive, mobile-first layout
-- Mobile navigation (hamburger menu)
-- Scroll reveal animations (Intersection Observer)
-- Custom About page with unified card layout and image grid
-- Glassmorphism effects with gradient backgrounds
-- Semantic HTML structure
-- Lightweight vanilla JavaScript (no frameworks)
-
 ## Pages
-- **Home** (`index.html`) — Landing page with organization overview
-- **About** (`about.html`) — Mission, values, and impact
-- **Opportunities** (`opportunities.html`) — Current Erasmus+ programs
-- **FAQ** (`faq.html`) — Common questions about programs
-- **Contact** (`contact.html`) — Contact form and social links
-
-## Tech Stack
-- HTML5
-- CSS3 (Flexbox, Grid, Custom Properties)
-- Vanilla JavaScript (ES6+)
-- Google Fonts (Inter)
+- **Home** (`/`) — Landing page with organization overview
+- **About** (`/about`) — Mission, values, and impact
+- **Opportunities** (`/opportunities`) — Current Erasmus+ programs
+- **FAQ** (`/faq`) — Common questions about programs
+- **Contact** (`/contact`) — Contact details and social links
 
 ## Project Structure
 ```
 articya-website/
-├── index.html
-├── about.html
-├── opportunities.html
-├── faq.html
-├── contact.html
-├── css/
-│   ├── base.css
-│   └── about.css
-└── images/
-    └── (project images)
+├── app/                  # Next.js App Router pages
+├── components/           # Shared components (header, footer, hero)
+│   └── ui/               # Reusable UI primitives
+├── content/              # All site copy as typed constants (frozen)
+├── lib/                  # Utilities (cn, withBasePath)
+├── public/images/        # Site images
+└── scripts/
+    └── verify-text-parity.mjs
 ```
 
-## Run Locally
+All visible text lives in `/content` as typed constants; pages render only from those. The legacy static pages (`*.html`, `css/`, `images/`) are kept in place while the current GitHub Pages deployment still serves them.
+
+## Development
 ```bash
-git clone https://github.com/andreasvas04/articya-website.git
-cd articya-website
-python3 -m http.server 8000
+npm install
+npm run dev
 ```
 
-Then visit `http://localhost:8000`.
+Then visit `http://localhost:3000`.
 
-**Tip:** You can also use the VS Code Live Server extension.
+## Build
+
+Static export for any static host (also what Vercel serves):
+
+```bash
+npm run build
+```
+
+Build for GitHub Pages (adds the `/articya-website` base path to routes and image URLs):
+
+```bash
+npm run build:pages
+```
+
+Both output to `out/`.
+
+### Text parity check
+
+Verifies that the visible text of the exported pages matches the legacy HTML pages character for character:
+
+```bash
+npm run verify:text
+```
 
 ## Deployment
-Deployed via GitHub Pages: https://andreasvas04.github.io/articya-website/
+
+### GitHub Pages
+```bash
+npm run build:pages
+```
+Publish the `out/` directory to GitHub Pages (e.g. push it to a `gh-pages` branch or upload it as the Pages artifact in a workflow). The site is served at https://andreasvas04.github.io/articya-website/.
+
+### Vercel (alternative)
+Import the repository on [vercel.com](https://vercel.com) — the Next.js preset works as is (`npm run build`, no `GITHUB_PAGES` flag). The static export is served from the domain root.
 
 ## Contact
 **ArtiCYa - Erasmus+ Youth**
