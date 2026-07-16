@@ -55,7 +55,7 @@ export default function HomePage() {
             </Reveal>
           </div>
 
-          <div className="mt-14 grid border-y border-pine-800 md:mt-24 md:grid-cols-3 md:divide-x md:divide-pine-800 max-md:divide-y max-md:divide-pine-800">
+          <div className="mt-10 grid border-y border-pine-800 md:mt-24 md:grid-cols-3 md:divide-x md:divide-pine-800 max-md:divide-y max-md:divide-pine-800">
             {whatWeDo.stats.map((stat, i) => (
               <Reveal key={stat.label} delayMs={i * 150}>
                 <StatCounter num={stat.num} label={stat.label} />

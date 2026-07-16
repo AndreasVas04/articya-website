@@ -70,6 +70,14 @@ function stripHomeBadges(text) {
   return text.replace(homeBadgeEmoji, " ").replace(/\s+/g, " ").trim();
 }
 
+// The exported header carries an "ArtiCYa" text wordmark next to the logo
+// (the original pages had a logo image only), and the header is the first
+// thing in the body. Strip exactly that one leading occurrence from the
+// exported text; every other character stays guarded.
+function stripHeaderWordmark(text) {
+  return text.replace(/^ArtiCYa /, "");
+}
+
 function firstDiff(a, b) {
   const len = Math.min(a.length, b.length);
   for (let i = 0; i < len; i++) {
@@ -91,6 +99,8 @@ for (const page of pages) {
     console.error(`FAIL  ${page.name}: ${err.message}`);
     continue;
   }
+
+  exported = stripHeaderWordmark(exported);
 
   if (page.name === "home") {
     original = stripHomeBadges(original);

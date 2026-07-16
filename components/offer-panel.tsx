@@ -206,7 +206,7 @@ export function OfferPanel({
               className="mt-5 block h-1 w-16 origin-left bg-resin"
               style={active ? { scaleX: barScaleX } : undefined}
             />
-            <p className="mt-5 leading-[1.7] text-plaster-bright">
+            <p className="mt-5 leading-[1.7] text-plaster-bright md:text-xl md:leading-[1.55]">
               {groups.map((group, i) => (
                 <SentenceGroup
                   key={`${groups.length}-${i}`}

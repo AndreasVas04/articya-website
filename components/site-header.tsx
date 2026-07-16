@@ -44,7 +44,7 @@ export function SiteHeader() {
       )}
     >
       <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 md:h-20">
-        <Link href="/" className="shrink-0">
+        <Link href="/" className="flex shrink-0 items-center gap-2.5">
           <Image
             src={withBasePath(nav.logo.src)}
             alt={nav.logo.alt}
@@ -53,6 +53,14 @@ export function SiteHeader() {
             className="h-11 w-auto md:h-14"
             priority
           />
+          <span
+            className={cn(
+              "font-display text-lg font-semibold tracking-[-0.01em] transition-colors duration-200 md:text-xl",
+              lightText ? "text-plaster-bright" : "text-pine-950"
+            )}
+          >
+            ArtiCYa
+          </span>
         </Link>
 
         <button

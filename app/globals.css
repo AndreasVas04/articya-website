@@ -29,6 +29,14 @@ body {
   color: var(--color-pine-950);
 }
 
+/* Two-ring focus indicator: the pine ring carries the contrast on plaster
+   grounds, the resin ring on pine grounds, so one rule covers both worlds. */
+:focus-visible {
+  outline: 2px solid var(--color-resin);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--color-pine-950);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

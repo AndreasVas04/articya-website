@@ -92,12 +92,17 @@ Display: **Bricolage Grotesque** · Body: **Instrument Sans** — both loaded vi
 | Display | `clamp(2.75rem, 6vw, 4.5rem)` / 1.05, −0.02em | Bricolage 600 | Page hero headline only |
 | H2 | `clamp(2rem, 4vw, 3rem)` / 1.1, −0.01em | Bricolage 600 | Section headings; home offer-panel titles |
 | H3 | `1.5rem` / 1.25 | Bricolage 600 | Card and block headings |
-| Stat numeral | `clamp(3.25rem, 8vw, 6.5rem)` / 1 | Bricolage 600 | Home stats only — `resin`, monumental, glowing |
+| Stat numeral | `clamp(3.25rem, 8vw, 6.5rem)` / 1 desktop · `2.75rem` / 1 mobile | Bricolage 600 | Home stats only — `resin`, glowing. Monumental centered columns on desktop; compact ledger rows on mobile so all three share one screen |
 | Showpiece | `clamp(2.25rem, 5vw, 3.75rem)` / 1.15, −0.01em | Bricolage 600 | One key line per page max (e.g. the home closing line) |
 | Trail item | `clamp(1.5rem, 2.5vw, 2.25rem)` / 1.2 | Bricolage 600 | Home gains sequence |
-| Lede | `1.25rem` / 1.55 | Instrument Sans 400 | Intro paragraph under headings |
+| Lede | `1.25rem` / 1.55 | Instrument Sans 400 | Intro paragraph under headings; offer-panel body on desktop, where plain Body reads too small against the full-bleed panel scale |
 | Body | `1rem` / 1.7 | Instrument Sans 400 | Default copy |
 | Label | `0.8125rem` / 1.4, +0.08em, uppercase | Instrument Sans 600 | Section eyebrows (`lichen`), pills |
+
+The brand name always renders as "ArtiCYa" — never CSS-uppercased. An
+element carrying the brand name (header wordmark, hero hint pill) drops the
+Label step's uppercase and tracking; section labels and other non-brand
+text keep them.
 | Caption | `0.875rem` / 1.5 | Instrument Sans 400 | Photo credits, footnotes |
 
 ## Layout & spacing

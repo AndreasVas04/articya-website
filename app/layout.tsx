@@ -18,6 +18,12 @@ const instrumentSans = Instrument_Sans({
 export const metadata: Metadata = {
   title: meta.title,
   description: meta.description,
+  openGraph: {
+    title: meta.title,
+    description: meta.description,
+    type: "website",
+    locale: "en_US",
+  },
 };
 
 export default function RootLayout({

@@ -242,7 +242,7 @@ const ScrollExpandMedia = ({
               {hintLabel && (
                 <div className="mt-4 flex justify-center">
                   <p
-                    className="rounded-full border border-sage/60 bg-pine-950/80 px-4 py-1 text-[0.8125rem] font-semibold uppercase leading-[1.4] tracking-[0.08em] text-resin-light"
+                    className="rounded-full border border-sage/60 bg-pine-950/80 px-4 py-1 text-[0.8125rem] font-semibold leading-[1.4] text-resin-light"
                     style={{ transform: `translateX(${textTranslateX}vw)` }}
                   >
                     {hintLabel}
