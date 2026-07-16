@@ -30,7 +30,9 @@ export default function HomePage() {
         </div>
       </ScrollExpandMedia>
 
-      <section className="relative overflow-hidden bg-pine-950 text-plaster-bright">
+      {/* overflow-clip (not hidden) so the offer panels' sticky frames can
+          pin against the viewport. */}
+      <section className="relative overflow-clip bg-pine-950 text-plaster-bright">
         {/* Mirrors the lower half of the hero's halo, which the hero clips
             at the seam — together they read as one light. */}
         <div
