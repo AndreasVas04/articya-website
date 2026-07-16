@@ -1,3 +1,4 @@
+import { Reveal } from "@/components/reveal";
 import { withBasePath } from "@/lib/utils";
 
 interface PageHeroProps {
@@ -6,18 +7,29 @@ interface PageHeroProps {
   text: string;
 }
 
+// Inner pages open on a pine-dusk hero over the page's photograph; the body
+// below stays on the plaster ground.
 export function PageHero({ image, heading, text }: PageHeroProps) {
   return (
-    <section
-      className="bg-cover bg-center"
-      style={{ backgroundImage: `url(${withBasePath(image)})` }}
-    >
-      <div className="bg-black/50 px-4 pb-24 pt-36 text-center text-white md:pt-44">
-        <div className="mx-auto max-w-2xl">
-          <h1 className="text-4xl font-bold">{heading}</h1>
-          <p className="mt-4 text-lg">{text}</p>
-        </div>
+    <section className="relative overflow-hidden bg-pine-950">
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 bg-cover bg-center"
+        style={{ backgroundImage: `url(${withBasePath(image)})` }}
+      />
+      <div className="absolute inset-0 bg-pine-950/70" />
+      <div className="relative mx-auto flex min-h-[55vh] max-w-6xl flex-col items-center justify-center px-4 pb-16 pt-28 text-center md:min-h-[65vh] md:pb-20 md:pt-32">
+        <Reveal>
+          <span aria-hidden="true" className="mx-auto block h-1 w-16 bg-resin" />
+          <h1 className="mt-8 font-display text-[clamp(2.75rem,6vw,4.5rem)] font-semibold leading-[1.05] tracking-[-0.02em] text-plaster-bright">
+            {heading}
+          </h1>
+          <p className="mx-auto mt-6 max-w-2xl text-xl leading-[1.55] text-plaster-muted">
+            {text}
+          </p>
+        </Reveal>
       </div>
+      <div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-px bg-sage/40" />
     </section>
   );
 }

@@ -12,6 +12,28 @@ export const hero = {
 
 export const background = "/images/AboutBack.jpg";
 
+export const gallery = [
+  { src: "/images/AboutImage2.jpg", alt: "Youth exchange activities" },
+  {
+    src: "/images/hero-1.jpg",
+    alt: "Participants hiking along a lakeside mountain trail",
+  },
+  { src: "/images/AboutImage1.jpg", alt: "ArtiCYa team activities" },
+  {
+    src: "/images/hero-3.jpg",
+    alt: "Participants talking on mossy rocks in the forest",
+  },
+  {
+    src: "/images/home-training.jpg",
+    alt: "A team-building game during a training course",
+  },
+  { src: "/images/hero-2.jpg", alt: "The group walking a shaded forest road" },
+  {
+    src: "/images/home-youth.jpg",
+    alt: "Hands joined by a rope web during a group exercise",
+  },
+];
+
 export const rows = [
   {
     paragraphs: [
