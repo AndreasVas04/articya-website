@@ -1,20 +1,12 @@
-import {
-  Award,
-  Compass,
-  Globe,
-  GraduationCap,
-  HandCoins,
-  Users,
-} from "lucide-react";
 import ScrollExpandMedia from "@/components/ui/scroll-expansion-hero";
 import { StatCounter } from "@/components/stat-counter";
 import { Reveal } from "@/components/reveal";
+import { OfferPanel } from "@/components/offer-panel";
+import { GainTrail } from "@/components/gain-trail";
 import { ButtonLink } from "@/components/ui/button";
 import { hero, whatWeDo, gain } from "@/content/home";
-import { withBasePath } from "@/lib/utils";
 
-const cardIcons = [Globe, GraduationCap];
-const gainIcons = [Compass, Users, Award, HandCoins];
+const offerIcons = ["globe", "graduation"] as const;
 
 export default function HomePage() {
   return (
@@ -38,104 +30,92 @@ export default function HomePage() {
         </div>
       </ScrollExpandMedia>
 
-      <section className="bg-plaster px-4 py-16 md:py-24">
-        <div className="mx-auto max-w-6xl">
-          <div className="md:grid md:grid-cols-12 md:items-end md:gap-x-16">
-            <Reveal className="md:col-span-7">
-              <h2 className="font-display text-[clamp(2rem,4vw,3rem)] font-semibold leading-[1.1] tracking-[-0.01em]">
+      <section className="relative overflow-hidden bg-pine-950 text-plaster-bright">
+        {/* Mirrors the lower half of the hero's halo, which the hero clips
+            at the seam — together they read as one light. */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute left-1/2 top-0 h-40 w-[42rem] max-w-[90vw] -translate-x-1/2 -translate-y-1/2 rounded-full bg-resin/45 blur-[80px]"
+        />
+
+        <div className="relative mx-auto max-w-6xl px-4 pt-16 md:pt-28">
+          <div className="md:grid md:grid-cols-12 md:gap-x-16">
+            <Reveal className="md:col-span-5">
+              <span aria-hidden="true" className="block h-1 w-16 bg-resin" />
+              <h2 className="mt-6 font-display text-[clamp(2rem,4vw,3rem)] font-semibold leading-[1.1] tracking-[-0.01em]">
                 {whatWeDo.title}
               </h2>
-              <p className="mt-6 max-w-xl text-xl leading-[1.55] text-pine-900">
+            </Reveal>
+            <Reveal delayMs={100} className="md:col-span-7 md:pt-3">
+              <p className="mt-6 max-w-2xl border-l border-sage/40 pl-5 text-xl leading-[1.55] text-plaster-muted md:mt-0 md:ml-auto md:pl-6">
                 {whatWeDo.lead}
               </p>
             </Reveal>
-            <div className="mt-12 divide-y divide-sage border-y border-sage md:col-span-5 md:mt-0">
-              {whatWeDo.stats.map((stat, i) => (
-                <Reveal key={stat.label} delayMs={i * 100}>
-                  <StatCounter num={stat.num} label={stat.label} />
-                </Reveal>
-              ))}
-            </div>
           </div>
 
-          <div className="mt-14 grid gap-8 md:mt-20 md:grid-cols-2">
-            {whatWeDo.cards.map((card, i) => {
-              const Icon = cardIcons[i] ?? Globe;
-              return (
-                <Reveal key={card.title} delayMs={i * 150} className="h-full">
-                  <article className="h-full overflow-hidden rounded-lg border border-sage bg-plaster-bright transition-[border-color,box-shadow,transform] duration-200 ease-out-quart hover:-translate-y-1 hover:border-lichen hover:shadow-[0_20px_40px_-24px_rgba(19,26,18,0.4)]">
-                    <div
-                      className="relative h-52 bg-cover bg-center md:h-60"
-                      style={{
-                        backgroundImage: `url(${withBasePath(card.image)})`,
-                      }}
-                    >
-                      <span
-                        aria-hidden="true"
-                        className="absolute left-4 top-4 flex size-10 items-center justify-center rounded-full bg-plaster-bright/90 text-lichen"
-                      >
-                        <Icon className="size-5" strokeWidth={1.5} />
-                      </span>
-                    </div>
-                    <div className="p-6 md:p-8">
-                      <h3 className="font-display text-2xl font-semibold leading-[1.25]">
-                        {card.title}
-                      </h3>
-                      <p className="mt-3 leading-[1.7] text-pine-900">
-                        {card.text}
-                      </p>
-                    </div>
-                  </article>
-                </Reveal>
-              );
-            })}
+          <div className="mt-14 grid border-y border-pine-800 md:mt-24 md:grid-cols-3 md:divide-x md:divide-pine-800 max-md:divide-y max-md:divide-pine-800">
+            {whatWeDo.stats.map((stat, i) => (
+              <Reveal key={stat.label} delayMs={i * 150}>
+                <StatCounter num={stat.num} label={stat.label} />
+              </Reveal>
+            ))}
           </div>
+        </div>
+
+        <div className="mt-16 md:mt-24">
+          {whatWeDo.cards.map((card, i) => (
+            <OfferPanel
+              key={card.title}
+              image={card.image}
+              title={card.title}
+              text={card.text}
+              icon={offerIcons[i] ?? "globe"}
+              flip={i % 2 === 1}
+            />
+          ))}
         </div>
       </section>
 
-      <section className="bg-plaster-muted px-4 py-16 text-center md:py-24">
-        <div className="mx-auto max-w-3xl">
-          <Reveal>
-            <h2 className="font-display text-[clamp(2rem,4vw,3rem)] font-semibold leading-[1.1] tracking-[-0.01em]">
+      <section className="relative overflow-hidden bg-pine-950 px-4 py-16 text-plaster-bright md:py-24">
+        <div className="mx-auto max-w-6xl">
+          <Reveal className="text-center">
+            <span
+              aria-hidden="true"
+              className="mx-auto block h-1 w-16 bg-resin"
+            />
+            <h2 className="mt-6 font-display text-[clamp(2rem,4vw,3rem)] font-semibold leading-[1.1] tracking-[-0.01em]">
               {gain.title}
             </h2>
           </Reveal>
-          <div className="mt-12 grid gap-4 sm:grid-cols-2">
-            {gain.items.map((item, i) => {
-              const Icon = gainIcons[i] ?? Compass;
-              return (
-                <Reveal key={item} delayMs={i * 100} className="h-full">
-                  <div className="flex h-full items-center gap-4 rounded-lg border border-sage bg-plaster-bright px-5 py-4 text-left">
-                    <span
-                      aria-hidden="true"
-                      className="flex size-10 shrink-0 items-center justify-center rounded-full bg-plaster-muted text-lichen"
-                    >
-                      <Icon className="size-5" strokeWidth={1.5} />
-                    </span>
-                    <span className="font-semibold">{item}</span>
-                  </div>
-                </Reveal>
-              );
-            })}
+
+          <div className="mt-12 md:mt-16">
+            <GainTrail items={gain.items} />
           </div>
-          <Reveal delayMs={100}>
-            <p className="mt-12 text-xl leading-[1.55] text-pine-900">
-              {gain.text}
-            </p>
-            <p className="mt-3 font-display text-[clamp(1.75rem,3vw,2.25rem)] font-semibold leading-[1.25] text-resin-deep">
-              {gain.highlight}
-            </p>
-          </Reveal>
-          <Reveal delayMs={200}>
-            <div className="mt-10">
-              <ButtonLink
-                href={gain.cta.href}
-                className="bg-resin-deep text-plaster-bright hover:bg-pine-900"
-              >
-                {gain.cta.label}
-              </ButtonLink>
-            </div>
-          </Reveal>
+
+          <div className="relative mx-auto max-w-3xl text-center">
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute left-1/2 top-1/2 h-56 w-[36rem] max-w-full -translate-x-1/2 -translate-y-1/2 rounded-full bg-resin/25 blur-[100px]"
+            />
+            <Reveal className="relative">
+              <p className="text-xl leading-[1.55] text-plaster-muted">
+                {gain.text}
+              </p>
+              <p className="mt-5 font-display text-[clamp(2.25rem,5vw,3.75rem)] font-semibold leading-[1.15] tracking-[-0.01em] text-resin [text-shadow:0_0_40px_color-mix(in_srgb,var(--color-resin)_40%,transparent)]">
+                {gain.highlight}
+              </p>
+            </Reveal>
+            <Reveal delayMs={200} className="relative">
+              <div className="mt-10">
+                <ButtonLink
+                  href={gain.cta.href}
+                  className="bg-resin text-pine-950 hover:bg-resin-light"
+                >
+                  {gain.cta.label}
+                </ButtonLink>
+              </div>
+            </Reveal>
+          </div>
         </div>
       </section>
     </>

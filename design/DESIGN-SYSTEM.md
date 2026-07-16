@@ -4,12 +4,14 @@
 
 The hour after a summer hike in Troodos: pine forest going black-green as the
 light drops, and one warm point of amber — resin catching the last sun, a
-lantern at camp. The site lives mostly in warm plaster daylight, where the
-photography does the talking. Green is present on every screen before any dark
-section appears: lichen section labels, sage pills and borders, and soft
-green-tinted bands between plaster sections. Three moments drop into pine
-dusk, and everything that glows there — the lamp, the globe, the final CTA —
-glows the same resin amber, as if the whole site shares one light source.
+lantern at camp. The site splits into two registers. The home page is that
+hour itself: one continuous pine-dusk world from the hero to the footer, where
+photography burns through the dark and everything that glows — the lamp, the
+stats, the trail, the globe, the final CTA — glows the same resin amber, as if
+the whole page shares one light source. The inner pages are the same place in
+daylight: warm plaster grounds where long-form text is comfortable to read,
+with green present on every screen — lichen section labels, sage pills and
+borders, soft green-tinted bands between plaster sections.
 
 The palette is a place, not a badge: pine dusk, lichen, dried sage, resin,
 sun-baked plaster. No bright tech greens, no leaf iconography, no gradients.
@@ -18,9 +20,9 @@ sun-baked plaster. No bright tech greens, no leaf iconography, no gradients.
 
 | Token | Hex | Role |
 |---|---|---|
-| `pine-950` | `#131A12` | Dark ground (the three dark sections); text on light |
-| `pine-900` | `#1D2718` | Raised surfaces/cards on dark; secondary text on light |
-| `pine-800` | `#2C3A26` | Borders and hover fills on dark |
+| `pine-950` | `#131A12` | Dark ground (the whole home page, inner-page heroes); text on light |
+| `pine-900` | `#1D2718` | Soft raised surfaces/cards on dark; secondary text on light |
+| `pine-800` | `#2C3A26` | Muted surfaces, borders, hairlines and hover fills on dark |
 | `lichen` | `#566350` | Green mid tone: section labels, icon strokes, captions on light |
 | `resin` | `#E19A3C` | Warm accent — the single light source. Glows, large text, filled buttons |
 | `resin-deep` | `#845110` | Text-safe accent on light grounds (links, labels, filled buttons) |
@@ -59,6 +61,13 @@ text, 3.0:1 for large text (≥24px, or ≥18.66px bold) and graphical objects.
 | `sage` | `pine-950` | 8.11 | Icon strokes on dark ✓ |
 | `plaster-bright` | `resin-deep` | 6.25 | Filled button (light sections) ✓ |
 | `pine-950` | `resin` | 7.51 | Filled amber button (dark sections) ✓ |
+| `resin` | `pine-900` | 6.56 | Large text and glows on dark cards ✓ (never body-size text) |
+| `resin` | `pine-800` | 5.11 | Large text on dark hover fills ✓ (never body-size text) |
+| `resin-light` | `pine-800` | 7.28 | Links/labels on dark hover fills ✓ |
+| `sage` | `pine-900` | 7.08 | Icon strokes/graphics on dark cards ✓ |
+| `sage` | `pine-800` | 5.52 | Icon strokes on dark hover fills ✓ |
+| `plaster-muted` | `pine-800` | 9.28 | Secondary text on dark hover fills ✓ |
+| `lichen` | `pine-950` | 2.78 | ✗ FAILS — `lichen` never carries text on dark grounds |
 
 Usage rules derived from the table:
 
@@ -67,7 +76,11 @@ Usage rules derived from the table:
 - `sage` is never text on light grounds (decorative there: borders, dividers,
   pill backgrounds). On dark it may carry icon strokes and graphics.
 - `lichen` is the only green that may carry small text, and only on the
-  plaster family.
+  plaster family. On dark grounds it is never text; the green accent roles
+  there belong to `sage` (strokes, graphics) and the pine surfaces.
+- On dark grounds the working set is: `pine-900`/`pine-800` for soft and muted
+  surfaces, `sage` for strokes and graphics, `resin-light` for readable accent
+  text, `resin` for large numerals, glows and filled buttons.
 
 ## Typography
 
@@ -77,8 +90,11 @@ Display: **Bricolage Grotesque** · Body: **Instrument Sans** — both loaded vi
 | Step | Size / line height | Font | Use |
 |---|---|---|---|
 | Display | `clamp(2.75rem, 6vw, 4.5rem)` / 1.05, −0.02em | Bricolage 600 | Page hero headline only |
-| H2 | `clamp(2rem, 4vw, 3rem)` / 1.1, −0.01em | Bricolage 600 | Section headings |
+| H2 | `clamp(2rem, 4vw, 3rem)` / 1.1, −0.01em | Bricolage 600 | Section headings; home offer-panel titles |
 | H3 | `1.5rem` / 1.25 | Bricolage 600 | Card and block headings |
+| Stat numeral | `clamp(3.25rem, 8vw, 6.5rem)` / 1 | Bricolage 600 | Home stats only — `resin`, monumental, glowing |
+| Showpiece | `clamp(2.25rem, 5vw, 3.75rem)` / 1.15, −0.01em | Bricolage 600 | One key line per page max (e.g. the home closing line) |
+| Trail item | `clamp(1.5rem, 2.5vw, 2.25rem)` / 1.2 | Bricolage 600 | Home gains sequence |
 | Lede | `1.25rem` / 1.55 | Instrument Sans 400 | Intro paragraph under headings |
 | Body | `1rem` / 1.7 | Instrument Sans 400 | Default copy |
 | Label | `0.8125rem` / 1.4, +0.08em, uppercase | Instrument Sans 600 | Section eyebrows (`lichen`), pills |
@@ -91,12 +107,19 @@ Display: **Bricolage Grotesque** · Body: **Instrument Sans** — both loaded vi
 - Section rhythm: `py-24` desktop / `py-16` mobile. Adjacent plaster sections
   alternate `plaster` / `plaster-muted` so light stretches read green, never
   neutral cream.
-- **`plaster` is the site default background.** Dark (`pine-950`) sections are
-  capped at exactly three per site: the hero, the globe section, and the
-  final CTA. No other section may go dark.
-- Every page's first screen must read "green outdoors" before any dark
-  section: photography plus at least two green token roles (lichen label,
-  sage pill/border, or a plaster-muted band) above the fold.
+- **Ground is decided per page, not per section.**
+  - **Home** is one continuous `pine-950` world from the hero to the footer —
+    no plaster section may interrupt it. Depth inside the dark comes from
+    `pine-900`/`pine-800` surfaces, full-bleed photography, and the resin
+    light, never from switching to a light ground. This also carries the
+    upcoming globe and lamp sections without a seam.
+  - **Inner pages** (about, opportunities, faq, contact) are text-heavy and
+    keep `plaster` as the default background below their heroes; no dark
+    section may appear there outside the hero.
+- Every page's first screen must read "green outdoors": photography plus at
+  least two green token roles above the fold. On light grounds those are
+  lichen labels, sage pills/borders, plaster-muted bands; on the dark home
+  ground they are sage strokes/pills and the pine-green surface family.
 
 ## Motion
 
@@ -119,14 +142,19 @@ soft long-radius glow (blur ≥ 40px, opacity falling to 0), always warm against
 `pine-950`. The site should be remembered as "the one where the same light
 follows you down the page."
 
-Sanctioned placements — at most these three, matching the three dark sections:
+Sanctioned placements — the home page only, as one continuous thread that
+leads the eye down the dark toward the closing line:
 
 1. **Hero** — the lamp beam and its halo.
-2. **Globe section** — the globe's dots and arcs read as lit points of the
+2. **Stats** — the monumental numerals glow resin out of the dark.
+3. **Gains trail** — the drawn line and its nodes, ending in the glow behind
+   "Your adventure starts here."
+4. **Globe section** — the globe's dots and arcs read as lit points of the
    same lamp.
-3. **Final CTA** — a resin glow behind the primary button.
+5. **Final CTA** — a resin glow behind the primary button.
 
-Nowhere else. No glows on light grounds, ever.
+One thread, one hue, one temperature. Nowhere else — inner pages are light
+grounds, and there are no glows on light grounds, ever.
 
 ## Do / Don't
 
@@ -144,7 +172,8 @@ Nowhere else. No glows on light grounds, ever.
   and plaster families.
 - Don't use bright/tech greens, leaf icons, or gradient backgrounds.
 - Don't set `resin` as body-size text, or `sage` as text on light grounds.
-- Don't add a fourth dark section or a second accent hue.
+- Don't break the home page's dark ground with a light section, and don't put
+  a dark section on an inner page below its hero. No second accent hue.
 - Don't introduce new font weights beyond 400/600, or new durations/easings.
 
 ## Component token mapping

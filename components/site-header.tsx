@@ -25,16 +25,21 @@ export function SiteHeader() {
   }, []);
 
   // Every page opens on a dark hero, so the header starts transparent with
-  // light text and gains a plaster surface once the hero is scrolled past.
-  // The open mobile menu always needs the solid surface behind it.
+  // light text. Once scrolled it gains the surface of the page it sits on:
+  // pine on the home page (a continuous dark world), plaster on the light
+  // inner pages. The open mobile menu always needs the solid surface.
   const solid = scrolled || open;
+  const dark = pathname === "/";
+  const lightText = !solid || dark;
 
   return (
     <header
       className={cn(
         "fixed inset-x-0 top-0 z-50 border-b transition-colors duration-200 ease-out-quart",
         solid
-          ? "border-sage/60 bg-plaster/95 backdrop-blur-sm"
+          ? dark
+            ? "border-pine-800 bg-pine-950/90 backdrop-blur-sm"
+            : "border-sage/60 bg-plaster/95 backdrop-blur-sm"
           : "border-transparent bg-transparent"
       )}
     >
@@ -60,26 +65,29 @@ export function SiteHeader() {
           <span
             className={cn(
               "h-0.5 w-6 transition-colors duration-200",
-              solid ? "bg-pine-950" : "bg-plaster-bright"
+              lightText ? "bg-plaster-bright" : "bg-pine-950"
             )}
           />
           <span
             className={cn(
               "h-0.5 w-6 transition-colors duration-200",
-              solid ? "bg-pine-950" : "bg-plaster-bright"
+              lightText ? "bg-plaster-bright" : "bg-pine-950"
             )}
           />
           <span
             className={cn(
               "h-0.5 w-6 transition-colors duration-200",
-              solid ? "bg-pine-950" : "bg-plaster-bright"
+              lightText ? "bg-plaster-bright" : "bg-pine-950"
             )}
           />
         </button>
 
         <ul
           className={cn(
-            "absolute inset-x-0 top-full flex-col gap-1 border-b border-sage/60 bg-plaster/95 px-4 pb-6 pt-2 backdrop-blur-sm md:static md:flex md:flex-row md:items-center md:gap-8 md:border-0 md:bg-transparent md:p-0 md:backdrop-blur-none",
+            "absolute inset-x-0 top-full flex-col gap-1 border-b px-4 pb-6 pt-2 backdrop-blur-sm md:static md:flex md:flex-row md:items-center md:gap-8 md:border-0 md:bg-transparent md:p-0 md:backdrop-blur-none",
+            dark
+              ? "border-pine-800 bg-pine-950/90"
+              : "border-sage/60 bg-plaster/95",
             open ? "flex" : "hidden"
           )}
         >
@@ -92,11 +100,11 @@ export function SiteHeader() {
                   onClick={() => setOpen(false)}
                   className={cn(
                     "group relative block py-2 text-[0.8125rem] font-semibold uppercase leading-[1.4] tracking-[0.08em] transition-colors duration-200 md:py-1",
-                    solid
-                      ? "text-pine-950 hover:text-resin-deep"
-                      : "text-plaster-bright hover:text-resin-light",
+                    lightText
+                      ? "text-plaster-bright hover:text-resin-light"
+                      : "text-pine-950 hover:text-resin-deep",
                     active &&
-                      (solid ? "text-resin-deep" : "text-resin-light")
+                      (lightText ? "text-resin-light" : "text-resin-deep")
                   )}
                 >
                   {item.label}
@@ -104,7 +112,7 @@ export function SiteHeader() {
                     aria-hidden="true"
                     className={cn(
                       "absolute bottom-0 left-0 hidden h-0.5 w-full origin-left transition-transform duration-200 ease-out-quart md:block",
-                      solid ? "bg-resin-deep" : "bg-resin-light",
+                      lightText ? "bg-resin-light" : "bg-resin-deep",
                       active ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
                     )}
                   />

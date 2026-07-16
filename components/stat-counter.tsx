@@ -50,11 +50,17 @@ export function StatCounter({ num, label }: StatCounterProps) {
   }, [num]);
 
   return (
-    <div ref={ref} className="flex items-baseline justify-between gap-6 py-5">
-      <div className="font-display text-[clamp(2.75rem,5vw,4rem)] font-semibold leading-none text-resin-deep">
+    <div ref={ref} className="relative px-4 py-10 text-center md:py-12">
+      {/* A soft pool of lamp light behind the numeral — an ellipse reads
+          cleaner than a text-shadow, which lumps around glyph outlines. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute left-1/2 top-1/2 h-3/4 w-2/3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-resin/15 blur-[60px]"
+      />
+      <div className="relative font-display text-[clamp(3.25rem,8vw,6.5rem)] font-semibold leading-none text-resin">
         {display}
       </div>
-      <div className="text-[0.8125rem] font-semibold uppercase leading-[1.4] tracking-[0.08em] text-lichen">
+      <div className="relative mt-3 text-[0.8125rem] font-semibold uppercase leading-[1.4] tracking-[0.08em] text-plaster-muted">
         {label}
       </div>
     </div>
