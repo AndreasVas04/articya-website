@@ -42,12 +42,28 @@ const TILES = [
 
 const TARGET_SCALES = [4, 5, 6, 5, 6, 8, 9];
 
-// The story's finale: the closing paragraph arrives alone in the pinned
-// frame, then dissolves as every photograph from the scenes above gathers
-// into a mosaic around the point where the words stood, and the mosaic
-// zooms until the community fills the screen. Before mount and under
-// reduced motion it renders unpinned — the full paragraph followed by a
-// static grid — so the exported HTML is the resting state.
+// While the words are on screen each outer tile holds this offset from its
+// mosaic slot (x in vw, y in vh) — gathered loosely around the paragraph,
+// clear of the text block at both breakpoints — then settles into the slot
+// as the words hand off. The center tile has no offset; it arrives last,
+// where the words stood.
+const GATHER: [number, number][] = [
+  [0, 0],
+  [0, -12],
+  [-22, -4],
+  [22, 0],
+  [0, 10],
+  [-4, 10],
+  [8, 10],
+];
+
+// The story's finale: the photographs from the scenes above rise around the
+// closing paragraph while it completes — words and tiles share every frame —
+// then the words dissolve, the loose ring closes into a mosaic over the
+// point where they stood, and the mosaic zooms until the community fills
+// the screen. Before mount and under reduced motion it renders unpinned —
+// the full paragraph followed by a static grid — so the exported HTML is
+// the resting state.
 export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
   const container = useRef<HTMLElement | null>(null);
   const reducedMotion = useReducedMotion();
@@ -63,14 +79,15 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
     offset: ["start end", "end start"],
   });
 
-  // Text: three groups complete shortly after the pin engages, hold, then
-  // hand the frame to the photographs.
+  // Text: three groups complete shortly after the pin engages while the
+  // outer tiles gather, hold among them, then hand the frame over as the
+  // ring closes.
   const seg = 0.18 / (groups.length + 0.5);
   const textOut = useTransform(
-    () => 1 - stageWindow(stage.get(), 0.38, 0.44)
+    () => 1 - stageWindow(stage.get(), 0.42, 0.5)
   );
   const textDrift = useTransform(
-    () => -24 * stageWindow(stage.get(), 0.38, 0.44)
+    () => -24 * stageWindow(stage.get(), 0.42, 0.5)
   );
 
   useEffect(() => setMounted(true), []);
@@ -112,7 +129,7 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
     >
       <div className="sticky top-0 h-svh overflow-hidden">
         <motion.div
-          className="absolute inset-0 flex items-center justify-center px-4"
+          className="absolute inset-0 z-10 flex items-center justify-center px-4"
           style={{ opacity: textOut, y: textDrift }}
         >
           <div className="max-w-2xl text-center">
@@ -179,11 +196,24 @@ function FinaleTile({
   src: string;
   alt: string;
 }) {
-  // Tiles gather staggered as the words hand over, then zoom together; the
-  // center tile ends past full-bleed.
-  const opacity = useTransform(() =>
-    stageWindow(stage.get(), 0.46 + index * 0.01, 0.54 + index * 0.01)
+  // Outer tiles rise staggered into their gathered offsets while the words
+  // complete; the ring settles into the mosaic as the words hand over, the
+  // center tile arrives where they stood, and the zoom takes the center
+  // tile past full-bleed.
+  const center = index === 0;
+  const inStart = center ? 0.44 : 0.1 + (index - 1) * 0.015;
+  const inEnd = inStart + (center ? 0.08 : 0.1);
+  const [gatherX, gatherY] = GATHER[index];
+
+  const opacity = useTransform(() => stageWindow(stage.get(), inStart, inEnd));
+  const x = useTransform(
+    () => `${gatherX * (1 - stageWindow(stage.get(), 0.42, 0.54))}vw`
   );
+  const y = useTransform(() => {
+    const rise = 6 * (1 - stageWindow(stage.get(), inStart, inEnd));
+    const settle = 1 - stageWindow(stage.get(), 0.42, 0.54);
+    return `${gatherY * settle + rise}vh`;
+  });
   const scale = useTransform(
     () =>
       1 + (TARGET_SCALES[index] - 1) * stageWindow(stage.get(), 0.55, 0.745)
@@ -191,7 +221,7 @@ function FinaleTile({
 
   return (
     <motion.div
-      style={{ scale, opacity }}
+      style={{ x, y, scale, opacity }}
       className="absolute top-0 flex h-full w-full items-center justify-center"
     >
       <div

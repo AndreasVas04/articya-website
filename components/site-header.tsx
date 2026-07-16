@@ -24,22 +24,18 @@ export function SiteHeader() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Every page opens on a dark hero, so the header starts transparent with
-  // light text. Once scrolled it gains the surface of the page it sits on:
-  // pine on the home page (a continuous dark world), plaster on the light
-  // inner pages. The open mobile menu always needs the solid surface.
+  // One header for the whole site: every page opens on a pine-dusk hero, so
+  // it starts transparent with light text and, once scrolled (or when the
+  // mobile menu opens), gains the same pine surface everywhere — the strip
+  // of dusk that follows the visitor through the daylight pages.
   const solid = scrolled || open;
-  const dark = pathname === "/";
-  const lightText = !solid || dark;
 
   return (
     <header
       className={cn(
         "fixed inset-x-0 top-0 z-50 border-b transition-colors duration-200 ease-out-quart",
         solid
-          ? dark
-            ? "border-pine-800 bg-pine-950/90 backdrop-blur-sm"
-            : "border-sage/60 bg-plaster/95 backdrop-blur-sm"
+          ? "border-pine-800 bg-pine-950/90 backdrop-blur-sm"
           : "border-transparent bg-transparent"
       )}
     >
@@ -53,12 +49,7 @@ export function SiteHeader() {
             className="h-11 w-auto md:h-14"
             priority
           />
-          <span
-            className={cn(
-              "font-display text-lg font-semibold tracking-[-0.01em] transition-colors duration-200 md:text-xl",
-              lightText ? "text-plaster-bright" : "text-pine-950"
-            )}
-          >
+          <span className="font-display text-lg font-semibold tracking-[-0.01em] text-plaster-bright md:text-xl">
             ArtiCYa
           </span>
         </Link>
@@ -70,32 +61,14 @@ export function SiteHeader() {
           onClick={() => setOpen(!open)}
           className="flex flex-col gap-1.5 p-2 md:hidden"
         >
-          <span
-            className={cn(
-              "h-0.5 w-6 transition-colors duration-200",
-              lightText ? "bg-plaster-bright" : "bg-pine-950"
-            )}
-          />
-          <span
-            className={cn(
-              "h-0.5 w-6 transition-colors duration-200",
-              lightText ? "bg-plaster-bright" : "bg-pine-950"
-            )}
-          />
-          <span
-            className={cn(
-              "h-0.5 w-6 transition-colors duration-200",
-              lightText ? "bg-plaster-bright" : "bg-pine-950"
-            )}
-          />
+          <span className="h-0.5 w-6 bg-plaster-bright" />
+          <span className="h-0.5 w-6 bg-plaster-bright" />
+          <span className="h-0.5 w-6 bg-plaster-bright" />
         </button>
 
         <ul
           className={cn(
-            "absolute inset-x-0 top-full flex-col gap-1 border-b px-4 pb-6 pt-2 backdrop-blur-sm md:static md:flex md:flex-row md:items-center md:gap-8 md:border-0 md:bg-transparent md:p-0 md:backdrop-blur-none",
-            dark
-              ? "border-pine-800 bg-pine-950/90"
-              : "border-sage/60 bg-plaster/95",
+            "absolute inset-x-0 top-full flex-col gap-1 border-b border-pine-800 bg-pine-950/90 px-4 pb-6 pt-2 backdrop-blur-sm md:static md:flex md:flex-row md:items-center md:gap-8 md:border-0 md:bg-transparent md:p-0 md:backdrop-blur-none",
             open ? "flex" : "hidden"
           )}
         >
@@ -107,20 +80,15 @@ export function SiteHeader() {
                   href={item.href}
                   onClick={() => setOpen(false)}
                   className={cn(
-                    "group relative block py-2 text-[0.8125rem] font-semibold uppercase leading-[1.4] tracking-[0.08em] transition-colors duration-200 md:py-1",
-                    lightText
-                      ? "text-plaster-bright hover:text-resin-light"
-                      : "text-pine-950 hover:text-resin-deep",
-                    active &&
-                      (lightText ? "text-resin-light" : "text-resin-deep")
+                    "group relative block py-2 text-[0.8125rem] font-semibold uppercase leading-[1.4] tracking-[0.08em] text-plaster-bright transition-colors duration-200 hover:text-resin-light md:py-1",
+                    active && "text-resin-light"
                   )}
                 >
                   {item.label}
                   <span
                     aria-hidden="true"
                     className={cn(
-                      "absolute bottom-0 left-0 hidden h-0.5 w-full origin-left transition-transform duration-200 ease-out-quart md:block",
-                      lightText ? "bg-resin-light" : "bg-resin-deep",
+                      "absolute bottom-0 left-0 hidden h-0.5 w-full origin-left bg-resin-light transition-transform duration-200 ease-out-quart md:block",
                       active ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
                     )}
                   />

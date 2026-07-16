@@ -11,7 +11,12 @@ stats, the trail, the globe, the final CTA — glows the same resin amber, as if
 the whole page shares one light source. The inner pages are the same place in
 daylight: warm plaster grounds where long-form text is comfortable to read,
 with green present on every screen — lichen section labels, sage pills and
-borders, soft green-tinted bands between plaster sections.
+borders, soft green-tinted bands between plaster sections. The two registers
+are one forest at two hours, never two sites: every page opens and closes in
+the dusk — one pine header and footer bracket the whole site, and each inner
+page's hero is the dusk hour itself, a photograph under the pine wash with
+the same resin lamp glowing behind the headline — before the body steps into
+daylight.
 
 The palette is a place, not a badge: pine dusk, lichen, dried sage, resin,
 sun-baked plaster. No bright tech greens, no leaf iconography, no gradients.
@@ -120,7 +125,14 @@ text keep them.
     upcoming globe and lamp sections without a seam.
   - **Inner pages** (about, opportunities, faq, contact) are text-heavy and
     keep `plaster` as the default background below their heroes; no dark
-    section may appear there outside the hero.
+    section may appear there outside the hero. The hero itself is the bridge
+    to the home world: the same pine-dusk photograph treatment (`pine-950`
+    wash) with the resin halo behind the headline, so navigating home → an
+    inner page reads as the same forest at a different hour.
+  - **Header and footer** are one pine surface site-wide — the header is
+    transparent over every hero and gains `pine-950` once scrolled, the
+    footer is always `pine-950` — so every page opens and closes in the dusk
+    regardless of its body ground, and navigation never jumps worlds.
 - Every page's first screen must read "green outdoors": photography plus at
   least two green token roles above the fold. On light grounds those are
   lichen labels, sage pills/borders, plaster-muted bands; on the dark home
@@ -147,8 +159,8 @@ soft long-radius glow (blur ≥ 40px, opacity falling to 0), always warm against
 `pine-950`. The site should be remembered as "the one where the same light
 follows you down the page."
 
-Sanctioned placements — the home page only, as one continuous thread that
-leads the eye down the dark toward the closing line:
+Sanctioned placements — one continuous thread. On the home page it leads the
+eye down the dark toward the closing line:
 
 1. **Hero** — the lamp beam and its halo.
 2. **Stats** — the monumental numerals glow resin out of the dark.
@@ -158,8 +170,13 @@ leads the eye down the dark toward the closing line:
    same lamp.
 5. **Final CTA** — a resin glow behind the primary button.
 
-One thread, one hue, one temperature. Nowhere else — inner pages are light
-grounds, and there are no glows on light grounds, ever.
+And on the inner pages, exactly one placement:
+
+6. **Inner-page hero** — the halo behind the hero headline, the lamp meeting
+   the visitor at every page's dusk threshold before daylight.
+
+One thread, one hue, one temperature. Nowhere else — below their heroes the
+inner pages are light grounds, and there are no glows on light grounds, ever.
 
 ## Do / Don't
 

@@ -1,8 +1,4 @@
-"use client";
-
-import { usePathname } from "next/navigation";
 import { footer } from "@/content/shared";
-import { cn } from "@/lib/utils";
 
 const icons: Record<string, React.ReactNode> = {
   Facebook: (
@@ -24,18 +20,11 @@ const icons: Record<string, React.ReactNode> = {
   ),
 };
 
-// The footer sits on whichever ground the page ends on: the home page stays
-// inside its dark pine world, the inner pages close on plaster.
+// Like the header, the footer is one pine surface on every page: the site
+// opens and closes in the same dusk, whatever ground the page body used.
 export function SiteFooter() {
-  const dark = usePathname() === "/";
-
   return (
-    <footer
-      className={cn(
-        "border-t py-8",
-        dark ? "border-pine-800 bg-pine-950" : "border-sage/60 bg-plaster"
-      )}
-    >
+    <footer className="border-t border-pine-800 bg-pine-950 py-8">
       <div className="mx-auto flex max-w-5xl flex-col items-center gap-4 px-4">
         <div className="flex gap-4">
           {footer.social.map((s) => (
@@ -45,25 +34,13 @@ export function SiteFooter() {
               target="_blank"
               rel="noreferrer"
               aria-label={s.label}
-              className={cn(
-                "transition-colors duration-200",
-                dark
-                  ? "text-sage hover:text-resin-light"
-                  : "text-lichen hover:text-resin-deep"
-              )}
+              className="text-sage transition-colors duration-200 hover:text-resin-light"
             >
               {icons[s.label]}
             </a>
           ))}
         </div>
-        <p
-          className={cn(
-            "text-sm",
-            dark ? "text-plaster-muted" : "text-lichen"
-          )}
-        >
-          {footer.copyright}
-        </p>
+        <p className="text-sm text-plaster-muted">{footer.copyright}</p>
       </div>
     </footer>
   );

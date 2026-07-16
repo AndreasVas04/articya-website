@@ -70,6 +70,15 @@ function stripHomeBadges(text) {
   return text.replace(homeBadgeEmoji, " ").replace(/\s+/g, " ").trim();
 }
 
+// The source pages were inconsistent about the organization's name: headings
+// spell it "ArtiCYa" while several body paragraphs read "ArtiCya". The client
+// approved correcting the typo to "ArtiCYa" everywhere, so the original side
+// is normalized to the corrected spelling before comparison; every other
+// character stays guarded.
+function normalizeBrandSpelling(text) {
+  return text.replaceAll("ArtiCya", "ArtiCYa");
+}
+
 // The exported header carries an "ArtiCYa" text wordmark next to the logo
 // (the original pages had a logo image only), and the header is the first
 // thing in the body. Strip exactly that one leading occurrence from the
@@ -100,6 +109,7 @@ for (const page of pages) {
     continue;
   }
 
+  original = normalizeBrandSpelling(original);
   exported = stripHeaderWordmark(exported);
 
   if (page.name === "home") {

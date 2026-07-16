@@ -17,32 +17,41 @@ export default function ContactPage() {
         className="bg-cover bg-center"
         style={{ backgroundImage: `url(${withBasePath(background)})` }}
       >
-        <div className="bg-white/90 px-4 py-16">
-          <div className="mx-auto max-w-2xl rounded-lg border border-neutral-200 bg-white p-8">
-            <h3 className="text-xl font-semibold">{details.heading}</h3>
-            <div className="mt-6 space-y-3 text-neutral-700">
+        <div className="bg-plaster/95 px-4 py-16 md:py-24">
+          <div className="mx-auto max-w-2xl bg-plaster-bright p-8 ring-1 ring-sage/50">
+            <span aria-hidden="true" className="block h-1 w-16 bg-resin-deep" />
+            <h3 className="mt-6 font-display text-2xl font-semibold leading-[1.25] text-pine-950">
+              {details.heading}
+            </h3>
+            <div className="mt-6 space-y-3 text-pine-900">
               <p>
-                <strong>{details.email.label}</strong>{" "}
+                <strong className="font-semibold text-pine-950">
+                  {details.email.label}
+                </strong>{" "}
                 <span>{details.email.value}</span>
               </p>
               <p>
-                <strong>{details.instagram.label}</strong>{" "}
+                <strong className="font-semibold text-pine-950">
+                  {details.instagram.label}
+                </strong>{" "}
                 <a
                   href={details.instagram.href}
                   target="_blank"
                   rel="noreferrer"
-                  className="underline"
+                  className="text-resin-deep underline underline-offset-2 transition-colors duration-200 hover:text-pine-950"
                 >
                   {details.instagram.value}
                 </a>
               </p>
               <p>
-                <strong>{details.facebook.label}</strong>{" "}
+                <strong className="font-semibold text-pine-950">
+                  {details.facebook.label}
+                </strong>{" "}
                 <a
                   href={details.facebook.href}
                   target="_blank"
                   rel="noreferrer"
-                  className="underline"
+                  className="text-resin-deep underline underline-offset-2 transition-colors duration-200 hover:text-pine-950"
                 >
                   {details.facebook.value}
                 </a>

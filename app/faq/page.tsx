@@ -17,24 +17,32 @@ export default function FaqPage() {
         className="bg-cover bg-center"
         style={{ backgroundImage: `url(${withBasePath(background)})` }}
       >
-        <div className="bg-white/90 px-4 py-16">
+        <div className="bg-plaster/95 px-4 py-16 md:py-24">
           <div className="mx-auto flex max-w-2xl flex-col gap-12">
             {sections.map((section) => (
               <section key={section.heading}>
-                <h3 className="text-xl font-semibold">{section.heading}</h3>
-                <div className="mt-4 divide-y divide-neutral-200 rounded-lg border border-neutral-200 bg-white">
+                <span
+                  aria-hidden="true"
+                  className="block h-1 w-16 bg-resin-deep"
+                />
+                <h3 className="mt-4 font-display text-2xl font-semibold leading-[1.25] text-pine-950">
+                  {section.heading}
+                </h3>
+                <div className="mt-4 divide-y divide-sage/50 bg-plaster-bright ring-1 ring-sage/50">
                   {section.items.map((item) => (
                     <details key={item.question} className="group p-4">
                       <summary className="flex cursor-pointer list-none items-center justify-between gap-4">
-                        <h4 className="font-medium">{item.question}</h4>
+                        <h4 className="font-semibold text-pine-950">
+                          {item.question}
+                        </h4>
                         <span
                           aria-hidden="true"
-                          className="text-xs text-neutral-400 transition-transform group-open:rotate-180"
+                          className="text-xs text-lichen transition-transform duration-200 ease-out-quart group-open:rotate-180"
                         >
                           {arrow}
                         </span>
                       </summary>
-                      <p className="mt-3 text-sm text-neutral-700">
+                      <p className="mt-3 text-sm leading-[1.5] text-pine-900">
                         {item.answer}
                       </p>
                     </details>
