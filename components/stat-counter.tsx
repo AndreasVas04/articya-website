@@ -50,11 +50,11 @@ export function StatCounter({ num, label }: StatCounterProps) {
   }, [num]);
 
   return (
-    <div ref={ref} className="text-center">
-      <div className="font-display text-3xl font-semibold text-resin-deep">
+    <div ref={ref} className="flex items-baseline justify-between gap-6 py-5">
+      <div className="font-display text-[clamp(2.75rem,5vw,4rem)] font-semibold leading-none text-resin-deep">
         {display}
       </div>
-      <div className="mt-1 text-[0.8125rem] font-semibold uppercase leading-[1.4] tracking-[0.08em] text-lichen">
+      <div className="text-[0.8125rem] font-semibold uppercase leading-[1.4] tracking-[0.08em] text-lichen">
         {label}
       </div>
     </div>

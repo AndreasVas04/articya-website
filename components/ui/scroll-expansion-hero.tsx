@@ -34,9 +34,11 @@ const ScrollExpandMedia = ({
   const [mounted, setMounted] = useState(false);
 
   // Under reduced motion the component renders its resting state: media
-  // expanded, content visible, no scroll hijacking, first slide only.
-  const progress = reducedMotion ? 1 : scrollProgress;
-  const contentVisible = reducedMotion ? true : showContent;
+  // expanded, content visible, no scroll hijacking, first slide only. The
+  // mounted gate keeps the first client render identical to the SSR HTML.
+  const restingState = mounted && reducedMotion;
+  const progress = restingState ? 1 : scrollProgress;
+  const contentVisible = restingState ? true : showContent;
 
   useEffect(() => {
     setMounted(true);
@@ -157,15 +159,17 @@ const ScrollExpandMedia = ({
 
   // The photos have bright skies and white clothing, so the headline relies
   // on a dark wash instead of mix-blend: held at 0.75 while the headline can
-  // still overlap the frame (progress < 0.35), then eased down to 0.36.
+  // still overlap the frame (progress < 0.35), then eased down to 0.22 —
+  // by full expansion the headline has slid away and the content band
+  // carries the text, so the photo can show through.
   const overlayOpacity =
-    progress < 0.35 ? 0.75 : Math.max(0.36, 0.75 - (progress - 0.35) * 0.6);
+    progress < 0.35 ? 0.75 : Math.max(0.22, 0.75 - (progress - 0.35) * 0.82);
 
   const firstWord = title ? title.split(" ")[0] : "";
   const restOfTitle = title ? title.split(" ").slice(1).join(" ") : "";
 
   return (
-    <div className="overflow-x-hidden bg-pine-950">
+    <div className="overflow-hidden bg-pine-950">
       <section className="relative flex min-h-[100dvh] flex-col items-center justify-start overflow-hidden">
         <motion.div
           className="absolute inset-0 z-0"
@@ -198,7 +202,7 @@ const ScrollExpandMedia = ({
               }}
             >
               <div className="relative h-full w-full overflow-hidden rounded-2xl ring-1 ring-sage/40">
-                {reducedMotion ? (
+                {restingState ? (
                   <Image
                     src={withBasePath(slides[0])}
                     alt=""
@@ -265,16 +269,33 @@ const ScrollExpandMedia = ({
                 )}
               </h1>
             )}
+
+            {/* The payoff of the expansion: once the frame is full, the intro
+                rises inside a band anchored to its bottom edge. A second
+                overlay with the frame's geometry keeps the intro after the
+                headline in document order. Children opt into the stagger via
+                group-data-[expanded] classes. */}
+            <div
+              className="pointer-events-none absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl"
+              style={{
+                width: `${mediaWidth}px`,
+                height: `${mediaHeight}px`,
+                maxWidth: "95vw",
+                maxHeight: "85vh",
+              }}
+            >
+              <div
+                data-expanded={!mounted || contentVisible ? "" : undefined}
+                className={cn(
+                  "group pointer-events-auto absolute inset-x-0 bottom-0 flex flex-col items-center bg-pine-950/85 px-6 py-8 opacity-0 backdrop-blur-sm duration-[400ms] ease-out-quart data-[expanded]:opacity-100 data-[expanded]:transition-opacity md:py-10",
+                  mounted && !contentVisible && "pointer-events-none"
+                )}
+              >
+                {children}
+              </div>
+            </div>
           </div>
 
-          <section
-            className={cn(
-              "flex w-full flex-col items-center px-4 pb-24 pt-4 transition-opacity duration-700 ease-out-quart",
-              mounted && !contentVisible && "opacity-0"
-            )}
-          >
-            {children}
-          </section>
         </div>
 
         <div

@@ -30,7 +30,7 @@ export const whatWeDo = {
     },
     {
       badge: "\u{1F393}",
-      image: "/images/home-training.jpg",
+      image: "/images/FAQ.jpg",
       title: "Training Courses",
       text: "Professional development programs for youth workers aged 18+ with no upper age limit, lasting 2 to 14 days. Focused on skill-building through workshops, simulations and networking opportunities. Open to educators, trainers and young people involved in youth work on topics like inclusion, digital tools and community engagement.",
     },
