@@ -1,9 +1,41 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  /* Resin & Pine palette — see /design/DESIGN-SYSTEM.md for roles and contrast rules */
+  --color-pine-950: #131a12;
+  --color-pine-900: #1d2718;
+  --color-pine-800: #2c3a26;
+  --color-lichen: #566350;
+  --color-resin: #e19a3c;
+  --color-resin-deep: #845110;
+  --color-resin-light: #f2c177;
+  --color-sage: #a9b39a;
+  --color-plaster: #f2efe6;
+  --color-plaster-bright: #faf8f2;
+  --color-plaster-muted: #e0e4cd;
+
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-in-out-cubic: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+@theme inline {
+  --font-sans: var(--font-instrument-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
 }
 
 body {
   font-family: var(--font-sans);
+  background-color: var(--color-plaster);
+  color: var(--color-pine-950);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
