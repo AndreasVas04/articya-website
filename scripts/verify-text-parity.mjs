@@ -61,6 +61,15 @@ function visibleText(html) {
     .trim();
 }
 
+// The home page renders the two card badges (globe and graduation cap) as
+// SVG icons instead of the original emoji, so strip exactly those two
+// characters on that pair. Every other character stays guarded.
+const homeBadgeEmoji = /[\u{1F30D}\u{1F393}]/gu;
+
+function stripHomeBadges(text) {
+  return text.replace(homeBadgeEmoji, " ").replace(/\s+/g, " ").trim();
+}
+
 function firstDiff(a, b) {
   const len = Math.min(a.length, b.length);
   for (let i = 0; i < len; i++) {
@@ -81,6 +90,11 @@ for (const page of pages) {
     failed = true;
     console.error(`FAIL  ${page.name}: ${err.message}`);
     continue;
+  }
+
+  if (page.name === "home") {
+    original = stripHomeBadges(original);
+    exported = stripHomeBadges(exported);
   }
 
   const diff = firstDiff(original, exported);

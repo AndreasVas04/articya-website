@@ -1,108 +1,111 @@
+import { Globe, GraduationCap } from "lucide-react";
+import ScrollExpandMedia from "@/components/ui/scroll-expansion-hero";
+import { StatCounter } from "@/components/stat-counter";
 import { ButtonLink } from "@/components/ui/button";
 import { hero, whatWeDo, gain } from "@/content/home";
 import { withBasePath } from "@/lib/utils";
 
+const cardIcons = [Globe, GraduationCap];
+
 export default function HomePage() {
   return (
     <>
-      <section className="relative">
-        {hero.slides.map((slide, i) => (
-          <div
-            key={slide}
-            className={
-              i === 0 ? "absolute inset-0 bg-cover bg-center" : "hidden"
-            }
-            style={{ backgroundImage: `url(${withBasePath(slide)})` }}
-          />
-        ))}
-        <div className="relative bg-black/50 px-4 py-32 text-center text-white">
-          <div className="mx-auto max-w-2xl">
-            <span className="text-sm uppercase tracking-wide">
-              {hero.location}
-            </span>
-            <h1 className="mt-2 text-5xl font-bold">{hero.heading}</h1>
-            <p className="mt-4 text-lg">{hero.text}</p>
-            <div className="mt-8">
-              <ButtonLink
-                href={hero.cta.href}
-                className="bg-white text-neutral-900 hover:bg-neutral-200"
-              >
-                {hero.cta.label}
-              </ButtonLink>
+      <ScrollExpandMedia
+        slides={hero.slides}
+        bgImageSrc={hero.slides[0]}
+        title={hero.heading}
+        hintLabel={hero.location}
+      >
+        <p className="max-w-2xl text-center text-xl leading-[1.55] text-plaster-bright">
+          {hero.text}
+        </p>
+        <div className="mt-8">
+          <ButtonLink
+            href={hero.cta.href}
+            className="bg-resin text-pine-950 hover:bg-resin-light"
+          >
+            {hero.cta.label}
+          </ButtonLink>
+        </div>
+      </ScrollExpandMedia>
+
+      <section className="bg-plaster px-4 py-16 md:py-24">
+        <div className="mx-auto max-w-6xl">
+          <div className="md:flex md:items-end md:justify-between md:gap-8">
+            <div className="max-w-xl">
+              <h2 className="font-display text-[clamp(2rem,4vw,3rem)] font-semibold leading-[1.1] tracking-[-0.01em]">
+                {whatWeDo.title}
+              </h2>
+              <p className="mt-4 text-xl leading-[1.55] text-pine-900">
+                {whatWeDo.lead}
+              </p>
+            </div>
+            <div className="mt-10 flex gap-10 md:mt-0">
+              {whatWeDo.stats.map((stat) => (
+                <StatCounter key={stat.label} num={stat.num} label={stat.label} />
+              ))}
             </div>
           </div>
-        </div>
-      </section>
 
-      <section
-        className="bg-cover bg-center"
-        style={{ backgroundImage: `url(${withBasePath(whatWeDo.background)})` }}
-      >
-        <div className="bg-white/90 px-4 py-16">
-          <div className="mx-auto max-w-5xl">
-            <div className="md:flex md:items-start md:justify-between md:gap-8">
-              <div className="max-w-xl">
-                <h2 className="text-3xl font-bold">{whatWeDo.title}</h2>
-                <p className="mt-4 text-neutral-700">{whatWeDo.lead}</p>
-              </div>
-              <div className="mt-8 flex gap-6 md:mt-0">
-                {whatWeDo.stats.map((stat) => (
-                  <div key={stat.label} className="text-center">
-                    <div className="text-2xl font-bold">{stat.num}</div>
-                    <div className="text-xs tracking-wide text-neutral-500">
-                      {stat.label}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="mt-12 grid gap-8 md:grid-cols-2">
-              {whatWeDo.cards.map((card) => (
+          <div className="mt-12 grid gap-8 md:grid-cols-2">
+            {whatWeDo.cards.map((card, i) => {
+              const Icon = cardIcons[i] ?? Globe;
+              return (
                 <article
                   key={card.title}
-                  className="overflow-hidden rounded-lg border border-neutral-200 bg-white"
+                  className="overflow-hidden rounded-lg border border-sage bg-plaster-bright"
                 >
                   <div
-                    className="h-48 bg-cover bg-center p-4"
+                    className="relative h-48 bg-cover bg-center"
                     style={{
                       backgroundImage: `url(${withBasePath(card.image)})`,
                     }}
                   >
-                    <span aria-hidden="true" className="text-2xl">
-                      {card.badge}
+                    <span
+                      aria-hidden="true"
+                      className="absolute left-4 top-4 flex size-10 items-center justify-center rounded-full bg-plaster-bright/90 text-lichen"
+                    >
+                      <Icon className="size-5" strokeWidth={1.5} />
                     </span>
                   </div>
                   <div className="p-6">
-                    <h3 className="text-xl font-semibold">{card.title}</h3>
-                    <p className="mt-3 text-sm text-neutral-700">{card.text}</p>
+                    <h3 className="font-display text-2xl font-semibold leading-[1.25]">
+                      {card.title}
+                    </h3>
+                    <p className="mt-3 leading-[1.7] text-pine-900">
+                      {card.text}
+                    </p>
                   </div>
                 </article>
-              ))}
-            </div>
+              );
+            })}
           </div>
         </div>
       </section>
 
-      <section className="bg-neutral-900 px-4 py-16 text-center text-white">
+      <section className="bg-plaster-muted px-4 py-16 text-center md:py-24">
         <div className="mx-auto max-w-3xl">
-          <h2 className="text-3xl font-bold">{gain.title}</h2>
-          <div className="mt-8 grid gap-4 sm:grid-cols-2">
+          <h2 className="font-display text-[clamp(2rem,4vw,3rem)] font-semibold leading-[1.1] tracking-[-0.01em]">
+            {gain.title}
+          </h2>
+          <div className="mt-10 grid gap-4 sm:grid-cols-2">
             {gain.items.map((item) => (
               <div
                 key={item}
-                className="rounded-md border border-neutral-700 px-4 py-3"
+                className="rounded-md border border-sage bg-plaster-bright px-4 py-3"
               >
                 {item}
               </div>
             ))}
           </div>
-          <p className="mt-8 text-neutral-300">{gain.text}</p>
-          <div className="mt-4 text-xl font-semibold">{gain.highlight}</div>
-          <div className="mt-8">
+          <p className="mt-10 leading-[1.7] text-pine-900">{gain.text}</p>
+          <div className="mt-4 font-display text-2xl font-semibold leading-[1.25] text-resin-deep">
+            {gain.highlight}
+          </div>
+          <div className="mt-10">
             <ButtonLink
               href={gain.cta.href}
-              className="bg-white text-neutral-900 hover:bg-neutral-200"
+              className="bg-resin-deep text-plaster-bright hover:bg-pine-900"
             >
               {gain.cta.label}
             </ButtonLink>
