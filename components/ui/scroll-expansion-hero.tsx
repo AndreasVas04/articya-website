@@ -237,6 +237,13 @@ const ScrollExpandMedia = ({
                   animate={{ opacity: overlayOpacity }}
                   transition={{ duration: 0.2, ease: EASE_IN_OUT_CUBIC }}
                 />
+                {/* Constant edge vignette inside the frame; the dynamic
+                    wash above handles legibility, this keeps the photo
+                    cinematic once the wash eases off. */}
+                <div
+                  aria-hidden="true"
+                  className="photo-vignette pointer-events-none absolute inset-0"
+                />
               </div>
 
               {hintLabel && (

@@ -2,9 +2,9 @@
 
 @theme {
   /* Resin & Pine palette — see /design/DESIGN-SYSTEM.md for roles and contrast rules */
-  --color-pine-950: #131a12;
-  --color-pine-900: #1d2718;
-  --color-pine-800: #2c3a26;
+  --color-pine-950: #22301c;
+  --color-pine-900: #2d4024;
+  --color-pine-800: #3e5433;
   --color-lichen: #566350;
   --color-resin: #e19a3c;
   --color-resin-deep: #845110;
@@ -35,6 +35,43 @@ body {
   outline: 2px solid var(--color-resin);
   outline-offset: 2px;
   box-shadow: 0 0 0 2px var(--color-pine-950);
+}
+
+/* Atmospheric grounds — static depth layers, painted once and never
+   animated; roles and limits in DESIGN-SYSTEM.md. All of them mix the
+   existing pine/plaster tokens, so every text pair stays between two
+   measured grounds that both pass. */
+.dusk-light {
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--color-pine-900) 55%, transparent),
+    transparent
+  );
+}
+.dusk-ambient {
+  background: radial-gradient(
+    ellipse 75% 55% at 50% 40%,
+    color-mix(in srgb, var(--color-pine-900) 55%, transparent),
+    transparent 70%
+  );
+}
+.photo-vignette {
+  background: radial-gradient(
+    ellipse 120% 100% at 50% 45%,
+    transparent 55%,
+    color-mix(in srgb, var(--color-pine-950) 45%, transparent)
+  );
+}
+.plaster-light {
+  background: radial-gradient(
+    ellipse 65% 50% at 50% 42%,
+    color-mix(in srgb, var(--color-plaster-bright) 65%, transparent),
+    transparent 72%
+  );
+}
+.print-shadow {
+  box-shadow: 0 24px 48px -24px
+    color-mix(in srgb, var(--color-pine-950) 35%, transparent);
 }
 
 @media (prefers-reduced-motion: reduce) {

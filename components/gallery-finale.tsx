@@ -27,17 +27,20 @@ interface GalleryFinaleProps {
   images: GalleryImage[];
 }
 
-// Per-tile placement, mobile first with md: overrides. The center tile is
-// sized so that at full scale it finishes slightly past 100vw/100vh and its
-// rounded corners land offscreen.
+// Per-tile placement, mobile first with md: overrides. The mosaic is a
+// three-row grid around the center tile: the side tiles share the middle
+// row's height, the top and bottom rows interlock one long tile with one
+// small one, and every edge sits on a uniform gap (2vw/1.5vh mobile,
+// 1.5vw/2vh desktop). The center tile is sized so that at full scale it
+// finishes slightly past 100vw/100vh and its rounded corners land offscreen.
 const TILES = [
   "h-[26vh] w-[52vw] md:h-[26vh] md:w-[26vw]",
-  "-top-[21vh] left-[8vw] h-[16vh] w-[44vw] md:-top-[30vh] md:left-[5vw] md:h-[30vh] md:w-[35vw]",
-  "-top-[12vh] -left-[38vw] h-[30vh] w-[26vw] md:-top-[10vh] md:-left-[25vw] md:h-[45vh] md:w-[20vw]",
-  "left-[40vw] h-[20vh] w-[28vw] md:left-[27.5vw] md:h-[25vh] md:w-[25vw]",
-  "top-[22vh] left-[10vw] h-[15vh] w-[30vw] md:top-[27.5vh] md:left-[5vw] md:h-[25vh] md:w-[20vw]",
-  "top-[22vh] -left-[30vw] h-[15vh] w-[40vw] md:top-[27.5vh] md:-left-[22.5vw] md:h-[25vh] md:w-[30vw]",
-  "top-[19vh] left-[36vw] h-[11vh] w-[20vw] md:top-[22.5vh] md:left-[25vw] md:h-[15vh] md:w-[15vw]",
+  "-top-[22.5vh] -left-[11vw] h-[16vh] w-[74vw] md:-top-[25vh] md:-left-[10.25vw] md:h-[20vh] md:w-[46.5vw]",
+  "-left-[38vw] h-[26vh] w-[20vw] md:-left-[24vw] md:h-[26vh] md:w-[19vw]",
+  "left-[38vw] h-[26vh] w-[20vw] md:left-[24vw] md:h-[26vh] md:w-[19vw]",
+  "top-[22.5vh] left-[11vw] h-[16vh] w-[74vw] md:top-[25vh] md:left-[10.25vw] md:h-[20vh] md:w-[46.5vw]",
+  "top-[22.5vh] -left-[38vw] h-[16vh] w-[20vw] md:top-[25vh] md:-left-[24vw] md:h-[20vh] md:w-[19vw]",
+  "-top-[22.5vh] left-[38vw] h-[16vh] w-[20vw] md:-top-[25vh] md:left-[24vw] md:h-[20vh] md:w-[19vw]",
 ];
 
 const TARGET_SCALES = [4, 5, 6, 5, 6, 8, 9];
@@ -49,12 +52,12 @@ const TARGET_SCALES = [4, 5, 6, 5, 6, 8, 9];
 // where the words stood.
 const GATHER: [number, number][] = [
   [0, 0],
-  [0, -12],
-  [-22, -4],
-  [22, 0],
-  [0, 10],
-  [-4, 10],
-  [8, 10],
+  [0, -8],
+  [-14, 0],
+  [14, 0],
+  [0, 9],
+  [-6, 8],
+  [6, -8],
 ];
 
 // The story's finale: the photographs from the scenes above rise around the
@@ -128,6 +131,9 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
       className="relative h-[300vh] bg-plaster-muted md:h-[440vh]"
     >
       <div className="sticky top-0 h-svh overflow-hidden">
+        {/* The same pool of daylight the scenes sit in, under the gathering
+            mosaic. */}
+        <div aria-hidden="true" className="plaster-light absolute inset-0" />
         <motion.div
           className="absolute inset-0 z-10 flex items-center justify-center px-4"
           style={{ opacity: textOut, y: textDrift }}

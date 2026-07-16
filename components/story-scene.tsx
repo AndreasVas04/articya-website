@@ -114,14 +114,16 @@ export function StoryScene({
     >
       <div
         className={cn(
-          "overflow-hidden",
+          "relative overflow-hidden",
           active ? "sticky top-0 flex h-svh items-center" : "py-16 md:py-24"
         )}
       >
-        <div className="mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-8 px-4 md:grid-cols-12 md:gap-x-0">
+        {/* A soft pool of daylight where the print and its words sit. */}
+        <div aria-hidden="true" className="plaster-light absolute inset-0" />
+        <div className="relative mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-8 px-4 md:grid-cols-12 md:gap-x-0">
           <motion.div
             className={cn(
-              "bg-plaster-bright p-2 ring-1 ring-sage/50 md:p-3",
+              "print-shadow bg-plaster-bright p-2 ring-1 ring-sage/50 md:p-3",
               image.wide ? "md:col-span-6" : "md:col-span-5",
               flip
                 ? image.wide

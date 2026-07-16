@@ -19,6 +19,11 @@ export function PageHero({ image, heading, text }: PageHeroProps) {
         style={{ backgroundImage: `url(${withBasePath(image)})` }}
       />
       <div className="absolute inset-0 bg-pine-950/70" />
+      {/* Soft top light and an edge vignette keep the dusk photograph
+          cinematic: the sky breathes above the headline, the corners fall
+          away toward the frame. */}
+      <div aria-hidden="true" className="dusk-light absolute inset-x-0 top-0 h-48" />
+      <div aria-hidden="true" className="photo-vignette absolute inset-0" />
       <div
         aria-hidden="true"
         className="pointer-events-none absolute left-1/2 top-1/2 h-56 w-[36rem] max-w-[90vw] -translate-x-1/2 -translate-y-1/2 rounded-full bg-resin/25 blur-[100px]"

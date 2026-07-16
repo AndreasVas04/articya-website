@@ -19,15 +19,16 @@ the same resin lamp glowing behind the headline — before the body steps into
 daylight.
 
 The palette is a place, not a badge: pine dusk, lichen, dried sage, resin,
-sun-baked plaster. No bright tech greens, no leaf iconography, no gradients.
+sun-baked plaster. No bright tech greens, no leaf iconography, no decorative
+gradients — the only gradients are atmosphere (see Atmospheric grounds).
 
 ## Palette
 
 | Token | Hex | Role |
 |---|---|---|
-| `pine-950` | `#131A12` | Dark ground (the whole home page, inner-page heroes); text on light |
-| `pine-900` | `#1D2718` | Soft raised surfaces/cards on dark; secondary text on light |
-| `pine-800` | `#2C3A26` | Muted surfaces, borders, hairlines and hover fills on dark |
+| `pine-950` | `#22301C` | Dark ground (the whole home page, inner-page heroes); text on light |
+| `pine-900` | `#2D4024` | Soft raised surfaces/cards on dark; secondary text on light |
+| `pine-800` | `#3E5433` | Muted surfaces, borders, hairlines and hover fills on dark |
 | `lichen` | `#566350` | Green mid tone: section labels, icon strokes, captions on light |
 | `resin` | `#E19A3C` | Warm accent — the single light source. Glows, large text, filled buttons |
 | `resin-deep` | `#845110` | Text-safe accent on light grounds (links, labels, filled buttons) |
@@ -44,35 +45,35 @@ text, 3.0:1 for large text (≥24px, or ≥18.66px bold) and graphical objects.
 
 | Foreground | Background | Ratio | Rule |
 |---|---|---|---|
-| `plaster-bright` | `pine-950` | 16.70 | Body text on dark ✓ |
-| `plaster-bright` | `pine-900` | 14.59 | Body text on dark cards ✓ |
-| `plaster-bright` | `pine-800` | 11.36 | Body text on dark hover fills ✓ |
-| `plaster-muted` | `pine-950` | 13.64 | Secondary text on dark ✓ |
-| `plaster-muted` | `pine-900` | 11.91 | Secondary text on dark cards ✓ |
-| `resin-light` | `pine-950` | 10.70 | Links/labels on dark ✓ |
-| `resin-light` | `pine-900` | 9.35 | Links/labels on dark cards ✓ |
-| `resin` | `pine-950` | 7.51 | Large text and glows on dark ✓ (never body-size text) |
-| `pine-950` | `plaster` | 15.42 | Body text on light ✓ |
-| `pine-950` | `plaster-bright` | 16.70 | Body text on light cards ✓ |
-| `pine-950` | `plaster-muted` | 13.64 | Body text on green bands ✓ |
-| `pine-900` | `plaster` | 13.47 | Secondary text on light ✓ |
+| `plaster-bright` | `pine-950` | 13.12 | Body text on dark ✓ |
+| `plaster-bright` | `pine-900` | 10.57 | Body text on dark cards ✓ |
+| `plaster-bright` | `pine-800` | 7.84 | Body text on dark hover fills ✓ |
+| `plaster-muted` | `pine-950` | 10.71 | Secondary text on dark ✓ |
+| `plaster-muted` | `pine-900` | 8.63 | Secondary text on dark cards ✓ |
+| `resin-light` | `pine-950` | 8.40 | Links/labels on dark ✓ |
+| `resin-light` | `pine-900` | 6.77 | Links/labels on dark cards ✓ |
+| `resin` | `pine-950` | 5.90 | Large text and glows on dark ✓ (never body-size text) |
+| `pine-950` | `plaster` | 12.12 | Body text on light ✓ |
+| `pine-950` | `plaster-bright` | 13.12 | Body text on light cards ✓ |
+| `pine-950` | `plaster-muted` | 10.71 | Body text on green bands ✓ |
+| `pine-900` | `plaster` | 9.77 | Secondary text on light ✓ |
 | `lichen` | `plaster` | 5.54 | Section labels/captions on light ✓ |
 | `lichen` | `plaster-bright` | 6.00 | Section labels on light cards ✓ |
 | `lichen` | `plaster-muted` | 4.90 | Section labels on green bands ✓ |
 | `resin-deep` | `plaster` | 5.77 | Links on light ✓ |
 | `resin-deep` | `plaster-bright` | 6.25 | Links on light cards ✓ |
 | `resin-deep` | `plaster-muted` | 5.10 | Links on green bands ✓ |
-| `pine-950` | `sage` | 8.11 | Text on sage pills ✓ |
-| `sage` | `pine-950` | 8.11 | Icon strokes on dark ✓ |
+| `pine-950` | `sage` | 6.37 | Text on sage pills ✓ |
+| `sage` | `pine-950` | 6.37 | Icon strokes on dark ✓ |
 | `plaster-bright` | `resin-deep` | 6.25 | Filled button (light sections) ✓ |
-| `pine-950` | `resin` | 7.51 | Filled amber button (dark sections) ✓ |
-| `resin` | `pine-900` | 6.56 | Large text and glows on dark cards ✓ (never body-size text) |
-| `resin` | `pine-800` | 5.11 | Large text on dark hover fills ✓ (never body-size text) |
-| `resin-light` | `pine-800` | 7.28 | Links/labels on dark hover fills ✓ |
-| `sage` | `pine-900` | 7.08 | Icon strokes/graphics on dark cards ✓ |
-| `sage` | `pine-800` | 5.52 | Icon strokes on dark hover fills ✓ |
-| `plaster-muted` | `pine-800` | 9.28 | Secondary text on dark hover fills ✓ |
-| `lichen` | `pine-950` | 2.78 | ✗ FAILS — `lichen` never carries text on dark grounds |
+| `pine-950` | `resin` | 5.90 | Filled amber button (dark sections) ✓ |
+| `resin` | `pine-900` | 4.75 | Large text and glows on dark cards ✓ (never body-size text) |
+| `resin` | `pine-800` | 3.53 | Large text on dark hover fills ✓ (never body-size text) |
+| `resin-light` | `pine-800` | 5.03 | Links/labels on dark hover fills ✓ |
+| `sage` | `pine-900` | 5.13 | Icon strokes/graphics on dark cards ✓ |
+| `sage` | `pine-800` | 3.81 | Icon strokes on dark hover fills ✓ |
+| `plaster-muted` | `pine-800` | 6.41 | Secondary text on dark hover fills ✓ |
+| `lichen` | `pine-950` | 2.19 | ✗ FAILS — `lichen` never carries text on dark grounds |
 
 Usage rules derived from the table:
 
@@ -178,6 +179,33 @@ And on the inner pages, exactly one placement:
 One thread, one hue, one temperature. Nowhere else — below their heroes the
 inner pages are light grounds, and there are no glows on light grounds, ever.
 
+## Atmospheric grounds
+
+The flat grounds carry a whisper of dusk so pages read cinematic rather than
+printed. Five layers, defined once in `globals.css`, are the entire
+vocabulary — nothing else may put a gradient on a ground:
+
+| Class | What it is | Where it may sit |
+|---|---|---|
+| `.dusk-light` | Top-down wash of `pine-900` fading out — the sky a shade lighter than the ground it settles into | Top of dark sections and inner-page heroes |
+| `.dusk-ambient` | Centered radial pocket of `pine-900` | Behind content on long dark stretches |
+| `.photo-vignette` | Edges falling toward `pine-950` | Inside photographic frames and hero photos only |
+| `.plaster-light` | Soft pool of `plaster-bright` | Behind the About scenes and the finale mosaic |
+| `.print-shadow` | Soft `pine-950` drop shadow | Under framed prints on plaster |
+
+Rules, in order of precedence:
+
+- **Static only.** Every layer is painted once and never animated, never
+  scroll-linked, never repainted — atmosphere is free on the GPU and needs no
+  reduced-motion variant.
+- **Token mixes only.** Each layer is a `color-mix` of two existing grounds,
+  so any text over it sits between two measured pairs that both pass; no new
+  contrast pairs are created.
+- **Not light sources.** Atmosphere is pine and plaster, never resin — the
+  single-light-source rule is untouched, and these layers must stay too faint
+  to read as glow, shape, or blob (whisper-level; if a screenshot shows a
+  visible edge, it is too strong).
+
 ## Do / Don't
 
 **Do**
@@ -192,7 +220,8 @@ inner pages are light grounds, and there are no glows on light grounds, ever.
 
 - Don't use pure black, pure white, or any gray — the neutrals are the pine
   and plaster families.
-- Don't use bright/tech greens, leaf icons, or gradient backgrounds.
+- Don't use bright/tech greens, leaf icons, or gradients outside the five
+  atmospheric-ground layers.
 - Don't set `resin` as body-size text, or `sage` as text on light grounds.
 - Don't break the home page's dark ground with a light section, and don't put
   a dark section on an inner page below its hero. No second accent hue.

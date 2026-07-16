@@ -39,6 +39,12 @@ export default function HomePage() {
           aria-hidden="true"
           className="pointer-events-none absolute left-1/2 top-0 h-40 w-[42rem] max-w-[90vw] -translate-x-1/2 -translate-y-1/2 rounded-full bg-resin/45 blur-[80px]"
         />
+        {/* Dusk falls down the section: the sky above the treeline is a
+            shade lighter than the ground it settles into. */}
+        <div
+          aria-hidden="true"
+          className="dusk-light pointer-events-none absolute inset-x-0 top-0 h-[60vh]"
+        />
 
         <div className="relative mx-auto max-w-6xl px-4 pt-16 md:pt-28">
           <div className="md:grid md:grid-cols-12 md:gap-x-16">
@@ -79,7 +85,13 @@ export default function HomePage() {
       </section>
 
       <section className="relative overflow-hidden bg-pine-950 px-4 py-16 text-plaster-bright md:py-24">
-        <div className="mx-auto max-w-6xl">
+        {/* A pocket of ambient dusk light around the trail, so the closing
+            stretch sits in a clearing rather than on a flat ground. */}
+        <div
+          aria-hidden="true"
+          className="dusk-ambient pointer-events-none absolute inset-0"
+        />
+        <div className="relative mx-auto max-w-6xl">
           <Reveal className="text-center">
             <span
               aria-hidden="true"
