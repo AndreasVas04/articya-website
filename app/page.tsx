@@ -1,3 +1,4 @@
+import Image from "next/image";
 import ScrollExpandMedia from "@/components/ui/scroll-expansion-hero";
 import { StatCounter } from "@/components/stat-counter";
 import { Reveal } from "@/components/reveal";
@@ -5,6 +6,7 @@ import { OfferPanel } from "@/components/offer-panel";
 import { GainTrail } from "@/components/gain-trail";
 import { ButtonLink } from "@/components/ui/button";
 import { hero, whatWeDo, gain } from "@/content/home";
+import { withBasePath } from "@/lib/utils";
 
 const offerIcons = ["globe", "graduation"] as const;
 
@@ -33,17 +35,36 @@ export default function HomePage() {
       {/* overflow-clip (not hidden) so the offer panels' sticky frames can
           pin against the viewport. */}
       <section className="relative overflow-clip bg-pine-950 text-plaster-bright">
+        {/* The environment behind the clearing: our own canopy photograph
+            sunk under the pine scrim — felt more than seen, strongest behind
+            the heading and numerals, gone before the panels. */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 top-0 h-[120vh] [mask-image:radial-gradient(ellipse_90%_75%_at_50%_28%,black_25%,transparent_92%)]"
+        >
+          <Image
+            src={withBasePath("/images/hero-2.jpg")}
+            alt=""
+            fill
+            sizes="100vw"
+            className="scale-110 object-cover object-[50%_30%] opacity-20 blur-2xl brightness-50 saturate-[0.6]"
+          />
+        </div>
         {/* Mirrors the lower half of the hero's halo, which the hero clips
             at the seam — together they read as one light. */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute left-1/2 top-0 h-40 w-[42rem] max-w-[90vw] -translate-x-1/2 -translate-y-1/2 rounded-full bg-resin/45 blur-[80px]"
+          className="pointer-events-none absolute left-1/2 top-0 h-40 w-[42rem] max-w-[90vw] -translate-x-1/2 -translate-y-1/2 rounded-full bg-resin/30 blur-[80px]"
         />
-        {/* Dusk falls down the section: the sky above the treeline is a
-            shade lighter than the ground it settles into. */}
+        {/* The lamp's light falls down the section from the seam, shading
+            the ground from lit to deep instead of leaving it flat. */}
         <div
           aria-hidden="true"
-          className="dusk-light pointer-events-none absolute inset-x-0 top-0 h-[60vh]"
+          className="lamp-falloff pointer-events-none absolute inset-x-0 top-0 h-[80vh]"
+        />
+        <div
+          aria-hidden="true"
+          className="film-grain pointer-events-none absolute inset-0"
         />
 
         <div className="relative mx-auto max-w-6xl px-4 pt-16 md:pt-28">
@@ -91,6 +112,25 @@ export default function HomePage() {
           aria-hidden="true"
           className="dusk-ambient pointer-events-none absolute inset-0"
         />
+        {/* Faint distance behind the trail: mountains over water from our
+            own hikes, blurred into the dusk and faded out well before the
+            closing line so the glow zone keeps its measured contrast. */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 top-[6%] h-[52%] [mask-image:radial-gradient(ellipse_95%_75%_at_50%_50%,black_20%,transparent_78%)]"
+        >
+          <Image
+            src={withBasePath("/images/hero-1.jpg")}
+            alt=""
+            fill
+            sizes="100vw"
+            className="scale-110 object-cover object-[70%_45%] opacity-20 blur-[14px] brightness-50 saturate-[0.6]"
+          />
+        </div>
+        <div
+          aria-hidden="true"
+          className="film-grain pointer-events-none absolute inset-0"
+        />
         <div className="relative mx-auto max-w-6xl">
           <Reveal className="text-center">
             <span
@@ -107,15 +147,18 @@ export default function HomePage() {
           </div>
 
           <div className="relative mx-auto max-w-3xl text-center">
+            {/* The glow belongs to the showpiece line, not the whole block:
+                centered behind the highlight so the supporting paragraph
+                above stays out of its bright core. */}
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute left-1/2 top-1/2 h-56 w-[36rem] max-w-full -translate-x-1/2 -translate-y-1/2 rounded-full bg-resin/25 blur-[100px]"
+              className="pointer-events-none absolute left-1/2 top-[62%] h-48 w-[36rem] max-w-full -translate-x-1/2 -translate-y-1/2 rounded-full bg-resin/20 blur-[100px]"
             />
             <Reveal className="relative">
               <p className="text-xl leading-[1.55] text-plaster-muted">
                 {gain.text}
               </p>
-              <p className="mt-5 font-display text-[clamp(2.25rem,5vw,3.75rem)] font-semibold leading-[1.15] tracking-[-0.01em] text-resin [text-shadow:0_0_40px_color-mix(in_srgb,var(--color-resin)_40%,transparent)]">
+              <p className="mt-8 font-display text-[clamp(2.25rem,5vw,3.75rem)] font-semibold leading-[1.15] tracking-[-0.01em] text-resin [text-shadow:0_0_30px_color-mix(in_srgb,var(--color-resin)_30%,transparent)]">
                 {gain.highlight}
               </p>
             </Reveal>

@@ -188,6 +188,11 @@ const ScrollExpandMedia = ({
           <div className="absolute inset-0 bg-pine-950/75" />
         </motion.div>
 
+        <div
+          aria-hidden="true"
+          className="film-grain pointer-events-none absolute inset-0 z-[1]"
+        />
+
         <div className="relative z-10 mx-auto flex w-full flex-col items-center">
           <div className="relative flex h-[100dvh] w-full flex-col items-center justify-center">
             <div
@@ -243,6 +248,10 @@ const ScrollExpandMedia = ({
                 <div
                   aria-hidden="true"
                   className="photo-vignette pointer-events-none absolute inset-0"
+                />
+                <div
+                  aria-hidden="true"
+                  className="film-grain pointer-events-none absolute inset-0"
                 />
               </div>
 
@@ -307,7 +316,7 @@ const ScrollExpandMedia = ({
 
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute bottom-0 left-1/2 z-0 h-40 w-[42rem] max-w-[90vw] -translate-x-1/2 translate-y-1/2 rounded-full bg-resin/45 blur-[80px]"
+          className="pointer-events-none absolute bottom-0 left-1/2 z-0 h-40 w-[42rem] max-w-[90vw] -translate-x-1/2 translate-y-1/2 rounded-full bg-resin/30 blur-[80px]"
         />
       </section>
     </div>

@@ -29,13 +29,16 @@ export function GainTrail({ items }: { items: string[] }) {
 
   return (
     <div ref={ref} className="relative pb-12 md:pb-16">
+      {/* The line stops short of the container bottom so its glow hands off
+          to the closing line's own glow instead of washing over the text
+          that follows. */}
       <div
         aria-hidden="true"
-        className="absolute bottom-0 left-6 top-0 w-px bg-pine-800 md:left-1/2 md:-translate-x-1/2"
+        className="absolute bottom-6 left-6 top-0 w-px bg-pine-800 md:bottom-8 md:left-1/2 md:-translate-x-1/2"
       />
       <motion.div
         aria-hidden="true"
-        className="absolute bottom-0 left-6 top-0 w-px origin-top bg-resin shadow-[0_0_40px_2px_color-mix(in_srgb,var(--color-resin)_55%,transparent)] md:left-1/2 md:-translate-x-1/2"
+        className="absolute bottom-6 left-6 top-0 w-px origin-top bg-resin shadow-[0_0_40px_2px_color-mix(in_srgb,var(--color-resin)_55%,transparent)] md:bottom-8 md:left-1/2 md:-translate-x-1/2"
         style={drawn ? { scaleY: scrollYProgress } : undefined}
       />
 

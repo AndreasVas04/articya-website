@@ -181,30 +181,50 @@ inner pages are light grounds, and there are no glows on light grounds, ever.
 
 ## Atmospheric grounds
 
-The flat grounds carry a whisper of dusk so pages read cinematic rather than
-printed. Five layers, defined once in `globals.css`, are the entire
-vocabulary — nothing else may put a gradient on a ground:
+Dark stretches are built as layered environments, never as painted surfaces:
+one of our own photographs sunk under the pine scrim, the lamp's light
+falling with direction, and film grain over the top. The shared layers are
+defined once in `globals.css`; environment photographs are art-directed per
+section. Nothing else may put a gradient or texture on a ground:
 
 | Class | What it is | Where it may sit |
 |---|---|---|
 | `.dusk-light` | Top-down wash of `pine-900` fading out — the sky a shade lighter than the ground it settles into | Top of dark sections and inner-page heroes |
 | `.dusk-ambient` | Centered radial pocket of `pine-900` | Behind content on long dark stretches |
+| `.lamp-falloff` | The seam lamp given direction: a warm whisper directly under the halo inside a wider `pine-800` light dome, shading the ground from lit to deep | Below the home hero seam only |
+| `.dusk-scrim` | Graded photo wash — most open where the lamp halo sits, near-solid pine at the edges and base of the frame | Inner-page hero photographs |
 | `.photo-vignette` | Edges falling toward `pine-950` | Inside photographic frames and hero photos only |
+| `.film-grain` | Fine tiled SVG grain at 5% opacity, killing the flat digital-paint feel | Over dark grounds and photographic frames |
 | `.plaster-light` | Soft pool of `plaster-bright` | Behind the About scenes and the finale mosaic |
 | `.print-shadow` | Soft `pine-950` drop shadow | Under framed prints on plaster |
+
+**Environment photographs.** A dark stretch may sink one of our own
+photographs into its ground as atmosphere: blurred (≥ 14px), desaturated,
+darkened, at ≤ 20% opacity, and masked so it dissolves into pure `pine-950`
+before the next stretch begins — felt more than seen. The home page carries
+two: the forest canopy behind the "What we do" clearing, and a faint band of
+mountains over water behind the gains trail, faded out before the closing
+line so the glow zone keeps its measured contrast. Always our own outdoor
+photography from `/public/images` — never stock textures, generic forest
+wallpaper, or leaf patterns.
 
 Rules, in order of precedence:
 
 - **Static only.** Every layer is painted once and never animated, never
   scroll-linked, never repainted — atmosphere is free on the GPU and needs no
   reduced-motion variant.
-- **Token mixes only.** Each layer is a `color-mix` of two existing grounds,
-  so any text over it sits between two measured pairs that both pass; no new
-  contrast pairs are created.
-- **Not light sources.** Atmosphere is pine and plaster, never resin — the
-  single-light-source rule is untouched, and these layers must stay too faint
-  to read as glow, shape, or blob (whisper-level; if a screenshot shows a
-  visible edge, it is too strong).
+- **Measured on the composite.** Layered grounds create pixel values between
+  tokens, so text contrast is verified against the actual rendered composite
+  (screenshot sampling behind each text zone), not against the flat token.
+  Working ceiling: no composite behind text may exceed `pine-800` lightness —
+  the lightest ground every dark-ground pair still passes on. Gradient layers
+  mix only existing grounds; photo layers respect the ceiling through their
+  opacity and brightness caps.
+- **One light.** `.lamp-falloff`'s warm whisper is the falloff of the same
+  resin lamp at the hero seam — direction for the existing light, never a
+  second source. Everything else is pine and plaster, and every layer stays
+  too faint to read as glow, shape, or blob (whisper-level; if a screenshot
+  shows a hard edge, it is too strong).
 
 ## Do / Don't
 
@@ -220,7 +240,7 @@ Rules, in order of precedence:
 
 - Don't use pure black, pure white, or any gray — the neutrals are the pine
   and plaster families.
-- Don't use bright/tech greens, leaf icons, or gradients outside the five
+- Don't use bright/tech greens, leaf icons, or gradients outside the
   atmospheric-ground layers.
 - Don't set `resin` as body-size text, or `sage` as text on light grounds.
 - Don't break the home page's dark ground with a light section, and don't put

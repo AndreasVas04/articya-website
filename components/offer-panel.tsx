@@ -180,6 +180,10 @@ export function OfferPanel({
           aria-hidden="true"
           className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-pine-950 to-transparent md:h-32"
         />
+        <div
+          aria-hidden="true"
+          className="film-grain pointer-events-none absolute inset-0"
+        />
 
         <div
           className={cn(
