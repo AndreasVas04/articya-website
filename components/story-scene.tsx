@@ -1,0 +1,191 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
+import {
+  cubicBezier,
+  motion,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+  type MotionValue,
+} from "framer-motion";
+import { cn, withBasePath } from "@/lib/utils";
+
+const easeInOutCubic = cubicBezier(0.65, 0, 0.35, 1);
+
+// Eased 0→1 over a slice of the pinned scroll. Computed transforms are used
+// throughout (rather than useTransform's range form) because the range form
+// gets promoted to a native view-timeline animation, which measures element
+// visibility instead of pin progress inside a sticky frame.
+const stageWindow = (value: number, from: number, to: number) =>
+  easeInOutCubic(Math.min(Math.max((value - from) / (to - from), 0), 1));
+
+interface SceneImage {
+  src: string;
+  alt: string;
+  wide?: boolean;
+}
+
+interface StorySceneProps {
+  groups: string[];
+  image: SceneImage;
+  flip?: boolean;
+  muted?: boolean;
+}
+
+// One group of the scene paragraph, fading in over its slice of the pin.
+// Opacity only, so the paragraph never reflows while it is being read.
+function TextGroup({
+  progress,
+  start,
+  end,
+  active,
+  children,
+}: {
+  progress: MotionValue<number>;
+  start: number;
+  end: number;
+  active: boolean;
+  children: React.ReactNode;
+}) {
+  const opacity = useTransform(() => stageWindow(progress.get(), start, end));
+  return <motion.span style={active ? { opacity } : undefined}>{children}</motion.span>;
+}
+
+// One scene of the About story: a daylight sibling of the home offer panel.
+// The section pins while the photograph rises into its plaster mat and
+// settles, a resin bar draws itself, and the paragraph completes group by
+// group at reading pace before the scene releases. Scenes stay on the
+// plaster grounds — the photo is a framed print, never a full-bleed dark
+// panel. Before mount and under reduced motion the scene renders unpinned
+// with everything visible, so the exported HTML is the resting state.
+export function StoryScene({
+  groups,
+  image,
+  flip = false,
+  muted = false,
+}: StorySceneProps) {
+  const ref = useRef<HTMLElement | null>(null);
+  const reducedMotion = useReducedMotion();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
+
+  // `travel` spans the whole traversal and drives the photo's arrival, so
+  // the print is already rising into view while the previous scene releases
+  // — the frame is never empty between scenes. `stage` spans only the
+  // pinned stretch and drives the reading choreography.
+  const { scrollYProgress: travel } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"],
+  });
+  const { scrollYProgress: stage } = useScroll({
+    target: ref,
+    offset: ["start start", "end end"],
+  });
+
+  const photoOpacity = useTransform(() =>
+    stageWindow(travel.get(), 0.05, 0.28)
+  );
+  const photoY = useTransform(
+    () => 48 * (1 - stageWindow(travel.get(), 0.05, 0.28))
+  );
+  const imageScale = useTransform(
+    () => 1.08 - 0.08 * stageWindow(travel.get(), 0.05, 0.45)
+  );
+  const imageDrift = useTransform(() => `${-4 + 8 * travel.get()}%`);
+  const barScaleX = useTransform(() => stageWindow(stage.get(), 0.08, 0.18));
+
+  const active = mounted && !reducedMotion;
+
+  // Groups overlap by half a window and finish at 80% of the pin, so every
+  // scene holds its completed text for the same beat before releasing.
+  const seg = 0.58 / (groups.length + 0.5);
+
+  return (
+    <section
+      ref={ref}
+      className={cn(
+        "relative",
+        muted ? "bg-plaster-muted" : "bg-plaster",
+        active && (groups.length > 1 ? "h-[170svh] md:h-[190svh]" : "h-[150svh] md:h-[160svh]")
+      )}
+    >
+      <div
+        className={cn(
+          "overflow-hidden",
+          active ? "sticky top-0 flex h-svh items-center" : "py-16 md:py-24"
+        )}
+      >
+        <div className="mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-8 px-4 md:grid-cols-12 md:gap-x-0">
+          <motion.div
+            className={cn(
+              "bg-plaster-bright p-2 ring-1 ring-sage/50 md:p-3",
+              image.wide ? "md:col-span-6" : "md:col-span-5",
+              flip
+                ? image.wide
+                  ? "md:col-start-7"
+                  : "md:col-start-8"
+                : "md:col-start-1"
+            )}
+            style={active ? { opacity: photoOpacity, y: photoY } : undefined}
+          >
+            <div
+              className={cn(
+                "relative overflow-hidden",
+                image.wide
+                  ? "h-[32svh] md:h-auto md:aspect-[16/9]"
+                  : "h-[36svh] md:h-auto md:aspect-[4/5] md:max-h-[72svh]"
+              )}
+            >
+              <motion.div
+                className="absolute -inset-y-[6%] inset-x-0"
+                style={active ? { scale: imageScale, y: imageDrift } : undefined}
+              >
+                <Image
+                  src={withBasePath(image.src)}
+                  alt={image.alt}
+                  fill
+                  sizes="(min-width: 768px) 40vw, 100vw"
+                  className="object-cover"
+                />
+              </motion.div>
+            </div>
+          </motion.div>
+
+          <div
+            className={cn(
+              image.wide ? "md:col-span-5" : "md:col-span-6",
+              flip
+                ? "md:col-start-1 md:row-start-1"
+                : image.wide
+                  ? "md:col-start-8"
+                  : "md:col-start-7"
+            )}
+          >
+            <motion.span
+              aria-hidden="true"
+              className="block h-1 w-16 origin-left bg-resin-deep"
+              style={active ? { scaleX: barScaleX } : undefined}
+            />
+            <p className="mt-6 leading-[1.7] text-pine-950 md:mt-8 md:text-xl md:leading-[1.55]">
+              {groups.map((group, i) => (
+                <TextGroup
+                  key={i}
+                  progress={stage}
+                  start={0.22 + i * seg}
+                  end={0.22 + i * seg + seg * 1.5}
+                  active={active}
+                >
+                  {group}
+                  {i < groups.length - 1 ? " " : ""}
+                </TextGroup>
+              ))}
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
