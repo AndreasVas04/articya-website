@@ -47,5 +47,5 @@ export const gain = {
   ],
   text: "Travel across Europe with all expenses covered through Erasmus+ funding.",
   highlight: "Your adventure starts here.",
-  cta: { label: "Explore Opportunities", href: "/opportunities/" },
+  cta: { label: "Contact Us", href: "/contact/" },
 };

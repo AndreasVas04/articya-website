@@ -7,14 +7,19 @@ import process from "node:process";
 
 const root = process.cwd();
 
+// The opportunities page was removed by owner decision (Andreas, 2026-07-18):
+// no open opportunities to list and the page would sit permanently "coming
+// soon". Scope of the sanctioned removal: the /opportunities route and its
+// content file are gone, the "Opportunities" nav item is dropped on every
+// page, and the home closing CTA swaps from "Explore Opportunities"
+// (→ /opportunities/) to the existing frozen string "Contact Us"
+// (→ /contact/), as already used on the home hero. The legacy
+// opportunities.html stays in the repo as part of the still-deployed legacy
+// site; it just has no exported counterpart to compare. See
+// normalizeRemovedOpportunities below for the original-side normalization.
 const pages = [
   { name: "home", original: "index.html", exported: "out/index.html" },
   { name: "about", original: "about.html", exported: "out/about/index.html" },
-  {
-    name: "opportunities",
-    original: "opportunities.html",
-    exported: "out/opportunities/index.html",
-  },
   { name: "contact", original: "contact.html", exported: "out/contact/index.html" },
   { name: "faq", original: "faq.html", exported: "out/faq/index.html" },
 ];
@@ -87,6 +92,19 @@ function stripHeaderWordmark(text) {
   return text.replace(/^ArtiCYa /, "");
 }
 
+// Third exception — opportunities page removed by owner decision (see the
+// note above the pages list). The original side is normalized to the
+// sanctioned removal: exactly one nav occurrence of "Opportunities" between
+// "Home" and "FAQ" (present on every legacy page), and on home exactly one
+// closing-CTA label swap. Every other character stays guarded.
+function normalizeRemovedOpportunities(text, pageName) {
+  let out = text.replace("Home Opportunities FAQ", "Home FAQ");
+  if (pageName === "home") {
+    out = out.replace("Explore Opportunities", "Contact Us");
+  }
+  return out;
+}
+
 function firstDiff(a, b) {
   const len = Math.min(a.length, b.length);
   for (let i = 0; i < len; i++) {
@@ -110,6 +128,7 @@ for (const page of pages) {
   }
 
   original = normalizeBrandSpelling(original);
+  original = normalizeRemovedOpportunities(original, page.name);
   exported = stripHeaderWordmark(exported);
 
   if (page.name === "home") {

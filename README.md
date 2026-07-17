@@ -10,7 +10,6 @@ Built with Next.js 15 (App Router, static export), TypeScript and Tailwind CSS v
 ## Pages
 - **Home** (`/`) — Landing page with organization overview
 - **About** (`/about`) — Mission, values, and impact
-- **Opportunities** (`/opportunities`) — Current Erasmus+ programs
 - **FAQ** (`/faq`) — Common questions about programs
 - **Contact** (`/contact`) — Contact details and social links
 

@@ -11,7 +11,6 @@ export const nav = {
   menuToggleLabel: "Toggle menu",
   items: [
     { label: "Home", href: "/" },
-    { label: "Opportunities", href: "/opportunities/" },
     { label: "FAQ", href: "/faq/" },
     { label: "Contact", href: "/contact/" },
     { label: "About", href: "/about/" },

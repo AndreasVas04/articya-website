@@ -124,7 +124,7 @@ text keep them.
     `pine-900`/`pine-800` surfaces, full-bleed photography, and the resin
     light, never from switching to a light ground. This also carries the
     upcoming globe and lamp sections without a seam.
-  - **Inner pages** (about, opportunities, faq, contact) are text-heavy and
+  - **Inner pages** (about, faq, contact) are text-heavy and
     keep `plaster` as the default background below their heroes; no dark
     section may appear there outside the hero. The hero itself is the bridge
     to the home world: the same pine-dusk photograph treatment (`pine-950`
