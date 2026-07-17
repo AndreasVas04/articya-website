@@ -4,6 +4,7 @@ import { StatCounter } from "@/components/stat-counter";
 import { Reveal } from "@/components/reveal";
 import { OfferPanel } from "@/components/offer-panel";
 import { GainTrail } from "@/components/gain-trail";
+import { DottedGlobe } from "@/components/ui/dotted-globe";
 import { ButtonLink } from "@/components/ui/button";
 import { hero, whatWeDo, gain } from "@/content/home";
 import { withBasePath } from "@/lib/utils";
@@ -68,21 +69,39 @@ export default function HomePage() {
         />
 
         <div className="relative mx-auto max-w-6xl px-4 pt-16 md:pt-28">
-          <div className="md:grid md:grid-cols-12 md:gap-x-16">
-            <Reveal className="md:col-span-5">
-              <span aria-hidden="true" className="block h-1 w-16 bg-resin" />
-              <h2 className="mt-6 font-display text-[clamp(2rem,4vw,3rem)] font-semibold leading-[1.1] tracking-[-0.01em]">
-                {whatWeDo.title}
-              </h2>
-            </Reveal>
-            <Reveal delayMs={100} className="md:col-span-7 md:pt-3">
-              <p className="mt-6 max-w-2xl border-l border-sage/40 pl-5 text-xl leading-[1.55] text-plaster-muted md:mt-0 md:ml-auto md:pl-6">
-                {whatWeDo.lead}
-              </p>
-            </Reveal>
+          {/* The globe is the living center of the clearing: text left, the
+              lit world right, the stats ledger reading under it — with the
+              countries column landing directly beneath the globe, since the
+              globe is that number made visible. The reveals stagger down the
+              same path the eye takes: title, lead, globe, then the numerals. */}
+          <div className="md:grid md:grid-cols-12 md:items-center md:gap-x-12">
+            <div className="md:col-span-5">
+              <Reveal>
+                <span aria-hidden="true" className="block h-1 w-16 bg-resin" />
+                <h2 className="mt-6 font-display text-[clamp(2rem,4vw,3rem)] font-semibold leading-[1.1] tracking-[-0.01em]">
+                  {whatWeDo.title}
+                </h2>
+              </Reveal>
+              <Reveal delayMs={100}>
+                <p className="mt-6 border-l border-sage/40 pl-5 text-xl leading-[1.55] text-plaster-muted md:mt-8">
+                  {whatWeDo.lead}
+                </p>
+              </Reveal>
+            </div>
+            <div className="relative mt-12 md:col-span-7 md:mt-0">
+              {/* The globe's share of the one lamp — a soft resin pool the
+                  dots appear to be lit by. */}
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute left-1/2 top-1/2 h-2/3 w-2/3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-resin/10 blur-[100px]"
+              />
+              <Reveal delayMs={150} className="duration-[700ms]">
+                <DottedGlobe className="mx-auto w-full max-w-[21rem] md:max-w-[34rem]" />
+              </Reveal>
+            </div>
           </div>
 
-          <div className="mt-10 grid border-y border-pine-800 md:mt-24 md:grid-cols-3 md:divide-x md:divide-pine-800 max-md:divide-y max-md:divide-pine-800">
+          <div className="mt-12 grid border-y border-pine-800 md:mt-20 md:grid-cols-3 md:divide-x md:divide-pine-800 max-md:divide-y max-md:divide-pine-800">
             {whatWeDo.stats.map((stat, i) => (
               <Reveal key={stat.label} delayMs={i * 150}>
                 <StatCounter num={stat.num} label={stat.label} />

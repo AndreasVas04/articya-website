@@ -260,10 +260,11 @@ integration time.
 | Scroll-expansion hero | `blue-200` subtext | `resin-light` |
 | Zoom parallax | `neutral` grounds/gaps | `plaster` (section), `plaster-muted` (image gaps) |
 | Zoom parallax | any neutral text | `pine-950` |
-| D3 globe | `black` background | `pine-950` |
-| D3 globe | `white` land dots | `resin` |
-| D3 globe | `white` arcs/lines | `resin-light` |
-| D3 globe | graticule/sphere stroke | `pine-800` |
+| D3 globe | `black` ocean fill | none — transparent, the section's `pine-950` ground is the ocean |
+| D3 globe | `#999` halftone land dots | `resin` |
+| D3 globe | `white` land outlines | `resin-light` (low alpha) |
+| D3 globe | `white` graticule/sphere stroke | `pine-800` (low alpha) |
+| D3 globe | Europe/Mediterranean dots | `resin-light`, brighter and larger — the warm heart of the globe |
 | Lamp | `slate-950` background | `pine-950` |
 | Lamp | `cyan-500` glow | `resin` |
 | Lamp | `cyan-400` glow | `resin-light` |
