@@ -70,7 +70,10 @@ body {
     transparent 72%
   );
 }
-.print-shadow {
+/* Soft pine drop shadow: under framed prints, and as the raised state of
+   interactive cards (open accordion, hovered contact card) — defined as a
+   utility so hover/open variants reuse the same token shadow. */
+@utility print-shadow {
   box-shadow: 0 24px 48px -24px
     color-mix(in srgb, var(--color-pine-950) 35%, transparent);
 }

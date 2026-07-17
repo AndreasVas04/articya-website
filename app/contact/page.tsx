@@ -1,19 +1,12 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { Mail } from "lucide-react";
 import { PageHero } from "@/components/page-hero";
 import { Reveal } from "@/components/reveal";
 import { meta, hero, details } from "@/content/contact";
-import { withBasePath } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: meta.title,
   description: meta.description,
-};
-
-const photo = {
-  src: "/images/AboutImage1.jpg",
-  alt: "The ArtiCYa team behind a table of Cypriot food at an intercultural evening",
 };
 
 // Brand marks matching the footer's set; lucide dropped its brand icons.
@@ -53,19 +46,19 @@ function ChannelCard({
     <a
       href={href}
       {...(external ? { target: "_blank", rel: "noreferrer" } : {})}
-      className="group flex items-center gap-5 border border-sage/60 bg-plaster-bright p-5 transition-colors duration-200 ease-out-quart hover:border-resin-deep/50"
+      className="group flex h-full items-center gap-5 rounded-lg border border-sage/50 bg-plaster-bright p-5 transition duration-200 ease-out-quart hover:-translate-y-0.5 hover:border-resin-deep/50 hover:print-shadow md:flex-col md:px-6 md:py-10 md:text-center"
     >
       <span
         aria-hidden="true"
-        className="flex size-12 shrink-0 items-center justify-center rounded-full border border-sage/60 text-lichen transition-colors duration-200 ease-out-quart group-hover:border-resin-deep/50 group-hover:text-resin-deep"
+        className="flex size-12 shrink-0 items-center justify-center rounded-full border border-sage/60 text-lichen transition-colors duration-200 ease-out-quart group-hover:border-resin-deep/50 group-hover:text-resin-deep md:size-14"
       >
         {icon}
       </span>
-      <span>
-        <span className="block text-[0.8125rem] font-semibold uppercase leading-[1.4] tracking-[0.08em] text-lichen">
+      <span className="min-w-0">
+        <span className="block text-[0.8125rem] font-semibold uppercase leading-[1.4] tracking-[0.08em] text-lichen md:mt-6">
           {label}
         </span>
-        <span className="mt-1 block font-semibold text-pine-950 transition-colors duration-200 ease-out-quart group-hover:text-resin-deep">
+        <span className="mt-1 block break-words font-semibold text-pine-950 transition-colors duration-200 ease-out-quart group-hover:text-resin-deep md:mt-2">
           {value}
         </span>
       </span>
@@ -73,65 +66,49 @@ function ChannelCard({
   );
 }
 
-// The conversion endpoint: one warm scene — the team at the table on the
-// left, the three ways to reach them composed beside it.
+// The conversion endpoint: the invitation at full voice and the three ways
+// to reach the team, composed to hold the viewport on their own.
 export default function ContactPage() {
   return (
     <>
       <PageHero image={hero.image} heading={hero.heading} text={hero.text} />
 
-      <section className="bg-plaster px-4 py-16 md:py-24">
-        <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-12 md:grid-cols-12 md:gap-x-12">
-          <div className="md:col-span-6 md:col-start-7 md:row-start-1">
-            <Reveal>
-              <span aria-hidden="true" className="block h-1 w-16 bg-resin-deep" />
-              <h2 className="mt-6 font-display text-[clamp(2rem,4vw,3rem)] font-semibold leading-[1.1] tracking-[-0.01em] text-pine-950">
-                {details.heading}
-              </h2>
-            </Reveal>
-            <div className="mt-8 space-y-4">
-              <Reveal delayMs={100}>
-                <ChannelCard
-                  icon={<Mail className="size-5" strokeWidth={1.5} />}
-                  label={details.email.label}
-                  value={details.email.value}
-                  href={`mailto:${details.email.value}`}
-                />
-              </Reveal>
-              <Reveal delayMs={150}>
-                <ChannelCard
-                  icon={instagramIcon}
-                  label={details.instagram.label}
-                  value={details.instagram.value}
-                  href={details.instagram.href}
-                  external
-                />
-              </Reveal>
-              <Reveal delayMs={200}>
-                <ChannelCard
-                  icon={facebookIcon}
-                  label={details.facebook.label}
-                  value={details.facebook.value}
-                  href={details.facebook.href}
-                  external
-                />
-              </Reveal>
-            </div>
-          </div>
-
-          <Reveal delayMs={150} className="md:col-span-5 md:row-start-1">
-            <figure className="print-shadow bg-plaster-bright p-2 ring-1 ring-sage/50 md:p-3">
-              <div className="relative aspect-[4/5] overflow-hidden">
-                <Image
-                  src={withBasePath(photo.src)}
-                  alt={photo.alt}
-                  fill
-                  sizes="(min-width: 768px) 40vw, 100vw"
-                  className="object-cover"
-                />
-              </div>
-            </figure>
+      <section className="bg-plaster px-4 py-20 md:py-28">
+        <div className="mx-auto max-w-4xl">
+          <Reveal className="text-center">
+            <span aria-hidden="true" className="mx-auto block h-1 w-16 bg-resin-deep" />
+            <h2 className="mt-8 font-display text-[clamp(2.25rem,5vw,3.75rem)] font-semibold leading-[1.15] tracking-[-0.01em] text-pine-950">
+              {details.heading}
+            </h2>
           </Reveal>
+          <div className="mt-12 grid grid-cols-1 gap-4 md:mt-16 md:grid-cols-3 md:gap-6">
+            <Reveal delayMs={100}>
+              <ChannelCard
+                icon={<Mail className="size-5" strokeWidth={1.5} />}
+                label={details.email.label}
+                value={details.email.value}
+                href={`mailto:${details.email.value}`}
+              />
+            </Reveal>
+            <Reveal delayMs={150}>
+              <ChannelCard
+                icon={instagramIcon}
+                label={details.instagram.label}
+                value={details.instagram.value}
+                href={details.instagram.href}
+                external
+              />
+            </Reveal>
+            <Reveal delayMs={200}>
+              <ChannelCard
+                icon={facebookIcon}
+                label={details.facebook.label}
+                value={details.facebook.value}
+                href={details.facebook.href}
+                external
+              />
+            </Reveal>
+          </div>
         </div>
       </section>
     </>

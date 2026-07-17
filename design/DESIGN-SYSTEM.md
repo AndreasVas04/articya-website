@@ -197,7 +197,7 @@ section. Nothing else may put a gradient or texture on a ground:
 | `.photo-vignette` | Edges falling toward `pine-950` | Inside photographic frames and hero photos only |
 | `.film-grain` | Fine tiled SVG grain at 5% opacity, killing the flat digital-paint feel | Over dark grounds and photographic frames |
 | `.plaster-light` | Soft pool of `plaster-bright` | Behind the About scenes and the finale mosaic |
-| `.print-shadow` | Soft `pine-950` drop shadow | Under framed prints on plaster |
+| `.print-shadow` | Soft `pine-950` drop shadow | Under framed prints on plaster; the raised state of interactive cards (open accordion, hovered contact card) |
 
 **Environment photographs.** A dark stretch may sink one of our own
 photographs into its ground as atmosphere: blurred (≥ 14px), desaturated,
