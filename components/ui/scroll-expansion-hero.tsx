@@ -44,6 +44,25 @@ const ScrollExpandMedia = ({
     setMounted(true);
   }, []);
 
+  // The pre-hydration veil (set by the page's inline script) hands over to
+  // React's own hidden state here — removed only after the mounted
+  // re-render has applied it, so no frame shows the intro in between.
+  useEffect(() => {
+    if (mounted) document.documentElement.classList.remove("hero-js");
+  }, [mounted]);
+
+  // Reloads of this page must start the scroll choreography from the top;
+  // the inline script covers the pre-hydration window on hard loads, this
+  // covers client-side navigation and restores the browser default on
+  // unmount so other pages keep native back/forward behavior.
+  useEffect(() => {
+    if (!("scrollRestoration" in history)) return;
+    history.scrollRestoration = "manual";
+    return () => {
+      history.scrollRestoration = "auto";
+    };
+  }, []);
+
   useEffect(() => {
     if (reducedMotion) return;
 
@@ -310,7 +329,7 @@ const ScrollExpandMedia = ({
               <div
                 data-expanded={!mounted || contentVisible ? "" : undefined}
                 className={cn(
-                  "group pointer-events-auto absolute inset-x-0 bottom-0 flex flex-col items-center bg-pine-950/85 px-6 py-8 opacity-0 backdrop-blur-sm duration-[400ms] ease-out-quart data-[expanded]:opacity-100 data-[expanded]:transition-opacity md:py-10",
+                  "hero-intro group pointer-events-auto absolute inset-x-0 bottom-0 flex flex-col items-center bg-pine-950/85 px-6 py-8 opacity-0 backdrop-blur-sm duration-[400ms] ease-out-quart data-[expanded]:opacity-100 data-[expanded]:transition-opacity md:py-10",
                   mounted && !contentVisible && "pointer-events-none"
                 )}
               >

@@ -15,6 +15,17 @@ const offerIcons = ["globe", "graduation"] as const;
 export default function HomePage() {
   return (
     <>
+      {/* Runs during parse, before the hero can paint: opts this page out
+          of browser scroll restoration (a reload mid-page would strand the
+          visitor in a scroll choreography whose state machine started
+          fresh) and flags JS-on so the CSS veil holds the hero intro
+          hidden until hydration takes over. */}
+      <script
+        dangerouslySetInnerHTML={{
+          __html:
+            'history.scrollRestoration="manual";window.scrollTo(0,0);document.documentElement.classList.add("hero-js");',
+        }}
+      />
       <ScrollExpandMedia
         slides={hero.slides}
         bgImageSrc={hero.slides[0]}

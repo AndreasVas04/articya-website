@@ -76,6 +76,12 @@ export function LampCta({ children, className }: LampCtaProps) {
   const [mounted, setMounted] = useState(false);
   const [lit, setLit] = useState(false);
   const [threadPath, setThreadPath] = useState<string | null>(null);
+  // Progress value at which the thread arrives and the lamp ignites. 0.95
+  // when the page has scroll to spare, but clamped to just inside the
+  // progress the page can actually deliver at its natural scroll bottom —
+  // otherwise a short viewport leaves the arrival stranded past the end of
+  // the scrollbar and the lamp never delivers its words.
+  const arrivalRef = useRef(0.95);
 
   // The thread's path is measured, not styled: it must start at the trail
   // line's exact x (24px from the content edge on mobile, center on md+)
@@ -85,7 +91,8 @@ export function LampCta({ children, className }: LampCtaProps) {
     const el = descentRef.current;
     if (!el) return;
     const measure = () => {
-      const { width, height } = el.getBoundingClientRect();
+      const rect = el.getBoundingClientRect();
+      const { width, height } = rect;
       const startX = window.matchMedia("(min-width: 768px)").matches
         ? width / 2
         : 24;
@@ -94,10 +101,27 @@ export function LampCta({ children, className }: LampCtaProps) {
           height * 0.45
         }, ${width / 2} ${height}`
       );
+      // Mirror useScroll's ["start 0.5", "end 0.35"] mapping to find the
+      // progress reachable at max scroll, and keep the arrival a hair
+      // inside it. The floor guards against a mid-load mis-measure firing
+      // the lamp while the trail is still drawing.
+      const vh = window.innerHeight;
+      const top = rect.top + window.scrollY;
+      const rangeStart = top - vh * 0.5;
+      const rangeEnd = top + height - vh * 0.35;
+      const maxScroll = document.documentElement.scrollHeight - vh;
+      const atBottom = (maxScroll - rangeStart) / (rangeEnd - rangeStart);
+      arrivalRef.current = Math.min(0.95, Math.max(0.6, atBottom - 0.02));
     };
     measure();
     window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
+    // Late-loading images can change the document height, so re-measure
+    // once the page settles.
+    window.addEventListener("load", measure);
+    return () => {
+      window.removeEventListener("resize", measure);
+      window.removeEventListener("load", measure);
+    };
   }, []);
 
   useEffect(() => {
@@ -113,19 +137,35 @@ export function LampCta({ children, className }: LampCtaProps) {
   });
 
   useMotionValueEvent(scrollYProgress, "change", (v) => {
-    if (v >= 0.95) setLit(true);
+    if (v >= arrivalRef.current) {
+      setLit(true);
+    } else if (
+      v > 0.5 &&
+      window.innerHeight + window.scrollY >=
+        document.documentElement.scrollHeight - 2
+    ) {
+      // The document end always ignites, even if a layout shift left the
+      // measured arrival stale — the words can never strand below the fold.
+      setLit(true);
+    }
   });
   // Covers loading the page already scrolled past the arrival point.
   useEffect(() => {
-    if (mounted && scrollYProgress.get() >= 0.95) setLit(true);
+    if (mounted && scrollYProgress.get() >= arrivalRef.current) setLit(true);
   }, [mounted, scrollYProgress]);
 
   const drawn = mounted && !reducedMotion;
   const on = !mounted || lit;
 
-  // The junction node rides the thread's tip in over the draw's last
-  // stretch, so it reads as the thread's own endpoint arriving.
-  const nodeArrival = useTransform(scrollYProgress, [0.8, 1], [0, 1]);
+  // Draw and arrival share the ignition's clamp, so the thread completes
+  // and its endpoint node lands exactly as the lamp fires, whatever the
+  // viewport. The node rides the tip in over the draw's last stretch.
+  const threadDraw = useTransform(scrollYProgress, (v) =>
+    Math.min(1, Math.max(0, v / arrivalRef.current))
+  );
+  const nodeArrival = useTransform(scrollYProgress, (v) =>
+    Math.min(1, Math.max(0, (v - (arrivalRef.current - 0.2)) / 0.2))
+  );
 
   return (
     <div
@@ -161,7 +201,7 @@ export function LampCta({ children, className }: LampCtaProps) {
                 strokeWidth="1"
                 style={
                   drawn
-                    ? { pathLength: scrollYProgress, filter: THREAD_GLOW }
+                    ? { pathLength: threadDraw, filter: THREAD_GLOW }
                     : { filter: THREAD_GLOW }
                 }
               />

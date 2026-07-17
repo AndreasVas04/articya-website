@@ -30,7 +30,9 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
+    // suppressHydrationWarning: the home page's inline script adds a
+    // pre-hydration flag class to <html> before React attaches.
+    <html lang="en" suppressHydrationWarning>
       <body className={`${instrumentSans.variable} ${bricolage.variable}`}>
         <SiteHeader />
         <main>{children}</main>

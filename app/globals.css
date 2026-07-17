@@ -113,6 +113,18 @@ body {
   opacity: 0.05;
 }
 
+/* The home hero's static HTML carries its intro in the visible resting
+   state (no-JS and reduced-motion visitors keep it), but with JS enabled
+   hydration re-hides it a beat after first paint — a visible flash. An
+   inline script on the home page sets the flag before the hero parses so
+   the intro is hidden from the first frame; the hero removes the flag
+   once React's own hidden state has taken over. */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-js .hero-intro {
+    opacity: 0;
+  }
+}
+
 /* One-shot kick of the closing arc's junction node as the lamp ignites:
    a quick scale-and-glow pulse, then back to the trail dots' resting
    weight. The glow half runs on a separate blurred underlay so the dot's
