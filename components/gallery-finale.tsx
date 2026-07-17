@@ -47,9 +47,9 @@ const TARGET_SCALES = [4, 5, 6, 5, 6, 8, 9];
 
 // While the words are on screen each outer tile holds this offset from its
 // mosaic slot (x in vw, y in vh) — gathered loosely around the paragraph,
-// clear of the text block at both breakpoints — then settles into the slot
-// as the words hand off. The center tile has no offset; it arrives last,
-// where the words stood.
+// clear of the text block — then settles into the slot as the words hand
+// off. The center tile has no offset; it arrives last, where the words
+// stood.
 const GATHER: [number, number][] = [
   [0, 0],
   [0, -8],
@@ -58,6 +58,20 @@ const GATHER: [number, number][] = [
   [0, 9],
   [-6, 8],
   [6, -8],
+];
+
+// Below md the paragraph runs nearly full-width and full-height, so the ring
+// stages vertically instead: the wide and small tiles hold in bands above
+// and below the words, and the tall middle-row tiles wait just offscreen
+// (their slots sit beside the text) and sweep in as the ring closes.
+const GATHER_COMPACT: [number, number][] = [
+  [0, 0],
+  [0, -11.5],
+  [-24, 0],
+  [24, 0],
+  [0, 9],
+  [-6, 8],
+  [0, -11.5],
 ];
 
 // The story's finale: the photographs from the scenes above rise around the
@@ -71,6 +85,7 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
   const container = useRef<HTMLElement | null>(null);
   const reducedMotion = useReducedMotion();
   const [mounted, setMounted] = useState(false);
+  const [compact, setCompact] = useState(false);
 
   // One travel-based timeline (section top at viewport bottom → section
   // bottom at viewport top), so the words are already arriving while the
@@ -84,16 +99,25 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
 
   // Text: three groups complete shortly after the pin engages while the
   // outer tiles gather, hold among them, then hand the frame over as the
-  // ring closes.
+  // ring closes. On compact screens the words dissolve completely before
+  // the ring starts moving, so the closing tiles never cross live text.
   const seg = 0.18 / (groups.length + 0.5);
+  const [fadeFrom, fadeTo] = compact ? [0.4, 0.46] : [0.42, 0.5];
   const textOut = useTransform(
-    () => 1 - stageWindow(stage.get(), 0.42, 0.5)
+    () => 1 - stageWindow(stage.get(), fadeFrom, fadeTo)
   );
   const textDrift = useTransform(
-    () => -24 * stageWindow(stage.get(), 0.42, 0.5)
+    () => -24 * stageWindow(stage.get(), fadeFrom, fadeTo)
   );
 
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    const query = window.matchMedia("(min-width: 768px)");
+    const update = () => setCompact(!query.matches);
+    update();
+    setMounted(true);
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  }, []);
 
   // Resting state: the paragraph in full, then the same photos as a plain
   // grid. No pinning, no scroll-linked transforms.
@@ -130,7 +154,10 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
       ref={container}
       className="relative h-[300vh] bg-plaster-muted md:h-[440vh]"
     >
-      <div className="sticky top-0 h-svh overflow-hidden">
+      <div
+        key={compact ? "compact" : "wide"}
+        className="sticky top-0 h-svh overflow-hidden"
+      >
         {/* The same pool of daylight the scenes sit in, under the gathering
             mosaic. */}
         <div aria-hidden="true" className="plaster-light absolute inset-0" />
@@ -158,6 +185,7 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
             index={index}
             src={src}
             alt={alt}
+            compact={compact}
           />
         ))}
       </div>
@@ -196,28 +224,41 @@ function FinaleTile({
   index,
   src,
   alt,
+  compact,
 }: {
   stage: ReturnType<typeof useScroll>["scrollYProgress"];
   index: number;
   src: string;
   alt: string;
+  compact: boolean;
 }) {
   // Outer tiles rise staggered into their gathered offsets while the words
   // complete; the ring settles into the mosaic as the words hand over, the
   // center tile arrives where they stood, and the zoom takes the center
-  // tile past full-bleed.
+  // tile past full-bleed. Compact screens sequence the handoff strictly —
+  // the ring holds until the words have fully dissolved and the center tile
+  // waits for the settle — and the band tiles above the words rise in from
+  // above so their entrance also stays clear of the text.
   const center = index === 0;
-  const inStart = center ? 0.44 : 0.1 + (index - 1) * 0.015;
+  const inStart = center
+    ? compact
+      ? 0.465
+      : 0.44
+    : 0.1 + (index - 1) * 0.015;
   const inEnd = inStart + (center ? 0.08 : 0.1);
-  const [gatherX, gatherY] = GATHER[index];
+  const [gatherX, gatherY] = (compact ? GATHER_COMPACT : GATHER)[index];
+  const [settleFrom, settleTo] = compact ? [0.46, 0.545] : [0.42, 0.54];
+  const riseDirection = compact && gatherY < 0 ? -1 : 1;
 
   const opacity = useTransform(() => stageWindow(stage.get(), inStart, inEnd));
   const x = useTransform(
-    () => `${gatherX * (1 - stageWindow(stage.get(), 0.42, 0.54))}vw`
+    () =>
+      `${gatherX * (1 - stageWindow(stage.get(), settleFrom, settleTo))}vw`
   );
   const y = useTransform(() => {
-    const rise = 6 * (1 - stageWindow(stage.get(), inStart, inEnd));
-    const settle = 1 - stageWindow(stage.get(), 0.42, 0.54);
+    const rise =
+      riseDirection * 6 * (1 - stageWindow(stage.get(), inStart, inEnd));
+    const settle = 1 - stageWindow(stage.get(), settleFrom, settleTo);
     return `${gatherY * settle + rise}vh`;
   });
   const scale = useTransform(
