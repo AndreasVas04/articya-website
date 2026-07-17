@@ -38,10 +38,12 @@ export default function HomePage() {
       <section className="relative overflow-clip bg-pine-950 text-plaster-bright">
         {/* The environment behind the clearing: our own canopy photograph
             sunk under the pine scrim — felt more than seen, strongest behind
-            the heading and numerals, gone before the panels. */}
+            the heading and numerals, gone before the panels. The top fade
+            keeps it out of the hero seam so the two grounds meet as one
+            surface. */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 top-0 h-[120vh] [mask-image:radial-gradient(ellipse_90%_75%_at_50%_28%,black_25%,transparent_92%)]"
+          className="pointer-events-none absolute inset-x-0 top-0 h-[120vh] [mask-composite:intersect] [mask-image:linear-gradient(to_bottom,transparent,black_16rem),radial-gradient(ellipse_90%_75%_at_50%_28%,black_25%,transparent_92%)]"
         >
           <Image
             src={withBasePath("/images/hero-2.jpg")}
@@ -51,24 +53,26 @@ export default function HomePage() {
             className="scale-110 object-cover object-[50%_30%] opacity-20 blur-2xl brightness-50 saturate-[0.6]"
           />
         </div>
+        {/* The lamp's light falls down the section from the seam, shading
+            the ground from lit to deep instead of leaving it flat. Painted
+            before the halo so the layers stack in the same order as the
+            hero's side of the seam and the two halves composite identically. */}
+        <div
+          aria-hidden="true"
+          className="lamp-falloff pointer-events-none absolute inset-x-0 top-0 h-[80vh]"
+        />
         {/* Mirrors the lower half of the hero's halo, which the hero clips
             at the seam — together they read as one light. */}
         <div
           aria-hidden="true"
           className="pointer-events-none absolute left-1/2 top-0 h-40 w-[42rem] max-w-[90vw] -translate-x-1/2 -translate-y-1/2 rounded-full bg-resin/30 blur-[80px]"
         />
-        {/* The lamp's light falls down the section from the seam, shading
-            the ground from lit to deep instead of leaving it flat. */}
-        <div
-          aria-hidden="true"
-          className="lamp-falloff pointer-events-none absolute inset-x-0 top-0 h-[80vh]"
-        />
         <div
           aria-hidden="true"
           className="film-grain pointer-events-none absolute inset-0"
         />
 
-        <div className="relative mx-auto max-w-6xl px-4 pt-16 md:pt-28">
+        <div className="relative mx-auto max-w-6xl px-4 pt-10 md:pt-16">
           {/* The globe is the living center of the clearing: text left, the
               lit world right, the stats ledger reading under it — with the
               countries column landing directly beneath the globe, since the
@@ -101,7 +105,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="mt-8 grid border-y border-pine-800 md:mt-20 md:grid-cols-3 md:divide-x md:divide-pine-800 max-md:divide-y max-md:divide-pine-800">
+          <div className="mt-8 grid border-y border-pine-800 md:mt-12 md:grid-cols-3 md:divide-x md:divide-pine-800 max-md:divide-y max-md:divide-pine-800">
             {whatWeDo.stats.map((stat, i) => (
               <Reveal key={stat.label} delayMs={i * 150}>
                 <StatCounter num={stat.num} label={stat.label} />

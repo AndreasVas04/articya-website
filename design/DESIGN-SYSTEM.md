@@ -191,7 +191,7 @@ section. Nothing else may put a gradient or texture on a ground:
 |---|---|---|
 | `.dusk-light` | Top-down wash of `pine-900` fading out — the sky a shade lighter than the ground it settles into | Top of dark sections and inner-page heroes |
 | `.dusk-ambient` | Centered radial pocket of `pine-900` | Behind content on long dark stretches |
-| `.lamp-falloff` | The seam lamp given direction: a warm whisper directly under the halo inside a wider `pine-800` light dome, shading the ground from lit to deep | Below the home hero seam only |
+| `.lamp-falloff` | The seam lamp given direction: a warm whisper directly under the halo inside a wider `pine-800` light dome, shading the ground from lit to deep | Astride the home hero seam only — mirrored above it inside the hero, falling away below it, so the two grounds meet with no edge |
 | `.dusk-scrim` | Graded photo wash — most open where the lamp halo sits, near-solid pine at the edges and base of the frame | Inner-page hero photographs |
 | `.photo-vignette` | Edges falling toward `pine-950` | Inside photographic frames and hero photos only |
 | `.film-grain` | Fine tiled SVG grain at 5% opacity, killing the flat digital-paint feel | Over dark grounds and photographic frames |
@@ -201,7 +201,8 @@ section. Nothing else may put a gradient or texture on a ground:
 **Environment photographs.** A dark stretch may sink one of our own
 photographs into its ground as atmosphere: blurred (≥ 14px), desaturated,
 darkened, at ≤ 20% opacity, and masked so it dissolves into pure `pine-950`
-before the next stretch begins — felt more than seen. The home page carries
+at both ends of its stretch — it never touches a seam, and is felt more
+than seen. The home page carries
 two: the forest canopy behind the "What we do" clearing, and a faint band of
 mountains over water behind the gains trail, faded out before the closing
 line so the glow zone keeps its measured contrast. Always our own outdoor

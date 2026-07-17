@@ -188,6 +188,13 @@ const ScrollExpandMedia = ({
           <div className="absolute inset-0 bg-pine-950/75" />
         </motion.div>
 
+        {/* Upper half of the seam's light dome, mirrored from the section
+            below so the two grounds shade into each other with no edge. */}
+        <div
+          aria-hidden="true"
+          className="lamp-falloff pointer-events-none absolute inset-x-0 bottom-0 z-0 h-[80vh] -scale-y-100"
+        />
+
         <div
           aria-hidden="true"
           className="film-grain pointer-events-none absolute inset-0 z-[1]"
