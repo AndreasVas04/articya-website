@@ -5,6 +5,7 @@ import { Reveal } from "@/components/reveal";
 import { OfferPanel } from "@/components/offer-panel";
 import { GainTrail } from "@/components/gain-trail";
 import { DottedGlobe } from "@/components/ui/dotted-globe";
+import { LampCta } from "@/components/ui/lamp";
 import { ButtonLink } from "@/components/ui/button";
 import { hero, whatWeDo, gain } from "@/content/home";
 import { withBasePath } from "@/lib/utils";
@@ -168,35 +169,32 @@ export default function HomePage() {
           <div className="mt-12 md:mt-16">
             <GainTrail items={gain.items} />
           </div>
-
-          <div className="relative mx-auto max-w-3xl text-center">
-            {/* The glow belongs to the showpiece line, not the whole block:
-                centered behind the highlight so the supporting paragraph
-                above stays out of its bright core. */}
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute left-1/2 top-[62%] h-48 w-[36rem] max-w-full -translate-x-1/2 -translate-y-1/2 rounded-full bg-resin/20 blur-[100px]"
-            />
-            <Reveal className="relative">
-              <p className="text-xl leading-[1.55] text-plaster-muted">
-                {gain.text}
-              </p>
-              <p className="mt-8 font-display text-[clamp(2.25rem,5vw,3.75rem)] font-semibold leading-[1.15] tracking-[-0.01em] text-resin [text-shadow:0_0_30px_color-mix(in_srgb,var(--color-resin)_30%,transparent)]">
-                {gain.highlight}
-              </p>
-            </Reveal>
-            <Reveal delayMs={200} className="relative">
-              <div className="mt-10">
-                <ButtonLink
-                  href={gain.cta.href}
-                  className="bg-resin text-pine-950 hover:bg-resin-light"
-                >
-                  {gain.cta.label}
-                </ButtonLink>
-              </div>
-            </Reveal>
-          </div>
         </div>
+      </section>
+
+      {/* The destination the page has been descending toward: the source of
+          the light that has followed the visitor down — hero falloff, globe
+          dots, trail nodes — finally shown as a lamp, delivering the closing
+          words inside its glow. The ground stays the same flat pine as the
+          trail's end above and the footer below, so the three meet without a
+          seam. */}
+      <section className="relative bg-pine-950 text-plaster-bright">
+        <LampCta>
+          <p className="max-w-2xl translate-y-6 text-center text-xl leading-[1.55] text-plaster-muted opacity-0 duration-[700ms] ease-out-quart group-data-[lit]:translate-y-0 group-data-[lit]:opacity-100 group-data-[lit]:transition-[opacity,transform] group-data-[lit]:delay-100 motion-reduce:translate-y-0">
+            {gain.text}
+          </p>
+          <p className="mt-8 max-w-3xl translate-y-6 text-center font-display text-[clamp(2.25rem,5vw,3.75rem)] font-semibold leading-[1.15] tracking-[-0.01em] text-resin opacity-0 duration-[700ms] ease-out-quart [text-shadow:0_0_30px_color-mix(in_srgb,var(--color-resin)_30%,transparent)] group-data-[lit]:translate-y-0 group-data-[lit]:opacity-100 group-data-[lit]:transition-[opacity,transform] group-data-[lit]:delay-200 motion-reduce:translate-y-0">
+            {gain.highlight}
+          </p>
+          <div className="mt-10 translate-y-6 opacity-0 duration-[700ms] ease-out-quart group-data-[lit]:translate-y-0 group-data-[lit]:opacity-100 group-data-[lit]:transition-[opacity,transform] group-data-[lit]:delay-[400ms] motion-reduce:translate-y-0">
+            <ButtonLink
+              href={gain.cta.href}
+              className="bg-resin text-pine-950 hover:bg-resin-light"
+            >
+              {gain.cta.label}
+            </ButtonLink>
+          </div>
+        </LampCta>
       </section>
     </>
   );

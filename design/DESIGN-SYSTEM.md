@@ -165,11 +165,12 @@ eye down the dark toward the closing line:
 
 1. **Hero** — the lamp beam and its halo.
 2. **Stats** — the monumental numerals glow resin out of the dark.
-3. **Gains trail** — the drawn line and its nodes, ending in the glow behind
-   "Your adventure starts here."
+3. **Gains trail** — the drawn line and its nodes.
 4. **Globe section** — the globe's dots and arcs read as lit points of the
    same lamp.
-5. **Final CTA** — a resin glow behind the primary button.
+5. **Final CTA** — the lamp itself, the source of the whole thread: its line,
+   cone and glow deliver "Your adventure starts here." and the primary
+   button.
 
 And on the inner pages, exactly one placement:
 
@@ -270,6 +271,8 @@ integration time.
 | Lamp | `cyan-500` glow | `resin` |
 | Lamp | `cyan-400` glow | `resin-light` |
 | Lamp | `white` headline | `plaster-bright` |
+| Lamp | `slate-950` cover bars shaping the cone | none — the cone halves fade to transparency via `mask-image`; the two bars that remain (above the line, under the cone) are `pine-950` on the section's flat ground |
+| Lamp | demo headline (`slate-300`→`slate-500` gradient text) | none — stripped; the section carries the frozen closing content in the type scale's own styles |
 
 The globe and lamp share `resin`/`resin-light` deliberately — they are the
 same light source (see signature element).
