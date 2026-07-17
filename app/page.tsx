@@ -34,8 +34,14 @@ export default function HomePage() {
       </ScrollExpandMedia>
 
       {/* overflow-clip (not hidden) so the offer panels' sticky frames can
-          pin against the viewport. */}
-      <section className="relative overflow-clip bg-pine-950 text-plaster-bright">
+          pin against the viewport. The transform rides the hero's handoff:
+          for the last scroll segment the whole section travels up over the
+          receding hero, then the shift returns to zero and the section rests
+          in normal flow (see scroll-expansion-hero). */}
+      <section
+        className="relative overflow-clip bg-pine-950 text-plaster-bright"
+        style={{ transform: "translateY(var(--hero-handoff-shift, 0px))" }}
+      >
         {/* The environment behind the clearing: our own canopy photograph
             sunk under the pine scrim — felt more than seen, strongest behind
             the heading and numerals, gone before the panels. The top fade
