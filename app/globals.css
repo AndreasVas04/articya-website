@@ -125,6 +125,18 @@ body {
   }
 }
 
+/* FAQ answers rise softly into place as their details element opens; the
+   reduced-motion rule below collapses the duration. */
+@keyframes accordion-open {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+details[open] .accordion-answer {
+  animation: accordion-open 400ms var(--ease-out-quart);
+}
+
 /* One-shot kick of the closing arc's junction node as the lamp ignites:
    a quick scale-and-glow pulse, then back to the trail dots' resting
    weight. The glow half runs on a separate blurred underlay so the dot's
