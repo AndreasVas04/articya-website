@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import { cn, withBasePath } from "@/lib/utils";
@@ -8,16 +8,6 @@ import { cn, withBasePath } from "@/lib/utils";
 const EASE_IN_OUT_CUBIC: [number, number, number, number] = [0.65, 0, 0.35, 1];
 const SLIDE_INTERVAL_MS = 4500;
 const EXPAND_KEYS = ["ArrowDown", "PageDown", "End", " "];
-const REWIND_KEYS = ["ArrowUp", "PageUp", "Home"];
-
-// The handoff segment costs noticeably less scroll than the expansion —
-// it is an arrival, not a second pinned epic.
-const WHEEL_HANDOFF_RATE = 0.0016;
-const TOUCH_HANDOFF_RATE = 0.0028;
-// Momentum still arriving this soon after the handoff lands is the tail of
-// the gesture that completed it; it gets absorbed so the landing holds.
-const SETTLE_GAP_MS = 160;
-const SETTLE_MAX_MS = 1000;
 
 interface ScrollExpandMediaProps {
   slides: string[];
@@ -42,19 +32,6 @@ const ScrollExpandMedia = ({
   const [isMobile, setIsMobile] = useState(false);
   const [activeSlide, setActiveSlide] = useState(0);
   const [mounted, setMounted] = useState(false);
-  // Handoff: once the media is fully expanded, further scrolling drives the
-  // next section's arrival over the hero (via --hero-handoff-shift on the
-  // document root) instead of free-scrolling a gap. At 1 the page snaps its
-  // real scroll position to the section top and releases into native
-  // scrolling. State is mirrored in refs so the handlers, the release and
-  // the scroll pin never act on a stale phase.
-  const [handoff, setHandoff] = useState(0);
-  const handoffRef = useRef(0);
-  const handedOffRef = useRef(false);
-  const settleLockRef = useRef(false);
-  const lastWheelAtRef = useRef(0);
-  const releasedAtRef = useRef(0);
-  const rootRef = useRef<HTMLDivElement | null>(null);
 
   // Under reduced motion the component renders its resting state: media
   // expanded, content visible, no scroll hijacking, first slide only. The
@@ -65,61 +42,10 @@ const ScrollExpandMedia = ({
 
   useEffect(() => {
     setMounted(true);
-    return () => {
-      document.documentElement.style.removeProperty("--hero-handoff-shift");
-    };
   }, []);
 
   useEffect(() => {
-    if (reducedMotion) {
-      document.documentElement.style.removeProperty("--hero-handoff-shift");
-      return;
-    }
-
-    // The handoff travel: exactly the hero's height, so landing puts the
-    // next section's top at the top of the viewport.
-    const travel = () =>
-      rootRef.current?.offsetHeight ?? window.innerHeight;
-
-    const setHandoffProgress = (value: number) => {
-      handoffRef.current = value;
-      setHandoff(value);
-      document.documentElement.style.setProperty(
-        "--hero-handoff-shift",
-        `${-value * travel()}px`
-      );
-    };
-
-    // Landing: clear the shift and move the real scroll position to the
-    // section top in the same task, so the composition holds pixel-for-pixel
-    // while native scrolling takes over.
-    const releaseHandoff = () => {
-      handedOffRef.current = true;
-      handoffRef.current = 1;
-      setHandoff(1);
-      settleLockRef.current = true;
-      releasedAtRef.current = performance.now();
-      document.documentElement.style.setProperty("--hero-handoff-shift", "0px");
-      window.scrollTo(0, travel());
-    };
-
-    // The reverse of the landing: swap the native scroll offset back into
-    // shift, again within one paint, then let deltas rewind the arrival.
-    const reenterHandoff = () => {
-      handedOffRef.current = false;
-      const progress = Math.min(window.scrollY / travel(), 1);
-      window.scrollTo(0, 0);
-      setHandoffProgress(progress);
-    };
-
-    const applyHandoff = (delta: number) => {
-      const next = Math.min(Math.max(handoffRef.current + delta, 0), 1);
-      if (next >= 1) {
-        releaseHandoff();
-      } else {
-        setHandoffProgress(next);
-      }
-    };
+    if (reducedMotion) return;
 
     const expandInstantly = () => {
       setScrollProgress(1);
@@ -139,62 +65,24 @@ const ScrollExpandMedia = ({
     };
 
     const handleWheel = (e: globalThis.WheelEvent) => {
-      const now = e.timeStamp;
-      if (!mediaFullyExpanded) {
+      if (mediaFullyExpanded && e.deltaY < 0 && window.scrollY <= 5) {
+        setMediaFullyExpanded(false);
+        e.preventDefault();
+      } else if (!mediaFullyExpanded) {
         e.preventDefault();
         applyProgress(e.deltaY * 0.0009);
-      } else if (!handedOffRef.current) {
-        if (e.deltaY < 0 && handoffRef.current <= 0) {
-          if (window.scrollY <= 5) {
-            setMediaFullyExpanded(false);
-            e.preventDefault();
-          }
-        } else {
-          e.preventDefault();
-          applyHandoff(e.deltaY * WHEEL_HANDOFF_RATE);
-        }
-      } else if (
-        settleLockRef.current &&
-        e.deltaY > 0 &&
-        now - lastWheelAtRef.current <= SETTLE_GAP_MS &&
-        now - releasedAtRef.current <= SETTLE_MAX_MS
-      ) {
-        e.preventDefault();
-      } else {
-        settleLockRef.current = false;
-        if (e.deltaY < 0 && window.scrollY <= travel() + 5) {
-          e.preventDefault();
-          reenterHandoff();
-        } else if (e.deltaY > 0 && window.scrollY < travel() - 5) {
-          // Only reachable by dragging the scrollbar into the seam; fold
-          // the position back into the choreography instead of free-falling
-          // through it.
-          e.preventDefault();
-          reenterHandoff();
-        }
       }
-      lastWheelAtRef.current = now;
     };
 
-    // Keyboard escape hatch: each phase resolves in one step so the
-    // wheel/touch lock can never trap keyboard or switch-access users.
+    // Keyboard escape hatch: expand in one step so the wheel/touch lock can
+    // never trap keyboard or switch-access users.
     const handleKeyDown = (e: globalThis.KeyboardEvent) => {
+      if (mediaFullyExpanded) return;
       const target = e.target as HTMLElement | null;
       if (target?.closest("a, button, input, select, textarea")) return;
-      if (!mediaFullyExpanded) {
-        if (EXPAND_KEYS.includes(e.key)) {
-          e.preventDefault();
-          expandInstantly();
-        }
-        return;
-      }
-      if (handedOffRef.current) return;
       if (EXPAND_KEYS.includes(e.key)) {
         e.preventDefault();
-        releaseHandoff();
-      } else if (REWIND_KEYS.includes(e.key) && handoffRef.current > 0) {
-        e.preventDefault();
-        setHandoffProgress(0);
+        expandInstantly();
       }
     };
 
@@ -208,51 +96,26 @@ const ScrollExpandMedia = ({
       const touchY = e.touches[0].clientY;
       const deltaY = touchStartY - touchY;
 
-      if (!mediaFullyExpanded) {
+      if (mediaFullyExpanded && deltaY < -20 && window.scrollY <= 5) {
+        setMediaFullyExpanded(false);
+        e.preventDefault();
+      } else if (!mediaFullyExpanded) {
+        // Once progress hits 1 this branch stops matching, so touch events
+        // are no longer intercepted and native scrolling resumes.
         e.preventDefault();
         const scrollFactor = deltaY < 0 ? 0.008 : 0.005;
         applyProgress(deltaY * scrollFactor);
         setTouchStartY(touchY);
-      } else if (!handedOffRef.current) {
-        if (deltaY < -20 && handoffRef.current <= 0 && window.scrollY <= 5) {
-          setMediaFullyExpanded(false);
-          e.preventDefault();
-        } else if (deltaY !== 0) {
-          e.preventDefault();
-          applyHandoff(deltaY * TOUCH_HANDOFF_RATE);
-          setTouchStartY(touchY);
-        }
-      } else if (settleLockRef.current && deltaY > 0) {
-        // The rest of the swipe that completed the handoff; the lock lifts
-        // when the finger comes off.
-        e.preventDefault();
-      } else {
-        settleLockRef.current = false;
-        if (deltaY < -20 && window.scrollY <= travel() + 5) {
-          e.preventDefault();
-          reenterHandoff();
-          setTouchStartY(touchY);
-        }
       }
     };
 
     const handleTouchEnd = () => {
       setTouchStartY(0);
-      settleLockRef.current = false;
     };
 
     const handleScroll = () => {
-      // The page holds still through both driven phases; scroll only moves
-      // once the handoff has landed.
-      if (!mediaFullyExpanded || !handedOffRef.current) {
+      if (!mediaFullyExpanded) {
         window.scrollTo(0, 0);
-        return;
-      }
-      if (window.scrollY <= 0) {
-        // Back at the top by native means (keyboard, scrollbar): rearm the
-        // handoff so the next gesture is choreographed again.
-        handedOffRef.current = false;
-        setHandoffProgress(0);
       }
     };
 
@@ -306,10 +169,7 @@ const ScrollExpandMedia = ({
   const restOfTitle = title ? title.split(" ").slice(1).join(" ") : "";
 
   return (
-    // isolate keeps the hero's internal z layers inside one stacking
-    // context, so the arriving section (later in the document) always
-    // paints over the hero during the handoff.
-    <div ref={rootRef} className="isolate overflow-hidden bg-pine-950">
+    <div className="overflow-hidden bg-pine-950">
       <section className="relative flex min-h-[100dvh] flex-col items-center justify-start overflow-hidden">
         <motion.div
           className="absolute inset-0 z-0"
@@ -340,19 +200,7 @@ const ScrollExpandMedia = ({
           className="film-grain pointer-events-none absolute inset-0 z-[1]"
         />
 
-        {/* While the next section arrives over it, the hero recedes: a slow
-            upward drift, a slight shrink and a dim, so the handoff reads as
-            one composed move with depth rather than a slide-over. */}
-        <motion.div
-          className="relative z-10 mx-auto flex w-full flex-col items-center"
-          initial={false}
-          animate={{
-            y: `${-6 * handoff}vh`,
-            scale: 1 - 0.04 * handoff,
-            opacity: 1 - 0.55 * handoff,
-          }}
-          transition={{ duration: 0.2, ease: EASE_IN_OUT_CUBIC }}
-        >
+        <div className="relative z-10 mx-auto flex w-full flex-col items-center">
           <div className="relative flex h-[100dvh] w-full flex-col items-center justify-center">
             <div
               className="absolute left-1/2 top-1/2 z-0 -translate-x-1/2 -translate-y-1/2"
@@ -471,7 +319,7 @@ const ScrollExpandMedia = ({
             </div>
           </div>
 
-        </motion.div>
+        </div>
 
         <div
           aria-hidden="true"

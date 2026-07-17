@@ -34,14 +34,8 @@ export default function HomePage() {
       </ScrollExpandMedia>
 
       {/* overflow-clip (not hidden) so the offer panels' sticky frames can
-          pin against the viewport. The transform rides the hero's handoff:
-          for the last scroll segment the whole section travels up over the
-          receding hero, then the shift returns to zero and the section rests
-          in normal flow (see scroll-expansion-hero). */}
-      <section
-        className="relative overflow-clip bg-pine-950 text-plaster-bright"
-        style={{ transform: "translateY(var(--hero-handoff-shift, 0px))" }}
-      >
+          pin against the viewport. */}
+      <section className="relative overflow-clip bg-pine-950 text-plaster-bright">
         {/* The environment behind the clearing: our own canopy photograph
             sunk under the pine scrim — felt more than seen, strongest behind
             the heading and numerals, gone before the panels. The top fade
@@ -78,13 +72,13 @@ export default function HomePage() {
           className="film-grain pointer-events-none absolute inset-0"
         />
 
-        <div className="relative mx-auto max-w-6xl px-4 pt-10 md:pt-16">
+        <div className="relative mx-auto max-w-6xl px-4 pt-4 md:pt-6">
           {/* The globe is the living center of the clearing: text left, the
               lit world right, the stats ledger reading under it — with the
               countries column landing directly beneath the globe, since the
               globe is that number made visible. The reveals stagger down the
               same path the eye takes: title, lead, globe, then the numerals. */}
-          <div className="md:grid md:grid-cols-12 md:items-center md:gap-x-12">
+          <div className="md:grid md:grid-cols-12 md:items-start md:gap-x-12">
             <div className="md:col-span-5">
               <Reveal>
                 <span aria-hidden="true" className="block h-1 w-16 bg-resin" />
