@@ -6,6 +6,7 @@ import {
   useMotionValueEvent,
   useReducedMotion,
   useScroll,
+  useTransform,
 } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -20,6 +21,10 @@ const CONE_RIGHT =
 // The descending thread carries the trail line's glow with it.
 const THREAD_GLOW =
   "drop-shadow(0 0 2px color-mix(in srgb, var(--color-resin) 80%, transparent)) drop-shadow(0 0 18px color-mix(in srgb, var(--color-resin) 55%, transparent))";
+
+// The blade is brightest where the node feeds it, decaying toward its ends.
+const BLADE_HOTSPOT =
+  "linear-gradient(to right, transparent, color-mix(in srgb, var(--color-plaster-bright) 85%, transparent) 50%, transparent)";
 
 interface LampCtaProps {
   children: React.ReactNode;
@@ -40,12 +45,12 @@ interface LampCtaProps {
 // mount. Children opt into the ignition via group-data-[lit] classes.
 //
 // The cone halves fade to transparency with mask-image instead of the stock
-// component's opaque cover bars, so they composite on any ground. The two
-// remaining opaque layers (the bar above the line and the soft flattener at
-// the cone's base) are pine-950 on the section's flat pine-950 ground, and
-// the section's film grain is painted over them, so neither can read as a
-// box. No overflow clip here — the parent section clips, so the halo's
-// spill dies naturally instead of cutting a line at the component's edge.
+// component's opaque cover bars, so they composite on any ground. The one
+// remaining opaque layer (the bar above the line) is pine-950 on the
+// section's flat pine-950 ground, and the section's film grain is painted
+// over it, so it can never read as a box. No overflow clip here — the
+// parent section clips, so the halo's spill dies naturally instead of
+// cutting a line at the component's edge.
 export function LampCta({ children, className }: LampCtaProps) {
   const descentRef = useRef<HTMLDivElement | null>(null);
   const reducedMotion = useReducedMotion();
@@ -99,12 +104,16 @@ export function LampCta({ children, className }: LampCtaProps) {
   const drawn = mounted && !reducedMotion;
   const on = !mounted || lit;
 
+  // The junction node rides the thread's tip in over the draw's last
+  // stretch, so it reads as the thread's own endpoint arriving.
+  const nodeArrival = useTransform(scrollYProgress, [0.8, 1], [0, 1]);
+
   return (
     <div
       data-lit={on ? "" : undefined}
       className={cn("group relative bg-pine-950", className)}
     >
-      <div className="relative mx-auto flex w-full max-w-6xl flex-col items-center px-4 pb-24 md:pb-32">
+      <div className="relative mx-auto flex w-full max-w-6xl flex-col items-center px-4 pb-16 md:pb-20">
         {/* The descent: the trail's thread crossing from the section above
             down onto the lamp line. z-10 lifts it over the stage's spill
             bar. Before the path is measured, a plain centered line keeps
@@ -146,10 +155,15 @@ export function LampCta({ children, className }: LampCtaProps) {
             so the section can size to its content instead of a full
             screen. */}
         <div aria-hidden="true" className="relative isolate h-56 w-full">
+          {/* The cone halves reach past the text zone: near-full strength
+              above the paragraph, a long masked fade through the headline,
+              gone by the button — the light falls on the words, dimmed to
+              hold the composite ceiling (no pixel behind text above
+              pine-800 lightness). */}
           <div
             style={{ backgroundImage: CONE_LEFT }}
             className={cn(
-              "absolute right-1/2 top-0 h-56 [mask-composite:intersect] [mask-image:linear-gradient(to_top,transparent,black_71%),linear-gradient(to_right,transparent,black_33%)]",
+              "absolute right-1/2 top-0 h-80 [mask-composite:intersect] [mask-image:linear-gradient(to_top,transparent_6%,rgb(0_0_0/0.22)_57.5%,rgb(0_0_0/0.5)_70%,black_82%),linear-gradient(to_right,transparent,black_33%)]",
               lit &&
                 "transition-[width,opacity] duration-[700ms] ease-in-out-cubic",
               on
@@ -160,7 +174,7 @@ export function LampCta({ children, className }: LampCtaProps) {
           <div
             style={{ backgroundImage: CONE_RIGHT }}
             className={cn(
-              "absolute left-1/2 top-0 h-56 [mask-composite:intersect] [mask-image:linear-gradient(to_top,transparent,black_71%),linear-gradient(to_left,transparent,black_33%)]",
+              "absolute left-1/2 top-0 h-80 [mask-composite:intersect] [mask-image:linear-gradient(to_top,transparent_6%,rgb(0_0_0/0.22)_57.5%,rgb(0_0_0/0.5)_70%,black_82%),linear-gradient(to_left,transparent,black_33%)]",
               lit &&
                 "transition-[width,opacity] duration-[700ms] ease-in-out-cubic",
               on
@@ -168,9 +182,6 @@ export function LampCta({ children, className }: LampCtaProps) {
                 : "w-[8.5rem] opacity-50 md:w-[15rem]"
             )}
           />
-          {/* Soft pine shadow across the cone's base, easing the light into
-              the ground before the text reads. */}
-          <div className="absolute left-1/2 top-36 h-56 w-full -translate-x-1/2 scale-x-150 bg-pine-950 blur-2xl" />
           {/* Ambient halo sitting on the line. The fade lives on a padded
               wrapper so it shades the blur's spill instead of clipping it at
               the element box, and the bloom dies inside the headroom — on
@@ -188,21 +199,46 @@ export function LampCta({ children, className }: LampCtaProps) {
               on ? "w-40 md:w-64" : "w-20 md:w-32"
             )}
           />
-          {/* The lamp line itself. */}
+          {/* The lamp line itself, brightest at its center where the node
+              feeds it. */}
           <div
+            style={{ backgroundImage: BLADE_HOTSPOT }}
             className={cn(
               "absolute left-1/2 top-0 z-50 h-0.5 -translate-x-1/2 -translate-y-1/2 bg-resin-light",
               lit && "transition-[width] duration-[700ms] ease-in-out-cubic",
               on ? "w-[17rem] md:w-[30rem]" : "w-[8.5rem] md:w-[15rem]"
             )}
           />
+          {/* The trail's final stop: a node in the gains' dot vocabulary,
+              landing where the thread meets the blade. It arrives as the
+              thread's endpoint and kicks once at ignition — the bloom
+              visibly leaves it. */}
+          <span className="absolute left-1/2 top-0 z-50 -translate-x-1/2 -translate-y-1/2">
+            <motion.span
+              className="relative block"
+              style={drawn ? { opacity: nodeArrival, scale: nodeArrival } : undefined}
+            >
+              <span
+                className={cn(
+                  "absolute -inset-2 rounded-full bg-resin opacity-0 blur-md",
+                  lit && "animate-[node-flare-glow_400ms_var(--ease-out-quart)]"
+                )}
+              />
+              <span
+                className={cn(
+                  "relative block size-3 rounded-full bg-resin shadow-[0_0_40px_6px_color-mix(in_srgb,var(--color-resin)_45%,transparent)] ring-4 ring-pine-950",
+                  lit && "animate-[node-flare_400ms_var(--ease-out-quart)]"
+                )}
+              />
+            </motion.span>
+          </span>
           {/* Swallows the halo's spill above the line; the line (z-50) and
               a whisper of the ambient halo stay above it, as in the stock
               layering. The descent thread rides over it at z-10. */}
           <div className="absolute bottom-full left-1/2 z-40 h-44 w-[150%] -translate-x-1/2 bg-pine-950" />
         </div>
 
-        <div className="relative z-10 -mt-24 flex w-full flex-col items-center">
+        <div className="relative z-10 -mt-24 flex w-full flex-col items-center md:-mt-16">
           {children}
         </div>
       </div>

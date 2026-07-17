@@ -113,6 +113,21 @@ body {
   opacity: 0.05;
 }
 
+/* One-shot kick of the closing arc's junction node as the lamp ignites:
+   a quick scale-and-glow pulse, then back to the trail dots' resting
+   weight. The glow half runs on a separate blurred underlay so the dot's
+   pine ring never flickers. */
+@keyframes node-flare {
+  50% {
+    transform: scale(1.75);
+  }
+}
+@keyframes node-flare-glow {
+  50% {
+    opacity: 0.7;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
