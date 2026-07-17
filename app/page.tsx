@@ -129,64 +129,63 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="relative overflow-hidden bg-pine-950 px-4 py-16 text-plaster-bright md:py-24">
-        {/* A pocket of ambient dusk light around the trail, so the closing
-            stretch sits in a clearing rather than on a flat ground. */}
-        <div
-          aria-hidden="true"
-          className="dusk-ambient pointer-events-none absolute inset-0"
-        />
-        {/* Faint distance behind the trail: mountains over water from our
-            own hikes, blurred into the dusk and faded out well before the
-            closing line so the glow zone keeps its measured contrast. */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 top-[6%] h-[52%] [mask-image:radial-gradient(ellipse_95%_75%_at_50%_50%,black_20%,transparent_78%)]"
-        >
-          <Image
-            src={withBasePath("/images/hero-1.jpg")}
-            alt=""
-            fill
-            sizes="100vw"
-            className="scale-110 object-cover object-[70%_45%] opacity-20 blur-[14px] brightness-50 saturate-[0.6]"
+      {/* The closing arc is one object: the trail's drawn line runs past the
+          last gain, descends into the lamp and lands on its line, and the
+          lamp ignites as the thread arrives — the light that has followed
+          the visitor down the page finally shown at its source, delivering
+          the closing words inside the glow. One section, one flat pine
+          ground, so nothing interrupts the thread on its way down. */}
+      <section className="relative overflow-hidden bg-pine-950 text-plaster-bright">
+        {/* z-10 keeps the trail (and its atmosphere) painting over the
+            lamp's spill-swallowing bar, which reaches up past the descent. */}
+        <div className="relative z-10 px-4 pt-16 md:pt-24">
+          {/* A pocket of ambient dusk light around the trail, so it sits in
+              a clearing rather than on a flat ground; the lamp below keeps
+              the flat pine its glow is measured against. */}
+          <div
+            aria-hidden="true"
+            className="dusk-ambient pointer-events-none absolute inset-0"
           />
-        </div>
-        <div
-          aria-hidden="true"
-          className="film-grain pointer-events-none absolute inset-0"
-        />
-        <div className="relative mx-auto max-w-6xl">
-          <Reveal className="text-center">
-            <span
-              aria-hidden="true"
-              className="mx-auto block h-1 w-16 bg-resin"
+          {/* Faint distance behind the trail: mountains over water from our
+              own hikes, blurred into the dusk and faded out well before the
+              descent so the glow zone keeps its measured contrast. */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 top-[6%] h-[52%] [mask-image:radial-gradient(ellipse_95%_75%_at_50%_50%,black_20%,transparent_78%)]"
+          >
+            <Image
+              src={withBasePath("/images/hero-1.jpg")}
+              alt=""
+              fill
+              sizes="100vw"
+              className="scale-110 object-cover object-[70%_45%] opacity-20 blur-[14px] brightness-50 saturate-[0.6]"
             />
-            <h2 className="mt-6 font-display text-[clamp(2rem,4vw,3rem)] font-semibold leading-[1.1] tracking-[-0.01em]">
-              {gain.title}
-            </h2>
-          </Reveal>
+          </div>
+          <div className="relative mx-auto max-w-6xl">
+            <Reveal className="text-center">
+              <span
+                aria-hidden="true"
+                className="mx-auto block h-1 w-16 bg-resin"
+              />
+              <h2 className="mt-6 font-display text-[clamp(2rem,4vw,3rem)] font-semibold leading-[1.1] tracking-[-0.01em]">
+                {gain.title}
+              </h2>
+            </Reveal>
 
-          <div className="mt-12 md:mt-16">
-            <GainTrail items={gain.items} />
+            <div className="mt-12 md:mt-16">
+              <GainTrail items={gain.items} />
+            </div>
           </div>
         </div>
-      </section>
 
-      {/* The destination the page has been descending toward: the source of
-          the light that has followed the visitor down — hero falloff, globe
-          dots, trail nodes — finally shown as a lamp, delivering the closing
-          words inside its glow. The ground stays the same flat pine as the
-          trail's end above and the footer below, so the three meet without a
-          seam. */}
-      <section className="relative bg-pine-950 text-plaster-bright">
         <LampCta>
-          <p className="max-w-2xl translate-y-6 text-center text-xl leading-[1.55] text-plaster-muted opacity-0 duration-[700ms] ease-out-quart group-data-[lit]:translate-y-0 group-data-[lit]:opacity-100 group-data-[lit]:transition-[opacity,transform] group-data-[lit]:delay-100 motion-reduce:translate-y-0">
+          <p className="max-w-2xl translate-y-24 text-center text-xl leading-[1.55] text-plaster-muted opacity-0 duration-[700ms] ease-out-quart group-data-[lit]:translate-y-0 group-data-[lit]:opacity-100 group-data-[lit]:transition-[opacity,transform] group-data-[lit]:delay-300 motion-reduce:translate-y-0">
             {gain.text}
           </p>
-          <p className="mt-8 max-w-3xl translate-y-6 text-center font-display text-[clamp(2.25rem,5vw,3.75rem)] font-semibold leading-[1.15] tracking-[-0.01em] text-resin opacity-0 duration-[700ms] ease-out-quart [text-shadow:0_0_30px_color-mix(in_srgb,var(--color-resin)_30%,transparent)] group-data-[lit]:translate-y-0 group-data-[lit]:opacity-100 group-data-[lit]:transition-[opacity,transform] group-data-[lit]:delay-200 motion-reduce:translate-y-0">
+          <p className="mt-8 max-w-3xl translate-y-24 text-center font-display text-[clamp(2.25rem,5vw,3.75rem)] font-semibold leading-[1.15] tracking-[-0.01em] text-resin opacity-0 duration-[700ms] ease-out-quart [text-shadow:0_0_30px_color-mix(in_srgb,var(--color-resin)_30%,transparent)] group-data-[lit]:translate-y-0 group-data-[lit]:opacity-100 group-data-[lit]:transition-[opacity,transform] group-data-[lit]:delay-[450ms] motion-reduce:translate-y-0">
             {gain.highlight}
           </p>
-          <div className="mt-10 translate-y-6 opacity-0 duration-[700ms] ease-out-quart group-data-[lit]:translate-y-0 group-data-[lit]:opacity-100 group-data-[lit]:transition-[opacity,transform] group-data-[lit]:delay-[400ms] motion-reduce:translate-y-0">
+          <div className="mt-10 translate-y-24 opacity-0 duration-[700ms] ease-out-quart group-data-[lit]:translate-y-0 group-data-[lit]:opacity-100 group-data-[lit]:transition-[opacity,transform] group-data-[lit]:delay-[600ms] motion-reduce:translate-y-0">
             <ButtonLink
               href={gain.cta.href}
               className="bg-resin text-pine-950 hover:bg-resin-light"
@@ -195,6 +194,13 @@ export default function HomePage() {
             </ButtonLink>
           </div>
         </LampCta>
+
+        {/* One grain layer over the whole arc — including the lamp's opaque
+            pine bars, so they can never read as boxes. */}
+        <div
+          aria-hidden="true"
+          className="film-grain pointer-events-none absolute inset-0"
+        />
       </section>
     </>
   );
