@@ -55,7 +55,7 @@ export function StatCounter({ num, label }: StatCounterProps) {
   return (
     <div
       ref={ref}
-      className="relative flex items-baseline justify-between gap-4 px-1 py-5 md:block md:px-4 md:py-12 md:text-center"
+      className="relative flex items-baseline justify-between gap-4 px-1 py-4 md:block md:px-4 md:py-12 md:text-center"
     >
       {/* A soft pool of lamp light behind the numeral — an ellipse reads
           cleaner than a text-shadow, which lumps around glyph outlines. */}

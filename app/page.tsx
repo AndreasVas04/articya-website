@@ -83,12 +83,12 @@ export default function HomePage() {
                 </h2>
               </Reveal>
               <Reveal delayMs={100}>
-                <p className="mt-6 border-l border-sage/40 pl-5 text-xl leading-[1.55] text-plaster-muted md:mt-8">
+                <p className="mt-5 border-l border-sage/40 pl-5 text-xl leading-[1.55] text-plaster-muted md:mt-8">
                   {whatWeDo.lead}
                 </p>
               </Reveal>
             </div>
-            <div className="relative mt-12 md:col-span-7 md:mt-0">
+            <div className="relative mt-8 md:col-span-7 md:mt-0">
               {/* The globe's share of the one lamp — a soft resin pool the
                   dots appear to be lit by. */}
               <div
@@ -96,12 +96,12 @@ export default function HomePage() {
                 className="pointer-events-none absolute left-1/2 top-1/2 h-2/3 w-2/3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-resin/10 blur-[100px]"
               />
               <Reveal delayMs={150} className="duration-[700ms]">
-                <DottedGlobe className="mx-auto w-full max-w-[21rem] md:max-w-[34rem]" />
+                <DottedGlobe className="mx-auto w-full max-w-[16rem] md:max-w-[34rem]" />
               </Reveal>
             </div>
           </div>
 
-          <div className="mt-12 grid border-y border-pine-800 md:mt-20 md:grid-cols-3 md:divide-x md:divide-pine-800 max-md:divide-y max-md:divide-pine-800">
+          <div className="mt-8 grid border-y border-pine-800 md:mt-20 md:grid-cols-3 md:divide-x md:divide-pine-800 max-md:divide-y max-md:divide-pine-800">
             {whatWeDo.stats.map((stat, i) => (
               <Reveal key={stat.label} delayMs={i * 150}>
                 <StatCounter num={stat.num} label={stat.label} />
