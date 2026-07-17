@@ -61,17 +61,19 @@ const GATHER: [number, number][] = [
 ];
 
 // Below md the paragraph runs nearly full-width and full-height, so the ring
-// stages vertically instead: the wide and small tiles hold in bands above
-// and below the words, and the tall middle-row tiles wait just offscreen
-// (their slots sit beside the text) and sweep in as the ring closes.
+// stages vertically instead: the wide and small tiles hold as two aligned
+// bands above and below the words — mirrored pairs on the mosaic's 2vw side
+// margins, inset 11.5vh from the viewport edges so the top band clears the
+// fixed header — and the tall middle-row tiles wait just offscreen (their
+// slots sit beside the text) and sweep in as the ring closes.
 const GATHER_COMPACT: [number, number][] = [
   [0, 0],
-  [0, -11.5],
+  [0, -8],
   [-24, 0],
   [24, 0],
-  [0, 9],
-  [-6, 8],
-  [0, -11.5],
+  [0, 8],
+  [0, 8],
+  [0, -8],
 ];
 
 // The story's finale: the photographs from the scenes above rise around the
