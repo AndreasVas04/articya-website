@@ -26,6 +26,25 @@ const THREAD_GLOW =
 const BLADE_HOTSPOT =
   "linear-gradient(to right, transparent, color-mix(in srgb, var(--color-plaster-bright) 85%, transparent) 50%, transparent)";
 
+// Local attenuation behind the text lines only: soft pine bands where the
+// glyphs sit, easing off in the gap between paragraph and headline so the
+// pool visibly threads through the words. The band positions track each
+// breakpoint's line layout, so the profile comes in a mobile and a desktop
+// variant; a horizontal mask fades both out sideways well inside the
+// pool's width — never a box, never total darkness.
+const shadeStop = (pct: number) =>
+  `color-mix(in srgb, var(--color-pine-950) ${pct}%, transparent)`;
+const TEXT_SHADE_MOBILE = `linear-gradient(to bottom, transparent 2%, ${shadeStop(
+  66
+)} 10%, ${shadeStop(70)} 41%, ${shadeStop(26)} 49%, ${shadeStop(
+  34
+)} 60%, ${shadeStop(34)} 90%, transparent 98%)`;
+const TEXT_SHADE_DESKTOP = `linear-gradient(to bottom, transparent 2%, ${shadeStop(
+  66
+)} 9.5%, ${shadeStop(70)} 24%, ${shadeStop(26)} 30%, ${shadeStop(
+  34
+)} 40%, ${shadeStop(34)} 92%, transparent 100%)`;
+
 interface LampCtaProps {
   children: React.ReactNode;
   className?: string;
@@ -113,7 +132,10 @@ export function LampCta({ children, className }: LampCtaProps) {
       data-lit={on ? "" : undefined}
       className={cn("group relative bg-pine-950", className)}
     >
-      <div className="relative mx-auto flex w-full max-w-6xl flex-col items-center px-4 pb-16 md:pb-20">
+      {/* pb compensates the text pull-up so the page keeps its length —
+          the descent's scroll progress must still clear the ignition
+          threshold at natural scroll bottom on every viewport. */}
+      <div className="relative mx-auto flex w-full max-w-6xl flex-col items-center px-4 pb-32 md:pb-36">
         {/* The descent: the trail's thread crossing from the section above
             down onto the lamp line. z-10 lifts it over the stage's spill
             bar. Before the path is measured, a plain centered line keeps
@@ -155,15 +177,15 @@ export function LampCta({ children, className }: LampCtaProps) {
             so the section can size to its content instead of a full
             screen. */}
         <div aria-hidden="true" className="relative isolate h-56 w-full">
-          {/* The cone halves reach past the text zone: near-full strength
-              above the paragraph, a long masked fade through the headline,
-              gone by the button — the light falls on the words, dimmed to
-              hold the composite ceiling (no pixel behind text above
-              pine-800 lightness). */}
+          {/* The cone halves carry the pool through the text zone: full
+              strength in the short throat above the paragraph, then a long
+              mid-band the paragraph and headline sit inside, dying at the
+              button — the words are in the light, and the TEXT_SHADE layer
+              plus this curve hold the composite floors behind the glyphs. */}
           <div
             style={{ backgroundImage: CONE_LEFT }}
             className={cn(
-              "absolute right-1/2 top-0 h-80 [mask-composite:intersect] [mask-image:linear-gradient(to_top,transparent_6%,rgb(0_0_0/0.22)_57.5%,rgb(0_0_0/0.5)_70%,black_82%),linear-gradient(to_right,transparent,black_33%)]",
+              "absolute right-1/2 top-0 h-80 [mask-composite:intersect] [mask-image:linear-gradient(to_top,transparent_5%,rgb(0_0_0/0.1)_22%,rgb(0_0_0/0.3)_60%,rgb(0_0_0/0.38)_82%,black_90%),linear-gradient(to_right,transparent,black_33%)]",
               lit &&
                 "transition-[width,opacity] duration-[700ms] ease-in-out-cubic",
               on
@@ -174,7 +196,7 @@ export function LampCta({ children, className }: LampCtaProps) {
           <div
             style={{ backgroundImage: CONE_RIGHT }}
             className={cn(
-              "absolute left-1/2 top-0 h-80 [mask-composite:intersect] [mask-image:linear-gradient(to_top,transparent_6%,rgb(0_0_0/0.22)_57.5%,rgb(0_0_0/0.5)_70%,black_82%),linear-gradient(to_left,transparent,black_33%)]",
+              "absolute left-1/2 top-0 h-80 [mask-composite:intersect] [mask-image:linear-gradient(to_top,transparent_5%,rgb(0_0_0/0.1)_22%,rgb(0_0_0/0.3)_60%,rgb(0_0_0/0.38)_82%,black_90%),linear-gradient(to_left,transparent,black_33%)]",
               lit &&
                 "transition-[width,opacity] duration-[700ms] ease-in-out-cubic",
               on
@@ -185,16 +207,18 @@ export function LampCta({ children, className }: LampCtaProps) {
           {/* Ambient halo sitting on the line. The fade lives on a padded
               wrapper so it shades the blur's spill instead of clipping it at
               the element box, and the bloom dies inside the headroom — on
-              both sides: the lower fade keeps the halo's spill off the text
-              zone, where the composite must hold the plaster-muted minimum
-              (the cone carries the light down instead). */}
-          <div className="absolute left-1/2 top-10 z-50 -translate-x-1/2 -translate-y-1/2 p-24 [mask-image:linear-gradient(to_bottom,transparent,black_50%,black_65%,transparent_95%)]">
+              both sides: the lower fade lets the halo reach the paragraph
+              (the pool wraps the words now) but be gone before the
+              headline's lower lines, where the cone alone carries the
+              warmth. */}
+          <div className="absolute left-1/2 top-10 z-50 -translate-x-1/2 -translate-y-1/2 p-24 [mask-image:linear-gradient(to_bottom,transparent,black_48%,black_54%,transparent_76%)]">
             <div className="h-36 w-[18rem] rounded-full bg-resin opacity-40 blur-3xl md:w-[28rem]" />
           </div>
-          {/* Bright core just under the line. */}
+          {/* Bright core just under the line — kept short so its blur
+              spill dies above the paragraph band. */}
           <div
             className={cn(
-              "absolute left-1/2 top-4 z-30 h-32 -translate-x-1/2 -translate-y-1/2 rounded-full bg-resin-light blur-2xl",
+              "absolute left-1/2 top-3 z-30 h-24 -translate-x-1/2 -translate-y-1/2 rounded-full bg-resin-light blur-2xl",
               lit && "transition-[width] duration-[700ms] ease-in-out-cubic",
               on ? "w-40 md:w-64" : "w-20 md:w-32"
             )}
@@ -238,7 +262,22 @@ export function LampCta({ children, className }: LampCtaProps) {
           <div className="absolute bottom-full left-1/2 z-40 h-44 w-[150%] -translate-x-1/2 bg-pine-950" />
         </div>
 
-        <div className="relative z-10 -mt-24 flex w-full flex-col items-center md:-mt-16">
+        {/* The words live inside the pool: pulled up so the paragraph sits
+            in the pool's upper-to-mid band and the headline in its warm
+            middle, with only the button reaching the dying edge. The shade
+            layer sits under the text (-z-10 inside this stacking context,
+            above the whole stage) to hold the contrast floors. */}
+        <div className="relative z-10 -mt-40 flex w-full flex-col items-center">
+          <div
+            aria-hidden="true"
+            style={{ backgroundImage: TEXT_SHADE_MOBILE }}
+            className="absolute -top-6 left-1/2 -z-10 h-[13rem] w-[26rem] max-w-full -translate-x-1/2 [mask-image:linear-gradient(to_right,transparent,black_18%,black_82%,transparent)] md:hidden"
+          />
+          <div
+            aria-hidden="true"
+            style={{ backgroundImage: TEXT_SHADE_DESKTOP }}
+            className="absolute -top-6 left-1/2 -z-10 hidden h-[15rem] w-[46rem] -translate-x-1/2 [mask-image:linear-gradient(to_right,transparent,black_18%,black_82%,transparent)] md:block"
+          />
           {children}
         </div>
       </div>
