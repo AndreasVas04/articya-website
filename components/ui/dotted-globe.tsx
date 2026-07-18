@@ -122,11 +122,10 @@ interface DottedGlobeProps {
   className?: string;
 }
 
-// A wireframe globe carved out of the home page's pine ground: no ocean
-// fill — the section's dark is the ocean — with the land drawn as halftone
-// dots in the resin family, the same light as the lamp and the stats.
-// Decorative (aria-hidden): the meaning it illustrates is carried by the
-// countries stat beside it.
+// A wireframe globe sitting in the home page's warm ground: no ocean fill —
+// the ground itself is the ocean — with the land drawn as halftone dots in
+// pine, lit by the amber halo behind it. Decorative (aria-hidden): the
+// meaning it illustrates is carried by the countries stat beside it.
 export function DottedGlobe({ className }: DottedGlobeProps) {
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -142,9 +141,8 @@ export function DottedGlobe({ className }: DottedGlobeProps) {
     // once — the component never hardcodes a color.
     const styles = getComputedStyle(document.documentElement);
     const token = (name: string) => styles.getPropertyValue(name).trim();
-    const pine800 = token("--color-pine-800");
-    const resin = token("--color-resin");
-    const resinLight = token("--color-resin-light");
+    const pine = token("--color-pine");
+    const ink = token("--color-ink");
 
     const reducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
@@ -192,35 +190,40 @@ export function DottedGlobe({ className }: DottedGlobeProps) {
       projection.rotate(rotation);
       context.clearRect(0, 0, size, size);
 
+      // On the warm ground the structure lines have to stay whisper-faint:
+      // at full strength a dark graticule reads as a wireframe cage rather
+      // than the suggestion of a sphere.
       context.beginPath();
       path(sphere);
-      context.strokeStyle = pine800;
+      context.strokeStyle = ink;
       context.lineWidth = 1;
-      context.globalAlpha = 0.9;
+      context.globalAlpha = 0.18;
       context.stroke();
 
       context.beginPath();
       path(graticule);
-      context.strokeStyle = pine800;
+      context.strokeStyle = ink;
       context.lineWidth = 0.6;
-      context.globalAlpha = 0.5;
+      context.globalAlpha = 0.08;
       context.stroke();
 
       if (land) {
         context.beginPath();
         for (const feature of land.features) path(feature);
-        context.strokeStyle = resinLight;
+        context.strokeStyle = pine;
         context.lineWidth = 0.8;
-        context.globalAlpha = 0.3;
+        context.globalAlpha = 0.16;
         context.stroke();
 
+        // One color for the land — the warmth comes from the halo behind the
+        // globe, not from a second dot hue. Europe and the Mediterranean read
+        // as the heart through weight alone.
         const baseRadius = Math.max(1, size * 0.0026);
-        context.fillStyle = resin;
-        context.globalAlpha = 0.75;
+        context.fillStyle = pine;
+        context.globalAlpha = 0.5;
         drawDots(0, baseRadius);
-        context.globalAlpha = 0.9;
+        context.globalAlpha = 0.65;
         drawDots(1, baseRadius * 1.15);
-        context.fillStyle = resinLight;
         context.globalAlpha = 0.8;
         drawDots(2, baseRadius * 1.3);
         context.globalAlpha = 0.95;

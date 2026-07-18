@@ -38,7 +38,60 @@ gradients — the only gradients are atmosphere (see Atmospheric grounds).
 | `plaster-bright` | `#FAF8F2` | Cards on light; body text on dark |
 | `plaster-muted` | `#E0E4CD` | Green-tinted alternating bands; secondary text on dark |
 
-## Measured contrast (WCAG 2.1)
+## Warm palette — the home page's living atmosphere
+
+> **In transition.** The home page is being rebuilt section by section into a
+> warm, light "living atmosphere" world. This table and the color-role rules
+> below are the direction of record for the sections already converted (the
+> ground below the hero, "What we do", the stats and the globe). Everything
+> outside this section — the narrative, the "one continuous pine-950 world"
+> ground rule, the signature-element thread and the atmospheric-ground
+> table — still describes the dusk world and is **knowingly contradictory
+> while the migration runs**. It gets rewritten once the offer panels, "What
+> you gain" and the closing CTA have landed; until then, don't resolve the
+> conflict by reverting a converted section.
+
+| Token | Hex | Role |
+|---|---|---|
+| `base` | `#F2ECE0` | Warm cream page ground |
+| `ink` | `#2A3329` | **All** body text, all headings, all large numerals |
+| `ink-soft` | `#5C6359` | Secondary text, labels, captions |
+| `amber` | `#C88A3A` | The one accent — CTA fills, accent bars, eyebrows, links |
+| `amber-soft` | `#E2AB52` | Glows and highlights only, never text |
+| `pine` | `#285C3C` | Small structural marks only — globe dots, small icons |
+| `hairline` | `rgba(42,51,41,.14)` | Rules, dividers, quiet borders |
+
+Color-role rules, in order of precedence:
+
+- **Ink is text.** Every heading, every paragraph and every numeral is `ink`;
+  secondary text is `ink-soft`. No other token carries text on the warm ground.
+- **Amber is the only accent.** One accent hue, nothing competing with it.
+- **Pine is structural, never typographic.** Small marks only — it may never
+  carry large text, numerals, or a background.
+- **Same role, same color everywhere.** A numeral is one color, never
+  two-tone; the stats are `ink` across all three columns.
+
+### Measured contrast on `base` (#F2ECE0)
+
+| Foreground | Ratio | Rule |
+|---|---|---|
+| `ink` | 11.13 | Body text, headings, numerals ✓ |
+| `ink-soft` | 5.28 | Secondary text, labels ✓ |
+| `pine` | 6.65 | Passes, but pine stays structural by role, not contrast |
+| `ink` on `amber` | 4.46 | Large text ✓ · normal-size button labels are borderline |
+| `amber` | **2.50** | ✗ **FAILS** — see the ceiling below |
+
+**The amber text ceiling.** `amber` on `base` measures 2.50:1, which fails AA
+for normal text (4.5) *and* for large text (3.0). So amber's text-shaped roles
+in the table above — eyebrows and links — cannot be filled by `#C88A3A` as
+typed. Amber is safe as a **fill**: accent bars, decorative marks and button
+backgrounds, where the contrast that matters is `ink` sitting on top of it.
+Any converted section that needs amber-colored *text* must first introduce a
+darkened, text-safe amber and measure it here; until that token exists, an
+eyebrow on the warm ground is `ink-soft`. The `resin-deep` (`#845110`, 5.77 on
+plaster) precedent below is the shape of the fix.
+
+## Measured contrast (WCAG 2.1) — dusk palette
 
 All ratios measured on the final hex values. AA thresholds: 4.5:1 for normal
 text, 3.0:1 for large text (≥24px, or ≥18.66px bold) and graphical objects.

@@ -57,16 +57,10 @@ export function StatCounter({ num, label }: StatCounterProps) {
       ref={ref}
       className="relative flex items-baseline justify-between gap-4 px-1 py-4 md:block md:px-4 md:py-8 md:text-center"
     >
-      {/* A soft pool of lamp light behind the numeral — an ellipse reads
-          cleaner than a text-shadow, which lumps around glyph outlines. */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute left-0 top-1/2 h-full w-2/5 -translate-y-1/2 rounded-full bg-resin/10 blur-[40px] md:left-1/2 md:h-3/4 md:w-2/3 md:-translate-x-1/2 md:bg-resin/15 md:blur-[60px]"
-      />
-      <div className="relative font-display text-[2.75rem] font-semibold leading-none text-resin md:text-[clamp(3.25rem,8vw,6.5rem)]">
+      <div className="font-display text-[2.75rem] font-semibold leading-none text-ink md:text-[clamp(3.25rem,8vw,6.5rem)]">
         {display}
       </div>
-      <div className="relative text-[0.8125rem] font-semibold uppercase leading-[1.4] tracking-[0.08em] text-plaster-muted md:mt-3">
+      <div className="text-[0.8125rem] font-semibold uppercase leading-[1.4] tracking-[0.08em] text-ink-soft md:mt-3">
         {label}
       </div>
     </div>

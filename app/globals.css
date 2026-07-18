@@ -14,6 +14,18 @@
   --color-plaster-bright: #faf8f2;
   --color-plaster-muted: #e0e4cd;
 
+  /* Warm daylight palette — the home page's living-atmosphere world.
+     Roles and measured contrast in /design/DESIGN-SYSTEM.md. One rule:
+     ink carries every piece of text, amber is the only accent, pine is
+     small structural marks only. */
+  --color-base: #f2ece0;
+  --color-ink: #2a3329;
+  --color-ink-soft: #5c6359;
+  --color-amber: #c88a3a;
+  --color-amber-soft: #e2ab52;
+  --color-pine: #285c3c;
+  --color-hairline: rgba(42, 51, 41, 0.14);
+
   --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
   --ease-in-out-cubic: cubic-bezier(0.65, 0, 0.35, 1);
 }
@@ -114,6 +126,54 @@ body {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23g)'/%3E%3C/svg%3E");
   background-repeat: repeat;
   opacity: 0.05;
+}
+
+/* Living atmosphere — the warm ground's two drifting light layers. Both are
+   tiled at a fixed 840px so the warm light stays continuous however tall the
+   page grows, rather than stretching into one giant blob. Each pool is a
+   closest-side circle centered in its own tile, so it has faded to nothing by
+   the time it reaches an edge — a pool that is still colored where the tile
+   ends draws a hard line down the page. The second layer is offset half a
+   tile so the two grids interleave instead of stacking. They drift on
+   alternate so the loop eases back on itself instead of snapping at its end.
+   Transform only; the tiles are painted once and never repainted. */
+.atmosphere-glow-a {
+  background-image: radial-gradient(
+    circle closest-side at 50% 50%,
+    color-mix(in srgb, var(--color-amber-soft) 24%, transparent),
+    transparent
+  );
+  background-size: 840px 840px;
+  background-repeat: repeat;
+}
+.atmosphere-glow-b {
+  background-image: radial-gradient(
+    circle closest-side at 50% 50%,
+    color-mix(in srgb, var(--color-amber) 15%, transparent),
+    transparent
+  );
+  background-size: 840px 840px;
+  background-position: 420px 260px;
+  background-repeat: repeat;
+}
+@keyframes atmosphere-drift {
+  from {
+    transform: translate3d(-32px, -22px, 0);
+  }
+  to {
+    transform: translate3d(32px, 22px, 0);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .atmosphere-glow-a,
+  .atmosphere-glow-b {
+    animation: atmosphere-drift 40s var(--ease-in-out-cubic) infinite alternate;
+    will-change: transform;
+  }
+  .atmosphere-glow-b {
+    animation-duration: 56s;
+    animation-direction: alternate-reverse;
+  }
 }
 
 /* The home hero's static HTML carries its intro in the visible resting
