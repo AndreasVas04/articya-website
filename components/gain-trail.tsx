@@ -60,7 +60,7 @@ export function GainTrail({ items }: { items: string[] }) {
           >
             <span
               aria-hidden="true"
-              className="absolute left-6 top-1/2 size-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-amber shadow-[0_0_0_6px_color-mix(in_srgb,var(--color-base)_75%,transparent),0_0_26px_8px_color-mix(in_srgb,var(--color-amber-soft)_55%,transparent)] md:left-1/2"
+              className="absolute left-6 top-1/2 size-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-amber shadow-[0_0_0_6px_color-mix(in_srgb,var(--color-sage-soft)_70%,transparent),0_0_26px_8px_color-mix(in_srgb,var(--color-amber-soft)_55%,transparent)] md:left-1/2"
             />
             <div
               className={cn(

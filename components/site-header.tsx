@@ -12,15 +12,16 @@ function isActive(pathname: string, href: string) {
   return normalize(pathname) === normalize(href);
 }
 
-// Chrome, not content: one cream bar a shade deeper than the body ground on
-// every page, matched by the footer. A hairline does the separating, so the
-// chrome is set apart from the warm body without contrasting against it.
+// Chrome, not content: one soft sage bar on every page, matched by the
+// footer. Sage is the secondary surface, so the chrome is set apart from the
+// warm body by a change of surface rather than by contrast — a hairline still
+// does the separating.
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b border-hairline bg-base-2">
+    <header className="fixed inset-x-0 top-0 z-50 border-b border-hairline bg-sage-soft">
       <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 md:h-20">
         <Link href="/" className="flex shrink-0 items-center gap-2.5">
           <Image
@@ -50,7 +51,7 @@ export function SiteHeader() {
 
         <ul
           className={cn(
-            "absolute inset-x-0 top-full flex-col gap-1 border-b border-hairline bg-base-2 px-4 pb-6 pt-2 md:static md:flex md:flex-row md:items-center md:gap-8 md:border-0 md:bg-transparent md:p-0",
+            "absolute inset-x-0 top-full flex-col gap-1 border-b border-hairline bg-sage-soft px-4 pb-6 pt-2 md:static md:flex md:flex-row md:items-center md:gap-8 md:border-0 md:bg-transparent md:p-0",
             open ? "flex" : "hidden"
           )}
         >

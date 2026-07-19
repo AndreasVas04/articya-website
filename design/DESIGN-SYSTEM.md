@@ -54,7 +54,8 @@ gradients — the only gradients are atmosphere (see Atmospheric grounds).
 | Token | Hex | Role |
 |---|---|---|
 | `base` | `#F2ECE0` | Warm cream page ground |
-| `base-2` | `#EAE2D1` | Chrome surface (header, footer) — one step deeper than the ground |
+| `base-2` | `#EAE2D1` | Deeper cream step — no longer carries the chrome (see `sage-soft`) |
+| `sage-soft` | `#D9E0CB` | **Secondary surface** — chrome (header, footer), the hero mission band, the "What you gain" break |
 | `ink` | `#2A3329` | **All** body text, all headings, all large numerals |
 | `ink-soft` | `#5C6359` | Secondary text, labels, captions |
 | `amber` | `#C88A3A` | The one accent — CTA fills, accent bars, eyebrows, links |
@@ -63,16 +64,31 @@ gradients — the only gradients are atmosphere (see Atmospheric grounds).
 | `hairline` | `rgba(42,51,41,.14)` | Rules, dividers, quiet borders |
 
 **The chrome is soft, not a frame.** The header and footer are chrome, and
-they sit on `base-2` — one step deeper and warmer than the body's `base`, so
-they are set apart from the page without contrasting against it. A `hairline`
-rule does the separating; there is no dark or saturated bar bracketing the
-site. On that surface the working set is the warm palette's own: `ink` for
-labels and the wordmark (10.16), `ink-soft` for secondary text and icon
-strokes (4.82), `resin-deep` for the active and hover nav label (5.15), and
-`amber` for the nav underline as a decorative mark. The underline never
-carries the active state alone — `resin-deep` on the label does — since
-`amber` measures 2.28 on `base-2` and, as everywhere on the warm ground,
-is a fill and never text.
+they sit on `sage-soft` — the secondary surface, a shade cooler and quieter
+than the body's `base`, so they are set apart from the page by a change of
+surface rather than by contrast. A `hairline` rule does the separating; there
+is no dark or saturated bar bracketing the site. On that surface the working
+set is the warm palette's own: `ink` for labels and the wordmark (9.65),
+`ink-soft` for secondary text and icon strokes (4.57), `resin-deep` for the
+active and hover nav label (4.89), and `amber` for the nav underline as a
+decorative mark. The underline never carries the active state alone —
+`resin-deep` on the label does — since `amber` measures 2.16 on `sage-soft`
+and, as everywhere on the warm ground, is a fill and never text.
+
+**Sage is the 30%, and it is structural only.** Cream is the dominant ground,
+sage the secondary surface, amber the accent. Sage may hold chrome and
+supporting section breaks; it may never sit under a content star. The page
+rhythm it produces, top to bottom: sage nav → cream hero photograph with a
+sage mission band → cream "What we do" → cream offer panels → sage "What you
+gain" → cream finale → sage footer. The lamp's finale stays cream in
+particular — the amber glow is the subject there, and a cool ground under it
+cools the one light the whole page has been following.
+
+Sage is never painted flat. Both `.sage-field` (a cream pool opening through
+the centre) and `.sage-band` (ramped edges where a sage stretch meets cream)
+are defined in `globals.css`; a sage zone uses at least the former. Because
+the pool lightens toward `base`, every ink pair measured on flat `sage-soft`
+is a floor, not an average.
 
 Color-role rules, in order of precedence:
 
@@ -89,9 +105,11 @@ Color-role rules, in order of precedence:
 | Foreground | Ratio | Rule |
 |---|---|---|
 | `ink` | 11.13 | Body text, headings, numerals ✓ |
-| `ink` on `base-2` | 10.16 | Chrome labels and wordmark ✓ |
-| `ink-soft` on `base-2` | 4.82 | Chrome secondary text, icon strokes ✓ |
-| `resin-deep` on `base-2` | 5.15 | Chrome active/hover nav label ✓ |
+| `ink` on `sage-soft` | 9.65 | Chrome labels, wordmark, mission statement, trail labels ✓ |
+| `ink-soft` on `sage-soft` | 4.57 | Chrome secondary text, icon strokes ✓ |
+| `resin-deep` on `sage-soft` | 4.89 | Chrome active/hover nav label ✓ |
+| `pine` on `sage-soft` | 5.76 | Trail node icon strokes ✓ |
+| `amber` on `sage-soft` | 2.16 | Fill only — the trail line and nodes are `aria-hidden` decoration |
 | `ink-soft` | 5.28 | Secondary text, labels ✓ |
 | `pine` | 6.65 | Passes, but pine stays structural by role, not contrast |
 | `ink` on `amber` | 4.46 | Large text ✓ · normal-size button labels are borderline |
@@ -170,7 +188,7 @@ Display: **Bricolage Grotesque** · Body: **Instrument Sans** — both loaded vi
 | Stat numeral | `clamp(3.25rem, 8vw, 6.5rem)` / 1 desktop · `2.75rem` / 1 mobile | Bricolage 600 | Home stats only — `resin`, glowing. Monumental centered columns on desktop; compact ledger rows on mobile so all three share one screen |
 | Showpiece | `clamp(2.25rem, 5vw, 3.75rem)` / 1.15, −0.01em | Bricolage 600 | One key line per page max (e.g. the home closing line) |
 | Trail item | `clamp(1.5rem, 2.5vw, 2.25rem)` / 1.2 | Bricolage 600 | Home gains sequence |
-| Hero statement | `clamp(1.125rem, 1.6vw, 1.5rem)` / 1.35, −0.01em | Bricolage 500 | Home hero mission line only — a calm lead under the headline, breaking to 2–3 lines at `34rem` |
+| Hero statement | `clamp(0.95rem, 1.3vw, 1.2rem)` / 1.4, −0.01em | Bricolage 500 | Home hero mission line only — a calm lead under the headline. Held to two balanced lines on desktop by a wide `62rem` measure rather than a small one, so the band stays shallow and the photograph above it keeps the frame |
 | Lede | `1.25rem` / 1.55 | Instrument Sans 400 | Intro paragraph under headings; offer-panel body on desktop, where plain Body reads too small against the full-bleed panel scale |
 | Body | `1rem` / 1.7 | Instrument Sans 400 | Default copy |
 | Label | `0.8125rem` / 1.4, +0.08em, uppercase | Instrument Sans 600 | Section eyebrows (`lichen`), pills |
@@ -200,7 +218,7 @@ text keep them.
     to the home world: the same pine-dusk photograph treatment (`pine-950`
     wash) with the resin halo behind the headline, so navigating home → an
     inner page reads as the same forest at a different hour.
-  - **Header and footer** are one `base-2` surface site-wide, solid on every
+  - **Header and footer** are one `sage-soft` surface site-wide, solid on every
     page and never transparent over a hero — so navigation reads the same
     everywhere and the chrome sets itself apart from the body by a shade and
     a hairline rather than by contrast.
@@ -267,6 +285,8 @@ section. Nothing else may put a gradient or texture on a ground:
 | `.photo-vignette` | Edges falling toward `pine-950` | Inside photographic frames and hero photos only |
 | `.film-grain` | Fine tiled SVG grain at 5% opacity, killing the flat digital-paint feel | Over dark grounds and photographic frames |
 | `.plaster-light` | Soft pool of `plaster-bright` | Behind the About scenes and the finale mosaic |
+| `.sage-field` | `sage-soft` with a cream pool opening through the centre | Every sage zone — chrome aside, which is flat by role |
+| `.sage-band` | Ramped top and bottom edges for a sage stretch standing in the cream page | The "What you gain" section break |
 | `.print-shadow` | Soft `pine-950` drop shadow | Under framed prints on plaster; the raised state of interactive cards (open accordion, hovered contact card) |
 
 **Environment photographs.** A dark stretch may sink one of our own

@@ -43,10 +43,10 @@ export default function HomePage() {
             aria-hidden="true"
             className="block h-1 w-16 translate-y-6 bg-amber opacity-0 duration-[700ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] motion-reduce:translate-y-0"
           />
-          <p className="mt-4 max-w-[34rem] translate-y-6 text-balance text-center font-display text-[clamp(1.125rem,1.6vw,1.5rem)] font-medium leading-[1.35] tracking-[-0.01em] text-ink opacity-0 duration-[700ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] group-data-[expanded]:delay-100 motion-reduce:translate-y-0">
+          <p className="mt-3 max-w-[62rem] translate-y-6 text-balance text-center font-display text-[clamp(0.95rem,1.3vw,1.2rem)] font-medium leading-[1.4] tracking-[-0.01em] text-ink opacity-0 duration-[700ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] group-data-[expanded]:delay-100 motion-reduce:translate-y-0">
             {hero.text}
           </p>
-          <div className="mt-5 translate-y-6 opacity-0 duration-[400ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] group-data-[expanded]:delay-300 motion-reduce:translate-y-0">
+          <div className="mt-4 translate-y-6 opacity-0 duration-[400ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] group-data-[expanded]:delay-300 motion-reduce:translate-y-0">
             <ButtonLink href={hero.cta.href}>{hero.cta.label}</ButtonLink>
           </div>
         </ScrollExpandMedia>
@@ -116,6 +116,15 @@ export default function HomePage() {
             so the trail's line runs straight on into the thread rather than
             stopping short of a section edge. */}
         <section className="relative px-4 pt-24 text-ink md:pt-32">
+          {/* The one supporting section break in the page: the walk down the
+              four gains happens on the secondary surface, so the cream
+              clearing above it and the lamp below it read as separate beats.
+              Ramped at both edges rather than ruled, so the trail's amber
+              line crosses in and out of the band unbroken. */}
+          <div
+            aria-hidden="true"
+            className="sage-field sage-band pointer-events-none absolute inset-0"
+          />
           <div className="relative mx-auto max-w-6xl">
             <Reveal className="text-center">
               <span
