@@ -171,7 +171,7 @@ export function LampCta({ children, className }: LampCtaProps) {
         <div
           ref={descentRef}
           aria-hidden="true"
-          className="relative z-10 h-48 w-full md:h-64"
+          className="relative z-10 h-28 w-full md:h-36"
         >
           {threadPath ? (
             <svg
