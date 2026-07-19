@@ -58,7 +58,7 @@ function SentenceGroup({
 // A full-bleed photographic panel staged as a pinned scroll beat. The outer
 // section is taller than the viewport and the frame sticks while the user
 // scrolls through it: the photo owns the entry under an open wash, then the
-// cream scrim builds as the heading rises and an amber bar draws itself, and
+// cream scrim builds as the heading rises and an ochre bar draws itself, and
 // the paragraph completes sentence by sentence at reading pace before the
 // panel releases. On mobile the pin is shorter and the paragraph arrives in
 // two halves anchored to the bottom wash. Before mount and under reduced
@@ -161,21 +161,21 @@ export function OfferPanel({
               alt=""
               fill
               sizes="100vw"
-              className="object-cover brightness-[1.06] saturate-[1.08]"
+              className="photo-grade object-cover"
             />
           </motion.div>
 
           {/* A light veil lifts the photo into the warm ground, then the
               reading wash builds from the text side so the words land on
               cream rather than on the picture. */}
-          <div className="absolute inset-0 bg-base/12" />
+          <div className="absolute inset-0 bg-cream/12" />
           <motion.div
-            className="absolute inset-0 bg-gradient-to-t from-base from-18% via-base/82 via-50% to-transparent md:hidden"
+            className="absolute inset-0 bg-gradient-to-t from-cream from-18% via-cream/82 via-50% to-transparent md:hidden"
             style={active ? { opacity: washOpacity } : undefined}
           />
           <motion.div
             className={cn(
-              "absolute inset-0 hidden from-base from-24% via-base/78 via-52% to-transparent md:block",
+              "absolute inset-0 hidden from-cream from-24% via-cream/78 via-52% to-transparent md:block",
               flip ? "bg-gradient-to-l" : "bg-gradient-to-r"
             )}
             style={active ? { opacity: washOpacity } : undefined}
@@ -192,7 +192,7 @@ export function OfferPanel({
           <div className={cn("max-w-xl", flip && "md:ml-auto")}>
             <motion.span
               aria-hidden="true"
-              className="flex size-12 items-center justify-center rounded-full border border-pine/30 bg-base/70 text-pine backdrop-blur-sm"
+              className="flex size-12 items-center justify-center rounded-full border border-olive/30 bg-cream/70 text-olive backdrop-blur-sm"
               style={active ? { opacity: iconOpacity, y: iconY } : undefined}
             >
               <Icon className="size-6" strokeWidth={1.5} />
@@ -205,7 +205,7 @@ export function OfferPanel({
             </motion.h3>
             <motion.span
               aria-hidden="true"
-              className="mt-5 block h-1 w-16 origin-left bg-amber"
+              className="mt-5 block h-1 w-16 origin-left bg-ochre"
               style={active ? { scaleX: barScaleX } : undefined}
             />
             <p className="mt-5 leading-[1.7] text-ink md:text-xl md:leading-[1.55]">

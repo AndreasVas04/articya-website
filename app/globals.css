@@ -14,19 +14,25 @@
   --color-plaster-bright: #faf8f2;
   --color-plaster-muted: #e0e4cd;
 
-  /* Warm daylight palette — the home page's living-atmosphere world.
-     Roles and measured contrast in /design/DESIGN-SYSTEM.md. One rule:
-     ink carries every piece of text, amber is the only accent, pine is
-     small structural marks only. */
-  --color-base: #f2ece0;
-  --color-base-2: #eae2d1;
-  --color-sage-soft: #d9e0cb;
-  --color-ink: #2a3329;
-  --color-ink-soft: #5c6359;
-  --color-amber: #c88a3a;
-  --color-amber-soft: #e2ab52;
-  --color-pine: #285c3c;
-  --color-hairline: rgba(42, 51, 41, 0.14);
+  /* Muted earth palette — the home page's world. Every token shares one warm
+     undertone and the same degree of muting, so nothing sits at a different
+     intensity from its neighbours. Roles and measured contrast in
+     /design/DESIGN-SYSTEM.md. One rule: ink carries text, ochre is the only
+     accent and is a fill, olive is small structural marks only. */
+  --color-cream: #efe9da;
+  --color-sage-soft: #c4c7a6;
+  --color-ink: #302e20;
+  --color-ink-soft: #6e6a55;
+  --color-ochre: #c29055;
+  --color-ochre-deep: #8a5a22;
+  /* Text-safe accent for the flat sage chrome only. sage is dark enough that
+     ochre-deep lands at 3.38 on it and ink-soft at 3.13 — both under AA — so
+     the two on-sage text roles (active/hover nav label, footer secondary)
+     take this deeper earth instead: 4.88 on sage. */
+  --color-ochre-on-sage: #6c4413;
+  --color-ochre-soft: #d3a468;
+  --color-olive: #4a5637;
+  --color-hairline: rgba(48, 46, 32, 0.13);
 
   --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
   --ease-in-out-cubic: cubic-bezier(0.65, 0, 0.35, 1);
@@ -84,9 +90,18 @@ body {
   background: radial-gradient(
     ellipse 120% 100% at 50% 45%,
     transparent 55%,
-    color-mix(in srgb, var(--color-base) 55%, transparent)
+    color-mix(in srgb, var(--color-cream) 55%, transparent)
   );
 }
+/* Brings our photographs into the muted earth family without touching the
+   files: pulls the saturation back so no photo out-punches the palette around
+   it, and lays a little warmth over the result so the greens and greys in the
+   frame share the ground's undertone. Filter only — the images themselves are
+   never altered, swapped or re-exported. */
+.photo-grade {
+  filter: saturate(0.85) sepia(0.14) contrast(0.97) brightness(1.01);
+}
+
 /* Dissolves a full-bleed photographic frame into the ground at its top and
    bottom edges. It masks rather than painting cream over the photo: the
    ground here is the living atmosphere, so a flat repaint lands a shade
@@ -161,29 +176,30 @@ body {
       color-mix(in srgb, var(--color-pine-950) 94%, transparent)
     );
 }
-/* Fine photographic grain over dark surfaces, tiled from an inline SVG so
-   nothing is fetched. Whisper-level: it reads as texture, never as pattern. */
+/* Fine photographic grain, tiled from an inline SVG so nothing is fetched.
+   Whisper-level: it reads as texture, never as pattern. Callers set --grain
+   to trade texture against how much the layer moves the ground under it. */
 .film-grain {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23g)'/%3E%3C/svg%3E");
   background-repeat: repeat;
-  opacity: 0.05;
+  opacity: var(--grain, 0.05);
 }
 
 /* The secondary surface given the same treatment as the warm ground: a soft
    pool of cream opens through the centre so the sage reads as a lit surface
-   rather than a flat swatch. Lightening toward base only raises the contrast
+   rather than a flat swatch. Lightening toward cream only raises the contrast
    of the ink sitting on it, so the measured pair holds across the gradient. */
 .sage-field {
   background-color: var(--color-sage-soft);
   background-image: radial-gradient(
     ellipse 75% 85% at 50% 42%,
-    color-mix(in srgb, var(--color-base) 60%, transparent),
+    color-mix(in srgb, var(--color-cream) 60%, transparent),
     transparent 72%
   );
 }
 /* A sage stretch standing in the middle of the cream page. The ramps let the
    two grounds meet without a ruled edge — long enough that the change of
-   surface is felt as a section break, soft enough that the amber trail can
+   surface is felt as a section break, soft enough that the ochre trail can
    cross it unbroken. */
 .sage-band {
   --band-mask: linear-gradient(
@@ -205,11 +221,18 @@ body {
    ends draws a hard line down the page. The second layer is offset half a
    tile so the two grids interleave instead of stacking. They drift on
    alternate so the loop eases back on itself instead of snapping at its end.
-   Transform only; the tiles are painted once and never repainted. */
+   Transform only; the tiles are painted once and never repainted.
+
+   Both pools are drawn from the palette's own muted tones — ochre warming one
+   grid, sage cooling the other — and both are held low enough that the cream
+   stays cream. This is the ceiling, not a starting point: the layers add
+   depth and slow movement, and the moment they start tinting the ground they
+   have stopped being atmosphere and started being a wash. Measured on the
+   rendered composite, not on these numbers (see DESIGN-SYSTEM.md). */
 .atmosphere-glow-a {
   background-image: radial-gradient(
     circle closest-side at 50% 50%,
-    color-mix(in srgb, var(--color-amber-soft) 24%, transparent),
+    color-mix(in srgb, var(--color-ochre) 7%, transparent),
     transparent
   );
   background-size: 840px 840px;
@@ -218,7 +241,7 @@ body {
 .atmosphere-glow-b {
   background-image: radial-gradient(
     circle closest-side at 50% 50%,
-    color-mix(in srgb, var(--color-amber) 15%, transparent),
+    color-mix(in srgb, var(--color-sage-soft) 8%, transparent),
     transparent
   );
   background-size: 840px 840px;

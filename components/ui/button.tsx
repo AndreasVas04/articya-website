@@ -20,9 +20,9 @@ export function ButtonLink({
       className={cn(
         "inline-block rounded-md px-6 py-3 text-sm font-semibold transition-colors",
         variant === "primary" &&
-          "bg-resin-deep text-plaster-bright hover:bg-resin hover:text-pine-950",
+          "bg-ochre-deep text-cream hover:bg-ochre hover:text-ink",
         variant === "outline" &&
-          "border border-pine-950 text-pine-950 hover:bg-plaster-muted",
+          "border border-ink text-ink hover:bg-sage-soft",
         className
       )}
     >

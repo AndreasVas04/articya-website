@@ -10,11 +10,11 @@ const icons = [Compass, Users, Award, HandCoins];
 
 // The rails dissolve at the top instead of stopping on a cut edge. The
 // bottom runs full strength to the container's edge, where the lamp's
-// descent thread picks it up, so the amber line crosses the junction into
+// descent thread picks it up, so the ochre line crosses the junction into
 // the closing section unbroken.
 const RAIL_FADE = "linear-gradient(to bottom, transparent, black 7%, black)";
 
-// The four gains as stations along a trail. An amber line draws itself down
+// The four gains as stations along a trail. An ochre line draws itself down
 // the path as the user scrolls, passing a lit node at each station; stations
 // reveal one by one as they enter. Before mount and under reduced motion the
 // line renders fully drawn, so exported HTML and reduced-motion users get
@@ -42,7 +42,7 @@ export function GainTrail({ items }: { items: string[] }) {
       />
       <motion.div
         aria-hidden="true"
-        className="absolute bottom-0 left-6 top-0 w-0.5 origin-top -translate-x-1/2 rounded-full bg-amber shadow-[0_0_18px_3px_color-mix(in_srgb,var(--color-amber-soft)_55%,transparent)] md:left-1/2"
+        className="absolute bottom-0 left-6 top-0 w-0.5 origin-top -translate-x-1/2 rounded-full bg-ochre shadow-[0_0_18px_3px_color-mix(in_srgb,var(--color-ochre-soft)_55%,transparent)] md:left-1/2"
         style={{
           maskImage: RAIL_FADE,
           WebkitMaskImage: RAIL_FADE,
@@ -60,7 +60,7 @@ export function GainTrail({ items }: { items: string[] }) {
           >
             <span
               aria-hidden="true"
-              className="absolute left-6 top-1/2 size-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-amber shadow-[0_0_0_6px_color-mix(in_srgb,var(--color-sage-soft)_70%,transparent),0_0_26px_8px_color-mix(in_srgb,var(--color-amber-soft)_55%,transparent)] md:left-1/2"
+              className="absolute left-6 top-1/2 size-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-ochre shadow-[0_0_0_6px_color-mix(in_srgb,var(--color-sage-soft)_70%,transparent),0_0_26px_8px_color-mix(in_srgb,var(--color-ochre-soft)_55%,transparent)] md:left-1/2"
             />
             <div
               className={cn(
@@ -76,7 +76,7 @@ export function GainTrail({ items }: { items: string[] }) {
                 >
                   <span
                     aria-hidden="true"
-                    className="flex size-12 shrink-0 items-center justify-center rounded-full border border-hairline text-pine"
+                    className="flex size-12 shrink-0 items-center justify-center rounded-full border border-hairline text-olive"
                   >
                     <Icon className="size-6" strokeWidth={1.5} />
                   </span>

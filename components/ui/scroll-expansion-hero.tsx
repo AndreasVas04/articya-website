@@ -243,7 +243,7 @@ const ScrollExpandMedia = ({
                     fill
                     priority
                     sizes="95vw"
-                    className="object-cover saturate-[1.06] sepia-[0.08]"
+                    className="photo-grade object-cover"
                   />
                 ) : (
                   slides.map((src, i) => (
@@ -260,13 +260,13 @@ const ScrollExpandMedia = ({
                         fill
                         priority={i === 0}
                         sizes="95vw"
-                        className="object-cover saturate-[1.06] sepia-[0.08]"
+                        className="photo-grade object-cover"
                       />
                     </motion.div>
                   ))
                 )}
                 <motion.div
-                  className="absolute inset-0 bg-base"
+                  className="absolute inset-0 bg-cream"
                   initial={false}
                   animate={{ opacity: overlayOpacity }}
                   transition={{ duration: 0.2, ease: EASE_IN_OUT_CUBIC }}
@@ -287,7 +287,7 @@ const ScrollExpandMedia = ({
               {hintLabel && (
                 <div className="mt-4 flex justify-center">
                   <p
-                    className="rounded-full border border-hairline bg-base/85 px-4 py-1 text-[0.8125rem] font-semibold leading-[1.4] text-ink"
+                    className="rounded-full border border-hairline bg-cream/85 px-4 py-1 text-[0.8125rem] font-semibold leading-[1.4] text-ink"
                     style={{ transform: `translateX(${textTranslateX}vw)` }}
                   >
                     {hintLabel}

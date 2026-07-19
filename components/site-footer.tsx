@@ -35,13 +35,13 @@ export function SiteFooter() {
               target="_blank"
               rel="noreferrer"
               aria-label={s.label}
-              className="text-ink-soft transition-colors duration-200 hover:text-resin-deep"
+              className="text-ochre-on-sage transition-colors duration-200 hover:text-ink"
             >
               {icons[s.label]}
             </a>
           ))}
         </div>
-        <p className="text-sm text-ink-soft">{footer.copyright}</p>
+        <p className="text-sm text-ochre-on-sage">{footer.copyright}</p>
       </div>
     </footer>
   );

@@ -19,18 +19,18 @@ import { cn } from "@/lib/utils";
 // box, so it carries no edge from any angle. Painted as an explicit gradient
 // rather than a blurred element, so nothing clips the falloff.
 const POOL =
-  "radial-gradient(ellipse 62% 52% at 50% 0%, color-mix(in srgb, var(--color-amber-soft) 42%, transparent), color-mix(in srgb, var(--color-amber-soft) 15%, transparent) 46%, transparent 78%)";
+  "radial-gradient(ellipse 62% 52% at 50% 0%, color-mix(in srgb, var(--color-ochre-soft) 42%, transparent), color-mix(in srgb, var(--color-ochre-soft) 15%, transparent) 46%, transparent 78%)";
 
 // The descending thread carries the trail line's glow with it.
 const THREAD_GLOW =
-  "drop-shadow(0 0 2px color-mix(in srgb, var(--color-amber) 70%, transparent)) drop-shadow(0 0 14px color-mix(in srgb, var(--color-amber-soft) 55%, transparent))";
+  "drop-shadow(0 0 2px color-mix(in srgb, var(--color-ochre) 70%, transparent)) drop-shadow(0 0 14px color-mix(in srgb, var(--color-ochre-soft) 55%, transparent))";
 
 // The blade is strongest where the node feeds it, decaying toward its ends.
-// It holds near-full amber across its middle rather than peaking at a single
+// It holds near-full ochre across its middle rather than peaking at a single
 // point: against cream a one-point peak washes straight into the pool behind
 // it and the lamp loses the bar it hangs from.
 const BLADE_HOTSPOT =
-  "linear-gradient(to right, transparent, color-mix(in srgb, var(--color-amber) 45%, transparent) 16%, var(--color-amber) 50%, color-mix(in srgb, var(--color-amber) 45%, transparent) 84%, transparent)";
+  "linear-gradient(to right, transparent, color-mix(in srgb, var(--color-ochre) 45%, transparent) 16%, var(--color-ochre) 50%, color-mix(in srgb, var(--color-ochre) 45%, transparent) 84%, transparent)";
 
 interface LampCtaProps {
   children: React.ReactNode;
@@ -165,7 +165,7 @@ export function LampCta({ children, className }: LampCtaProps) {
         {/* The descent: the trail's thread crossing from the section above
             down onto the lamp line. It starts flush with the trail's last
             rail pixel — the section above carries no bottom padding — and
-            owns the whole gap between the two sections, so the amber line
+            owns the whole gap between the two sections, so the ochre line
             is unbroken across the junction. Before the path is measured, a
             plain centered line keeps the exported resting state threaded. */}
         <div
@@ -185,7 +185,7 @@ export function LampCta({ children, className }: LampCtaProps) {
               />
               <motion.path
                 d={threadPath}
-                stroke="var(--color-amber)"
+                stroke="var(--color-ochre)"
                 strokeWidth="2"
                 style={
                   drawn
@@ -195,7 +195,7 @@ export function LampCta({ children, className }: LampCtaProps) {
               />
             </svg>
           ) : (
-            <span className="absolute inset-y-0 left-1/2 w-0.5 -translate-x-1/2 bg-amber" />
+            <span className="absolute inset-y-0 left-1/2 w-0.5 -translate-x-1/2 bg-ochre" />
           )}
         </div>
 
@@ -230,7 +230,7 @@ export function LampCta({ children, className }: LampCtaProps) {
           <div className="absolute left-1/2 top-2 z-30 -translate-x-1/2 -translate-y-1/2 p-20 [mask-image:linear-gradient(to_bottom,transparent_18%,black_46%,black_56%,transparent_84%)]">
             <div
               className={cn(
-                "h-20 rounded-full bg-amber-soft opacity-40 blur-2xl",
+                "h-20 rounded-full bg-ochre-soft opacity-40 blur-2xl",
                 lit && "transition-[width] duration-[700ms] ease-in-out-cubic",
                 on ? "w-52 md:w-80" : "w-24 md:w-40"
               )}
@@ -257,13 +257,13 @@ export function LampCta({ children, className }: LampCtaProps) {
             >
               <span
                 className={cn(
-                  "absolute -inset-2 rounded-full bg-amber opacity-0 blur-md",
+                  "absolute -inset-2 rounded-full bg-ochre opacity-0 blur-md",
                   lit && "animate-[node-flare-glow_400ms_var(--ease-out-quart)]"
                 )}
               />
               <span
                 className={cn(
-                  "relative block size-3.5 rounded-full bg-amber shadow-[0_0_0_6px_color-mix(in_srgb,var(--color-base)_75%,transparent),0_0_26px_8px_color-mix(in_srgb,var(--color-amber-soft)_55%,transparent)]",
+                  "relative block size-3.5 rounded-full bg-ochre shadow-[0_0_0_6px_color-mix(in_srgb,var(--color-cream)_75%,transparent),0_0_26px_8px_color-mix(in_srgb,var(--color-ochre-soft)_55%,transparent)]",
                   lit && "animate-[node-flare_400ms_var(--ease-out-quart)]"
                 )}
               />
