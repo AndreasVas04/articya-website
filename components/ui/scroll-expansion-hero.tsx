@@ -336,16 +336,14 @@ const ScrollExpandMedia = ({
                   mounted && !contentVisible && "pointer-events-none"
                 )}
               >
-                {/* The statement stands on the secondary surface. It is
+                {/* The statement stands on the page's own cream. It is
                     painted rather than shown through: what sits behind this
                     band is the photograph's lower half, not the ground, so a
-                    transparent band would reveal forest, not sage. The cream
-                    pool inside .sage-field keeps the surface from reading
-                    flat and sets the photograph above it off against a
-                    cooler, quieter ground. */}
+                    transparent band would reveal forest instead of the
+                    clearing the statement belongs to. */}
                 <div
                   aria-hidden="true"
-                  className="sage-field pointer-events-none absolute inset-0"
+                  className="pointer-events-none absolute inset-0 bg-cream"
                 />
                 <div
                   aria-hidden="true"

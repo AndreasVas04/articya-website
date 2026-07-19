@@ -6,11 +6,11 @@ A summer afternoon in Troodos, an hour before the light goes: sun-bleached
 limestone and dry grass, dusty olive scrub, and one warm point of ochre where
 the sun catches resin on a pine trunk. The site splits into two registers. The
 home page is that afternoon: one continuous muted-earth world from the hero to
-the footer, built on cream, broken by olive-sage, and lit by a single dusty
-ochre accent — a ground that is never quite still, carrying two slow drifting
-pools of its own light. The inner pages are the same place at dusk: the
-Resin & Pine world below, where long-form text sits on warm plaster and the
-greens go dark.
+the footer, built on a single cream ground and lit by a single dusty ochre
+accent — a ground that is unbroken by any band or panel, and never quite
+still, carrying two slow drifting pools of its own light. The inner pages are
+the same place at dusk: the Resin & Pine world below, where long-form text
+sits on warm plaster and the greens go dark.
 
 The palette is a place, not a badge. Everything in it is muted and shares one
 warm undertone — no bright tech greens, no leaf iconography, no stark white or
@@ -39,20 +39,18 @@ The home page is one muted, warm, earthy family. Its tokens:
 
 | Token | Hex | Role |
 |---|---|---|
-| `cream` | `#EFE9DA` | Dominant ground (~60%) — a muted warm off-white, never stark white |
-| `sage-soft` | `#C4C7A6` | **Secondary surface** (~30%) — muted warm olive: chrome (header, footer), the hero mission band, the "What you gain" break |
-| `ochre` | `#C29055` | The one accent (~10%) — dusty, not glossy. **Fill only**, never text |
-| `ochre-deep` | `#8A5A22` | Accent text on cream: the finale headline, CTA button fills |
-| `ochre-on-sage` | `#6C4413` | Accent text on the flat sage chrome only — see the on-sage ceiling below |
+| `cream` | `#EFE9DA` | The **only** ground — a muted warm off-white, never stark white. Body, chrome, mission band, every section |
+| `ochre` | `#C29055` | The one accent — dusty, not glossy. **Fill only**, never text |
+| `ochre-deep` | `#8A5A22` | Accent text on cream: the finale headline, active nav labels, footer secondary, CTA button fills |
 | `ink` | `#302E20` | **All** text — a warm near-black, never pure black |
-| `ink-soft` | `#6E6A55` | Secondary text **on cream only** |
+| `ink-soft` | `#6E6A55` | Secondary text |
 | `ochre-soft` | `#D3A468` | Glows and highlights only, never text |
 | `olive` | `#4A5637` | Small structural marks only — globe dots, small icons |
 | `hairline` | `rgba(48,46,32,.13)` | Rules, dividers, quiet borders |
 
-The token is named `sage-soft` rather than `sage` because `--color-sage`
-(`#A9B39A`) already belongs to the inner pages' dusk palette; the two must not
-collide.
+There is deliberately no green in this list. `sage` (`#A9B39A`) belongs to the
+inner pages' dusk palette and never appears on the home page — the home's only
+green is `olive`, and only as small structural marks.
 
 ### Why these cohere
 
@@ -64,8 +62,8 @@ Two properties are doing the work, and both must hold for any token added later:
   rather than sitting at a forest hue. Nothing on the page is a true neutral,
   so nothing reads as cold against the rest.
 - **One consistent degree of muting.** No token is fully saturated. The accent
-  is a dusty `#C29055`, not a glossy amber; the secondary surface is a greyed
-  olive, not a leaf green. Because every hue is pulled back by roughly the same
+  is a dusty `#C29055`, not a glossy amber; the ground is a warm `#EFE9DA`,
+  not a bright off-white. Because every hue is pulled back by roughly the same
   amount, no single element out-punches its neighbours — which is what makes
   the page read as one family rather than a set of related colours.
 
@@ -73,32 +71,25 @@ The practical test for a new colour: desaturate the page and it should still
 look deliberate; raise any one token's saturation and it will immediately look
 foreign.
 
-**The chrome is soft, not a frame.** The header and footer sit on `sage-soft`,
-a shade cooler and quieter than the body's `cream`, so they are set apart by a
-change of surface rather than by contrast. A `hairline` rule does the
-separating; no dark or saturated bar brackets the site.
+**The chrome is soft, not a frame.** The header and footer sit on the same
+`cream` as the body, so they are not set apart by surface at all — a
+`hairline` rule does the whole job. No bar, dark or colored, brackets the
+site, and the ground reads continuous from the top of the nav to the bottom
+of the footer.
 
-**Sage is the 30%, and it is structural only.** Cream is the dominant ground,
-sage the secondary surface, ochre the accent. Sage may hold chrome and
-supporting section breaks; it may never sit under a content star. The rhythm,
-top to bottom: sage nav → cream hero photograph with a sage mission band →
-cream "What we do" → cream offer panels → sage "What you gain" → cream finale
-→ sage footer. The finale stays cream in particular — the ochre glow is the
-subject there, and a cool ground under it cools the one light the page has
-been following.
-
-Sage is never painted flat *except in the chrome*, which is flat by role. Both
-`.sage-field` (a cream pool opening through the centre) and `.sage-band`
-(ramped edges where a sage stretch meets cream) are defined in `globals.css`;
-a sage content zone uses at least the former. Because the pool lightens toward
-`cream`, every ink pair measured on flat `sage-soft` is a floor, not an
-average — the chrome is the only place that floor is also the real value,
-which is why the ceiling below is stated against flat sage.
+**One ground, no bands.** Cream is the only surface on the home page; ochre is
+the only accent. No section may introduce a second surface color — the rhythm
+top to bottom is cream nav → cream hero photograph with a cream mission band →
+cream "What we do" → cream offer panels → cream "What you gain" → cream finale
+→ cream footer. Separation between beats comes from photography, spacing, the
+ochre accent bars and the living atmosphere, never from a colored band. This
+matters most at the finale: the ochre glow is the subject there, and any
+cooler ground under it would cool the one light the page has been following.
 
 Color-role rules, in order of precedence:
 
-- **Ink is text.** Every heading, paragraph and numeral is `ink`. On cream,
-  secondary text is `ink-soft`; on sage it is `ochre-on-sage`.
+- **Ink is text.** Every heading, paragraph and numeral is `ink`; secondary
+  text is `ink-soft` and accent text is `ochre-deep`.
 - **Ochre is the only accent.** One accent hue, nothing competing with it.
 - **Olive is structural, never typographic.** Small marks only — never large
   text, numerals, or a background.
@@ -110,39 +101,39 @@ Color-role rules, in order of precedence:
 Measured on the flat tokens; every pair was then re-verified against the
 **rendered composite** at 1440×900 and 390×844 (screenshot pixel sampling
 behind each text zone), because the living atmosphere puts real pixel values
-between the tokens. Composite values came in at or above these floors.
+between the tokens. Every pair holds on the composite except `ink-soft`, which
+sits at 4.50 flat and so falls to 4.16–4.34 once the atmosphere shades the
+ground beneath it. It is the one pair with no headroom: either the atmosphere
+comes back up or `ink-soft` goes a step darker — see the note under the table.
+
+Because there is only one ground, there is only one column of pairs to check.
 
 | Foreground | Background | Ratio | Rule |
 |---|---|---|---|
-| `ink` | `cream` | 11.28 | Body text, headings, numerals ✓ |
-| `ink-soft` | `cream` | 4.50 | Secondary text on cream ✓ (at the AA floor — do not darken the ground under it) |
-| `ochre-deep` | `cream` | 4.86 | Finale headline, accent text on cream ✓ |
+| `ink` | `cream` | 11.28 | Body text, headings, numerals, nav labels, wordmark, mission statement, trail labels ✓ |
+| `ink-soft` | `cream` | 4.50 | Secondary text — passes flat, **fails on the composite** (4.16–4.34); see below |
+| `ochre-deep` | `cream` | 4.86 | Finale headline, active/hover nav label, footer secondary ✓ |
 | `cream` | `ochre-deep` | 4.86 | CTA button label on its fill ✓ |
 | `ink` | `ochre` | 4.82 | Button label on the hover fill ✓ |
-| `ink` | `sage-soft` | 7.85 | Wordmark, nav labels, mission statement, trail labels ✓ |
-| `ochre-on-sage` | `sage-soft` | 4.88 | Chrome active/hover nav label, footer secondary ✓ |
 | `olive` | `cream` | 6.48 | Structural marks ✓ (structural by role, not by contrast) |
-| `olive` | `sage-soft` | 4.51 | Trail node icon strokes ✓ |
-| `ochre` | `cream` | 2.34 | ✗ Fill only |
-| `ochre` | `sage-soft` | 1.63 | ✗ Fill only — the nav underline and trail line are `aria-hidden` decoration |
-| `ink-soft` | `sage-soft` | 3.13 | ✗ **Never** — see the ceiling below |
-| `ochre-deep` | `sage-soft` | 3.38 | ✗ **Never** — see the ceiling below |
+| `ochre` | `cream` | 2.34 | ✗ Fill only — the nav underline and trail line are `aria-hidden` decoration |
 
-**The ochre text ceiling.** `ochre` fails AA on both grounds, for normal *and*
-large text. It is a **fill**: accent bars, decorative marks, button
-backgrounds — places where the contrast that matters is what sits on top of
-it. Accent *text* is `ochre-deep` on cream and `ochre-on-sage` on sage.
+**The ochre text ceiling.** `ochre` fails AA for normal *and* large text. It is
+a **fill**: accent bars, decorative marks, button backgrounds — places where
+the contrast that matters is what sits on top of it. Accent *text* is always
+`ochre-deep`. The nav underline stays `ochre` as decoration and never carries
+the active state alone; the active label's own color change does that.
 
-**The on-sage ceiling.** `sage-soft` is dark enough that two roles which pass
-comfortably on cream fall under AA on it: `ink-soft` (3.13) and `ochre-deep`
-(3.38). Lightening sage does not fix this — even a much lighter sage only
-lifts `ink-soft` to about 4.0. So the fix is on the foreground side, and it is
-narrow by design: body text on sage is `ink` (7.85), and the two text roles
-that need an accent — the active/hover nav label and the footer secondary
-text — take `ochre-on-sage` (`#6C4413`, 4.88 on sage), a deeper tone from the
-same earth family. `ochre-on-sage` exists for those two roles and nothing
-else; on cream, accent text is still `ochre-deep`. The nav underline stays
-`ochre` as decoration and never carries the active state alone.
+**The `ink-soft` shortfall.** `ink-soft` is exactly at the 4.5 AA floor against
+flat `cream`, which leaves it no headroom: the atmosphere's two pools are both
+darker than the ground, so wherever they pass under secondary text the measured
+composite lands at 4.16–4.34. The two places this bites are the "What we do"
+lead paragraph and the stat labels. Flat-token maths hides it; only composite
+sampling shows it. Fixing it means either pulling the atmosphere pools back
+until the darkest composite clears `#EFE9DA` minus a hair, or taking `ink-soft`
+one step darker (about `#65614D`, which clears 4.5 against the darkest sampled
+ground). Until one of those lands, this is a known AA miss — do not add new
+`ink-soft` text in the meantime.
 
 ## Measured contrast (WCAG 2.1) — dusk palette
 
@@ -228,23 +219,22 @@ text keep them.
 - **Ground is decided per page, not per section.**
   - **Home** is one continuous muted-earth world from the hero to the footer —
     no dusk section may interrupt it. `cream` is the ground; depth comes from
-    the living atmosphere, full-bleed photography and the ochre light, and the
-    only surface change is the `sage-soft` secondary (chrome, mission band,
-    "What you gain").
+    the living atmosphere, full-bleed photography and the ochre light. There
+    is no second surface — no band, panel or chrome bar changes the ground
+    anywhere between the top of the nav and the bottom of the footer.
   - **Inner pages** (about, faq, contact) are text-heavy and
     keep `plaster` as the default background below their heroes; no dark
     section may appear there outside the hero. The hero itself is the bridge
     to the home world: the same pine-dusk photograph treatment (`pine-950`
     wash) with the resin halo behind the headline, so navigating home → an
     inner page reads as the same forest at a different hour.
-  - **Header and footer** are one `sage-soft` surface site-wide, solid on every
+  - **Header and footer** are one `cream` surface site-wide, solid on every
     page and never transparent over a hero — so navigation reads the same
-    everywhere and the chrome sets itself apart from the body by a shade and
-    a hairline rather than by contrast.
-- Every page's first screen must read "green outdoors": photography plus at
-  least two green token roles above the fold. On the home page those are the
-  `sage-soft` chrome and mission band, plus `olive` structural marks; on the
-  inner pages, lichen labels, sage pills/borders and plaster-muted bands.
+    everywhere, and a hairline alone marks the chrome off from the body.
+- Every page's first screen must read "green outdoors". On the home page that
+  is carried by the photography itself plus `olive` structural marks — the
+  ground stays cream; on the inner pages, by lichen labels, sage
+  pills/borders and plaster-muted bands.
 
 ## Motion
 
@@ -301,11 +291,9 @@ section. Nothing else may put a gradient or texture on a ground:
 | `.dusk-scrim` | Graded photo wash — most open where the lamp halo sits, near-solid pine at the edges and base of the frame | Inner-page hero photographs |
 | `.photo-vignette` | Edges falling toward `pine-950` | Inside photographic frames and hero photos only |
 | `.film-grain` | Fine tiled SVG grain, killing the flat digital-paint feel. Opacity is `var(--grain, 0.05)` so a caller over a light ground can pull it back | Over any ground and inside photographic frames |
-| `.atmosphere-glow-a` / `-b` | The living atmosphere's two drifting pools — `ochre` at 7% and `sage-soft` at 8%, each a closest-side circle tiled at 840px, the second offset half a tile so the grids interleave | The home page ground only, via `LivingAtmosphere` |
+| `.atmosphere-glow-a` / `-b` | The living atmosphere's two drifting pools — `ochre` at 7% and `ochre-soft` at 8%, each a closest-side circle tiled at 840px, the second offset half a tile so the grids interleave. Both are the page's one light, so the ground never picks up a second hue | The home page ground only, via `LivingAtmosphere` |
 | `.photo-grade` | Filter-only warm grade (`saturate .85 · sepia .14 · contrast .97 · brightness 1.01`) bringing photographs into the muted family | Every photograph on the home page |
 | `.plaster-light` | Soft pool of `plaster-bright` | Behind the About scenes and the finale mosaic |
-| `.sage-field` | `sage-soft` with a cream pool opening through the centre | Every sage zone — chrome aside, which is flat by role |
-| `.sage-band` | Ramped top and bottom edges for a sage stretch standing in the cream page | The "What you gain" section break |
 | `.print-shadow` | Soft `pine-950` drop shadow | Under framed prints on plaster; the raised state of interactive cards (open accordion, hovered contact card) |
 
 **Environment photographs.** A dark stretch may sink one of our own
@@ -350,7 +338,8 @@ Rules, in order of precedence:
   `.photo-grade` so none of them out-punches the palette around it.
 - Use `plaster-muted` bands so inner-page light sections visibly lean green.
 - Keep every glow one hue at one temperature — ochre on cream, resin on pine.
-- Use sage borders instead of gray borders everywhere on light grounds.
+- Use sage borders instead of gray borders on inner-page light grounds, and
+  `hairline` for every rule and quiet border on the home page.
 - Check the contrast tables before introducing any new fg/bg pair.
 
 **Don't**
@@ -359,10 +348,10 @@ Rules, in order of precedence:
   earth, pine and plaster families.
 - Don't use bright/tech greens, leaf icons, or gradients outside the
   atmospheric-ground layers.
-- Don't set `ochre` or `resin` as text; don't put `ink-soft` or `ochre-deep`
-  on sage, or `sage` as text on light grounds.
-- Don't break the home page's cream ground with a dusk section, and don't put
-  a dark section on an inner page below its hero. No second accent hue.
+- Don't set `ochre` or `resin` as text, or `sage` as text on light grounds.
+- Don't break the home page's cream ground — not with a dusk section, and not
+  with a colored band, panel or chrome bar of any kind. Don't put a dark
+  section on an inner page below its hero. No second accent hue.
 - Don't introduce new font weights beyond 400/500/600, or new
   durations/easings. 500 is Bricolage only, and only for the home hero
   statement, where 600 at that size reads heavier than the line deserves.
@@ -378,7 +367,7 @@ component and stays on the dusk palette.
 |---|---|---|
 | Scroll-expansion hero | `black` background | `cream` |
 | Scroll-expansion hero | `white` text | `ink` |
-| Scroll-expansion hero | `blue-200` subtext | `ink` on the sage mission band |
+| Scroll-expansion hero | `blue-200` subtext | `ink` on the cream mission band |
 | Zoom parallax | `neutral` grounds/gaps | `plaster` (section), `plaster-muted` (image gaps) |
 | Zoom parallax | any neutral text | `pine-950` |
 | D3 globe | `black` ocean fill | none — transparent, the section's `cream` ground is the ocean |

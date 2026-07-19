@@ -22,7 +22,7 @@ export function ButtonLink({
         variant === "primary" &&
           "bg-ochre-deep text-cream hover:bg-ochre hover:text-ink",
         variant === "outline" &&
-          "border border-ink text-ink hover:bg-sage-soft",
+          "border border-ink text-ink hover:bg-ochre/20",
         className
       )}
     >

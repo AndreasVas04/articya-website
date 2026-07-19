@@ -12,16 +12,15 @@ function isActive(pathname: string, href: string) {
   return normalize(pathname) === normalize(href);
 }
 
-// Chrome, not content: one soft sage bar on every page, matched by the
-// footer. Sage is the secondary surface, so the chrome is set apart from the
-// warm body by a change of surface rather than by contrast — a hairline still
-// does the separating.
+// Chrome, not content: the same cream as the body on every page, matched by
+// the footer. Nothing brackets the page — a hairline alone does the
+// separating, so the chrome sits in the ground rather than on top of it.
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b border-hairline bg-sage-soft">
+    <header className="fixed inset-x-0 top-0 z-50 border-b border-hairline bg-cream">
       <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 md:h-20">
         <Link href="/" className="flex shrink-0 items-center gap-2.5">
           <Image
@@ -51,7 +50,7 @@ export function SiteHeader() {
 
         <ul
           className={cn(
-            "absolute inset-x-0 top-full flex-col gap-1 border-b border-hairline bg-sage-soft px-4 pb-6 pt-2 md:static md:flex md:flex-row md:items-center md:gap-8 md:border-0 md:bg-transparent md:p-0",
+            "absolute inset-x-0 top-full flex-col gap-1 border-b border-hairline bg-cream px-4 pb-6 pt-2 md:static md:flex md:flex-row md:items-center md:gap-8 md:border-0 md:bg-transparent md:p-0",
             open ? "flex" : "hidden"
           )}
         >
@@ -63,8 +62,8 @@ export function SiteHeader() {
                   href={item.href}
                   onClick={() => setOpen(false)}
                   className={cn(
-                    "group relative block py-2 text-[0.8125rem] font-semibold uppercase leading-[1.4] tracking-[0.08em] text-ink transition-colors duration-200 hover:text-ochre-on-sage md:py-1",
-                    active && "text-ochre-on-sage"
+                    "group relative block py-2 text-[0.8125rem] font-semibold uppercase leading-[1.4] tracking-[0.08em] text-ink transition-colors duration-200 hover:text-ochre-deep md:py-1",
+                    active && "text-ochre-deep"
                   )}
                 >
                   {item.label}

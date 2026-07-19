@@ -116,15 +116,6 @@ export default function HomePage() {
             so the trail's line runs straight on into the thread rather than
             stopping short of a section edge. */}
         <section className="relative px-4 pt-24 text-ink md:pt-32">
-          {/* The one supporting section break in the page: the walk down the
-              four gains happens on the secondary surface, so the cream
-              clearing above it and the lamp below it read as separate beats.
-              Ramped at both edges rather than ruled, so the trail's ochre
-              line crosses in and out of the band unbroken. */}
-          <div
-            aria-hidden="true"
-            className="sage-field sage-band pointer-events-none absolute inset-0"
-          />
           <div className="relative mx-auto max-w-6xl">
             <Reveal className="text-center">
               <span

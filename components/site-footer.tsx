@@ -20,12 +20,12 @@ const icons: Record<string, React.ReactNode> = {
   ),
 };
 
-// The lower half of the site's chrome: the same soft sage surface as the
-// header, closing every page on the edge it opened with and separated from
-// the warm body it brackets by a hairline.
+// The lower half of the site's chrome: the same cream surface as the header,
+// closing every page on the edge it opened with, marked off from the body
+// above it by a hairline and nothing more.
 export function SiteFooter() {
   return (
-    <footer className="border-t border-hairline bg-sage-soft py-8">
+    <footer className="border-t border-hairline bg-cream py-8">
       <div className="mx-auto flex max-w-5xl flex-col items-center gap-4 px-4">
         <div className="flex gap-4">
           {footer.social.map((s) => (
@@ -35,13 +35,13 @@ export function SiteFooter() {
               target="_blank"
               rel="noreferrer"
               aria-label={s.label}
-              className="text-ochre-on-sage transition-colors duration-200 hover:text-ink"
+              className="text-ochre-deep transition-colors duration-200 hover:text-ink"
             >
               {icons[s.label]}
             </a>
           ))}
         </div>
-        <p className="text-sm text-ochre-on-sage">{footer.copyright}</p>
+        <p className="text-sm text-ochre-deep">{footer.copyright}</p>
       </div>
     </footer>
   );
