@@ -144,18 +144,6 @@ body {
       transparent 78%
     );
 }
-/* The warm world's seam device, in the role .lamp-falloff plays in the dusk
-   one: the hero's ground is flat cream, the living atmosphere below it opens
-   with its drifting glow pools, so the two meet on a step. This ramps the
-   hero's lower edge toward the atmosphere's own warmth over a long fall, so
-   the light arrives gradually instead of switching on at a line. */
-.hero-ground-falloff {
-  background: linear-gradient(
-    to bottom,
-    transparent,
-    color-mix(in srgb, var(--color-amber-soft) 9%, transparent)
-  );
-}
 /* Graded wash for photographic heroes: most open where the halo sits,
    falling to near-solid pine at the edges and base of the frame. */
 .dusk-scrim {

@@ -186,8 +186,11 @@ const ScrollExpandMedia = ({
   const firstWord = title ? title.split(" ")[0] : "";
   const restOfTitle = title ? title.split(" ").slice(1).join(" ") : "";
 
+  // No ground of its own: the page's living atmosphere sits behind this frame
+  // and shows through, so the hero is lit by the same warm field as everything
+  // below it.
   return (
-    <div className="overflow-hidden bg-base">
+    <div className="overflow-hidden">
       <section className="relative flex min-h-[100dvh] flex-col items-center justify-start overflow-hidden">
         <motion.div
           className="absolute inset-0 z-0"
@@ -195,31 +198,29 @@ const ScrollExpandMedia = ({
           animate={{ opacity: 1 - progress }}
           transition={{ duration: 0.2, ease: EASE_IN_OUT_CUBIC }}
         >
+          {/* The backdrop photograph sinks into the ground the way the page's
+              other environment photographs do — blurred, desaturated, held
+              under 20% — rather than under a flat cream wash. A wash is opaque,
+              so it sealed the living atmosphere out and left the first screen
+              reading gray; at this opacity the warm field drifts through and
+              the photo is felt as depth behind the frame. */}
           <Image
             src={withBasePath(bgImageSrc)}
             alt=""
             fill
             priority
             sizes="100vw"
-            className="scale-110 object-cover blur-md"
+            className="scale-110 object-cover opacity-[0.1] blur-3xl saturate-50"
           />
-          {/* The backdrop photograph is held under a near-solid cream wash:
-              felt as warmth behind the frame, never as a second image, and
-              light enough that the ink headline reads over any slide. */}
-          <div className="absolute inset-0 bg-base/90" />
+          {/* Grain rides the backdrop rather than the section, so it fades out
+              with it: past full expansion the ground behind the frame is the
+              page atmosphere, which carries its own grain at the same
+              strength. Two stacked layers would read as twice the texture. */}
+          <div
+            aria-hidden="true"
+            className="film-grain pointer-events-none absolute inset-0 mix-blend-multiply"
+          />
         </motion.div>
-
-        {/* Carries the hero's ground down into the living atmosphere's own
-            warmth, so the two meet on a ramp rather than an edge. */}
-        <div
-          aria-hidden="true"
-          className="hero-ground-falloff pointer-events-none absolute inset-x-0 bottom-0 z-0 h-[45vh]"
-        />
-
-        <div
-          aria-hidden="true"
-          className="film-grain pointer-events-none absolute inset-0 z-[1] mix-blend-multiply"
-        />
 
         <div className="relative z-10 mx-auto flex w-full flex-col items-center">
           <div className="relative flex h-[100dvh] w-full flex-col items-center justify-center">
@@ -331,11 +332,20 @@ const ScrollExpandMedia = ({
               <div
                 data-expanded={!mounted || contentVisible ? "" : undefined}
                 className={cn(
-                  "hero-intro group pointer-events-auto absolute inset-x-0 bottom-0 flex flex-col items-center bg-base/90 px-6 py-8 opacity-0 backdrop-blur-sm duration-[400ms] ease-out-quart data-[expanded]:opacity-100 data-[expanded]:transition-opacity md:py-10",
+                  "hero-intro group pointer-events-auto absolute inset-x-0 bottom-0 flex flex-col items-center overflow-hidden bg-base/95 px-6 py-10 opacity-0 backdrop-blur-sm duration-[400ms] ease-out-quart data-[expanded]:opacity-100 data-[expanded]:transition-opacity md:py-14",
                   mounted && !contentVisible && "pointer-events-none"
                 )}
               >
-                {children}
+                {/* The band's own pocket of the page's warm light, so the
+                    statement sits in the atmosphere rather than on a flat
+                    cream stripe cut out of it. */}
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute left-1/2 top-1/2 h-3/4 w-2/3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-amber-soft/20 blur-[80px]"
+                />
+                <div className="relative flex flex-col items-center">
+                  {children}
+                </div>
               </div>
             </div>
           </div>

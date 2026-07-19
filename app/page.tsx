@@ -25,26 +25,31 @@ export default function HomePage() {
             'history.scrollRestoration="manual";window.scrollTo(0,0);document.documentElement.classList.add("hero-js");',
         }}
       />
-      <ScrollExpandMedia
-        slides={hero.slides}
-        bgImageSrc={hero.slides[0]}
-        title={hero.heading}
-        hintLabel={hero.location}
-      >
-        <p className="max-w-2xl translate-y-6 text-center text-base leading-[1.55] text-ink opacity-0 duration-[700ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] motion-reduce:translate-y-0 md:text-xl">
-          {hero.text}
-        </p>
-        <div className="mt-6 translate-y-6 opacity-0 duration-[400ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] group-data-[expanded]:delay-200 motion-reduce:translate-y-0">
-          <ButtonLink href={hero.cta.href}>{hero.cta.label}</ButtonLink>
-        </div>
-      </ScrollExpandMedia>
-
-      {/* Everything below the hero shares one warm ground, so the drifting
-          light is continuous down the page instead of restarting per
-          section. The atmosphere is absolute inside this wrapper — it starts
-          at the hero's lower edge and can never reach behind it. */}
+      {/* The whole page shares one warm ground, hero included: a single
+          atmosphere instance spans the wrapper, so the drifting light is one
+          continuous field rather than a per-section grid that restarts — and
+          restarting it at the hero's lower edge would land two different
+          phases of the same tiling on either side of that line. */}
       <div className="relative">
         <LivingAtmosphere />
+
+        <ScrollExpandMedia
+          slides={hero.slides}
+          bgImageSrc={hero.slides[0]}
+          title={hero.heading}
+          hintLabel={hero.location}
+        >
+          <span
+            aria-hidden="true"
+            className="block h-1 w-16 translate-y-6 bg-amber opacity-0 duration-[700ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] motion-reduce:translate-y-0"
+          />
+          <p className="mt-6 max-w-[54rem] translate-y-6 text-center font-display text-[clamp(1.5rem,2.4vw,2.25rem)] font-semibold leading-[1.2] tracking-[-0.01em] text-ink opacity-0 duration-[700ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] group-data-[expanded]:delay-100 motion-reduce:translate-y-0">
+            {hero.text}
+          </p>
+          <div className="mt-8 translate-y-6 opacity-0 duration-[400ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] group-data-[expanded]:delay-300 motion-reduce:translate-y-0">
+            <ButtonLink href={hero.cta.href}>{hero.cta.label}</ButtonLink>
+          </div>
+        </ScrollExpandMedia>
 
         {/* overflow-clip (not hidden) so the offer panels' sticky frames can
             pin against the viewport. */}
