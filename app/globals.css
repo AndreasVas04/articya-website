@@ -14,19 +14,18 @@
   --color-plaster-bright: #faf8f2;
   --color-plaster-muted: #e0e4cd;
 
-  /* Muted earth palette — the home page's world. Every token shares one warm
-     undertone and the same degree of muting, so nothing sits at a different
-     intensity from its neighbours. Roles and measured contrast in
-     /design/DESIGN-SYSTEM.md. One rule: ink carries text, ochre is the only
-     accent and is a fill, olive is small structural marks only. */
-  --color-cream: #efe9da;
-  --color-ink: #302e20;
-  --color-ink-soft: #6e6a55;
-  --color-ochre: #c29055;
-  --color-ochre-deep: #8a5a22;
-  --color-ochre-soft: #d3a468;
-  --color-olive: #4a5637;
-  --color-hairline: rgba(48, 46, 32, 0.13);
+  /* Warm daylight palette — the home page's living-atmosphere world.
+     Roles and measured contrast in /design/DESIGN-SYSTEM.md. One rule:
+     ink carries every piece of text, amber is the only accent, pine is
+     small structural marks only. */
+  --color-base: #f2ece0;
+  --color-base-2: #eae2d1;
+  --color-ink: #2a3329;
+  --color-ink-soft: #5c6359;
+  --color-amber: #c88a3a;
+  --color-amber-soft: #e2ab52;
+  --color-pine: #285c3c;
+  --color-hairline: rgba(42, 51, 41, 0.14);
 
   --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
   --ease-in-out-cubic: cubic-bezier(0.65, 0, 0.35, 1);
@@ -84,18 +83,9 @@ body {
   background: radial-gradient(
     ellipse 120% 100% at 50% 45%,
     transparent 55%,
-    color-mix(in srgb, var(--color-cream) 55%, transparent)
+    color-mix(in srgb, var(--color-base) 55%, transparent)
   );
 }
-/* Brings our photographs into the muted earth family without touching the
-   files: pulls the saturation back so no photo out-punches the palette around
-   it, and lays a little warmth over the result so the greens and greys in the
-   frame share the ground's undertone. Filter only — the images themselves are
-   never altered, swapped or re-exported. */
-.photo-grade {
-  filter: saturate(0.85) sepia(0.14) contrast(0.97) brightness(1.01);
-}
-
 /* Dissolves a full-bleed photographic frame into the ground at its top and
    bottom edges. It masks rather than painting cream over the photo: the
    ground here is the living atmosphere, so a flat repaint lands a shade
@@ -170,13 +160,12 @@ body {
       color-mix(in srgb, var(--color-pine-950) 94%, transparent)
     );
 }
-/* Fine photographic grain, tiled from an inline SVG so nothing is fetched.
-   Whisper-level: it reads as texture, never as pattern. Callers set --grain
-   to trade texture against how much the layer moves the ground under it. */
+/* Fine photographic grain over dark surfaces, tiled from an inline SVG so
+   nothing is fetched. Whisper-level: it reads as texture, never as pattern. */
 .film-grain {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23g)'/%3E%3C/svg%3E");
   background-repeat: repeat;
-  opacity: var(--grain, 0.05);
+  opacity: 0.05;
 }
 
 /* Living atmosphere — the warm ground's two drifting light layers. Both are
@@ -187,20 +176,11 @@ body {
    ends draws a hard line down the page. The second layer is offset half a
    tile so the two grids interleave instead of stacking. They drift on
    alternate so the loop eases back on itself instead of snapping at its end.
-   Transform only; the tiles are painted once and never repainted.
-
-   Both pools are drawn from the accent's own two tones — the dusty ochre on
-   one grid, its lighter highlight on the other — so the ground carries only
-   the page's single light and never picks up a second, cooler hue. Both are
-   held low enough that the cream stays cream. This is the ceiling, not a
-   starting point: the layers add
-   depth and slow movement, and the moment they start tinting the ground they
-   have stopped being atmosphere and started being a wash. Measured on the
-   rendered composite, not on these numbers (see DESIGN-SYSTEM.md). */
+   Transform only; the tiles are painted once and never repainted. */
 .atmosphere-glow-a {
   background-image: radial-gradient(
     circle closest-side at 50% 50%,
-    color-mix(in srgb, var(--color-ochre) 7%, transparent),
+    color-mix(in srgb, var(--color-amber-soft) 24%, transparent),
     transparent
   );
   background-size: 840px 840px;
@@ -209,7 +189,7 @@ body {
 .atmosphere-glow-b {
   background-image: radial-gradient(
     circle closest-side at 50% 50%,
-    color-mix(in srgb, var(--color-ochre-soft) 8%, transparent),
+    color-mix(in srgb, var(--color-amber) 15%, transparent),
     transparent
   );
   background-size: 840px 840px;

@@ -124,7 +124,7 @@ interface DottedGlobeProps {
 
 // A wireframe globe sitting in the home page's warm ground: no ocean fill —
 // the ground itself is the ocean — with the land drawn as halftone dots in
-// olive, lit by the ochre halo behind it. Decorative (aria-hidden): the
+// pine, lit by the amber halo behind it. Decorative (aria-hidden): the
 // meaning it illustrates is carried by the countries stat beside it.
 export function DottedGlobe({ className }: DottedGlobeProps) {
   const wrapperRef = useRef<HTMLDivElement | null>(null);
@@ -141,7 +141,7 @@ export function DottedGlobe({ className }: DottedGlobeProps) {
     // once — the component never hardcodes a color.
     const styles = getComputedStyle(document.documentElement);
     const token = (name: string) => styles.getPropertyValue(name).trim();
-    const pine = token("--color-olive");
+    const pine = token("--color-pine");
     const ink = token("--color-ink");
 
     const reducedMotion = window.matchMedia(

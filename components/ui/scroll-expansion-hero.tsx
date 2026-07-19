@@ -3,6 +3,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
+import { LivingAtmosphere } from "@/components/living-atmosphere";
 import { cn, withBasePath } from "@/lib/utils";
 
 const EASE_IN_OUT_CUBIC: [number, number, number, number] = [0.65, 0, 0.35, 1];
@@ -243,7 +244,7 @@ const ScrollExpandMedia = ({
                     fill
                     priority
                     sizes="95vw"
-                    className="photo-grade object-cover"
+                    className="object-cover saturate-[1.06] sepia-[0.08]"
                   />
                 ) : (
                   slides.map((src, i) => (
@@ -260,13 +261,13 @@ const ScrollExpandMedia = ({
                         fill
                         priority={i === 0}
                         sizes="95vw"
-                        className="photo-grade object-cover"
+                        className="object-cover saturate-[1.06] sepia-[0.08]"
                       />
                     </motion.div>
                   ))
                 )}
                 <motion.div
-                  className="absolute inset-0 bg-cream"
+                  className="absolute inset-0 bg-base"
                   initial={false}
                   animate={{ opacity: overlayOpacity }}
                   transition={{ duration: 0.2, ease: EASE_IN_OUT_CUBIC }}
@@ -287,7 +288,7 @@ const ScrollExpandMedia = ({
               {hintLabel && (
                 <div className="mt-4 flex justify-center">
                   <p
-                    className="rounded-full border border-hairline bg-cream/85 px-4 py-1 text-[0.8125rem] font-semibold leading-[1.4] text-ink"
+                    className="rounded-full border border-hairline bg-base/85 px-4 py-1 text-[0.8125rem] font-semibold leading-[1.4] text-ink"
                     style={{ transform: `translateX(${textTranslateX}vw)` }}
                   >
                     {hintLabel}
@@ -332,22 +333,25 @@ const ScrollExpandMedia = ({
               <div
                 data-expanded={!mounted || contentVisible ? "" : undefined}
                 className={cn(
-                  "hero-intro group pointer-events-auto absolute inset-x-0 bottom-0 flex flex-col items-center overflow-hidden px-6 py-4 opacity-0 duration-[400ms] ease-out-quart data-[expanded]:opacity-100 data-[expanded]:transition-opacity md:py-5",
+                  "hero-intro group pointer-events-auto absolute inset-x-0 bottom-0 flex flex-col items-center overflow-hidden px-6 py-5 opacity-0 duration-[400ms] ease-out-quart data-[expanded]:opacity-100 data-[expanded]:transition-opacity md:py-6",
                   mounted && !contentVisible && "pointer-events-none"
                 )}
               >
-                {/* The statement stands on the page's own cream. It is
-                    painted rather than shown through: what sits behind this
-                    band is the photograph's lower half, not the ground, so a
-                    transparent band would reveal forest instead of the
-                    clearing the statement belongs to. */}
+                {/* The statement stands in the page's own warm field rather
+                    than on a cream panel cut out of it. The field is painted
+                    here rather than shown through: what sits behind this band
+                    is the photograph's lower half, not the ground, so a
+                    transparent band would reveal forest, not light. Same
+                    component as the page ground, so both sides of the frame
+                    edge drift on one light. */}
+                <LivingAtmosphere />
+                {/* The pocket of light the statement rests in. Kept smaller
+                    than the band and centered on the words: a glow that spans
+                    the full height stops reading as depth and starts reading
+                    as an amber gradient with the band's own edges. */}
                 <div
                   aria-hidden="true"
-                  className="pointer-events-none absolute inset-0 bg-cream"
-                />
-                <div
-                  aria-hidden="true"
-                  className="film-grain pointer-events-none absolute inset-0 mix-blend-multiply"
+                  className="pointer-events-none absolute left-1/2 top-[45%] h-[80%] w-[58%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-amber-soft/18 blur-[100px]"
                 />
                 <div className="relative flex flex-col items-center">
                   {children}

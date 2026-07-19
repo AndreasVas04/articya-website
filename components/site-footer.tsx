@@ -21,11 +21,11 @@ const icons: Record<string, React.ReactNode> = {
 };
 
 // The lower half of the site's chrome: the same cream surface as the header,
-// closing every page on the edge it opened with, marked off from the body
-// above it by a hairline and nothing more.
+// closing every page on the edge it opened with, a shade deeper than the body
+// it brackets and separated from it by a hairline.
 export function SiteFooter() {
   return (
-    <footer className="border-t border-hairline bg-cream py-8">
+    <footer className="border-t border-hairline bg-base-2 py-8">
       <div className="mx-auto flex max-w-5xl flex-col items-center gap-4 px-4">
         <div className="flex gap-4">
           {footer.social.map((s) => (
@@ -35,13 +35,13 @@ export function SiteFooter() {
               target="_blank"
               rel="noreferrer"
               aria-label={s.label}
-              className="text-ochre-deep transition-colors duration-200 hover:text-ink"
+              className="text-ink-soft transition-colors duration-200 hover:text-resin-deep"
             >
               {icons[s.label]}
             </a>
           ))}
         </div>
-        <p className="text-sm text-ochre-deep">{footer.copyright}</p>
+        <p className="text-sm text-ink-soft">{footer.copyright}</p>
       </div>
     </footer>
   );
