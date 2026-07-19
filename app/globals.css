@@ -27,6 +27,15 @@
   --color-pine: #285c3c;
   --color-hairline: rgba(42, 51, 41, 0.14);
 
+  /* Warm browns pulled from the same earth as the resin. `bark` is the
+     chrome's resting nav label (6.14 on base-2); `cream-warm` is the one
+     panel warmer than the ground, the hero's tagline card; `ember` is the
+     deepest resin, dark enough to carry a white button label (6.84). */
+  --color-bark: #5c4b32;
+  --color-cream-warm: #efe1c7;
+  --color-ember: #7a4a0d;
+  --color-ember-lit: #8a5610;
+
   --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
   --ease-in-out-cubic: cubic-bezier(0.65, 0, 0.35, 1);
 }

@@ -62,15 +62,15 @@ export function SiteHeader() {
                   href={item.href}
                   onClick={() => setOpen(false)}
                   className={cn(
-                    "group relative block py-2 text-[0.8125rem] font-semibold uppercase leading-[1.4] tracking-[0.08em] text-ink transition-colors duration-200 hover:text-resin-deep md:py-1",
-                    active && "text-resin-deep"
+                    "group relative block py-2 text-[0.8125rem] font-semibold uppercase leading-[1.4] tracking-[0.08em] text-bark transition-colors duration-200 hover:text-amber md:py-1",
+                    active && "text-amber"
                   )}
                 >
                   {item.label}
                   <span
                     aria-hidden="true"
                     className={cn(
-                      "absolute bottom-0 left-0 hidden h-0.5 w-full origin-left bg-amber transition-transform duration-200 ease-out-quart md:block",
+                      "absolute -bottom-px left-0 hidden h-0.5 w-full origin-left bg-amber transition-transform duration-300 ease-out-quart md:block",
                       active ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
                     )}
                   />

@@ -187,6 +187,14 @@ const ScrollExpandMedia = ({
   const firstWord = title ? title.split(" ")[0] : "";
   const restOfTitle = title ? title.split(" ").slice(1).join(" ") : "";
 
+  // The hint pill's middle dot picks up the gold; the halves either side of
+  // it stay ink. Split on the first separator only, so the label reads
+  // exactly as written when it carries none.
+  const hintDotIndex = hintLabel?.indexOf("·") ?? -1;
+  const hintSeparator = hintDotIndex >= 0 ? "·" : "";
+  const hintBefore = hintDotIndex >= 0 ? hintLabel!.slice(0, hintDotIndex) : "";
+  const hintAfter = hintDotIndex >= 0 ? hintLabel!.slice(hintDotIndex + 1) : "";
+
   // No ground of its own: the page's living atmosphere sits behind this frame
   // and shows through, so the hero is lit by the same warm field as everything
   // below it.
@@ -286,12 +294,27 @@ const ScrollExpandMedia = ({
               </div>
 
               {hintLabel && (
-                <div className="mt-4 flex justify-center">
+                <div className="mt-4 flex flex-col items-center gap-3">
+                  {/* A short strike of the same gold, carrying the eye from
+                      the photograph's lower edge down into the pill. */}
+                  <span
+                    aria-hidden="true"
+                    className="h-[3px] w-[88px] rounded-[3px] bg-amber/90"
+                    style={{ transform: `translateX(${textTranslateX}vw)` }}
+                  />
                   <p
-                    className="rounded-full border border-hairline bg-base/85 px-4 py-1 text-[0.8125rem] font-semibold leading-[1.4] text-ink"
+                    className="rounded-full border border-amber/[0.78] bg-base/85 px-4 py-1 text-[0.8125rem] font-semibold leading-[1.4] text-ink"
                     style={{ transform: `translateX(${textTranslateX}vw)` }}
                   >
-                    {hintLabel}
+                    {hintSeparator ? (
+                      <>
+                        {hintBefore}
+                        <span className="text-amber">{hintSeparator}</span>
+                        {hintAfter}
+                      </>
+                    ) : (
+                      hintLabel
+                    )}
                   </p>
                 </div>
               )}
@@ -333,7 +356,7 @@ const ScrollExpandMedia = ({
               <div
                 data-expanded={!mounted || contentVisible ? "" : undefined}
                 className={cn(
-                  "hero-intro group pointer-events-auto absolute inset-x-0 bottom-0 flex flex-col items-center overflow-hidden px-6 py-5 opacity-0 duration-[400ms] ease-out-quart data-[expanded]:opacity-100 data-[expanded]:transition-opacity md:py-6",
+                  "hero-intro group pointer-events-auto absolute inset-x-0 bottom-0 flex flex-col items-center overflow-hidden border border-amber/[0.48] px-6 py-5 opacity-0 duration-[400ms] ease-out-quart data-[expanded]:opacity-100 data-[expanded]:transition-opacity md:py-6",
                   mounted && !contentVisible && "pointer-events-none"
                 )}
               >
@@ -343,8 +366,10 @@ const ScrollExpandMedia = ({
                     is the photograph's lower half, not the ground, so a
                     transparent band would reveal forest, not light. Same
                     component as the page ground, so both sides of the frame
-                    edge drift on one light. */}
-                <LivingAtmosphere />
+                    edge drift on one light. The card's ground runs a step
+                    warmer than the page's, so it reads as a panel resting on
+                    the light rather than a hole cut through it. */}
+                <LivingAtmosphere className="bg-cream-warm" />
                 {/* The pocket of light the statement rests in. Kept smaller
                     than the band and centered on the words: a glow that spans
                     the full height stops reading as depth and starts reading
