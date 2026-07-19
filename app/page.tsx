@@ -63,7 +63,7 @@ export default function HomePage() {
                 globe is that number made visible. The reveals stagger down the
                 same path the eye takes: title, lead, globe, then the numerals. */}
             <div className="md:grid md:grid-cols-12 md:items-start md:gap-x-12">
-              <div className="md:col-span-5">
+              <div className="md:col-span-6">
                 <Reveal>
                   <span aria-hidden="true" className="block h-1 w-16 bg-amber" />
                   <h2 className="mt-6 font-display text-[clamp(2rem,4vw,3rem)] font-semibold leading-[1.1] tracking-[-0.01em]">
@@ -76,7 +76,7 @@ export default function HomePage() {
                   </p>
                 </Reveal>
               </div>
-              <div className="relative mt-8 md:col-span-7 md:mt-0">
+              <div className="relative mt-8 md:col-span-6 md:mt-0 md:self-center">
                 {/* The warm halo the globe's dots sit in — the light of the
                     ground gathered behind it, not a second source. */}
                 <div
@@ -84,7 +84,7 @@ export default function HomePage() {
                   className="pointer-events-none absolute left-1/2 top-1/2 h-2/3 w-2/3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-amber-soft/25 blur-[100px]"
                 />
                 <Reveal delayMs={150} className="duration-[700ms]">
-                  <DottedGlobe className="mx-auto w-full max-w-[16rem] md:max-w-[34rem]" />
+                  <DottedGlobe className="mx-auto w-full max-w-[16rem] md:max-w-[24rem]" />
                 </Reveal>
               </div>
             </div>
