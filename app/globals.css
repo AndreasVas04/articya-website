@@ -34,6 +34,10 @@
      measures 4.46, a hair short. */
   --color-bark: #5c4b32;
   --color-cream-warm: #efe1c7;
+  /* The same gold at zero alpha. Fades name this explicitly rather than
+     ending on `transparent`, which is a colorless black and can pull a
+     gradient through grey. */
+  --color-cream-warm-0: rgb(239 225 199 / 0);
   --color-amber-fill: #ce9440;
   --color-amber-lit: #d8a254;
   --color-amber-edge: #b87a28;
@@ -125,6 +129,32 @@ body {
   );
   -webkit-mask-image: var(--edge-mask);
   mask-image: var(--edge-mask);
+}
+/* Ties a full-bleed panel back to the chrome's gold: the frame's own
+   background runs cream-warm at its top and bottom edges and falls to the
+   same gold at zero alpha toward the middle, so the living atmosphere still
+   carries the center. It sits under every child, which puts it exactly where
+   `photo-edge-dissolve` has masked the photograph away — the gold reads as
+   the ground the panel dissolves into, never as a tint over the picture.
+   Where two of these panels meet, the two edges make one continuous band. */
+.gold-edge-wash {
+  --gold-edge: 90px;
+  background:
+    linear-gradient(
+      to bottom,
+      var(--color-cream-warm) 0%,
+      var(--color-cream-warm-0) var(--gold-edge)
+    ),
+    linear-gradient(
+      to top,
+      var(--color-cream-warm) 0%,
+      var(--color-cream-warm-0) var(--gold-edge)
+    );
+}
+@media (min-width: 768px) {
+  .gold-edge-wash {
+    --gold-edge: 150px;
+  }
 }
 .plaster-light {
   background: radial-gradient(

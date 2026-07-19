@@ -139,7 +139,7 @@ export function OfferPanel({
     >
       <div
         className={cn(
-          "relative overflow-hidden",
+          "gold-edge-wash relative overflow-hidden",
           active ? "sticky top-0 h-svh" : "min-h-[92svh]"
         )}
       >
