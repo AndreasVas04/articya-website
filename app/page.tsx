@@ -41,7 +41,7 @@ export default function HomePage() {
         >
           <span
             aria-hidden="true"
-            className="block h-[3px] w-[82px] translate-y-6 bg-amber/90 opacity-0 duration-[700ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] motion-reduce:translate-y-0"
+            className="block h-[3px] w-[82px] translate-y-6 bg-amber opacity-0 duration-[700ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] motion-reduce:translate-y-0"
           />
           <p className="mt-4 max-w-[30rem] translate-y-6 text-balance text-center font-display text-[1.0625rem] font-medium md:max-w-[46rem] md:text-[1.25rem] leading-[1.35] tracking-[-0.01em] text-ink opacity-0 duration-[700ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] group-data-[expanded]:delay-100 motion-reduce:translate-y-0">
             {hero.text}
@@ -55,7 +55,7 @@ export default function HomePage() {
 
         {/* overflow-clip (not hidden) so the offer panels' sticky frames can
             pin against the viewport. */}
-        <section className="relative overflow-clip text-ink">
+        <section className="gold-field relative overflow-clip text-ink">
           <div className="relative mx-auto max-w-6xl px-4 pt-16 md:pt-24">
             {/* The globe is the living center of the clearing: text left, the
                 lit world right, the stats ledger reading under it — with the
@@ -117,7 +117,7 @@ export default function HomePage() {
             carries no bottom padding: the lamp's descent owns the gap below,
             so the trail's line runs straight on into the thread rather than
             stopping short of a section edge. */}
-        <section className="relative px-4 pt-24 text-ink md:pt-32">
+        <section className="gold-field relative px-4 pt-24 text-ink md:pt-32">
           <div className="relative mx-auto max-w-6xl">
             <Reveal className="text-center">
               <span
@@ -140,7 +140,7 @@ export default function HomePage() {
             the ground it has been lighting all page. The headline is the one
             place the accent carries text, so it takes the text-safe amber
             and leaves the bright one to the glow around it. */}
-        <section className="relative overflow-hidden text-ink">
+        <section className="gold-field relative overflow-hidden text-ink">
           <LampCta>
             {/* ink, not ink-soft: this line sits deepest in the pool, where
                 the warm wash measures 4.14 against ink-soft — under AA. */}

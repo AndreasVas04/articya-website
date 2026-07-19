@@ -40,23 +40,22 @@ gradients — the only gradients are atmosphere (see Atmospheric grounds).
 
 ## Warm palette — the home page's living atmosphere
 
-> **In transition.** The home page is being rebuilt section by section into a
-> warm, light "living atmosphere" world. This table and the color-role rules
-> below are the direction of record for the sections already converted (the
-> ground below the hero, "What we do", the stats and the globe). Everything
-> outside this section — the narrative, the "one continuous pine-950 world"
-> ground rule, the signature-element thread and the atmospheric-ground
-> table — still describes the dusk world and is **knowingly contradictory
-> while the migration runs**. It gets rewritten once the offer panels, "What
-> you gain" and the closing CTA have landed; until then, don't resolve the
-> conflict by reverting a converted section.
+> **The home page is fully converted.** Every section — hero, "What we do"
+> with the stats and the globe, both offer panels, "What you gain" and the
+> closing lamp — now stands in the warm gold world described below, and this
+> table is the direction of record for all of it. The dusk palette above still
+> governs the inner pages. Passages elsewhere in this document that describe
+> home as "one continuous pine-950 world" — the narrative, the signature
+> element thread, parts of the atmospheric-ground table — are **stale for
+> home and correct for the inner pages**; read them that way rather than
+> resolving the conflict by reverting a section.
 
 | Token | Hex | Role |
 |---|---|---|
-| `base` | `#F2ECE0` | Warm cream page ground |
-| `cream-warm` | `#EFE1C7` | Chrome surface (header, footer) and the hero's tagline card — the ground's gold |
+| `gold-wash` | `#EDE2C8` | The home page's gold floor — the ground every section stands on |
+| `gold-anchor` | `#E9D9B4` | The same gold a shade deeper: chrome (header, footer), the hero's tagline card, and every section's top and bottom edge |
 | `ink` | `#2A3329` | **All** body text, all headings, all large numerals |
-| `ink-soft` | `#5C6359` | Secondary text, labels, captions |
+| `ink-soft` | `#52594F` | Secondary text, labels, captions |
 | `bark` | `#5C4B32` | Resting nav label on the chrome |
 | `amber` | `#C88A3A` | The one accent, as a mark — accent bars, the nav underline, rules |
 | `amber-fill` | `#CE9440` | Button fill: the accent lightened until `ink` on it clears AA (4.95) |
@@ -66,27 +65,48 @@ gradients — the only gradients are atmosphere (see Atmospheric grounds).
 | `pine` | `#285C3C` | Small structural marks only — globe dots, small icons |
 | `hairline` | `rgba(42,51,41,.14)` | Rules, dividers, quiet borders |
 
-**The chrome is soft, not a frame.** The header and footer are chrome, and
-they sit on `cream-warm` — the ground's own gold, warmer and a shade deeper
-than the body's `base`, so they are set apart from the page without
-contrasting against it. It is the same surface as the hero's tagline card, so
-the gold that opens the page is the gold that closes it. A `hairline` rule
-does the separating; there is no dark or saturated bar bracketing the site.
-On that surface the working set is the warm palette's own: `ink` for the
-wordmark (10.14), `ink-soft` for secondary text and icon strokes (4.81),
-`bark` for the resting nav label (6.49), `resin-deep` for the active and
-hover nav label (5.14), and `amber` for the nav underline as a decorative
+**Gold on every section, no cream gaps.** The home page is one continuous
+gold field from the header to the footer. `gold-wash` is the floor — the
+living atmosphere paints it, so every section shows gold before it paints
+anything of its own, and no stretch of the page may read as neutral cream.
+Each section additionally carries `.gold-field`, which takes its top and
+bottom edges to `gold-anchor`. Adjacent sections therefore meet in one
+unbroken band of a single gold, and the first and last sections meet the
+header and footer in that same band. Measured across every seam on the built
+page, both viewports: `rgb(233,217,180)` — `gold-anchor` exactly — with a
+maximum channel jump of 2 across the join.
+
+Because the seam does the joining, **no section carries a rule at its edge**,
+and the header and footer carry none either. A hairline there would draw
+exactly the line the shared gold exists to erase.
+
+**The chrome is soft, not a frame.** Header, footer and the hero's tagline
+card are all `gold-anchor`, and the fills are explicitly the same value — the
+card looks richer only because it also carries a ring, an edge wash and a
+glow, never because its gold differs. So the gold that opens the page is the
+gold that closes it, and there is no dark or saturated bar bracketing the
+site. On that surface the working set is the warm palette's own: `ink` for
+the wordmark (9.38), `ink-soft` for secondary text and icon strokes (5.19),
+`bark` for the resting nav label (6.00), `resin-deep` for the active and
+hover nav label (4.75), and `amber` for the nav underline as a decorative
 mark. The underline never carries the active state alone — `resin-deep` on
-the label does — since `amber` measures 2.27 on `cream-warm` and, as
+the label does — since `amber` measures 2.10 on `gold-anchor` and, as
 everywhere on the warm ground, is a mark and never text.
+
+**Decorative amber lines only.** Amber's structural role on the home page is
+the short accent mark: heading bars, the tagline card's divider, the hero
+rule, the nav underline. Each is solid `amber` at 3–4px — crisp and fully
+opaque, never faded or hairline-thin. Amber never draws a full-width line
+between two sections; there are no section dividers on this page at all.
 
 Color-role rules, in order of precedence:
 
 - **Ink is text.** Every heading, every paragraph and every numeral is `ink`;
   secondary text is `ink-soft`. No other token carries text on the warm ground.
-- **No white text anywhere.** No `#fff`, no `rgb(255…)`, and no cream or
-  paper value — including `base`, `cream-warm` and `plaster-bright` — may be
-  set as a `color:` on the home page or in the shared header and footer.
+- **No white text anywhere.** No `#fff`, no `rgb(255…)`, and no cream, gold
+  or paper value — including `gold-wash`, `gold-anchor` and
+  `plaster-bright` — may be set as a `color:` on the home page or in the
+  shared header and footer.
   Every string is a dark token: `ink`, `ink-soft`, `bark` or `resin-deep`.
   Cream stays a surface. Where a control needs to read as filled, the fill
   carries the color and `ink` sits on top of it.
@@ -96,25 +116,32 @@ Color-role rules, in order of precedence:
 - **Same role, same color everywhere.** A numeral is one color, never
   two-tone; the stats are `ink` across all three columns.
 
-### Measured contrast on `base` (#F2ECE0)
+### Measured contrast on the gold ground
 
-| Foreground | Ratio | Rule |
-|---|---|---|
-| `ink` | 11.13 | Body text, headings, numerals ✓ |
-| `ink` on `cream-warm` | 10.14 | Chrome wordmark ✓ |
-| `ink-soft` on `cream-warm` | 4.81 | Chrome secondary text, icon strokes ✓ |
-| `bark` on `cream-warm` | 6.49 | Chrome resting nav label ✓ |
-| `resin-deep` on `cream-warm` | 5.14 | Chrome active/hover nav label ✓ |
-| `ink-soft` | 5.28 | Secondary text, labels ✓ |
-| `pine` | 6.65 | Passes, but pine stays structural by role, not contrast |
-| `ink` on `amber-fill` | 4.95 | Filled button label ✓ |
-| `ink` on `amber-lit` | 5.75 | Filled button label, hover ✓ |
-| `ink` on `amber` | 4.46 | ✗ just under AA — `amber` is not a button fill |
-| `amber` on `cream-warm` | **2.27** | ✗ **FAILS** — see the ceiling below |
-| `amber` | **2.50** | ✗ **FAILS** — see the ceiling below |
+Three grounds matter: the `gold-wash` floor, the `gold-anchor` edges and
+chrome, and — because the atmosphere's amber pools warm the floor where they
+drift over it — the **warmest composite** the page actually renders,
+sampled at `rgb(231,214,184)`. Text is signed off against that last column,
+not against the flat token; `ink-soft` was deepened from `#5C6359` to
+`#52594F` precisely because it measured 4.35 there while passing on paper.
 
-**The amber text ceiling.** `amber` measures 2.50:1 on `base` and 2.27:1 on
-`cream-warm`, failing AA for normal text (4.5) *and* for large text (3.0). So
+| Foreground | on `gold-wash` | on `gold-anchor` | on warmest composite | Rule |
+|---|---|---|---|---|
+| `ink` | 10.17 | 9.38 | 9.17 | Body text, headings, numerals ✓ |
+| `ink-soft` | 5.62 | 5.19 | 5.07 | Secondary text, labels, chrome icon strokes ✓ |
+| `bark` | 6.51 | 6.00 | 5.87 | Chrome resting nav label ✓ |
+| `resin-deep` | 5.15 | 4.75 | 4.65 | Chrome active/hover nav label, closing headline ✓ |
+| `pine` | 6.07 | 5.60 | 5.48 | Passes, but pine stays structural by role, not contrast |
+| `amber` | **2.28** | **2.10** | **2.06** | ✗ **FAILS** — see the ceiling below |
+
+| Foreground | Background | Ratio | Rule |
+|---|---|---|---|
+| `ink` | `amber-fill` | 4.95 | Filled button label ✓ |
+| `ink` | `amber-lit` | 5.75 | Filled button label, hover ✓ |
+| `ink` | `amber` | 4.46 | ✗ just under AA — `amber` is not a button fill |
+
+**The amber text ceiling.** `amber` measures 2.28:1 on `gold-wash` and 2.10:1
+on `gold-anchor`, failing AA for normal text (4.5) *and* for large text (3.0). So
 amber never carries text on the warm ground — not eyebrows, not links, not a
 nav label. It is a **mark**: accent bars, the nav underline, rules.
 
@@ -122,9 +149,11 @@ Amber's other role is a **fill**, where the contrast that matters is `ink`
 sitting on top of it. `#C88A3A` measures 4.46 under `ink` — a hair short — so
 buttons take `amber-fill` (`#CE9440`, 4.95) and `amber-lit` (`#D8A254`, 5.75)
 on hover, the same accent lightened one notch until the label clears AA. The
-rule **amber is a fill, never text** now holds without exception. Any section
-that wants amber-colored *text* uses `resin-deep` (`#845110`, 5.14 on the
-chrome, 5.77 on plaster) instead.
+rule **amber is a fill, never text** holds with one surviving exception: the
+hero hint pill's middle separator dot, an `amber` glyph carrying no
+information, which measures 2.06 on the composite. Any section that wants
+amber-colored *text* uses `resin-deep` (`#845110`, 4.75 on the chrome, 5.77
+on plaster) instead.
 
 ## Measured contrast (WCAG 2.1) — dusk palette
 
@@ -208,21 +237,22 @@ text keep them.
   alternate `plaster` / `plaster-muted` so light stretches read green, never
   neutral cream.
 - **Ground is decided per page, not per section.**
-  - **Home** is one continuous `pine-950` world from the hero to the footer —
-    no plaster section may interrupt it. Depth inside the dark comes from
-    `pine-900`/`pine-800` surfaces, full-bleed photography, and the resin
-    light, never from switching to a light ground. This also carries the
-    upcoming globe and lamp sections without a seam.
+  - **Home** is one continuous gold world from the header to the footer — the
+    `gold-wash` floor everywhere, `gold-anchor` at every section edge and in
+    the chrome. No section may interrupt it and none may read as neutral
+    cream. Depth inside the gold comes from the living atmosphere's amber
+    pools, full-bleed photography and the resin light, never from switching
+    ground.
   - **Inner pages** (about, faq, contact) are text-heavy and
     keep `plaster` as the default background below their heroes; no dark
     section may appear there outside the hero. The hero itself is the bridge
     to the home world: the same pine-dusk photograph treatment (`pine-950`
     wash) with the resin halo behind the headline, so navigating home → an
     inner page reads as the same forest at a different hour.
-  - **Header and footer** are one `cream-warm` surface site-wide, solid on every
+  - **Header and footer** are one `gold-anchor` surface site-wide, solid on every
     page and never transparent over a hero — so navigation reads the same
-    everywhere and the chrome sets itself apart from the body by a shade and
-    a hairline rather than by contrast.
+    everywhere. On the home page they carry no edge rule: the first and last
+    sections fade to this same gold, so chrome and body meet as one band.
 - Every page's first screen must read "green outdoors": photography plus at
   least two green token roles above the fold. On light grounds those are
   lichen labels, sage pills/borders, plaster-muted bands; on the dark home
@@ -285,6 +315,7 @@ section. Nothing else may put a gradient or texture on a ground:
 | `.dusk-scrim` | Graded photo wash — most open where the lamp halo sits, near-solid pine at the edges and base of the frame | Inner-page hero photographs |
 | `.photo-vignette` | Edges falling toward `pine-950` | Inside photographic frames and hero photos only |
 | `.film-grain` | Fine tiled SVG grain at 5% opacity, killing the flat digital-paint feel | Over dark grounds and photographic frames |
+| `.gold-field` | Top and bottom edges at `gold-anchor`, falling to it at zero alpha toward the middle where the `gold-wash` floor takes over | Every home section, and every full-bleed offer panel — it is what makes the seams continuous |
 | `.plaster-light` | Soft pool of `plaster-bright` | Behind the About scenes and the finale mosaic |
 | `.print-shadow` | Soft `pine-950` drop shadow | Under framed prints on plaster; the raised state of interactive cards (open accordion, hovered contact card) |
 
@@ -326,9 +357,21 @@ Rules, in order of precedence:
 - Keep every glow the same resin amber; one light source, one temperature.
 - Use sage borders instead of gray borders everywhere on light grounds.
 - Check this table before introducing any new fg/bg pair.
+- Outline a rounded card with an inset ring on its own topmost layer, not a
+  `border`. A border sits under an absolutely positioned fill, and an inset
+  shadow on the card itself paints under its children — either way the fill
+  covers it. Where a rounded parent clips the card, the card takes
+  `border-radius: inherit` rather than restating the value: these frames are
+  sized in fractional pixels, so a hand-matched radius rasterizes its arc on a
+  different subpixel boundary than the clip and the corner reads chipped.
 
 **Don't**
 
+- Don't give a gold outline to a card whose edge passes under the fixed
+  header. The hero photo frame is centered in the viewport, so on a short
+  desktop window its top edge and both top corners sit behind the chrome; it
+  keeps a `hairline` ring, which disappears under the header unnoticed, where
+  an amber one would stop dead at the header and read as a broken outline.
 - Don't use pure black, pure white, or any gray — the neutrals are the pine
   and plaster families.
 - Don't use bright/tech greens, leaf icons, or gradients outside the
@@ -348,7 +391,7 @@ integration time.
 
 | Component | Hardcoded value | Token |
 |---|---|---|
-| Header / footer | chrome surface | `cream-warm`, 1px `hairline` rule |
+| Header / footer | chrome surface | `gold-anchor`, no edge rule |
 | Header | wordmark | `ink` |
 | Header | resting nav label | `bark` |
 | Header | active + `:hover` nav label | `resin-deep` |

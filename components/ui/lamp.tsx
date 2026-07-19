@@ -263,7 +263,7 @@ export function LampCta({ children, className }: LampCtaProps) {
               />
               <span
                 className={cn(
-                  "relative block size-3.5 rounded-full bg-amber shadow-[0_0_0_6px_color-mix(in_srgb,var(--color-base)_75%,transparent),0_0_26px_8px_color-mix(in_srgb,var(--color-amber-soft)_55%,transparent)]",
+                  "relative block size-3.5 rounded-full bg-amber shadow-[0_0_0_6px_color-mix(in_srgb,var(--color-gold-wash)_75%,transparent),0_0_26px_8px_color-mix(in_srgb,var(--color-amber-soft)_55%,transparent)]",
                   lit && "animate-[node-flare_400ms_var(--ease-out-quart)]"
                 )}
               />

@@ -139,7 +139,7 @@ export function OfferPanel({
     >
       <div
         className={cn(
-          "gold-edge-wash relative overflow-hidden",
+          "gold-field relative overflow-hidden",
           active ? "sticky top-0 h-svh" : "min-h-[92svh]"
         )}
       >
@@ -168,14 +168,14 @@ export function OfferPanel({
           {/* A light veil lifts the photo into the warm ground, then the
               reading wash builds from the text side so the words land on
               cream rather than on the picture. */}
-          <div className="absolute inset-0 bg-base/12" />
+          <div className="absolute inset-0 bg-gold-wash/12" />
           <motion.div
-            className="absolute inset-0 bg-gradient-to-t from-base from-18% via-base/82 via-50% to-transparent md:hidden"
+            className="absolute inset-0 bg-gradient-to-t from-gold-wash from-18% via-gold-wash/82 via-50% to-transparent md:hidden"
             style={active ? { opacity: washOpacity } : undefined}
           />
           <motion.div
             className={cn(
-              "absolute inset-0 hidden from-base from-24% via-base/78 via-52% to-transparent md:block",
+              "absolute inset-0 hidden from-gold-wash from-24% via-gold-wash/78 via-52% to-transparent md:block",
               flip ? "bg-gradient-to-l" : "bg-gradient-to-r"
             )}
             style={active ? { opacity: washOpacity } : undefined}
@@ -192,7 +192,7 @@ export function OfferPanel({
           <div className={cn("max-w-xl", flip && "md:ml-auto")}>
             <motion.span
               aria-hidden="true"
-              className="flex size-12 items-center justify-center rounded-full border border-pine/30 bg-base/70 text-pine backdrop-blur-sm"
+              className="flex size-12 items-center justify-center rounded-full border border-pine/30 bg-gold-wash/70 text-pine backdrop-blur-sm"
               style={active ? { opacity: iconOpacity, y: iconY } : undefined}
             >
               <Icon className="size-6" strokeWidth={1.5} />

@@ -7,10 +7,13 @@ import { cn } from "@/lib/utils";
 // the viewport.
 const PARALLAX_PX = 20;
 
-// The warm ground the home page's light lives in: two tiled radial layers
-// drifting against each other under a fine grain, leaning gently toward the
-// pointer. Absolute, never fixed — a fixed layer is out of flow, so the page
-// can no longer measure its own height around it.
+// The warm ground the home page's light lives in: the `gold-wash` floor under
+// two tiled radial layers drifting against each other beneath a fine grain,
+// leaning gently toward the pointer. The floor is gold rather than neutral
+// cream, so every section it shows through reads gold before any section
+// paints anything of its own; the drifting layers are amber, so they only
+// ever warm it further. Absolute, never fixed — a fixed layer is out of flow,
+// so the page can no longer measure its own height around it.
 export function LivingAtmosphere({ className }: { className?: string }) {
   const driftRef = useRef<HTMLDivElement | null>(null);
 
@@ -45,7 +48,7 @@ export function LivingAtmosphere({ className }: { className?: string }) {
     <div
       aria-hidden="true"
       className={cn(
-        "pointer-events-none absolute inset-0 overflow-hidden bg-base",
+        "pointer-events-none absolute inset-0 overflow-hidden bg-gold-wash",
         className
       )}
     >

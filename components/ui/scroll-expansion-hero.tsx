@@ -195,12 +195,13 @@ const ScrollExpandMedia = ({
   const hintBefore = hintDotIndex >= 0 ? hintLabel!.slice(0, hintDotIndex) : "";
   const hintAfter = hintDotIndex >= 0 ? hintLabel!.slice(hintDotIndex + 1) : "";
 
-  // No ground of its own: the page's living atmosphere sits behind this frame
-  // and shows through, so the hero is lit by the same warm field as everything
-  // below it.
+  // The page's living atmosphere sits behind this frame and shows through, so
+  // the hero is lit by the same gold field as everything below it; `gold-field`
+  // adds only the edges, taking the top up into the header's gold and the
+  // bottom down into the first section's.
   return (
     <div className="overflow-hidden">
-      <section className="relative flex min-h-[100dvh] flex-col items-center justify-start overflow-hidden">
+      <section className="gold-field relative flex min-h-[100dvh] flex-col items-center justify-start overflow-hidden">
         <motion.div
           className="absolute inset-0 z-0"
           initial={false}
@@ -250,7 +251,14 @@ const ScrollExpandMedia = ({
                   on a different subpixel boundary than the ring's arc — the
                   two disagree at the tip and the corner reads chipped. Each
                   layer painting its own rounded corner removes the seam;
-                  `isolate` keeps the grain's blend inside the frame. */}
+                  `isolate` keeps the grain's blend inside the frame.
+
+                  The outline stays a hairline rather than joining the gold:
+                  this frame is centered in the viewport, so on a short desktop
+                  window its top edge passes under the fixed header and the top
+                  two corners are covered. A hairline disappears under the
+                  chrome unnoticed; an amber line would end at the header in a
+                  hard horizontal cut and read as a broken outline. */}
               <div className="relative isolate h-full w-full overflow-hidden rounded-2xl ring-1 ring-hairline">
                 {restingState ? (
                   <Image
@@ -282,7 +290,7 @@ const ScrollExpandMedia = ({
                   ))
                 )}
                 <motion.div
-                  className="absolute inset-0 rounded-[inherit] bg-base"
+                  className="absolute inset-0 rounded-[inherit] bg-gold-wash"
                   initial={false}
                   animate={{ opacity: overlayOpacity }}
                   transition={{ duration: 0.2, ease: EASE_IN_OUT_CUBIC }}
@@ -306,11 +314,11 @@ const ScrollExpandMedia = ({
                       the photograph's lower edge down into the pill. */}
                   <span
                     aria-hidden="true"
-                    className="h-[3px] w-[88px] rounded-[3px] bg-amber/90"
+                    className="h-[3px] w-[88px] rounded-[3px] bg-amber"
                     style={{ transform: `translateX(${textTranslateX}vw)` }}
                   />
                   <p
-                    className="rounded-full border border-amber/[0.78] bg-base/85 px-4 py-1 text-[0.8125rem] font-semibold leading-[1.4] text-ink"
+                    className="rounded-full border border-amber bg-gold-wash/85 px-4 py-1 text-[0.8125rem] font-semibold leading-[1.4] text-ink"
                     style={{ transform: `translateX(${textTranslateX}vw)` }}
                   >
                     {hintSeparator ? (
@@ -363,10 +371,13 @@ const ScrollExpandMedia = ({
               <div
                 data-expanded={!mounted || contentVisible ? "" : undefined}
                 className={cn(
-                  // rounded-b-2xl matches the frame it sits in: a square
-                  // bordered band clipped by the rounded card loses its amber
-                  // border diagonally at both bottom corners.
-                  "hero-intro group pointer-events-auto absolute inset-x-0 bottom-0 flex flex-col items-center overflow-hidden rounded-b-2xl border border-amber/[0.48] px-6 py-5 opacity-0 duration-[400ms] ease-out-quart data-[expanded]:opacity-100 data-[expanded]:transition-opacity md:py-6",
+                  // The band's bottom corners are the clipping parent's own
+                  // radius, inherited rather than restated: the frame is sized
+                  // in fractional pixels, so a hand-matched value rasterizes
+                  // its arc on a different subpixel boundary than the clip and
+                  // the two disagree at the corner tip. Inheriting makes them
+                  // one value by construction.
+                  "hero-intro group pointer-events-auto absolute inset-x-0 bottom-0 flex flex-col items-center overflow-hidden rounded-[inherit] rounded-t-none px-6 py-5 opacity-0 duration-[400ms] ease-out-quart data-[expanded]:opacity-100 data-[expanded]:transition-opacity md:py-6",
                   mounted && !contentVisible && "pointer-events-none"
                 )}
               >
@@ -376,10 +387,11 @@ const ScrollExpandMedia = ({
                     is the photograph's lower half, not the ground, so a
                     transparent band would reveal forest, not light. Same
                     component as the page ground, so both sides of the frame
-                    edge drift on one light. The card's ground runs a step
-                    warmer than the page's, so it reads as a panel resting on
-                    the light rather than a hole cut through it. */}
-                <LivingAtmosphere className="rounded-[inherit] bg-cream-warm" />
+                    edge drift on one light. The card's fill is the chrome's
+                    `gold-anchor`, the same value the header and footer carry,
+                    so the gold that opens the page is the gold that closes
+                    it — and the three read as one surface, not three shades. */}
+                <LivingAtmosphere className="rounded-[inherit] bg-gold-anchor" />
                 {/* The pocket of light the statement rests in. Kept smaller
                     than the band and centered on the words: a glow that spans
                     the full height stops reading as depth and starts reading
@@ -391,6 +403,19 @@ const ScrollExpandMedia = ({
                 <div className="relative flex flex-col items-center">
                   {children}
                 </div>
+                {/* The gold outline, as an inset ring on its own topmost
+                    layer rather than a border on the band. A border sits
+                    under the band's absolutely positioned fill, and an inset
+                    shadow on the band itself paints beneath its children —
+                    either way the atmosphere covers it. Here the ring is the
+                    last thing painted, it inherits the band's exact radius,
+                    and being inset it lies 2.5px inside the clip boundary, so
+                    a subpixel disagreement between arc and clip can only
+                    touch antialiasing, never break the line. */}
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-0 rounded-[inherit] shadow-[inset_0_0_0_2.5px_var(--color-amber)]"
+                />
               </div>
             </div>
           </div>
