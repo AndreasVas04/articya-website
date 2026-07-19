@@ -10,40 +10,27 @@ import {
 } from "framer-motion";
 import { cn } from "@/lib/utils";
 
-// The two halves of the light cone. Painted as explicit conic gradients so
-// the component never depends on Tailwind's gradient plumbing; the color is
-// always the resin token.
-const CONE_LEFT =
-  "conic-gradient(from 70deg at center top, color-mix(in srgb, var(--color-resin) 85%, transparent), transparent, transparent)";
-const CONE_RIGHT =
-  "conic-gradient(from 290deg at center top, transparent, transparent, color-mix(in srgb, var(--color-resin) 85%, transparent))";
+// The light the lamp lays on the ground, anchored to the line and spreading
+// down and out. On the dark page this was a pair of conic wedges masked into
+// a cone — a shape that only exists because darkness cuts it out. Cream has
+// no darkness to cut, so the same masks read as the straight edges of a
+// glowing slab. Here the light is a soft ellipse instead: it reaches its
+// warmest just under the line and has faded to nothing well inside its own
+// box, so it carries no edge from any angle. Painted as an explicit gradient
+// rather than a blurred element, so nothing clips the falloff.
+const POOL =
+  "radial-gradient(ellipse 62% 52% at 50% 0%, color-mix(in srgb, var(--color-amber-soft) 42%, transparent), color-mix(in srgb, var(--color-amber-soft) 15%, transparent) 46%, transparent 78%)";
 
 // The descending thread carries the trail line's glow with it.
 const THREAD_GLOW =
-  "drop-shadow(0 0 2px color-mix(in srgb, var(--color-resin) 80%, transparent)) drop-shadow(0 0 18px color-mix(in srgb, var(--color-resin) 55%, transparent))";
+  "drop-shadow(0 0 2px color-mix(in srgb, var(--color-amber) 70%, transparent)) drop-shadow(0 0 14px color-mix(in srgb, var(--color-amber-soft) 55%, transparent))";
 
-// The blade is brightest where the node feeds it, decaying toward its ends.
+// The blade is strongest where the node feeds it, decaying toward its ends.
+// It holds near-full amber across its middle rather than peaking at a single
+// point: against cream a one-point peak washes straight into the pool behind
+// it and the lamp loses the bar it hangs from.
 const BLADE_HOTSPOT =
-  "linear-gradient(to right, transparent, color-mix(in srgb, var(--color-plaster-bright) 85%, transparent) 50%, transparent)";
-
-// Local attenuation behind the text lines only: soft pine bands where the
-// glyphs sit, easing off in the gap between paragraph and headline so the
-// pool visibly threads through the words. The band positions track each
-// breakpoint's line layout, so the profile comes in a mobile and a desktop
-// variant; a horizontal mask fades both out sideways well inside the
-// pool's width — never a box, never total darkness.
-const shadeStop = (pct: number) =>
-  `color-mix(in srgb, var(--color-pine-950) ${pct}%, transparent)`;
-const TEXT_SHADE_MOBILE = `linear-gradient(to bottom, transparent 2%, ${shadeStop(
-  66
-)} 10%, ${shadeStop(70)} 41%, ${shadeStop(26)} 49%, ${shadeStop(
-  34
-)} 60%, ${shadeStop(34)} 90%, transparent 98%)`;
-const TEXT_SHADE_DESKTOP = `linear-gradient(to bottom, transparent 2%, ${shadeStop(
-  66
-)} 9.5%, ${shadeStop(70)} 24%, ${shadeStop(26)} 30%, ${shadeStop(
-  34
-)} 40%, ${shadeStop(34)} 92%, transparent 100%)`;
+  "linear-gradient(to right, transparent, color-mix(in srgb, var(--color-amber) 45%, transparent) 16%, var(--color-amber) 50%, color-mix(in srgb, var(--color-amber) 45%, transparent) 84%, transparent)";
 
 interface LampCtaProps {
   children: React.ReactNode;
@@ -63,13 +50,12 @@ interface LampCtaProps {
 // on with the thread fully drawn; the unlit state is only applied after
 // mount. Children opt into the ignition via group-data-[lit] classes.
 //
-// The cone halves fade to transparency with mask-image instead of the stock
-// component's opaque cover bars, so they composite on any ground. The one
-// remaining opaque layer (the bar above the line) is pine-950 on the
-// section's flat pine-950 ground, and the section's film grain is painted
-// over it, so it can never read as a box. No overflow clip here — the
-// parent section clips, so the halo's spill dies naturally instead of
-// cutting a line at the component's edge.
+// Every layer composites on the living atmosphere: the cone halves fade to
+// transparency with mask-image and nothing is painted opaque, so the lamp
+// has no ground of its own and the cream runs straight through it from the
+// trail above. No overflow clip here — the parent section clips, so the
+// halo's spill dies naturally instead of cutting a line at the component's
+// edge.
 export function LampCta({ children, className }: LampCtaProps) {
   const descentRef = useRef<HTMLDivElement | null>(null);
   const reducedMotion = useReducedMotion();
@@ -170,20 +156,22 @@ export function LampCta({ children, className }: LampCtaProps) {
   return (
     <div
       data-lit={on ? "" : undefined}
-      className={cn("group relative bg-pine-950", className)}
+      className={cn("group relative", className)}
     >
       {/* pb compensates the text pull-up so the page keeps its length —
           the descent's scroll progress must still clear the ignition
           threshold at natural scroll bottom on every viewport. */}
       <div className="relative mx-auto flex w-full max-w-6xl flex-col items-center px-4 pb-32 md:pb-36">
         {/* The descent: the trail's thread crossing from the section above
-            down onto the lamp line. z-10 lifts it over the stage's spill
-            bar. Before the path is measured, a plain centered line keeps
-            the exported resting state threaded. */}
+            down onto the lamp line. It starts flush with the trail's last
+            rail pixel — the section above carries no bottom padding — and
+            owns the whole gap between the two sections, so the amber line
+            is unbroken across the junction. Before the path is measured, a
+            plain centered line keeps the exported resting state threaded. */}
         <div
           ref={descentRef}
           aria-hidden="true"
-          className="relative z-10 h-32 w-full md:h-40"
+          className="relative z-10 h-48 w-full md:h-64"
         >
           {threadPath ? (
             <svg
@@ -192,13 +180,13 @@ export function LampCta({ children, className }: LampCtaProps) {
             >
               <path
                 d={threadPath}
-                stroke="var(--color-pine-800)"
-                strokeWidth="1"
+                stroke="var(--color-hairline)"
+                strokeWidth="2"
               />
               <motion.path
                 d={threadPath}
-                stroke="var(--color-resin)"
-                strokeWidth="1"
+                stroke="var(--color-amber)"
+                strokeWidth="2"
                 style={
                   drawn
                     ? { pathLength: threadDraw, filter: THREAD_GLOW }
@@ -207,68 +195,53 @@ export function LampCta({ children, className }: LampCtaProps) {
               />
             </svg>
           ) : (
-            <span className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-resin" />
+            <span className="absolute inset-y-0 left-1/2 w-0.5 -translate-x-1/2 bg-amber" />
           )}
         </div>
 
         {/* The lamp stage: the line sits on the stage's top edge — exactly
-            where the thread lands — and the cone fills it. Layer geometry
-            and z-order follow the stock component, re-anchored to the top
-            so the section can size to its content instead of a full
-            screen. */}
+            where the thread lands — and the light falls from it. Re-anchored
+            to the top so the section can size to its content instead of a
+            full screen. */}
         <div aria-hidden="true" className="relative isolate h-56 w-full">
-          {/* The cone halves carry the pool through the text zone: full
-              strength in the short throat above the paragraph, then a long
-              mid-band the paragraph and headline sit inside, dying at the
-              button — the words are in the light, and the TEXT_SHADE layer
-              plus this curve hold the composite floors behind the glyphs. */}
+          {/* The pool carries the light through the text zone: warmest in
+              the short throat above the paragraph, then a long fade the
+              paragraph and headline stand inside, gone by the button. The
+              wash only warms the cream it sits on — it never darkens it —
+              so ink keeps its contrast wherever the words land and needs no
+              shading behind the glyphs. Widening it is the ignition: the
+              light opens from the point the thread arrived at. */}
           <div
-            style={{ backgroundImage: CONE_LEFT }}
+            style={{ backgroundImage: POOL }}
             className={cn(
-              "absolute right-1/2 top-0 h-80 [mask-composite:intersect] [mask-image:linear-gradient(to_top,transparent_5%,rgb(0_0_0/0.1)_22%,rgb(0_0_0/0.3)_60%,rgb(0_0_0/0.38)_82%,black_90%),linear-gradient(to_right,transparent,black_33%)]",
+              "absolute left-1/2 top-0 h-80 -translate-x-1/2",
               lit &&
                 "transition-[width,opacity] duration-[700ms] ease-in-out-cubic",
               on
-                ? "w-[17rem] opacity-100 md:w-[30rem]"
-                : "w-[8.5rem] opacity-50 md:w-[15rem]"
+                ? "w-[34rem] max-w-[100vw] opacity-100 md:w-[60rem]"
+                : "w-[17rem] max-w-[100vw] opacity-50 md:w-[30rem]"
             )}
           />
-          <div
-            style={{ backgroundImage: CONE_RIGHT }}
-            className={cn(
-              "absolute left-1/2 top-0 h-80 [mask-composite:intersect] [mask-image:linear-gradient(to_top,transparent_5%,rgb(0_0_0/0.1)_22%,rgb(0_0_0/0.3)_60%,rgb(0_0_0/0.38)_82%,black_90%),linear-gradient(to_left,transparent,black_33%)]",
-              lit &&
-                "transition-[width,opacity] duration-[700ms] ease-in-out-cubic",
-              on
-                ? "w-[17rem] opacity-100 md:w-[30rem]"
-                : "w-[8.5rem] opacity-50 md:w-[15rem]"
-            )}
-          />
-          {/* Ambient halo sitting on the line. The fade lives on a padded
-              wrapper so it shades the blur's spill instead of clipping it at
-              the element box, and the bloom dies inside the headroom — on
-              both sides: the lower fade lets the halo reach the paragraph
-              (the pool wraps the words now) but be gone before the
-              headline's lower lines, where the cone alone carries the
-              warmth. */}
-          <div className="absolute left-1/2 top-10 z-50 -translate-x-1/2 -translate-y-1/2 p-24 [mask-image:linear-gradient(to_bottom,transparent,black_48%,black_54%,transparent_76%)]">
-            <div className="h-36 w-[18rem] rounded-full bg-resin opacity-40 blur-3xl md:w-[28rem]" />
+          {/* The source's own bloom, sitting tight on the line. The fade
+              lives on a padded wrapper so it shades the blur's spill instead
+              of clipping it at the element box, and it dies inside the
+              headroom on both sides — a whisper above the line, gone before
+              the paragraph, where the pool alone carries the warmth. */}
+          <div className="absolute left-1/2 top-2 z-30 -translate-x-1/2 -translate-y-1/2 p-20 [mask-image:linear-gradient(to_bottom,transparent_18%,black_46%,black_56%,transparent_84%)]">
+            <div
+              className={cn(
+                "h-20 rounded-full bg-amber-soft opacity-40 blur-2xl",
+                lit && "transition-[width] duration-[700ms] ease-in-out-cubic",
+                on ? "w-52 md:w-80" : "w-24 md:w-40"
+              )}
+            />
           </div>
-          {/* Bright core just under the line — kept short so its blur
-              spill dies above the paragraph band. */}
-          <div
-            className={cn(
-              "absolute left-1/2 top-3 z-30 h-24 -translate-x-1/2 -translate-y-1/2 rounded-full bg-resin-light blur-2xl",
-              lit && "transition-[width] duration-[700ms] ease-in-out-cubic",
-              on ? "w-40 md:w-64" : "w-20 md:w-32"
-            )}
-          />
           {/* The lamp line itself, brightest at its center where the node
               feeds it. */}
           <div
             style={{ backgroundImage: BLADE_HOTSPOT }}
             className={cn(
-              "absolute left-1/2 top-0 z-50 h-0.5 -translate-x-1/2 -translate-y-1/2 bg-resin-light",
+              "absolute left-1/2 top-0 z-50 h-0.5 -translate-x-1/2 -translate-y-1/2",
               lit && "transition-[width] duration-[700ms] ease-in-out-cubic",
               on ? "w-[17rem] md:w-[30rem]" : "w-[8.5rem] md:w-[15rem]"
             )}
@@ -284,40 +257,24 @@ export function LampCta({ children, className }: LampCtaProps) {
             >
               <span
                 className={cn(
-                  "absolute -inset-2 rounded-full bg-resin opacity-0 blur-md",
+                  "absolute -inset-2 rounded-full bg-amber opacity-0 blur-md",
                   lit && "animate-[node-flare-glow_400ms_var(--ease-out-quart)]"
                 )}
               />
               <span
                 className={cn(
-                  "relative block size-3 rounded-full bg-resin shadow-[0_0_40px_6px_color-mix(in_srgb,var(--color-resin)_45%,transparent)] ring-4 ring-pine-950",
+                  "relative block size-3.5 rounded-full bg-amber shadow-[0_0_0_6px_color-mix(in_srgb,var(--color-base)_75%,transparent),0_0_26px_8px_color-mix(in_srgb,var(--color-amber-soft)_55%,transparent)]",
                   lit && "animate-[node-flare_400ms_var(--ease-out-quart)]"
                 )}
               />
             </motion.span>
           </span>
-          {/* Swallows the halo's spill above the line; the line (z-50) and
-              a whisper of the ambient halo stay above it, as in the stock
-              layering. The descent thread rides over it at z-10. */}
-          <div className="absolute bottom-full left-1/2 z-40 h-44 w-[150%] -translate-x-1/2 bg-pine-950" />
         </div>
 
         {/* The words live inside the pool: pulled up so the paragraph sits
             in the pool's upper-to-mid band and the headline in its warm
-            middle, with only the button reaching the dying edge. The shade
-            layer sits under the text (-z-10 inside this stacking context,
-            above the whole stage) to hold the contrast floors. */}
+            middle, with only the button reaching the dying edge. */}
         <div className="relative z-10 -mt-40 flex w-full flex-col items-center">
-          <div
-            aria-hidden="true"
-            style={{ backgroundImage: TEXT_SHADE_MOBILE }}
-            className="absolute -top-6 left-1/2 -z-10 h-[13rem] w-[26rem] max-w-full -translate-x-1/2 [mask-image:linear-gradient(to_right,transparent,black_18%,black_82%,transparent)] md:hidden"
-          />
-          <div
-            aria-hidden="true"
-            style={{ backgroundImage: TEXT_SHADE_DESKTOP }}
-            className="absolute -top-6 left-1/2 -z-10 hidden h-[15rem] w-[46rem] -translate-x-1/2 [mask-image:linear-gradient(to_right,transparent,black_18%,black_82%,transparent)] md:block"
-          />
           {children}
         </div>
       </div>

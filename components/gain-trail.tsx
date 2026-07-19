@@ -8,10 +8,11 @@ import { cn } from "@/lib/utils";
 
 const icons = [Compass, Users, Award, HandCoins];
 
-// Both rails dissolve at their ends instead of stopping on a cut edge, so
-// the trail reads as a path passing through the section.
-const RAIL_FADE =
-  "linear-gradient(to bottom, transparent, black 7%, black 86%, transparent)";
+// The rails dissolve at the top instead of stopping on a cut edge. The
+// bottom runs full strength to the container's edge, where the lamp's
+// descent thread picks it up, so the amber line crosses the junction into
+// the closing section unbroken.
+const RAIL_FADE = "linear-gradient(to bottom, transparent, black 7%, black)";
 
 // The four gains as stations along a trail. An amber line draws itself down
 // the path as the user scrolls, passing a lit node at each station; stations

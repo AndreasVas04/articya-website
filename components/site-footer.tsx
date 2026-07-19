@@ -20,11 +20,13 @@ const icons: Record<string, React.ReactNode> = {
   ),
 };
 
-// Like the header, the footer is one pine surface on every page: the site
-// opens and closes in the same dusk, whatever ground the page body used.
+// The footer closes every page on the warm ground: cream, ink text, one
+// hairline across the top, and amber only where a link lights up. The home
+// page's last section runs straight into it, so nothing changes temperature
+// at the bottom of the scroll.
 export function SiteFooter() {
   return (
-    <footer className="border-t border-pine-800 bg-pine-950 py-8">
+    <footer className="border-t border-hairline bg-base py-8">
       <div className="mx-auto flex max-w-5xl flex-col items-center gap-4 px-4">
         <div className="flex gap-4">
           {footer.social.map((s) => (
@@ -34,13 +36,13 @@ export function SiteFooter() {
               target="_blank"
               rel="noreferrer"
               aria-label={s.label}
-              className="text-sage transition-colors duration-200 hover:text-resin-light"
+              className="text-ink-soft transition-colors duration-200 hover:text-resin-deep"
             >
               {icons[s.label]}
             </a>
           ))}
         </div>
-        <p className="text-sm text-plaster-muted">{footer.copyright}</p>
+        <p className="text-sm text-ink-soft">{footer.copyright}</p>
       </div>
     </footer>
   );
