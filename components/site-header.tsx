@@ -20,7 +20,7 @@ export function SiteHeader() {
   const pathname = usePathname();
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b border-hairline bg-base-2">
+    <header className="fixed inset-x-0 top-0 z-50 border-b border-hairline bg-cream-warm">
       <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 md:h-20">
         <Link href="/" className="flex shrink-0 items-center gap-2.5">
           <Image
@@ -50,7 +50,7 @@ export function SiteHeader() {
 
         <ul
           className={cn(
-            "absolute inset-x-0 top-full flex-col gap-1 border-b border-hairline bg-base-2 px-4 pb-6 pt-2 md:static md:flex md:flex-row md:items-center md:gap-8 md:border-0 md:bg-transparent md:p-0",
+            "absolute inset-x-0 top-full flex-col gap-1 border-b border-hairline bg-cream-warm px-4 pb-6 pt-2 md:static md:flex md:flex-row md:items-center md:gap-8 md:border-0 md:bg-transparent md:p-0",
             open ? "flex" : "hidden"
           )}
         >
@@ -62,15 +62,17 @@ export function SiteHeader() {
                   href={item.href}
                   onClick={() => setOpen(false)}
                   className={cn(
-                    "group relative block py-2 text-[0.8125rem] font-semibold uppercase leading-[1.4] tracking-[0.08em] text-bark transition-colors duration-200 hover:text-amber md:py-1",
-                    active && "text-amber"
+                    "group relative block py-2 text-[0.8125rem] font-semibold uppercase leading-[1.4] tracking-[0.08em] text-bark transition-colors duration-200 hover:text-resin-deep md:py-1",
+                    active && "text-resin-deep"
                   )}
                 >
                   {item.label}
+                  {/* The bright amber lives in the underline, never the label:
+                      it measures 2.27 on the chrome, so it is a mark, not text. */}
                   <span
                     aria-hidden="true"
                     className={cn(
-                      "absolute -bottom-px left-0 hidden h-0.5 w-full origin-left bg-amber transition-transform duration-300 ease-out-quart md:block",
+                      "absolute -bottom-px left-0 hidden h-0.5 w-full origin-left bg-amber transition-transform duration-200 ease-out-quart md:block",
                       active ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
                     )}
                   />

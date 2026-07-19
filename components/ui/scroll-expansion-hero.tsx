@@ -244,7 +244,14 @@ const ScrollExpandMedia = ({
                   "0 0 50px color-mix(in srgb, var(--color-ink) 14%, transparent)",
               }}
             >
-              <div className="relative h-full w-full overflow-hidden rounded-2xl ring-1 ring-hairline">
+              {/* The frame's radius is carried by every layer inside it, not
+                  just by the clip. The card is sized in fractional pixels, so
+                  a square child cut by `overflow-hidden` rasterizes its corner
+                  on a different subpixel boundary than the ring's arc — the
+                  two disagree at the tip and the corner reads chipped. Each
+                  layer painting its own rounded corner removes the seam;
+                  `isolate` keeps the grain's blend inside the frame. */}
+              <div className="relative isolate h-full w-full overflow-hidden rounded-2xl ring-1 ring-hairline">
                 {restingState ? (
                   <Image
                     src={withBasePath(slides[0])}
@@ -252,13 +259,13 @@ const ScrollExpandMedia = ({
                     fill
                     priority
                     sizes="95vw"
-                    className="object-cover saturate-[1.06] sepia-[0.08]"
+                    className="rounded-[inherit] object-cover saturate-[1.06] sepia-[0.08]"
                   />
                 ) : (
                   slides.map((src, i) => (
                     <motion.div
                       key={src}
-                      className="absolute inset-0"
+                      className="absolute inset-0 rounded-[inherit]"
                       initial={false}
                       animate={{ opacity: activeSlide === i ? 1 : 0 }}
                       transition={{ duration: 0.7, ease: EASE_IN_OUT_CUBIC }}
@@ -269,13 +276,13 @@ const ScrollExpandMedia = ({
                         fill
                         priority={i === 0}
                         sizes="95vw"
-                        className="object-cover saturate-[1.06] sepia-[0.08]"
+                        className="rounded-[inherit] object-cover saturate-[1.06] sepia-[0.08]"
                       />
                     </motion.div>
                   ))
                 )}
                 <motion.div
-                  className="absolute inset-0 bg-base"
+                  className="absolute inset-0 rounded-[inherit] bg-base"
                   initial={false}
                   animate={{ opacity: overlayOpacity }}
                   transition={{ duration: 0.2, ease: EASE_IN_OUT_CUBIC }}
@@ -285,11 +292,11 @@ const ScrollExpandMedia = ({
                     dissolving into the cream once the wash eases off. */}
                 <div
                   aria-hidden="true"
-                  className="photo-vignette-warm pointer-events-none absolute inset-0"
+                  className="photo-vignette-warm pointer-events-none absolute inset-0 rounded-[inherit]"
                 />
                 <div
                   aria-hidden="true"
-                  className="film-grain pointer-events-none absolute inset-0 mix-blend-multiply"
+                  className="film-grain pointer-events-none absolute inset-0 rounded-[inherit] mix-blend-multiply"
                 />
               </div>
 
@@ -345,7 +352,7 @@ const ScrollExpandMedia = ({
                 headline in document order. Children opt into the stagger via
                 group-data-[expanded] classes. */}
             <div
-              className="pointer-events-none absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl"
+              className="pointer-events-none absolute left-1/2 top-1/2 z-10 isolate -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl"
               style={{
                 width: `${mediaWidth}px`,
                 height: `${mediaHeight}px`,
@@ -356,7 +363,10 @@ const ScrollExpandMedia = ({
               <div
                 data-expanded={!mounted || contentVisible ? "" : undefined}
                 className={cn(
-                  "hero-intro group pointer-events-auto absolute inset-x-0 bottom-0 flex flex-col items-center overflow-hidden border border-amber/[0.48] px-6 py-5 opacity-0 duration-[400ms] ease-out-quart data-[expanded]:opacity-100 data-[expanded]:transition-opacity md:py-6",
+                  // rounded-b-2xl matches the frame it sits in: a square
+                  // bordered band clipped by the rounded card loses its amber
+                  // border diagonally at both bottom corners.
+                  "hero-intro group pointer-events-auto absolute inset-x-0 bottom-0 flex flex-col items-center overflow-hidden rounded-b-2xl border border-amber/[0.48] px-6 py-5 opacity-0 duration-[400ms] ease-out-quart data-[expanded]:opacity-100 data-[expanded]:transition-opacity md:py-6",
                   mounted && !contentVisible && "pointer-events-none"
                 )}
               >
@@ -369,7 +379,7 @@ const ScrollExpandMedia = ({
                     edge drift on one light. The card's ground runs a step
                     warmer than the page's, so it reads as a panel resting on
                     the light rather than a hole cut through it. */}
-                <LivingAtmosphere className="bg-cream-warm" />
+                <LivingAtmosphere className="rounded-[inherit] bg-cream-warm" />
                 {/* The pocket of light the statement rests in. Kept smaller
                     than the band and centered on the words: a glow that spans
                     the full height stops reading as depth and starts reading

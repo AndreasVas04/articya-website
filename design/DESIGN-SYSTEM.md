@@ -54,30 +54,42 @@ gradients — the only gradients are atmosphere (see Atmospheric grounds).
 | Token | Hex | Role |
 |---|---|---|
 | `base` | `#F2ECE0` | Warm cream page ground |
-| `base-2` | `#EAE2D1` | Chrome surface (header, footer) — one step deeper than the ground |
+| `cream-warm` | `#EFE1C7` | Chrome surface (header, footer) and the hero's tagline card — the ground's gold |
 | `ink` | `#2A3329` | **All** body text, all headings, all large numerals |
 | `ink-soft` | `#5C6359` | Secondary text, labels, captions |
-| `amber` | `#C88A3A` | The one accent — CTA fills, accent bars, eyebrows, links |
+| `bark` | `#5C4B32` | Resting nav label on the chrome |
+| `amber` | `#C88A3A` | The one accent, as a mark — accent bars, the nav underline, rules |
+| `amber-fill` | `#CE9440` | Button fill: the accent lightened until `ink` on it clears AA (4.95) |
+| `amber-lit` | `#D8A254` | Button hover fill — still clears AA under `ink` (5.75) |
+| `amber-edge` | `#B87A28` | 1px border under the amber fills |
 | `amber-soft` | `#E2AB52` | Glows and highlights only, never text |
 | `pine` | `#285C3C` | Small structural marks only — globe dots, small icons |
 | `hairline` | `rgba(42,51,41,.14)` | Rules, dividers, quiet borders |
 
 **The chrome is soft, not a frame.** The header and footer are chrome, and
-they sit on `base-2` — one step deeper and warmer than the body's `base`, so
-they are set apart from the page without contrasting against it. A `hairline`
-rule does the separating; there is no dark or saturated bar bracketing the
-site. On that surface the working set is the warm palette's own: `ink` for
-labels and the wordmark (10.16), `ink-soft` for secondary text and icon
-strokes (4.82), `resin-deep` for the active and hover nav label (5.15), and
-`amber` for the nav underline as a decorative mark. The underline never
-carries the active state alone — `resin-deep` on the label does — since
-`amber` measures 2.28 on `base-2` and, as everywhere on the warm ground,
-is a fill and never text.
+they sit on `cream-warm` — the ground's own gold, warmer and a shade deeper
+than the body's `base`, so they are set apart from the page without
+contrasting against it. It is the same surface as the hero's tagline card, so
+the gold that opens the page is the gold that closes it. A `hairline` rule
+does the separating; there is no dark or saturated bar bracketing the site.
+On that surface the working set is the warm palette's own: `ink` for the
+wordmark (10.14), `ink-soft` for secondary text and icon strokes (4.81),
+`bark` for the resting nav label (6.49), `resin-deep` for the active and
+hover nav label (5.14), and `amber` for the nav underline as a decorative
+mark. The underline never carries the active state alone — `resin-deep` on
+the label does — since `amber` measures 2.27 on `cream-warm` and, as
+everywhere on the warm ground, is a mark and never text.
 
 Color-role rules, in order of precedence:
 
 - **Ink is text.** Every heading, every paragraph and every numeral is `ink`;
   secondary text is `ink-soft`. No other token carries text on the warm ground.
+- **No white text anywhere.** No `#fff`, no `rgb(255…)`, and no cream or
+  paper value — including `base`, `cream-warm` and `plaster-bright` — may be
+  set as a `color:` on the home page or in the shared header and footer.
+  Every string is a dark token: `ink`, `ink-soft`, `bark` or `resin-deep`.
+  Cream stays a surface. Where a control needs to read as filled, the fill
+  carries the color and `ink` sits on top of it.
 - **Amber is the only accent.** One accent hue, nothing competing with it.
 - **Pine is structural, never typographic.** Small marks only — it may never
   carry large text, numerals, or a background.
@@ -89,23 +101,30 @@ Color-role rules, in order of precedence:
 | Foreground | Ratio | Rule |
 |---|---|---|
 | `ink` | 11.13 | Body text, headings, numerals ✓ |
-| `ink` on `base-2` | 10.16 | Chrome labels and wordmark ✓ |
-| `ink-soft` on `base-2` | 4.82 | Chrome secondary text, icon strokes ✓ |
-| `resin-deep` on `base-2` | 5.15 | Chrome active/hover nav label ✓ |
+| `ink` on `cream-warm` | 10.14 | Chrome wordmark ✓ |
+| `ink-soft` on `cream-warm` | 4.81 | Chrome secondary text, icon strokes ✓ |
+| `bark` on `cream-warm` | 6.49 | Chrome resting nav label ✓ |
+| `resin-deep` on `cream-warm` | 5.14 | Chrome active/hover nav label ✓ |
 | `ink-soft` | 5.28 | Secondary text, labels ✓ |
 | `pine` | 6.65 | Passes, but pine stays structural by role, not contrast |
-| `ink` on `amber` | 4.46 | Large text ✓ · normal-size button labels are borderline |
+| `ink` on `amber-fill` | 4.95 | Filled button label ✓ |
+| `ink` on `amber-lit` | 5.75 | Filled button label, hover ✓ |
+| `ink` on `amber` | 4.46 | ✗ just under AA — `amber` is not a button fill |
+| `amber` on `cream-warm` | **2.27** | ✗ **FAILS** — see the ceiling below |
 | `amber` | **2.50** | ✗ **FAILS** — see the ceiling below |
 
-**The amber text ceiling.** `amber` on `base` measures 2.50:1, which fails AA
-for normal text (4.5) *and* for large text (3.0). So amber's text-shaped roles
-in the table above — eyebrows and links — cannot be filled by `#C88A3A` as
-typed. Amber is safe as a **fill**: accent bars, decorative marks and button
-backgrounds, where the contrast that matters is `ink` sitting on top of it.
-Any converted section that needs amber-colored *text* must first introduce a
-darkened, text-safe amber and measure it here; until that token exists, an
-eyebrow on the warm ground is `ink-soft`. The `resin-deep` (`#845110`, 5.77 on
-plaster) precedent below is the shape of the fix.
+**The amber text ceiling.** `amber` measures 2.50:1 on `base` and 2.27:1 on
+`cream-warm`, failing AA for normal text (4.5) *and* for large text (3.0). So
+amber never carries text on the warm ground — not eyebrows, not links, not a
+nav label. It is a **mark**: accent bars, the nav underline, rules.
+
+Amber's other role is a **fill**, where the contrast that matters is `ink`
+sitting on top of it. `#C88A3A` measures 4.46 under `ink` — a hair short — so
+buttons take `amber-fill` (`#CE9440`, 4.95) and `amber-lit` (`#D8A254`, 5.75)
+on hover, the same accent lightened one notch until the label clears AA. The
+rule **amber is a fill, never text** now holds without exception. Any section
+that wants amber-colored *text* uses `resin-deep` (`#845110`, 5.14 on the
+chrome, 5.77 on plaster) instead.
 
 ## Measured contrast (WCAG 2.1) — dusk palette
 
@@ -200,7 +219,7 @@ text keep them.
     to the home world: the same pine-dusk photograph treatment (`pine-950`
     wash) with the resin halo behind the headline, so navigating home → an
     inner page reads as the same forest at a different hour.
-  - **Header and footer** are one `base-2` surface site-wide, solid on every
+  - **Header and footer** are one `cream-warm` surface site-wide, solid on every
     page and never transparent over a hero — so navigation reads the same
     everywhere and the chrome sets itself apart from the body by a shade and
     a hairline rather than by contrast.
@@ -329,6 +348,14 @@ integration time.
 
 | Component | Hardcoded value | Token |
 |---|---|---|
+| Header / footer | chrome surface | `cream-warm`, 1px `hairline` rule |
+| Header | wordmark | `ink` |
+| Header | resting nav label | `bark` |
+| Header | active + `:hover` nav label | `resin-deep` |
+| Header | nav underline (decorative, 200ms) | `amber` |
+| Footer | copyright, social icon strokes | `ink-soft`, `resin-deep` on hover |
+| Home CTA (`gold` button) | fill · label · border | `amber-fill` · `ink` · `amber-edge` |
+| Home CTA | `:hover` fill · label | `amber-lit` · `ink` |
 | Scroll-expansion hero | `black` background | `pine-950` |
 | Scroll-expansion hero | `white` text | `plaster-bright` |
 | Scroll-expansion hero | `blue-200` subtext | `resin-light` |

@@ -25,7 +25,7 @@ const icons: Record<string, React.ReactNode> = {
 // it brackets and separated from it by a hairline.
 export function SiteFooter() {
   return (
-    <footer className="border-t border-hairline bg-base-2 py-8">
+    <footer className="border-t border-hairline bg-cream-warm py-8">
       <div className="mx-auto flex max-w-5xl flex-col items-center gap-4 px-4">
         <div className="flex gap-4">
           {footer.social.map((s) => (

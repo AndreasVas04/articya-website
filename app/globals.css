@@ -17,9 +17,9 @@
   /* Warm daylight palette — the home page's living-atmosphere world.
      Roles and measured contrast in /design/DESIGN-SYSTEM.md. One rule:
      ink carries every piece of text, amber is the only accent, pine is
-     small structural marks only. */
+     small structural marks only, and no text on this ground is ever white
+     or cream. */
   --color-base: #f2ece0;
-  --color-base-2: #eae2d1;
   --color-ink: #2a3329;
   --color-ink-soft: #5c6359;
   --color-amber: #c88a3a;
@@ -27,14 +27,16 @@
   --color-pine: #285c3c;
   --color-hairline: rgba(42, 51, 41, 0.14);
 
-  /* Warm browns pulled from the same earth as the resin. `bark` is the
-     chrome's resting nav label (6.14 on base-2); `cream-warm` is the one
-     panel warmer than the ground, the hero's tagline card; `ember` is the
-     deepest resin, dark enough to carry a white button label (6.84). */
+  /* Warm browns pulled from the same earth as the resin. `cream-warm` is the
+     chrome surface and the hero's tagline card; `bark` is the chrome's
+     resting nav label (6.56 on it). The amber fills are the accent lightened
+     just far enough that `ink` sitting on them clears AA — `amber` itself
+     measures 4.46, a hair short. */
   --color-bark: #5c4b32;
   --color-cream-warm: #efe1c7;
-  --color-ember: #7a4a0d;
-  --color-ember-lit: #8a5610;
+  --color-amber-fill: #ce9440;
+  --color-amber-lit: #d8a254;
+  --color-amber-edge: #b87a28;
 
   --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
   --ease-in-out-cubic: cubic-bezier(0.65, 0, 0.35, 1);

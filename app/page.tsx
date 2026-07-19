@@ -47,10 +47,7 @@ export default function HomePage() {
             {hero.text}
           </p>
           <div className="mt-5 translate-y-6 opacity-0 duration-[400ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] group-data-[expanded]:delay-300 motion-reduce:translate-y-0">
-            <ButtonLink
-              href={hero.cta.href}
-              className="rounded-[9px] bg-ember tracking-[0.03em] text-white shadow-[0_6px_16px_-8px_rgba(60,35,5,0.55)] hover:bg-ember-lit hover:text-white"
-            >
+            <ButtonLink href={hero.cta.href} variant="gold">
               {hero.cta.label}
             </ButtonLink>
           </div>
@@ -154,7 +151,9 @@ export default function HomePage() {
               {gain.highlight}
             </p>
             <div className="mt-10 translate-y-24 opacity-0 duration-[700ms] ease-out-quart group-data-[lit]:translate-y-0 group-data-[lit]:opacity-100 group-data-[lit]:transition-[opacity,transform] group-data-[lit]:delay-[600ms] motion-reduce:translate-y-0">
-              <ButtonLink href={gain.cta.href}>{gain.cta.label}</ButtonLink>
+              <ButtonLink href={gain.cta.href} variant="gold">
+                {gain.cta.label}
+              </ButtonLink>
             </div>
           </LampCta>
         </section>
