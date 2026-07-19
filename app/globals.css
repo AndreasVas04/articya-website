@@ -19,6 +19,7 @@
      ink carries every piece of text, amber is the only accent, pine is
      small structural marks only. */
   --color-base: #f2ece0;
+  --color-base-2: #eae2d1;
   --color-ink: #2a3329;
   --color-ink-soft: #5c6359;
   --color-amber: #c88a3a;

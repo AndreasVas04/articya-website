@@ -12,15 +12,15 @@ function isActive(pathname: string, href: string) {
   return normalize(pathname) === normalize(href);
 }
 
-// Chrome, not content: one solid pine-950 bar on every page, matched by the
-// footer, so the warm body sits framed between two pine edges and navigation
-// never changes temperature between pages.
+// Chrome, not content: one cream bar a shade deeper than the body ground on
+// every page, matched by the footer. A hairline does the separating, so the
+// chrome is set apart from the warm body without contrasting against it.
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b border-pine-800 bg-pine-950">
+    <header className="fixed inset-x-0 top-0 z-50 border-b border-hairline bg-base-2">
       <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 md:h-20">
         <Link href="/" className="flex shrink-0 items-center gap-2.5">
           <Image
@@ -31,7 +31,7 @@ export function SiteHeader() {
             className="h-11 w-auto md:h-14"
             priority
           />
-          <span className="font-display text-lg font-semibold tracking-[-0.01em] text-plaster-bright md:text-xl">
+          <span className="font-display text-lg font-semibold tracking-[-0.01em] text-ink md:text-xl">
             ArtiCYa
           </span>
         </Link>
@@ -44,13 +44,13 @@ export function SiteHeader() {
           className="flex flex-col gap-1.5 p-2 md:hidden"
         >
           {[0, 1, 2].map((i) => (
-            <span key={i} className="h-0.5 w-6 bg-plaster-bright" />
+            <span key={i} className="h-0.5 w-6 bg-ink" />
           ))}
         </button>
 
         <ul
           className={cn(
-            "absolute inset-x-0 top-full flex-col gap-1 border-b border-pine-800 bg-pine-950 px-4 pb-6 pt-2 md:static md:flex md:flex-row md:items-center md:gap-8 md:border-0 md:bg-transparent md:p-0",
+            "absolute inset-x-0 top-full flex-col gap-1 border-b border-hairline bg-base-2 px-4 pb-6 pt-2 md:static md:flex md:flex-row md:items-center md:gap-8 md:border-0 md:bg-transparent md:p-0",
             open ? "flex" : "hidden"
           )}
         >
@@ -62,15 +62,15 @@ export function SiteHeader() {
                   href={item.href}
                   onClick={() => setOpen(false)}
                   className={cn(
-                    "group relative block py-2 text-[0.8125rem] font-semibold uppercase leading-[1.4] tracking-[0.08em] text-plaster-bright transition-colors duration-200 hover:text-resin-light md:py-1",
-                    active && "text-resin-light"
+                    "group relative block py-2 text-[0.8125rem] font-semibold uppercase leading-[1.4] tracking-[0.08em] text-ink transition-colors duration-200 hover:text-resin-deep md:py-1",
+                    active && "text-resin-deep"
                   )}
                 >
                   {item.label}
                   <span
                     aria-hidden="true"
                     className={cn(
-                      "absolute bottom-0 left-0 hidden h-0.5 w-full origin-left bg-resin transition-transform duration-200 ease-out-quart md:block",
+                      "absolute bottom-0 left-0 hidden h-0.5 w-full origin-left bg-amber transition-transform duration-200 ease-out-quart md:block",
                       active ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
                     )}
                   />

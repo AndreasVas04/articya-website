@@ -54,6 +54,7 @@ gradients — the only gradients are atmosphere (see Atmospheric grounds).
 | Token | Hex | Role |
 |---|---|---|
 | `base` | `#F2ECE0` | Warm cream page ground |
+| `base-2` | `#EAE2D1` | Chrome surface (header, footer) — one step deeper than the ground |
 | `ink` | `#2A3329` | **All** body text, all headings, all large numerals |
 | `ink-soft` | `#5C6359` | Secondary text, labels, captions |
 | `amber` | `#C88A3A` | The one accent — CTA fills, accent bars, eyebrows, links |
@@ -61,16 +62,17 @@ gradients — the only gradients are atmosphere (see Atmospheric grounds).
 | `pine` | `#285C3C` | Small structural marks only — globe dots, small icons |
 | `hairline` | `rgba(42,51,41,.14)` | Rules, dividers, quiet borders |
 
-**The chrome stays pine.** The warm ground is the page *body*. The header and
-footer are chrome, and they keep the dusk palette's `pine-950` (`#22301C`) —
-the deepest pine in the system, and already the footer's token under the
-"header and footer are one pine surface" rule below. No new deep-pine token is
-introduced: `pine-950` is the cleanest one, and its contrast pairs are already
-measured. On that surface, labels are `plaster-bright` (13.12), secondary text
-`plaster-muted` (10.71), icon strokes `sage` (6.37), and the active/hover nav
-accent `resin-light` (8.40) with a `resin` underline as a graphical mark
-(5.90). The body's `amber` never appears on pine — `resin-light` is the amber
-family's text-safe form on dark grounds.
+**The chrome is soft, not a frame.** The header and footer are chrome, and
+they sit on `base-2` — one step deeper and warmer than the body's `base`, so
+they are set apart from the page without contrasting against it. A `hairline`
+rule does the separating; there is no dark or saturated bar bracketing the
+site. On that surface the working set is the warm palette's own: `ink` for
+labels and the wordmark (10.16), `ink-soft` for secondary text and icon
+strokes (4.82), `resin-deep` for the active and hover nav label (5.15), and
+`amber` for the nav underline as a decorative mark. The underline never
+carries the active state alone — `resin-deep` on the label does — since
+`amber` measures 2.28 on `base-2` and, as everywhere on the warm ground,
+is a fill and never text.
 
 Color-role rules, in order of precedence:
 
@@ -87,6 +89,9 @@ Color-role rules, in order of precedence:
 | Foreground | Ratio | Rule |
 |---|---|---|
 | `ink` | 11.13 | Body text, headings, numerals ✓ |
+| `ink` on `base-2` | 10.16 | Chrome labels and wordmark ✓ |
+| `ink-soft` on `base-2` | 4.82 | Chrome secondary text, icon strokes ✓ |
+| `resin-deep` on `base-2` | 5.15 | Chrome active/hover nav label ✓ |
 | `ink-soft` | 5.28 | Secondary text, labels ✓ |
 | `pine` | 6.65 | Passes, but pine stays structural by role, not contrast |
 | `ink` on `amber` | 4.46 | Large text ✓ · normal-size button labels are borderline |
@@ -165,6 +170,7 @@ Display: **Bricolage Grotesque** · Body: **Instrument Sans** — both loaded vi
 | Stat numeral | `clamp(3.25rem, 8vw, 6.5rem)` / 1 desktop · `2.75rem` / 1 mobile | Bricolage 600 | Home stats only — `resin`, glowing. Monumental centered columns on desktop; compact ledger rows on mobile so all three share one screen |
 | Showpiece | `clamp(2.25rem, 5vw, 3.75rem)` / 1.15, −0.01em | Bricolage 600 | One key line per page max (e.g. the home closing line) |
 | Trail item | `clamp(1.5rem, 2.5vw, 2.25rem)` / 1.2 | Bricolage 600 | Home gains sequence |
+| Hero statement | `clamp(1.125rem, 1.6vw, 1.5rem)` / 1.35, −0.01em | Bricolage 500 | Home hero mission line only — a calm lead under the headline, breaking to 2–3 lines at `34rem` |
 | Lede | `1.25rem` / 1.55 | Instrument Sans 400 | Intro paragraph under headings; offer-panel body on desktop, where plain Body reads too small against the full-bleed panel scale |
 | Body | `1rem` / 1.7 | Instrument Sans 400 | Default copy |
 | Label | `0.8125rem` / 1.4, +0.08em, uppercase | Instrument Sans 600 | Section eyebrows (`lichen`), pills |
@@ -194,10 +200,10 @@ text keep them.
     to the home world: the same pine-dusk photograph treatment (`pine-950`
     wash) with the resin halo behind the headline, so navigating home → an
     inner page reads as the same forest at a different hour.
-  - **Header and footer** are one pine surface site-wide — the header is
-    transparent over every hero and gains `pine-950` once scrolled, the
-    footer is always `pine-950` — so every page opens and closes in the dusk
-    regardless of its body ground, and navigation never jumps worlds.
+  - **Header and footer** are one `base-2` surface site-wide, solid on every
+    page and never transparent over a hero — so navigation reads the same
+    everywhere and the chrome sets itself apart from the body by a shade and
+    a hairline rather than by contrast.
 - Every page's first screen must read "green outdoors": photography plus at
   least two green token roles above the fold. On light grounds those are
   lichen labels, sage pills/borders, plaster-muted bands; on the dark home
@@ -311,7 +317,9 @@ Rules, in order of precedence:
 - Don't set `resin` as body-size text, or `sage` as text on light grounds.
 - Don't break the home page's dark ground with a light section, and don't put
   a dark section on an inner page below its hero. No second accent hue.
-- Don't introduce new font weights beyond 400/600, or new durations/easings.
+- Don't introduce new font weights beyond 400/500/600, or new
+  durations/easings. 500 is Bricolage only, and only for the home hero
+  statement, where 600 at that size reads heavier than the line deserves.
 
 ## Component token mapping
 

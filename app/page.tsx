@@ -43,10 +43,10 @@ export default function HomePage() {
             aria-hidden="true"
             className="block h-1 w-16 translate-y-6 bg-amber opacity-0 duration-[700ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] motion-reduce:translate-y-0"
           />
-          <p className="mt-4 max-w-[40rem] translate-y-6 text-balance text-center font-display text-[clamp(1.25rem,1.9vw,1.75rem)] font-semibold leading-[1.3] tracking-[-0.01em] text-ink opacity-0 duration-[700ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] group-data-[expanded]:delay-100 motion-reduce:translate-y-0">
+          <p className="mt-4 max-w-[34rem] translate-y-6 text-balance text-center font-display text-[clamp(1.125rem,1.6vw,1.5rem)] font-medium leading-[1.35] tracking-[-0.01em] text-ink opacity-0 duration-[700ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] group-data-[expanded]:delay-100 motion-reduce:translate-y-0">
             {hero.text}
           </p>
-          <div className="mt-6 translate-y-6 opacity-0 duration-[400ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] group-data-[expanded]:delay-300 motion-reduce:translate-y-0">
+          <div className="mt-5 translate-y-6 opacity-0 duration-[400ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] group-data-[expanded]:delay-300 motion-reduce:translate-y-0">
             <ButtonLink href={hero.cta.href}>{hero.cta.label}</ButtonLink>
           </div>
         </ScrollExpandMedia>
