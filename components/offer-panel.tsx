@@ -57,13 +57,13 @@ function SentenceGroup({
 
 // A full-bleed photographic panel staged as a pinned scroll beat. The outer
 // section is taller than the viewport and the frame sticks while the user
-// scrolls through it: the photo owns the entry under a light wash, then the
-// scrim deepens as the heading rises and a resin bar draws itself, and the
-// paragraph completes sentence by sentence at reading pace before the panel
-// releases. On mobile the pin is shorter and the paragraph arrives in two
-// halves anchored to the bottom wash. Before mount and under reduced motion
-// the panel renders unpinned with everything visible, so the exported HTML
-// is the resting state.
+// scrolls through it: the photo owns the entry under an open wash, then the
+// cream scrim builds as the heading rises and an amber bar draws itself, and
+// the paragraph completes sentence by sentence at reading pace before the
+// panel releases. On mobile the pin is shorter and the paragraph arrives in
+// two halves anchored to the bottom wash. Before mount and under reduced
+// motion the panel renders unpinned with everything visible, so the exported
+// HTML is the resting state.
 export function OfferPanel({
   image,
   title,
@@ -101,8 +101,10 @@ export function OfferPanel({
   const photoScale = useTransform(
     () => 1.05 - 0.05 * stageWindow(stage.get(), 0.05, 0.35)
   );
+  // Floor is high enough that the cream reading field is already carrying the
+  // heading when it rises at 0.1 — the wash builds, it never starts from open.
   const washOpacity = useTransform(
-    () => 0.45 + 0.55 * stageWindow(stage.get(), 0.04, 0.2)
+    () => 0.6 + 0.4 * stageWindow(stage.get(), 0.04, 0.18)
   );
   const iconOpacity = useTransform(() => stageWindow(stage.get(), 0.07, 0.17));
   const iconY = useTransform(
@@ -151,34 +153,35 @@ export function OfferPanel({
             alt=""
             fill
             sizes="100vw"
-            className="object-cover"
+            className="object-cover brightness-[1.06] saturate-[1.08]"
           />
         </motion.div>
 
-        {/* Scrims: a base dim keeps the photo in the dusk; the washes start
-            light so the photo owns the entry, then deepen just ahead of the
-            heading to hand focus to the words. */}
-        <div aria-hidden="true" className="absolute inset-0 bg-pine-950/30" />
+        {/* Scrims, all cream: a light veil lifts the photo into the warm
+            ground, then the reading wash builds from the text side so the
+            words land on cream rather than on the picture. The top and bottom
+            fades run to the page ground, so the panel has no edge. */}
+        <div aria-hidden="true" className="absolute inset-0 bg-base/12" />
         <motion.div
           aria-hidden="true"
-          className="absolute inset-0 bg-gradient-to-t from-pine-950 from-15% via-pine-950/60 via-50% to-pine-950/5 md:hidden"
+          className="absolute inset-0 bg-gradient-to-t from-base from-18% via-base/82 via-50% to-transparent md:hidden"
           style={active ? { opacity: washOpacity } : undefined}
         />
         <motion.div
           aria-hidden="true"
           className={cn(
-            "absolute inset-0 hidden from-pine-950 from-22% via-pine-950/55 via-50% to-transparent md:block",
+            "absolute inset-0 hidden from-base from-24% via-base/78 via-52% to-transparent md:block",
             flip ? "bg-gradient-to-l" : "bg-gradient-to-r"
           )}
           style={active ? { opacity: washOpacity } : undefined}
         />
         <div
           aria-hidden="true"
-          className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-pine-950 to-transparent md:h-32"
+          className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-base to-transparent md:h-32"
         />
         <div
           aria-hidden="true"
-          className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-pine-950 to-transparent md:h-32"
+          className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-base to-transparent md:h-32"
         />
         <div
           aria-hidden="true"
@@ -194,23 +197,23 @@ export function OfferPanel({
           <div className={cn("max-w-xl", flip && "md:ml-auto")}>
             <motion.span
               aria-hidden="true"
-              className="flex size-12 items-center justify-center rounded-full border border-sage/50 bg-pine-950/60 text-sage backdrop-blur-sm"
+              className="flex size-12 items-center justify-center rounded-full border border-pine/30 bg-base/70 text-pine backdrop-blur-sm"
               style={active ? { opacity: iconOpacity, y: iconY } : undefined}
             >
               <Icon className="size-6" strokeWidth={1.5} />
             </motion.span>
             <motion.h3
-              className="mt-6 font-display text-[clamp(2rem,4vw,3rem)] font-semibold leading-[1.1] tracking-[-0.01em] text-plaster-bright"
+              className="mt-6 font-display text-[clamp(2rem,4vw,3rem)] font-semibold leading-[1.1] tracking-[-0.01em] text-ink"
               style={active ? { opacity: headingOpacity, y: headingY } : undefined}
             >
               {title}
             </motion.h3>
             <motion.span
               aria-hidden="true"
-              className="mt-5 block h-1 w-16 origin-left bg-resin"
+              className="mt-5 block h-1 w-16 origin-left bg-amber"
               style={active ? { scaleX: barScaleX } : undefined}
             />
-            <p className="mt-5 leading-[1.7] text-plaster-bright md:text-xl md:leading-[1.55]">
+            <p className="mt-5 leading-[1.7] text-ink md:text-xl md:leading-[1.55]">
               {groups.map((group, i) => (
                 <SentenceGroup
                   key={`${groups.length}-${i}`}
