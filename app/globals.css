@@ -75,6 +75,16 @@ body {
     color-mix(in srgb, var(--color-pine-950) 45%, transparent)
   );
 }
+/* The same edge fall for a frame standing on the warm ground: the corners
+   lift toward cream instead of sinking toward pine, so the hero card reads
+   as part of the light rather than a window cut into it. */
+.photo-vignette-warm {
+  background: radial-gradient(
+    ellipse 120% 100% at 50% 45%,
+    transparent 55%,
+    color-mix(in srgb, var(--color-base) 55%, transparent)
+  );
+}
 /* Dissolves a full-bleed photographic frame into the ground at its top and
    bottom edges. It masks rather than painting cream over the photo: the
    ground here is the living atmosphere, so a flat repaint lands a shade
@@ -133,6 +143,18 @@ body {
       color-mix(in srgb, var(--color-pine-800) 35%, transparent),
       transparent 78%
     );
+}
+/* The warm world's seam device, in the role .lamp-falloff plays in the dusk
+   one: the hero's ground is flat cream, the living atmosphere below it opens
+   with its drifting glow pools, so the two meet on a step. This ramps the
+   hero's lower edge toward the atmosphere's own warmth over a long fall, so
+   the light arrives gradually instead of switching on at a line. */
+.hero-ground-falloff {
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    color-mix(in srgb, var(--color-amber-soft) 9%, transparent)
+  );
 }
 /* Graded wash for photographic heroes: most open where the halo sits,
    falling to near-solid pine at the edges and base of the frame. */

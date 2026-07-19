@@ -176,11 +176,10 @@ const ScrollExpandMedia = ({
   const mediaHeight = 400 + progress * (isMobile ? 200 : 400);
   const textTranslateX = progress * (isMobile ? 180 : 150);
 
-  // The photos have bright skies and white clothing, so the headline relies
-  // on a dark wash instead of mix-blend: held at 0.75 while the headline can
-  // still overlap the frame (progress < 0.35), then eased down to 0.22 —
-  // by full expansion the headline has slid away and the content band
-  // carries the text, so the photo can show through.
+  // The headline reads as ink, so the frame carries a cream wash while the
+  // two can overlap: held at 0.75 through progress < 0.35, then eased down
+  // to 0.22 — by full expansion the headline has slid away and the content
+  // band carries the text, so the photo can show through.
   const overlayOpacity =
     progress < 0.35 ? 0.75 : Math.max(0.22, 0.75 - (progress - 0.35) * 0.82);
 
@@ -188,7 +187,7 @@ const ScrollExpandMedia = ({
   const restOfTitle = title ? title.split(" ").slice(1).join(" ") : "";
 
   return (
-    <div className="overflow-hidden bg-pine-950">
+    <div className="overflow-hidden bg-base">
       <section className="relative flex min-h-[100dvh] flex-col items-center justify-start overflow-hidden">
         <motion.div
           className="absolute inset-0 z-0"
@@ -204,19 +203,22 @@ const ScrollExpandMedia = ({
             sizes="100vw"
             className="scale-110 object-cover blur-md"
           />
-          <div className="absolute inset-0 bg-pine-950/75" />
+          {/* The backdrop photograph is held under a near-solid cream wash:
+              felt as warmth behind the frame, never as a second image, and
+              light enough that the ink headline reads over any slide. */}
+          <div className="absolute inset-0 bg-base/90" />
         </motion.div>
 
-        {/* Upper half of the seam's light dome, mirrored from the section
-            below so the two grounds shade into each other with no edge. */}
+        {/* Carries the hero's ground down into the living atmosphere's own
+            warmth, so the two meet on a ramp rather than an edge. */}
         <div
           aria-hidden="true"
-          className="lamp-falloff pointer-events-none absolute inset-x-0 bottom-0 z-0 h-[80vh] -scale-y-100"
+          className="hero-ground-falloff pointer-events-none absolute inset-x-0 bottom-0 z-0 h-[45vh]"
         />
 
         <div
           aria-hidden="true"
-          className="film-grain pointer-events-none absolute inset-0 z-[1]"
+          className="film-grain pointer-events-none absolute inset-0 z-[1] mix-blend-multiply"
         />
 
         <div className="relative z-10 mx-auto flex w-full flex-col items-center">
@@ -229,10 +231,10 @@ const ScrollExpandMedia = ({
                 maxWidth: "95vw",
                 maxHeight: "85vh",
                 boxShadow:
-                  "0 0 50px color-mix(in srgb, var(--color-pine-950) 45%, transparent)",
+                  "0 0 50px color-mix(in srgb, var(--color-ink) 14%, transparent)",
               }}
             >
-              <div className="relative h-full w-full overflow-hidden rounded-2xl ring-1 ring-sage/40">
+              <div className="relative h-full w-full overflow-hidden rounded-2xl ring-1 ring-hairline">
                 {restingState ? (
                   <Image
                     src={withBasePath(slides[0])}
@@ -240,7 +242,7 @@ const ScrollExpandMedia = ({
                     fill
                     priority
                     sizes="95vw"
-                    className="object-cover"
+                    className="object-cover saturate-[1.06] sepia-[0.08]"
                   />
                 ) : (
                   slides.map((src, i) => (
@@ -257,34 +259,34 @@ const ScrollExpandMedia = ({
                         fill
                         priority={i === 0}
                         sizes="95vw"
-                        className="object-cover"
+                        className="object-cover saturate-[1.06] sepia-[0.08]"
                       />
                     </motion.div>
                   ))
                 )}
                 <motion.div
-                  className="absolute inset-0 bg-pine-950"
+                  className="absolute inset-0 bg-base"
                   initial={false}
                   animate={{ opacity: overlayOpacity }}
                   transition={{ duration: 0.2, ease: EASE_IN_OUT_CUBIC }}
                 />
-                {/* Constant edge vignette inside the frame; the dynamic
-                    wash above handles legibility, this keeps the photo
-                    cinematic once the wash eases off. */}
+                {/* Constant edge lift inside the frame; the dynamic wash
+                    above handles legibility, this keeps the photo's corners
+                    dissolving into the cream once the wash eases off. */}
                 <div
                   aria-hidden="true"
-                  className="photo-vignette pointer-events-none absolute inset-0"
+                  className="photo-vignette-warm pointer-events-none absolute inset-0"
                 />
                 <div
                   aria-hidden="true"
-                  className="film-grain pointer-events-none absolute inset-0"
+                  className="film-grain pointer-events-none absolute inset-0 mix-blend-multiply"
                 />
               </div>
 
               {hintLabel && (
                 <div className="mt-4 flex justify-center">
                   <p
-                    className="rounded-full border border-sage/60 bg-pine-950/80 px-4 py-1 text-[0.8125rem] font-semibold leading-[1.4] text-resin-light"
+                    className="rounded-full border border-hairline bg-base/85 px-4 py-1 text-[0.8125rem] font-semibold leading-[1.4] text-ink"
                     style={{ transform: `translateX(${textTranslateX}vw)` }}
                   >
                     {hintLabel}
@@ -294,7 +296,7 @@ const ScrollExpandMedia = ({
             </div>
 
             {title && (
-              <h1 className="relative z-10 flex flex-col items-center gap-4 text-center font-display text-[clamp(2.75rem,6vw,4.5rem)] font-semibold leading-[1.05] tracking-[-0.02em] text-plaster-bright">
+              <h1 className="relative z-10 flex flex-col items-center gap-4 text-center font-display text-[clamp(2.75rem,6vw,4.5rem)] font-semibold leading-[1.05] tracking-[-0.02em] text-ink">
                 <span
                   className="block"
                   style={{ transform: `translateX(-${textTranslateX}vw)` }}
@@ -329,7 +331,7 @@ const ScrollExpandMedia = ({
               <div
                 data-expanded={!mounted || contentVisible ? "" : undefined}
                 className={cn(
-                  "hero-intro group pointer-events-auto absolute inset-x-0 bottom-0 flex flex-col items-center bg-pine-950/85 px-6 py-8 opacity-0 backdrop-blur-sm duration-[400ms] ease-out-quart data-[expanded]:opacity-100 data-[expanded]:transition-opacity md:py-10",
+                  "hero-intro group pointer-events-auto absolute inset-x-0 bottom-0 flex flex-col items-center bg-base/90 px-6 py-8 opacity-0 backdrop-blur-sm duration-[400ms] ease-out-quart data-[expanded]:opacity-100 data-[expanded]:transition-opacity md:py-10",
                   mounted && !contentVisible && "pointer-events-none"
                 )}
               >
@@ -339,11 +341,6 @@ const ScrollExpandMedia = ({
           </div>
 
         </div>
-
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute bottom-0 left-1/2 z-0 h-40 w-[42rem] max-w-[90vw] -translate-x-1/2 translate-y-1/2 rounded-full bg-resin/30 blur-[80px]"
-        />
       </section>
     </div>
   );

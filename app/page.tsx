@@ -31,16 +31,11 @@ export default function HomePage() {
         title={hero.heading}
         hintLabel={hero.location}
       >
-        <p className="max-w-2xl translate-y-6 text-center text-base leading-[1.55] text-plaster-bright opacity-0 duration-[700ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] motion-reduce:translate-y-0 md:text-xl">
+        <p className="max-w-2xl translate-y-6 text-center text-base leading-[1.55] text-ink opacity-0 duration-[700ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] motion-reduce:translate-y-0 md:text-xl">
           {hero.text}
         </p>
         <div className="mt-6 translate-y-6 opacity-0 duration-[400ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] group-data-[expanded]:delay-200 motion-reduce:translate-y-0">
-          <ButtonLink
-            href={hero.cta.href}
-            className="bg-resin text-pine-950 hover:bg-resin-light"
-          >
-            {hero.cta.label}
-          </ButtonLink>
+          <ButtonLink href={hero.cta.href}>{hero.cta.label}</ButtonLink>
         </div>
       </ScrollExpandMedia>
 
