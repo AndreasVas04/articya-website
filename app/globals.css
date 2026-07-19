@@ -75,6 +75,35 @@ body {
     color-mix(in srgb, var(--color-pine-950) 45%, transparent)
   );
 }
+/* Dissolves a full-bleed photographic frame into the ground at its top and
+   bottom edges. It masks rather than painting cream over the photo: the
+   ground here is the living atmosphere, so a flat repaint lands a shade
+   lighter and cooler than the glow it covers and draws exactly the seam it
+   was meant to hide. Masking resolves to the real ground instead, so the two
+   can never differ. The ramp is eased, not linear — a linear alpha fade
+   leaves a visible kink where it meets the flat ground. */
+.photo-edge-dissolve {
+  --edge: 18%;
+  --edge-mask: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgb(0 0 0 / 0.04) calc(var(--edge) * 0.125),
+    rgb(0 0 0 / 0.16) calc(var(--edge) * 0.25),
+    rgb(0 0 0 / 0.5) calc(var(--edge) * 0.5),
+    rgb(0 0 0 / 0.84) calc(var(--edge) * 0.75),
+    rgb(0 0 0 / 0.96) calc(var(--edge) * 0.875),
+    #000 var(--edge),
+    #000 calc(100% - var(--edge)),
+    rgb(0 0 0 / 0.96) calc(100% - var(--edge) * 0.875),
+    rgb(0 0 0 / 0.84) calc(100% - var(--edge) * 0.75),
+    rgb(0 0 0 / 0.5) calc(100% - var(--edge) * 0.5),
+    rgb(0 0 0 / 0.16) calc(100% - var(--edge) * 0.25),
+    rgb(0 0 0 / 0.04) calc(100% - var(--edge) * 0.125),
+    transparent 100%
+  );
+  -webkit-mask-image: var(--edge-mask);
+  mask-image: var(--edge-mask);
+}
 .plaster-light {
   background: radial-gradient(
     ellipse 65% 50% at 50% 42%,

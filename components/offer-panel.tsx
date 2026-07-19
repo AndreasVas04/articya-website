@@ -143,50 +143,45 @@ export function OfferPanel({
           active ? "sticky top-0 h-svh" : "min-h-[92svh]"
         )}
       >
-        <motion.div
+        {/* The photographic stack — photo, veil, reading wash and grain — is
+            masked as one so the whole panel dissolves into the page ground at
+            its top and bottom edges and carries no border of its own. The
+            wash fades out with the photo it exists to subdue, so the reading
+            field never thins out ahead of the picture behind it. */}
+        <div
           aria-hidden="true"
-          className="absolute inset-x-0 -inset-y-[8%]"
-          style={active ? { y: photoY, scale: photoScale } : undefined}
+          className="photo-edge-dissolve absolute inset-0"
         >
-          <Image
-            src={withBasePath(image)}
-            alt=""
-            fill
-            sizes="100vw"
-            className="object-cover brightness-[1.06] saturate-[1.08]"
-          />
-        </motion.div>
+          <motion.div
+            className="absolute inset-x-0 -inset-y-[8%]"
+            style={active ? { y: photoY, scale: photoScale } : undefined}
+          >
+            <Image
+              src={withBasePath(image)}
+              alt=""
+              fill
+              sizes="100vw"
+              className="object-cover brightness-[1.06] saturate-[1.08]"
+            />
+          </motion.div>
 
-        {/* Scrims, all cream: a light veil lifts the photo into the warm
-            ground, then the reading wash builds from the text side so the
-            words land on cream rather than on the picture. The top and bottom
-            fades run to the page ground, so the panel has no edge. */}
-        <div aria-hidden="true" className="absolute inset-0 bg-base/12" />
-        <motion.div
-          aria-hidden="true"
-          className="absolute inset-0 bg-gradient-to-t from-base from-18% via-base/82 via-50% to-transparent md:hidden"
-          style={active ? { opacity: washOpacity } : undefined}
-        />
-        <motion.div
-          aria-hidden="true"
-          className={cn(
-            "absolute inset-0 hidden from-base from-24% via-base/78 via-52% to-transparent md:block",
-            flip ? "bg-gradient-to-l" : "bg-gradient-to-r"
-          )}
-          style={active ? { opacity: washOpacity } : undefined}
-        />
-        <div
-          aria-hidden="true"
-          className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-base to-transparent md:h-32"
-        />
-        <div
-          aria-hidden="true"
-          className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-base to-transparent md:h-32"
-        />
-        <div
-          aria-hidden="true"
-          className="film-grain pointer-events-none absolute inset-0"
-        />
+          {/* A light veil lifts the photo into the warm ground, then the
+              reading wash builds from the text side so the words land on
+              cream rather than on the picture. */}
+          <div className="absolute inset-0 bg-base/12" />
+          <motion.div
+            className="absolute inset-0 bg-gradient-to-t from-base from-18% via-base/82 via-50% to-transparent md:hidden"
+            style={active ? { opacity: washOpacity } : undefined}
+          />
+          <motion.div
+            className={cn(
+              "absolute inset-0 hidden from-base from-24% via-base/78 via-52% to-transparent md:block",
+              flip ? "bg-gradient-to-l" : "bg-gradient-to-r"
+            )}
+            style={active ? { opacity: washOpacity } : undefined}
+          />
+          <div className="film-grain pointer-events-none absolute inset-0" />
+        </div>
 
         <div
           className={cn(
