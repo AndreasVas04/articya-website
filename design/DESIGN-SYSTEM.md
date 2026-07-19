@@ -61,6 +61,17 @@ gradients — the only gradients are atmosphere (see Atmospheric grounds).
 | `pine` | `#285C3C` | Small structural marks only — globe dots, small icons |
 | `hairline` | `rgba(42,51,41,.14)` | Rules, dividers, quiet borders |
 
+**The chrome stays pine.** The warm ground is the page *body*. The header and
+footer are chrome, and they keep the dusk palette's `pine-950` (`#22301C`) —
+the deepest pine in the system, and already the footer's token under the
+"header and footer are one pine surface" rule below. No new deep-pine token is
+introduced: `pine-950` is the cleanest one, and its contrast pairs are already
+measured. On that surface, labels are `plaster-bright` (13.12), secondary text
+`plaster-muted` (10.71), icon strokes `sage` (6.37), and the active/hover nav
+accent `resin-light` (8.40) with a `resin` underline as a graphical mark
+(5.90). The body's `amber` never appears on pine — `resin-light` is the amber
+family's text-safe form on dark grounds.
+
 Color-role rules, in order of precedence:
 
 - **Ink is text.** Every heading, every paragraph and every numeral is `ink`;
