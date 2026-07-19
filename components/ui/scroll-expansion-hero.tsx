@@ -3,6 +3,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
+import { LivingAtmosphere } from "@/components/living-atmosphere";
 import { cn, withBasePath } from "@/lib/utils";
 
 const EASE_IN_OUT_CUBIC: [number, number, number, number] = [0.65, 0, 0.35, 1];
@@ -332,16 +333,25 @@ const ScrollExpandMedia = ({
               <div
                 data-expanded={!mounted || contentVisible ? "" : undefined}
                 className={cn(
-                  "hero-intro group pointer-events-auto absolute inset-x-0 bottom-0 flex flex-col items-center overflow-hidden bg-base/95 px-6 py-10 opacity-0 backdrop-blur-sm duration-[400ms] ease-out-quart data-[expanded]:opacity-100 data-[expanded]:transition-opacity md:py-14",
+                  "hero-intro group pointer-events-auto absolute inset-x-0 bottom-0 flex flex-col items-center overflow-hidden px-6 py-9 opacity-0 duration-[400ms] ease-out-quart data-[expanded]:opacity-100 data-[expanded]:transition-opacity md:py-11",
                   mounted && !contentVisible && "pointer-events-none"
                 )}
               >
-                {/* The band's own pocket of the page's warm light, so the
-                    statement sits in the atmosphere rather than on a flat
-                    cream stripe cut out of it. */}
+                {/* The statement stands in the page's own warm field rather
+                    than on a cream panel cut out of it. The field is painted
+                    here rather than shown through: what sits behind this band
+                    is the photograph's lower half, not the ground, so a
+                    transparent band would reveal forest, not light. Same
+                    component as the page ground, so both sides of the frame
+                    edge drift on one light. */}
+                <LivingAtmosphere />
+                {/* The pocket of light the statement rests in. Kept smaller
+                    than the band and centered on the words: a glow that spans
+                    the full height stops reading as depth and starts reading
+                    as an amber gradient with the band's own edges. */}
                 <div
                   aria-hidden="true"
-                  className="pointer-events-none absolute left-1/2 top-1/2 h-3/4 w-2/3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-amber-soft/20 blur-[80px]"
+                  className="pointer-events-none absolute left-1/2 top-[45%] h-[80%] w-[58%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-amber-soft/18 blur-[100px]"
                 />
                 <div className="relative flex flex-col items-center">
                   {children}
