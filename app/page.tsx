@@ -63,7 +63,7 @@ export default function HomePage() {
                 globe is that number made visible. The reveals stagger down the
                 same path the eye takes: title, lead, globe, then the numerals. */}
             <div className="md:grid md:grid-cols-12 md:items-start md:gap-x-12">
-              <div className="md:col-span-6">
+              <div className="md:col-span-6 md:self-center">
                 <Reveal>
                   <span aria-hidden="true" className="block h-1 w-16 bg-amber" />
                   <h2 className="mt-6 font-display text-[clamp(2rem,4vw,3rem)] font-semibold leading-[1.1] tracking-[-0.01em]">
