@@ -213,14 +213,18 @@ const ScrollExpandMedia = ({
               under 20% — rather than under a flat cream wash. A wash is opaque,
               so it sealed the living atmosphere out and left the first screen
               reading gray; at this opacity the warm field drifts through and
-              the photo is felt as depth behind the frame. */}
+              the photo is felt as depth behind the frame. It sits at the top
+              of that range, and blurred to 32px rather than 64: the first
+              screen has to read as a photograph behind glass, and at 10% under
+              a 64px blur the picture had dissolved into an even gold and the
+              hero opened on an empty field. */}
           <Image
             src={withBasePath(bgImageSrc)}
             alt=""
             fill
             priority
             sizes="100vw"
-            className="scale-110 object-cover opacity-[0.1] blur-3xl saturate-50"
+            className="scale-110 object-cover opacity-[0.18] blur-[32px] saturate-[0.6]"
           />
           {/* Grain rides the backdrop rather than the section, so it fades out
               with it: past full expansion the ground behind the frame is the

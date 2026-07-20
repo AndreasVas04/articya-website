@@ -56,7 +56,10 @@ export default function HomePage() {
         {/* overflow-clip (not hidden) so the offer panels' sticky frames can
             pin against the viewport. */}
         <section className="gold-field relative overflow-clip text-ink">
-          <div className="relative mx-auto max-w-6xl px-4 pt-16 md:pt-24">
+          {/* pt is small on mobile by design: the hero card is centered in
+              its own screen, so it already leaves ~120px of gold below it
+              before this section starts. Desktop keeps the full rhythm. */}
+          <div className="relative mx-auto max-w-6xl px-4 pt-6 md:pt-24">
             {/* The globe is the living center of the clearing: text left, the
                 lit world right, the stats ledger reading under it — with the
                 countries column landing directly beneath the globe, since the
@@ -115,6 +118,7 @@ export default function HomePage() {
                 text={card.text}
                 icon={offerIcons[i] ?? "globe"}
                 flip={i % 2 === 1}
+                openTop={i === 0}
               />
             ))}
           </div>
@@ -125,7 +129,7 @@ export default function HomePage() {
             carries no bottom padding: the lamp's descent owns the gap below,
             so the trail's line runs straight on into the thread rather than
             stopping short of a section edge. */}
-        <section className="gold-field relative px-4 pt-24 text-ink md:pt-32">
+        <section className="gold-field relative px-4 pt-12 text-ink md:pt-32">
           <div className="relative mx-auto max-w-6xl">
             <Reveal className="text-center">
               <span

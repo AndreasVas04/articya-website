@@ -161,7 +161,7 @@ export function LampCta({ children, className }: LampCtaProps) {
       {/* pb compensates the text pull-up so the page keeps its length —
           the descent's scroll progress must still clear the ignition
           threshold at natural scroll bottom on every viewport. */}
-      <div className="relative mx-auto flex w-full max-w-6xl flex-col items-center px-4 pb-32 md:pb-36">
+      <div className="relative mx-auto flex w-full max-w-6xl flex-col items-center px-4 pb-20 md:pb-36">
         {/* The descent: the trail's thread crossing from the section above
             down onto the lamp line. It starts flush with the trail's last
             rail pixel — the section above carries no bottom padding — and

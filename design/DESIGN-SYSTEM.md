@@ -94,10 +94,24 @@ and the first visible row sits a step below the bar. The hero's backdrop
 photograph carries `.hero-backdrop-fade` for the same reason — it too starts
 at the section's top, hidden behind the bar, and would otherwise appear all at
 once along the bar's lower edge. Measured at the chrome joins on the built
-page: footer seam 2 (desktop) / 1 (mobile) maximum channel jump, header seam 7
-/ 4 at rest and 2 on mobile once expanded. On desktop the expanded hero's
+page: footer seam 2 (desktop) / 1 (mobile) maximum channel jump, header seam 6
+/ 7 at rest. On desktop the expanded hero's
 photograph passes under the header by design — that edge is a photograph, not
 a gold seam (see Don't).
+
+A section edge that opens onto its **own section's floor**, rather than onto
+another field edge, paints nothing: `.gold-field-open-top`. The anchor exists
+so that two edges can meet on one value, and where there is no second edge it
+has nothing to meet — it lands a step deeper than the ground beside it and
+draws a full-width line across the page, and being opaque it also covers the
+living atmosphere the row above it shows. The one place this happens is the
+first offer panel, which starts partway down the "What we do" section with the
+floor above it; its top edge is therefore open, the real ground runs straight
+through the join, and the panel's `photo-edge-dissolve` carries the
+photograph across on its own. Measured at that join on the built page: 1
+(desktop) / 2 (mobile) maximum channel jump, against 8 / 9 when the edge
+painted the anchor. Every internal seam on the page now measures 3 or under at
+both viewports.
 
 Because the seam does the joining, **no section carries a rule at its edge**,
 and the header and footer carry none either. A hairline there would draw
@@ -304,6 +318,17 @@ text keep them.
 - Section rhythm: `py-24` desktop / `py-16` mobile. Adjacent plaster sections
   alternate `plaster` / `plaster-muted` so light stretches read green, never
   neutral cream.
+- **The home page's mobile rhythm is tighter than that default**, because its
+  joins are not section-edge to section-edge: a full-bleed panel already ends
+  in its own bottom dissolve, the hero card is centered in its own screen and
+  leaves ~120px of gold below it, and the lamp's pool spreads well past the
+  button. Stacking `py-16` on top of that reads as dead gold rather than as
+  breathing room. So on mobile the "What we do" section opens at `pt-6`, the
+  gains section at `pt-12`, the offer panels close at `pb-10` and the lamp at
+  `pb-20`; the joins then measure 88–146px rather than 160–186px. Desktop
+  keeps the full rhythm — the wider frame earns it. The gold-field ramp is
+  `72px` on mobile against `150px` on desktop for the same reason: the fade
+  has to complete inside the shorter section.
 - **Ground is decided per page, not per section.**
   - **Home** is one continuous gold world from the header to the footer — the
     `gold-wash` floor everywhere, `gold-anchor` at every section edge and
@@ -385,7 +410,8 @@ section. Nothing else may put a gradient or texture on a ground:
 | `.film-grain` | Fine tiled SVG grain at 5% opacity, killing the flat digital-paint feel | Over dark grounds and photographic frames |
 | `.gold-field` | Top and bottom edges at `gold-anchor`, falling to it at zero alpha toward the middle where the `gold-wash` floor takes over | Every home section, and every full-bleed offer panel — it is what makes the seams continuous |
 | `.gold-field-chrome-top` / `-bottom` | The same field with that one edge ending on `gold-chrome` instead, and — on the top variant — held flat for the header's height before the ramp starts | The hero (top) and the closing section (bottom) only: the two edges that meet a chrome bar rather than another section |
-| `.hero-backdrop-fade` | Top-down mask fading a hero backdrop layer in over 176px | The home hero's backdrop photograph, so it does not appear all at once along the fixed header's lower edge |
+| `.gold-field-open-top` | The same field with its top edge painting nothing at all | A section or panel whose top opens onto its own section's floor rather than onto another field edge — the first offer panel only |
+| `.hero-backdrop-fade` | Top-down mask over a hero backdrop layer, held at 32% at the header's own height and full 170px later | The home hero's backdrop photograph, so it does not appear all at once along the fixed header's lower edge — while still reading as a photograph from the hero's first visible row |
 | `.plaster-light` | Soft pool of `plaster-bright` | Behind the About scenes and the finale mosaic |
 | `.print-shadow` | Soft `pine-950` drop shadow | Under framed prints on plaster; the raised state of interactive cards (open accordion, hovered contact card) |
 
@@ -399,6 +425,14 @@ mountains over water behind the gains trail, faded out before the closing
 line so the glow zone keeps its measured contrast. Always our own outdoor
 photography from `/public/images` — never stock textures, generic forest
 wallpaper, or leaf patterns.
+
+The home hero's backdrop is the one that sits at the **top** of the cap rather
+than well under it: 18% opacity at a 32px blur, where the others run nearer
+10% at 64px. It has a job the others do not — the collapsed hero is the first
+screen, and it has to read as a photograph behind frosted glass. Blurred to
+64px at 10% the picture dissolved into an even gold and the page opened on an
+empty field. 18/32px is still inside the ≤20% / ≥14px envelope, and every
+piece of text over it measures 9.0 or better on the rendered composite.
 
 Rules, in order of precedence:
 

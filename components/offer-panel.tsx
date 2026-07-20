@@ -32,6 +32,7 @@ interface OfferPanelProps {
   text: string;
   icon: keyof typeof icons;
   flip?: boolean;
+  openTop?: boolean;
 }
 
 // One group of the panel paragraph, fading in over its slice of the pinned
@@ -70,6 +71,7 @@ export function OfferPanel({
   text,
   icon,
   flip = false,
+  openTop = false,
 }: OfferPanelProps) {
   const ref = useRef<HTMLElement | null>(null);
   const reducedMotion = useReducedMotion();
@@ -140,6 +142,9 @@ export function OfferPanel({
       <div
         className={cn(
           "gold-field relative overflow-hidden",
+          // The first panel opens onto the floor of the section above it,
+          // not onto another field edge, so its top edge paints nothing.
+          openTop && "gold-field-open-top",
           active ? "sticky top-0 h-svh" : "min-h-[92svh]"
         )}
       >
@@ -185,7 +190,7 @@ export function OfferPanel({
 
         <div
           className={cn(
-            "relative mx-auto flex w-full max-w-6xl items-end px-4 pb-16 md:items-center md:pb-0",
+            "relative mx-auto flex w-full max-w-6xl items-end px-4 pb-10 md:items-center md:pb-0",
             active ? "h-full" : "min-h-[92svh] pt-[46svh] md:py-32"
           )}
         >
