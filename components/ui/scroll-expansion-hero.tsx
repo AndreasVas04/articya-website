@@ -4,6 +4,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import { LivingAtmosphere } from "@/components/living-atmosphere";
+import { ResinEmbers } from "@/components/resin-embers";
 import { cn, withBasePath } from "@/lib/utils";
 
 const EASE_IN_OUT_CUBIC: [number, number, number, number] = [0.65, 0, 0.35, 1];
@@ -209,7 +210,7 @@ const ScrollExpandMedia = ({
           exactly as the first offer panel's top edge would. Painting nothing
           lets the atmosphere's floor run straight through the join. Desktop
           keeps the anchor: there the two edges still land on each other. */}
-      <section className="gold-field gold-field-chrome-top relative flex min-h-[100dvh] flex-col items-center justify-start overflow-hidden">
+      <section className="gold-field gold-field-chrome-top hero-drop-scope relative flex min-h-[100dvh] flex-col items-center justify-start overflow-hidden">
         <motion.div
           className="hero-backdrop-fade absolute inset-0 z-0"
           initial={false}
@@ -260,8 +261,17 @@ const ScrollExpandMedia = ({
               panel. */}
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute left-1/2 top-1/2 h-[17rem] w-[32rem] max-w-[94vw] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold-wash/25 blur-[64px]"
+            className="hero-pool-drop pointer-events-none absolute left-1/2 h-[17rem] w-[32rem] max-w-[94vw] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold-wash/25 blur-[64px]"
           />
+          {/* The resin embers — the glass gaining life. They ride inside this
+              backdrop layer on purpose: behind the card and headline, above
+              the veil, masked under the header with the photograph, and faded
+              out with the whole layer as the card expands — so the moment
+              needs no scroll logic of its own. `paused` only stops the loop
+              once the layer is invisible. They hold still in the frame (no
+              pointer parallax), so the atmosphere's gentle lean drifts past
+              them instead of the two fighting over the cursor. */}
+          <ResinEmbers paused={progress >= 1} />
           {/* Grain rides the backdrop rather than the section, so it fades out
               with it: past full expansion the ground behind the frame is the
               page atmosphere, which carries its own grain at the same
@@ -273,7 +283,12 @@ const ScrollExpandMedia = ({
         </motion.div>
 
         <div className="relative z-10 mx-auto flex w-full flex-col items-center">
-          <div className="relative flex h-[100dvh] w-full flex-col items-center justify-center">
+          {/* hero-stage-drop: on phones the whole stage — card, headline,
+              pill and intro band together — rests lower in the screen, a
+              constant offset spending the gold the fold decision strands
+              under the expanded card. See the class in globals.css for the
+              clamp; desktop resolves to zero. */}
+          <div className="hero-stage-drop relative flex h-[100dvh] w-full flex-col items-center justify-center">
             <div
               className="absolute left-1/2 top-1/2 z-0 -translate-x-1/2 -translate-y-1/2"
               style={{
