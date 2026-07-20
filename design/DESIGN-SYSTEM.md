@@ -119,28 +119,43 @@ warm ground, is a mark and never text.
 
 **Decorative amber lines are thin.** Amber's structural role on the home page
 is the short accent mark: heading bars, the offer panels' card accents, the
-tagline card's divider, the hero rule, the nav underline. Each is solid
-`amber` at **1.25px** — fully opaque and sharp-ended, never rounded, faded or
-bolder. The one exception is the nav underline at 1.5px, where the mark also
-has to read as an interactive affordance. These are minimal-luxury rules, not
-bars: at 3–4px the same marks read as heavy blocks and the accent starts
-competing with the type instead of pointing at it. Amber never draws a
-full-width line between two sections; there are no section dividers on this
-page at all.
+hero rule, the nav underline. Each is solid `amber` at **1.25px** — fully
+opaque and sharp-ended, never rounded, faded or bolder. The one exception is
+the nav underline at 1.5px, where the mark also has to read as an interactive
+affordance. These are minimal-luxury rules, not bars: at 3–4px the same marks
+read as heavy blocks and the accent starts competing with the type instead of
+pointing at it. Amber never draws a full-width line between two sections;
+there are no section dividers on this page at all, and no horizontal rules
+anywhere on it — the lamp's light blade is the light source, not a rule. The
+stats ledger accordingly carries no border of its own: its only lines are the
+desktop columns' vertical `hairline` dividers, and the mobile ledger rows are
+structured by the numeral/label baseline alone, fading straight into the gold
+below.
 
 The trail thread is not one of these rules and keeps its 2px weight: the gains
 trail's descending line, its nodes and the lamp's line and cone are the
 signature light source (see below), not decoration, and thinning them would
 break the continuity from the trail into the lamp.
 
-**The tagline card is framed.** The hero's tagline panel — the band carrying
-the tagline and its button — carries a 1.25px `amber` inset ring around its
-full perimeter, as an inset ring on its own topmost layer (see Do). The frame
-is the card's main gold line; the short rule above the tagline stays as a
-subtle internal accent. Measured on the built page, both viewports: the ring
-covers 98–100% of all four sides, unbroken through both lower corners, and the
-panel's top sits well clear of the fixed header (647px on desktop, 507px on
-mobile, against an 80/64px bar) so no edge is ever occluded.
+**The expanded hero card is framed — whole, and square.** The expanded hero
+card — photograph and tagline panel as one object — carries a single hairline
+gold frame around its full perimeter: **1px `amber` at 0.55 alpha**, painted
+as an inset ring on the card overlay's own topmost layer (see Do) so nothing
+covers it. The frame fades in with the intro and shares its pre-hydration
+veil; the resting collapsed card stays frameless. The card's corners are
+**square** (`border-radius: 0`), deliberately: the card is centered in the
+viewport, so on a short desktop window its top edge passes under the fixed
+header — a rounded frame's corner arcs re-emerge mid-curve below the chrome
+and read as cut, where straight lines die under the bar cleanly. A crisp
+square corner beats a broken arc. The short rule above the tagline stays as
+an internal accent at the frame's own weight — 1px `amber` at 0.55 — not the
+1.25px accent-mark weight: a frame whispers where an accent mark points.
+
+**Quiet borders on the gold ground lean green.** A decorative circle or
+border framing a green mark takes `pine/30` rather than the neutral
+`hairline`, matching the offer panels' icon medallions — so the gains trail's
+icon rings and the panels' read as the same object family, and the green
+note carries through the borders instead of only the strokes inside them.
 
 Color-role rules, in order of precedence:
 
@@ -412,24 +427,26 @@ Rules, in order of precedence:
 - Keep every glow the same resin amber; one light source, one temperature.
 - Use sage borders instead of gray borders everywhere on light grounds.
 - Check this table before introducing any new fg/bg pair.
-- Outline a rounded card with an inset ring on its own topmost layer, not a
-  `border`. A border sits under an absolutely positioned fill, and an inset
-  shadow on the card itself paints under its children — either way the fill
-  covers it. Where a rounded parent clips the card, the card takes
-  `border-radius: inherit` rather than restating the value: these frames are
-  sized in fractional pixels, so a hand-matched radius rasterizes its arc on a
-  different subpixel boundary than the clip and the corner reads chipped.
+- Outline a card with an inset ring on its own topmost layer, not a `border`.
+  A border sits under an absolutely positioned fill, and an inset shadow on
+  the card itself paints under its children — either way the fill covers it.
+  Where a parent clips the card, the card takes `border-radius: inherit`
+  rather than restating the value: these frames are sized in fractional
+  pixels, so a hand-matched radius rasterizes its arc on a different subpixel
+  boundary than the clip and the corner reads chipped.
+- Square a card's corners when a gold frame has to cross the fixed header. A
+  round corner interrupted by the chrome reads as a cut arc; a straight edge
+  passing under the bar reads as nothing at all. This is why the expanded hero
+  card is square — see the frame spec above.
 
 **Don't**
 
-- Don't give a gold outline to a card whose edge passes under the fixed
-  header. The hero photo frame is centered in the viewport, so on a short
-  desktop window its top edge and both top corners sit behind the chrome; it
-  keeps a `hairline` ring, which disappears under the header unnoticed, where
-  an amber one would stop dead at the header and read as a broken outline.
-  The frame to gold-outline instead is the **tagline panel** anchored to that
-  frame's lower edge: it never rises anywhere near the chrome, so all four of
-  its sides stay visible and the ring can close.
+- Don't give a **rounded** gold outline to a card whose edge passes under the
+  fixed header. The expanded hero card is centered in the viewport, so on a
+  short desktop window its top edge and both top corners sit behind the
+  chrome. Its hairline gold frame works because the card is square: the two
+  vertical lines simply vanish under the bar. Rounded, the same frame's arcs
+  would re-emerge mid-curve below the chrome and read as broken.
 - Don't use pure black, pure white, or any gray — the neutrals are the pine
   and plaster families.
 - Don't use bright/tech greens, leaf icons, or gradients outside the

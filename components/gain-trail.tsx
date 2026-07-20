@@ -76,7 +76,7 @@ export function GainTrail({ items }: { items: string[] }) {
                 >
                   <span
                     aria-hidden="true"
-                    className="flex size-12 shrink-0 items-center justify-center rounded-full border border-hairline text-pine"
+                    className="flex size-12 shrink-0 items-center justify-center rounded-full border border-pine/30 text-pine"
                   >
                     <Icon className="size-6" strokeWidth={1.5} />
                   </span>

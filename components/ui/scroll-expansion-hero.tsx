@@ -245,21 +245,14 @@ const ScrollExpandMedia = ({
                   "0 0 50px color-mix(in srgb, var(--color-ink) 14%, transparent)",
               }}
             >
-              {/* The frame's radius is carried by every layer inside it, not
-                  just by the clip. The card is sized in fractional pixels, so
-                  a square child cut by `overflow-hidden` rasterizes its corner
-                  on a different subpixel boundary than the ring's arc — the
-                  two disagree at the tip and the corner reads chipped. Each
-                  layer painting its own rounded corner removes the seam;
-                  `isolate` keeps the grain's blend inside the frame.
-
-                  The outline stays a hairline rather than joining the gold:
-                  this frame is centered in the viewport, so on a short desktop
-                  window its top edge passes under the fixed header and the top
-                  two corners are covered. A hairline disappears under the
-                  chrome unnoticed; an amber line would end at the header in a
-                  hard horizontal cut and read as a broken outline. */}
-              <div className="relative isolate h-full w-full overflow-hidden rounded-2xl ring-1 ring-hairline">
+              {/* Square corners, deliberately: the expanded card wears a gold
+                  hairline frame (the overlay below), and this frame is
+                  centered in the viewport, so on a short desktop window its
+                  top edge passes under the fixed header. A rounded frame's
+                  corner arcs re-emerge mid-curve below the chrome and read as
+                  cut; straight lines die under the bar cleanly. `isolate`
+                  keeps the grain's blend inside the frame. */}
+              <div className="relative isolate h-full w-full overflow-hidden ring-1 ring-hairline">
                 {restingState ? (
                   <Image
                     src={withBasePath(slides[0])}
@@ -360,7 +353,7 @@ const ScrollExpandMedia = ({
                 headline in document order. Children opt into the stagger via
                 group-data-[expanded] classes. */}
             <div
-              className="pointer-events-none absolute left-1/2 top-1/2 z-10 isolate -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl"
+              className="pointer-events-none absolute left-1/2 top-1/2 z-10 isolate -translate-x-1/2 -translate-y-1/2 overflow-hidden"
               style={{
                 width: `${mediaWidth}px`,
                 height: `${mediaHeight}px`,
@@ -371,12 +364,8 @@ const ScrollExpandMedia = ({
               <div
                 data-expanded={!mounted || contentVisible ? "" : undefined}
                 className={cn(
-                  // The band's bottom corners are the clipping parent's own
-                  // radius, inherited rather than restated: the frame is sized
-                  // in fractional pixels, so a hand-matched value rasterizes
-                  // its arc on a different subpixel boundary than the clip and
-                  // the two disagree at the corner tip. Inheriting makes them
-                  // one value by construction.
+                  // The band's corners inherit the clipping parent's radius
+                  // rather than restating it, so the two can never disagree.
                   "hero-intro group pointer-events-auto absolute inset-x-0 bottom-0 flex flex-col items-center overflow-hidden rounded-[inherit] rounded-t-none px-6 py-5 opacity-0 duration-[400ms] ease-out-quart data-[expanded]:opacity-100 data-[expanded]:transition-opacity md:py-6",
                   mounted && !contentVisible && "pointer-events-none"
                 )}
@@ -403,28 +392,18 @@ const ScrollExpandMedia = ({
                 <div className="relative flex flex-col items-center">
                   {children}
                 </div>
-                {/* The gold frame, drawn around the tagline panel's whole
-                    perimeter as an inset ring on its own topmost layer rather
-                    than a border on the band. A border sits under the band's
-                    absolutely positioned fill, and an inset shadow on the band
-                    itself paints beneath its children — either way the
-                    atmosphere covers it. Here the ring is the last thing
-                    painted and it inherits the band's exact radius, so the
-                    line curves through the two lower corners without the
-                    subpixel disagreement a hand-matched value would leave.
-
-                    It frames this panel and not the photo frame around it for
-                    the reason the photo frame keeps a hairline: that frame is
-                    centered in the viewport, so once expanded its top edge
-                    passes under the fixed header, where a gold line would stop
-                    dead and read as broken. The panel is anchored to the
-                    frame's bottom edge and never rises anywhere near the
-                    chrome, so all four of its sides stay visible. */}
-                <span
-                  aria-hidden="true"
-                  className="pointer-events-none absolute inset-0 rounded-[inherit] shadow-[inset_0_0_0_1.25px_var(--color-amber)]"
-                />
               </div>
+              {/* The hairline gold frame, drawn around the whole expanded
+                  card — photograph and tagline panel as one object — as an
+                  inset ring on the overlay's own topmost layer, painted after
+                  the band so nothing covers it. It fades in with the intro
+                  (and shares its `hero-intro` pre-hydration veil): the
+                  resting hero card stays frameless. */}
+              <span
+                aria-hidden="true"
+                data-expanded={!mounted || contentVisible ? "" : undefined}
+                className="hero-intro pointer-events-none absolute inset-0 rounded-[inherit] opacity-0 shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-amber)_55%,transparent)] duration-[400ms] ease-out-quart data-[expanded]:opacity-100 data-[expanded]:transition-opacity"
+              />
             </div>
           </div>
 

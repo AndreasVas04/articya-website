@@ -27,7 +27,7 @@ export function ButtonLink({
         // the one pairing that lets amber carry a control without ever
         // becoming text. Both fills clear AA against ink (4.95 / 5.75).
         variant === "gold" &&
-          "rounded-[9px] border border-amber-edge bg-amber-fill tracking-[0.02em] text-ink shadow-[0_6px_16px_-8px_rgba(60,35,5,0.45)] hover:bg-amber-lit hover:text-ink",
+          "rounded-[9px] border border-amber-edge bg-amber-fill tracking-[0.02em] text-ink shadow-[0_6px_16px_-8px_rgba(60,35,5,0.45)] transition-[color,background-color,box-shadow] duration-200 hover:bg-amber-lit hover:text-ink hover:shadow-[0_8px_20px_-8px_rgba(60,35,5,0.5)]",
         className
       )}
     >
