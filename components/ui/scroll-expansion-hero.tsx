@@ -201,7 +201,15 @@ const ScrollExpandMedia = ({
   // bottom down into the first section's.
   return (
     <div className="overflow-hidden">
-      <section className="gold-field gold-field-chrome-top relative flex min-h-[100dvh] flex-col items-center justify-start overflow-hidden">
+      {/* The bottom edge opens onto nothing below md. There the next section
+          is pulled up over the gold this hero leaves under its centered card,
+          so the two field edges that used to meet at this boundary no longer
+          meet — and an anchor edge with no second edge to meet lands a step
+          deeper than the ground beside it and draws a line across the page,
+          exactly as the first offer panel's top edge would. Painting nothing
+          lets the atmosphere's floor run straight through the join. Desktop
+          keeps the anchor: there the two edges still land on each other. */}
+      <section className="gold-field gold-field-chrome-top gold-field-mobile-open-bottom relative flex min-h-[100dvh] flex-col items-center justify-start overflow-hidden">
         <motion.div
           className="hero-backdrop-fade absolute inset-0 z-0"
           initial={false}
@@ -209,22 +217,42 @@ const ScrollExpandMedia = ({
           transition={{ duration: 0.2, ease: EASE_IN_OUT_CUBIC }}
         >
           {/* The backdrop photograph sinks into the ground the way the page's
-              other environment photographs do — blurred, desaturated, held
-              under 20% — rather than under a flat cream wash. A wash is opaque,
-              so it sealed the living atmosphere out and left the first screen
-              reading gray; at this opacity the warm field drifts through and
-              the photo is felt as depth behind the frame. It sits at the top
-              of that range, and blurred to 32px rather than 64: the first
-              screen has to read as a photograph behind glass, and at 10% under
-              a 64px blur the picture had dissolved into an even gold and the
-              hero opened on an empty field. */}
+              other environment photographs do — blurred and softened rather
+              than hidden under a flat cream wash. A wash is opaque, so it
+              sealed the living atmosphere out and left the first screen
+              reading gray; here the warm field drifts through and the photo
+              carries the depth behind the frame.
+
+              This one sits above the environment cap the other backdrops keep
+              (≤20% at ≥64px) and that is deliberate: the collapsed hero is the
+              first screen anyone sees, and it has to read as our photographs
+              behind frosted glass — the forest green legible as green, the
+              shapes recognizable. Under the cap the picture dissolved into an
+              even gold and the page opened on an empty field. Saturation is
+              held near full for the same reason: desaturated to 0.6 the greens
+              went to a warm gray and the glass read as an abstract wash. */}
           <Image
             src={withBasePath(bgImageSrc)}
             alt=""
             fill
             priority
             sizes="100vw"
-            className="scale-110 object-cover opacity-[0.18] blur-[32px] saturate-[0.6]"
+            className="scale-110 object-cover opacity-[0.40] blur-[20px] saturate-[1.1]"
+          />
+          {/* The headline's own pocket of ground. At the top state the
+              backdrop reads at full strength and the headline is wider than
+              the collapsed card, so the outer end of "are ArtiCYa" lands on
+              open photograph — where the darkest patch of hillside took ink
+              to 3.48, under AA. A soft cream pool lifts that patch back to
+              the field's own value. It sits inside the backdrop layer rather
+              than behind the words: the card is painted after this, so the
+              pool only ever touches the photograph the headline overhangs,
+              and it fades out on the same opacity as the backdrop as the
+              card expands and the headline slides away. Blurred well past
+              its own box so it reads as light gathering, not as a panel. */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute left-1/2 top-1/2 h-[17rem] w-[32rem] max-w-[94vw] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold-wash/60 blur-[64px]"
           />
           {/* Grain rides the backdrop rather than the section, so it fades out
               with it: past full expansion the ground behind the frame is the
@@ -370,7 +398,10 @@ const ScrollExpandMedia = ({
                 className={cn(
                   // The band's corners inherit the clipping parent's radius
                   // rather than restating it, so the two can never disagree.
-                  "hero-intro group pointer-events-auto absolute inset-x-0 bottom-0 flex flex-col items-center overflow-hidden rounded-[inherit] rounded-t-none px-6 py-5 opacity-0 duration-[400ms] ease-out-quart data-[expanded]:opacity-100 data-[expanded]:transition-opacity md:py-6",
+                  // px-4 on mobile rather than px-6: the card is already only
+                  // 95vw wide there, and the 16px it gives back is what lets
+                  // the statement settle onto three even lines.
+                  "hero-intro group pointer-events-auto absolute inset-x-0 bottom-0 flex flex-col items-center overflow-hidden rounded-[inherit] rounded-t-none px-4 py-5 opacity-0 md:px-6 duration-[400ms] ease-out-quart data-[expanded]:opacity-100 data-[expanded]:transition-opacity md:py-6",
                   mounted && !contentVisible && "pointer-events-none"
                 )}
               >

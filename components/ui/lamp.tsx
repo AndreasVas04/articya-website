@@ -32,6 +32,14 @@ const THREAD_GLOW =
 const BLADE_HOTSPOT =
   "linear-gradient(to right, transparent, color-mix(in srgb, var(--color-amber) 45%, transparent) 16%, var(--color-amber) 50%, color-mix(in srgb, var(--color-amber) 45%, transparent) 84%, transparent)";
 
+// The thread finishes its draw at this fraction of the ignition threshold,
+// so the line has visibly landed on the node before the lamp blooms. Drawn
+// and fired on the same value the two events happened in one frame, and the
+// bloom covered the contact it was meant to confirm — on a phone, where the
+// whole descent plays out inside the last screen of scroll, that read as the
+// words arriving while the line was still short of the junction.
+const CONTACT_LEAD = 0.85;
+
 interface LampCtaProps {
   children: React.ReactNode;
   className?: string;
@@ -62,11 +70,11 @@ export function LampCta({ children, className }: LampCtaProps) {
   const [mounted, setMounted] = useState(false);
   const [lit, setLit] = useState(false);
   const [threadPath, setThreadPath] = useState<string | null>(null);
-  // Progress value at which the thread arrives and the lamp ignites. 0.95
-  // when the page has scroll to spare, but clamped to just inside the
-  // progress the page can actually deliver at its natural scroll bottom —
-  // otherwise a short viewport leaves the arrival stranded past the end of
-  // the scrollbar and the lamp never delivers its words.
+  // Progress value at which the lamp ignites. 0.95 when the page has scroll
+  // to spare, but clamped to just inside the progress the page can actually
+  // deliver at its natural scroll bottom — otherwise a short viewport leaves
+  // the arrival stranded past the end of the scrollbar and the lamp never
+  // delivers its words.
   const arrivalRef = useRef(0.95);
 
   // The thread's path is measured, not styled: it must start at the trail
@@ -97,7 +105,11 @@ export function LampCta({ children, className }: LampCtaProps) {
       const rangeEnd = top + height - vh * 0.35;
       const maxScroll = document.documentElement.scrollHeight - vh;
       const atBottom = (maxScroll - rangeStart) / (rangeEnd - rangeStart);
-      arrivalRef.current = Math.min(0.95, Math.max(0.6, atBottom - 0.02));
+      arrivalRef.current = Math.min(
+        0.95,
+        Math.max(0.6, atBottom - 0.02),
+        atBottom
+      );
     };
     measure();
     window.addEventListener("resize", measure);
@@ -126,12 +138,14 @@ export function LampCta({ children, className }: LampCtaProps) {
     if (v >= arrivalRef.current) {
       setLit(true);
     } else if (
-      v > 0.5 &&
+      v >= arrivalRef.current * CONTACT_LEAD &&
       window.innerHeight + window.scrollY >=
         document.documentElement.scrollHeight - 2
     ) {
       // The document end always ignites, even if a layout shift left the
       // measured arrival stale — the words can never strand below the fold.
+      // It waits for contact all the same: past this point the thread is
+      // drawn, so this path can never fire on a line still in the air.
       setLit(true);
     }
   });
@@ -143,15 +157,17 @@ export function LampCta({ children, className }: LampCtaProps) {
   const drawn = mounted && !reducedMotion;
   const on = !mounted || lit;
 
-  // Draw and arrival share the ignition's clamp, so the thread completes
-  // and its endpoint node lands exactly as the lamp fires, whatever the
-  // viewport. The node rides the tip in over the draw's last stretch.
+  // Draw and arrival share the ignition's clamp, so the thread completes at
+  // the same point of the scroll on every viewport — one contact lead ahead
+  // of the fire. The node rides the tip in over the draw's last stretch and
+  // lands with it.
   const threadDraw = useTransform(scrollYProgress, (v) =>
-    Math.min(1, Math.max(0, v / arrivalRef.current))
+    Math.min(1, Math.max(0, v / (arrivalRef.current * CONTACT_LEAD)))
   );
-  const nodeArrival = useTransform(scrollYProgress, (v) =>
-    Math.min(1, Math.max(0, (v - (arrivalRef.current - 0.2)) / 0.2))
-  );
+  const nodeArrival = useTransform(scrollYProgress, (v) => {
+    const contact = arrivalRef.current * CONTACT_LEAD;
+    return Math.min(1, Math.max(0, (v - (contact - 0.2)) / 0.2));
+  });
 
   return (
     <div

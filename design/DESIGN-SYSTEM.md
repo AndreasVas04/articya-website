@@ -300,10 +300,21 @@ Display: **Bricolage Grotesque** · Body: **Instrument Sans** — both loaded vi
 | Stat numeral | `clamp(3.25rem, 8vw, 6.5rem)` / 1 desktop · `2.75rem` / 1 mobile | Bricolage 600 | Home stats only — `resin`, glowing. Monumental centered columns on desktop; compact ledger rows on mobile so all three share one screen |
 | Showpiece | `clamp(2.25rem, 5vw, 3.75rem)` / 1.15, −0.01em | Bricolage 600 | One key line per page max (e.g. the home closing line) |
 | Trail item | `clamp(1.5rem, 2.5vw, 2.25rem)` / 1.2 | Bricolage 600 | Home gains sequence |
-| Hero statement | `clamp(1.125rem, 1.6vw, 1.5rem)` / 1.35, −0.01em | Bricolage 500 | Home hero mission line only — a calm lead under the headline, breaking to 2–3 lines at `34rem` |
+| Hero statement | `0.9375rem` mobile · `1.25rem` desktop / 1.35, −0.01em | Bricolage 500 | Home hero mission line only — a calm lead under the headline: **exactly 2 lines on desktop, 3 on mobile** |
 | Lede | `1.25rem` / 1.55 | Instrument Sans 400 | Intro paragraph under headings; offer-panel body on desktop, where plain Body reads too small against the full-bleed panel scale |
 | Body | `1rem` / 1.7 | Instrument Sans 400 | Default copy |
 | Label | `0.8125rem` / 1.4, +0.08em, uppercase | Instrument Sans 600 | Section eyebrows (`lichen`), pills |
+
+**The hero statement is sized to its line count, not to a ramp.** It is one
+sentence inside a card, and the card is only 95vw wide on a phone — so the
+size that matters is the one that lands the sentence on even lines, not the
+one a `clamp()` interpolates to. At 17px it broke to four ragged lines
+(258/226/285/195px) and stopped reading as a sentence at all. 15px with
+`text-wrap: balance`, in a band whose padding drops to `px-4` below `md` to
+give back the last 16px, settles it to three (275/325/254px). **15px is the
+floor** — below it the line stops being comfortable at arm's length, and the
+fix for a longer sentence would be the card, not the type. Desktop is
+untouched at 20px and stays at two lines, 4px apart.
 
 The brand name always renders as "ArtiCYa" — never CSS-uppercased. An
 element carrying the brand name (header wordmark, hero hint pill) drops the
@@ -329,6 +340,25 @@ text keep them.
   keeps the full rhythm — the wider frame earns it. The gold-field ramp is
   `72px` on mobile against `150px` on desktop for the same reason: the fade
   has to complete inside the shorter section.
+- **The mobile pull-up.** Padding could not reach all of that gold. The hero
+  card is centered in its own screen, so on a 390×844 phone ~122px of gold
+  sits below it that belongs to the *hero's geometry*, not to the next
+  section's rhythm — and the hero's centering is scroll-choreography, not
+  something to retune for spacing. So the "What we do" section climbs over it
+  instead: `-mt-16` below `md`, leaving 58px of breathing room under the card.
+  Desktop keeps `mt-0` — there the card is wider, the air reads as frame, and
+  the two section edges still meet exactly at the hero's lower boundary.
+
+  Two consequences are load-bearing. The section's heading now peeks above
+  the fold on mobile, which is the point: the gold it replaces was empty, and
+  a heading at the fold reads as an invitation to scroll where dead gold read
+  as the end of the page. And the pull-up **separates two field edges that
+  used to meet** — the section's top now lands in the middle of the hero's
+  own floor, and the hero's bottom is left opening onto nothing. Each then
+  has no second edge to land on and each draws the full-width line the shared
+  anchor exists to erase, so both take the mobile open-edge classes. Measured
+  at that join on the built page: **12** with both edges painted, **3** with
+  both open — back inside the ≤3 every internal seam holds.
 - **Ground is decided per page, not per section.**
   - **Home** is one continuous gold world from the header to the footer — the
     `gold-wash` floor everywhere, `gold-anchor` at every section edge and
@@ -384,6 +414,22 @@ eye down the dark toward the closing line:
    cone and glow deliver "Your adventure starts here." and the primary
    button.
 
+**Ignition is visual contact, not a shared number.** The lamp fires when the
+descending thread has *visibly landed* on its node — so the thread completes
+its draw at a fixed lead ahead of the ignition threshold (85% of the way to
+it) rather than on the threshold itself. Drawn and fired on one value the two
+events happen in the same frame, and the bloom covers the contact it exists
+to confirm; on a phone, where the whole descent plays out inside the last
+screen of scroll, that reads as the words arriving while the line is still
+short of the junction. The lead buys a beat the eye can actually read —
+measured on the built page, contact lands **32px** of scroll before ignition
+on mobile and **40px** on desktop. Two guards keep it honest: the threshold
+is clamped never to exceed the progress the page can deliver at its natural
+scroll bottom, so a short viewport still ignites; and the document-end
+fallback waits for the same contact point, so it can never fire on a line
+still in the air. Under reduced motion the thread renders fully drawn and the
+lamp is lit from the start — connected, trivially.
+
 And on the inner pages, exactly one placement:
 
 6. **Inner-page hero** — the halo behind the hero headline, the lamp meeting
@@ -411,13 +457,16 @@ section. Nothing else may put a gradient or texture on a ground:
 | `.gold-field` | Top and bottom edges at `gold-anchor`, falling to it at zero alpha toward the middle where the `gold-wash` floor takes over | Every home section, and every full-bleed offer panel — it is what makes the seams continuous |
 | `.gold-field-chrome-top` / `-bottom` | The same field with that one edge ending on `gold-chrome` instead, and — on the top variant — held flat for the header's height before the ramp starts | The hero (top) and the closing section (bottom) only: the two edges that meet a chrome bar rather than another section |
 | `.gold-field-open-top` | The same field with its top edge painting nothing at all | A section or panel whose top opens onto its own section's floor rather than onto another field edge — the first offer panel only |
+| `.gold-field-mobile-open-top` / `-open-bottom` | The same open edge, but only below `md` | The one join that comes apart on mobile alone: the hero's bottom edge and the "What we do" section's top edge, which the mobile pull-up separates (see Layout & spacing) |
+| Hero headline pool | Soft `gold-wash` ellipse, heavily blurred, inside the hero backdrop layer | Behind the home hero headline only, so it keeps AA over the now-fully-present backdrop photograph |
 | `.hero-backdrop-fade` | Top-down mask over a hero backdrop layer, held at 32% at the header's own height and full 170px later | The home hero's backdrop photograph, so it does not appear all at once along the fixed header's lower edge — while still reading as a photograph from the hero's first visible row |
 | `.plaster-light` | Soft pool of `plaster-bright` | Behind the About scenes and the finale mosaic |
 | `.print-shadow` | Soft `pine-950` drop shadow | Under framed prints on plaster; the raised state of interactive cards (open accordion, hovered contact card) |
 
 **Environment photographs.** A dark stretch may sink one of our own
 photographs into its ground as atmosphere: blurred (≥ 14px), desaturated,
-darkened, at ≤ 20% opacity, and masked so it dissolves into pure `pine-950`
+darkened, at ≤ 20% opacity — the home hero's backdrop is the one sanctioned
+exception, see below — and masked so it dissolves into pure `pine-950`
 at both ends of its stretch — it never touches a seam, and is felt more
 than seen. The home page carries
 two: the forest canopy behind the "What we do" clearing, and a faint band of
@@ -426,13 +475,44 @@ line so the glow zone keeps its measured contrast. Always our own outdoor
 photography from `/public/images` — never stock textures, generic forest
 wallpaper, or leaf patterns.
 
-The home hero's backdrop is the one that sits at the **top** of the cap rather
-than well under it: 18% opacity at a 32px blur, where the others run nearer
-10% at 64px. It has a job the others do not — the collapsed hero is the first
-screen, and it has to read as a photograph behind frosted glass. Blurred to
-64px at 10% the picture dissolved into an even gold and the page opened on an
-empty field. 18/32px is still inside the ≤20% / ≥14px envelope, and every
-piece of text over it measures 9.0 or better on the rendered composite.
+The home hero's backdrop is the one that **breaks** the cap rather than
+sitting under it: **40% opacity at a 20px blur, saturated 1.1**, where the
+others run nearer 10% at 64px and desaturated. It has a job the others do not
+— the collapsed hero is the first screen anyone sees, and it has to read as
+our photographs behind frosted glass: shapes recognizable, the hillsides and
+water legible as themselves, softly blurred and calm. Inside the envelope it
+could not do that job. At 10%/64px the picture dissolved into an even gold
+and the page opened on an empty field; at 18%/32px it was still a suggestion
+rather than a photograph. Saturation is lifted above 1 for the same reason —
+desaturated to 0.6 the greens went to a warm gray and the glass read as an
+abstract wash.
+
+**What the gold ground will and will not give back.** The greens can read as
+*vegetation* here; they cannot read as *forest green*. The ground under this
+layer is `gold-wash`, whose channels run R>G>B by roughly 37, and any
+photograph composited over it at glass-level opacity inherits that bias: the
+composite lands as a darker, cooler gold rather than as green. Measured on
+the built page at 40%, every sample across both viewports is warm-leaning
+(green excess −14 to +5), and swapping in the page's most saturated forest
+photograph moved nothing — it only made the blur read as mottled khaki and
+cost the picture its recognizable shapes. Green above the fold on this page
+therefore comes from the token roles that carry it — the pine marks, the
+sage strokes — and from the card photograph itself, not from the backdrop.
+Raising opacity further to chase it would spend the contrast budget below
+without buying the hue.
+
+Because the photograph now reads at full strength, the headline needs a
+ground of its own: `We are ArtiCYa` is wider than the collapsed card, so the
+outer end of the second line lands on open photograph, where the darkest
+patch of hillside took `ink` to **3.48** — under AA. A soft cream pool sits
+inside the backdrop layer, blurred well past its own box, and lifts exactly
+that patch. It sits inside the backdrop rather than behind the words on
+purpose: the card is painted after it, so the pool only ever touches the
+photograph the headline overhangs, and it fades out on the backdrop's own
+opacity as the card expands and the headline slides away — no second piece of
+scroll logic. Measured on the rendered composite at the top state, worst case
+over the whole text box: headline **5.44** mobile / **4.60** desktop, hint
+pill **4.82** / **4.67**. All clear AA.
 
 Rules, in order of precedence:
 
