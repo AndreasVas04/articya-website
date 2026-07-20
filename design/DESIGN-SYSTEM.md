@@ -417,13 +417,22 @@ text keep them.
   Padding is the only lever allowed on it, and on mobile that lever is now
   **fully spent**: the section carries no top padding at all there, so the
   accent rule sits on the section's own top edge, which sits exactly at the
-  fold. Those two constraints — card centered in 100dvh, nothing of the
-  section above the fold — fix a geometric floor at **viewport bottom minus
-  card bottom**, and the gap is at it. Measured on the built page at 390×844:
-  card bottom 722, accent rule 844 — **122px, the floor exactly**; heading top
-  869, so **147px** card-to-heading, the floor plus the rule's own `mt-6`.
-  Nothing but the type scale is left to give. Desktop keeps `pt-24`; the wider
-  frame earns the rhythm and its card leaves only 67px besides.
+  fold. The one lever left after that is the expanded card's own resting
+  drop, and it is spent to its floor too: the drop keeps **50px** clear of
+  the fold (`50dvh − 350px`, down from 57px — 50 is the floor of the 50–65px
+  band the clearance lives in), and the heading's rule-to-heading margin is
+  `mt-4` below `md`. Measured on the built page at 390×844: card bottom 794,
+  accent rule 844 — 50px, the clearance exactly; heading top 861.
+
+  Desktop dropped its `pt-24` in the sunrise pass. The hero already leaves
+  68px of gold under its card, and the left column's self-centering against
+  the taller globe column adds ~90px more — with 96px of padding on top, a
+  full empty gold band separated the card from the heading and the entrance
+  played out where nobody was looking. With no top padding the heading area
+  engages **158px** under the card block (measured at 1440×900), inside the
+  120–160px window, and the sunrise starts while the card is still leaving
+  the viewport — the two moments overlap instead of being separated by dead
+  gold.
 
   Reverting also removed the reason for the mobile open-edge classes: the
   hero's bottom edge and the section's top edge meet again exactly, at every
@@ -466,6 +475,27 @@ text keep them.
   components must additionally render their resting state.
 - Nothing autoplays on loop except the globe's slow rotation and the lamp
   glow, both of which stop under reduced motion.
+
+**The "What we do" sunrise.** The section enters as a sunrise scrubbed by its
+own approach (top edge traveling viewport bottom → 35% of the viewport),
+natural scroll only — nothing pins, and scrolling back plays it in reverse.
+The amber rule draws first; the heading rises 72px (56px mobile), crossing
+its resting line by 6% near the end of its window and settling back on it;
+the globe is the sun, surfacing from 24vh below its resting place (15vh
+mobile) while scaling 0.8 → 1; a dawn bloom crests behind it from nothing to
+full; and a broad ground wash warms the scene's gold as it rises. Amplitude
+is the point — at half progress the frame must be unmistakably different
+from the resting one (globe still low and small, bloom obvious, heading
+mid-rise); the earlier depth pass failed precisely by being too quiet to
+notice. Translate and scale ride the scroll; opacity is a one-shot timed
+rise per layer (the Reveal pattern) so the words stay readable at any scroll
+speed. The two glow layers (`.dawn-bloom`, `.sunrise-ground`) are the one
+sanctioned exception to "atmosphere is static": they are scrubbed, glows
+only, never grounds for text — measured at rest on the rendered composite,
+worst pixels keep `ink` ≥ 8.1 and `ink-soft` ≥ 4.6 on both viewports. The
+stats count up from 0 over 700ms when they enter view, client-side only and
+once per load: the server HTML always carries the final frozen strings, and
+reduced motion renders everything in place, full opacity, counters static.
 
 ## Signature element — the single light source
 

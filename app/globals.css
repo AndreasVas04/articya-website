@@ -255,8 +255,8 @@ body {
    expansion progress (`--hero-drop-progress`, written by the hero from the
    same value that sizes the card), so the collapsed card opens centered where
    the composition wants it and the offset eases in with the growth, on the
-   one clock the hero already keeps. 50dvh − 357px is the room under the
-   expanded card (half its 600px height plus 57px kept clear of the fold), so
+   one clock the hero already keeps. 50dvh − 350px is the room under the
+   expanded card (half its 600px height plus 50px kept clear of the fold), so
    a short phone where the card already fills its screen gets no drop at all
    rather than a clipped card. The var is scoped on the hero section so the
    backdrop's headline pool can follow the same offset. Desktop resolves to
@@ -267,7 +267,7 @@ body {
 }
 @media (max-width: 767px) {
   .hero-drop-scope {
-    --hero-card-drop: clamp(0px, 50dvh - 357px, 96px);
+    --hero-card-drop: clamp(0px, 50dvh - 350px, 96px);
   }
 }
 .hero-stage-drop {
@@ -312,6 +312,34 @@ body {
   .offer-panel-inset {
     padding-inline: clamp(5rem, 10.42vw - 60px, 10rem);
   }
+}
+/* The sunrise entrance's two scrubbed light layers. The dawn bloom is the
+   warm sky cresting behind the globe as it surfaces — a hot heart falling
+   through a wide halo, big enough to read as a bloom in a still frame rather
+   than a tint. The ground layer is the same light landing: a broad wash
+   rising from the scene's base, so the section's gold visibly warms as the
+   sun comes up. Both are glows, never grounds for text — the hottest bloom
+   pixel composites to about rgb(230,190,123), where ink still measures 7.4,
+   and the ground wash tops out at 18% amber-soft: measured on the rendered
+   composite behind the stats ledger, the worst pixel keeps ink-soft above
+   4.5 on both viewports (26% failed there at 4.32 on a phone). The bloom's
+   gradient runs on closest-side so it dies inside its own box — on
+   farthest-corner it was still colored at the edges and printed a soft
+   rectangle into the scene. */
+.dawn-bloom {
+  background: radial-gradient(
+    circle closest-side at 50% 55%,
+    color-mix(in srgb, var(--color-amber-soft) 62%, transparent),
+    color-mix(in srgb, var(--color-amber-soft) 26%, transparent) 48%,
+    transparent 95%
+  );
+}
+.sunrise-ground {
+  background: radial-gradient(
+    ellipse 120% 85% at 50% 100%,
+    color-mix(in srgb, var(--color-amber-soft) 18%, transparent),
+    transparent 72%
+  );
 }
 .plaster-light {
   background: radial-gradient(

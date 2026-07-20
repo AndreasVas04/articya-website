@@ -48,7 +48,11 @@ function seed(w: number, h: number): Ember[] {
     const angle = (i / COUNT) * Math.PI * 2 + rand(-0.35, 0.35);
     const homeR = rand(0.72, 1.3);
     const spawnR = homeR + rand(1.0, 1.9);
-    const size = rand(14, 34);
+    const size = rand(16, 36);
+    // A third of the field burns brighter: those peak near 0.7 at the top of
+    // their twinkle, so a handful of motes always read as unmistakable
+    // lights while the rest carry the depth behind them.
+    const bright = i % 3 === 0;
     return {
       hx: cx + Math.cos(angle) * rx * homeR,
       hy: cy + Math.sin(angle) * ry * homeR,
@@ -56,11 +60,10 @@ function seed(w: number, h: number): Ember[] {
       sy: cy + Math.sin(angle) * ry * spawnR + rand(-30, 30),
       delay: rand(0, STAGGER_MS),
       size,
-      // Smaller motes sit dimmer, so depth reads from brightness too. The
-      // bright half of the field peaks around 0.45–0.6: at the earlier
-      // 0.2–0.38 the embers read as faint smudges the eye had to hunt for
-      // rather than as lights it finds at a glance.
-      alpha: rand(0.35, 0.6) * (0.78 + 0.22 * (size / 34)),
+      // Smaller motes sit dimmer, so depth reads from brightness too.
+      alpha: bright
+        ? rand(0.62, 0.7)
+        : rand(0.4, 0.58) * (0.78 + 0.22 * (size / 36)),
       ax: rand(14, 34),
       ay: rand(10, 26),
       fx: (Math.PI * 2) / rand(26, 48),
@@ -73,19 +76,23 @@ function seed(w: number, h: number): Ember[] {
   });
 }
 
-// One soft radial sprite, drawn once and stamped per ember — a hot
-// amber-soft center inside a deeper amber-edge body, falling through amber to
-// nothing. The deep ring is what makes a mote read as an ember rather than a
-// pale haze against the gold: the bright core alone disappears into a ground
-// that is already nearly its color.
+// One radial sprite, drawn once and stamped per ember — a luminous near-gold
+// heart with a tight falloff into a deep amber-edge ring, then a wide soft
+// bloom to nothing. The two halves need each other on this ground: the gold
+// floor is already nearly the bloom's own color, so without the hot heart a
+// mote reads as a tea-stain, and without the deep ring the heart has nothing
+// to burn against. Tight core + dark ring is what makes it read as a small
+// glowing light.
 function makeSprite(): HTMLCanvasElement {
   const sprite = document.createElement("canvas");
   sprite.width = sprite.height = 64;
   const sctx = sprite.getContext("2d")!;
   const g = sctx.createRadialGradient(32, 32, 0, 32, 32, 32);
-  g.addColorStop(0, "rgba(226, 171, 82, 1)");
-  g.addColorStop(0.22, "rgba(184, 122, 40, 0.6)");
-  g.addColorStop(0.5, "rgba(200, 138, 58, 0.18)");
+  g.addColorStop(0, "rgba(255, 236, 190, 1)");
+  g.addColorStop(0.2, "rgba(244, 204, 132, 1)");
+  g.addColorStop(0.34, "rgba(232, 179, 106, 0.95)");
+  g.addColorStop(0.5, "rgba(184, 122, 40, 0.6)");
+  g.addColorStop(0.72, "rgba(200, 138, 58, 0.16)");
   g.addColorStop(1, "rgba(200, 138, 58, 0)");
   sctx.fillStyle = g;
   sctx.fillRect(0, 0, 64, 64);
@@ -153,7 +160,9 @@ export function ResinEmbers({ paused = false }: { paused?: boolean }) {
         const wy = Math.sin(t * e.fy + e.py) * e.ay;
         const x = e.sx + (e.hx - e.sx) * ease + wx * ease;
         const y = e.sy + (e.hy - e.sy) * ease + wy * ease;
-        const twinkle = 0.72 + 0.28 * Math.sin(t * e.twf + e.twp);
+        // The floor stays high: a trough that halves the glow drops a mote
+        // back to a stain, so the twinkle breathes instead of guttering.
+        const twinkle = 0.8 + 0.2 * Math.sin(t * e.twf + e.twp);
         // The fade-in front-runs the gather (full strength by ~40% of the
         // drift): the embers must read as lights within the first second of
         // looking, while the gather itself is allowed its slower arc.

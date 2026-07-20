@@ -20,13 +20,25 @@ import { cn } from "@/lib/utils";
 
 const easeInOutCubic = cubicBezier(0.65, 0, 0.35, 1);
 
+const clamp01 = (value: number) => Math.min(Math.max(value, 0), 1);
+
 // Eased 0→1 over a slice of the scene's approach. Computed transforms are
 // used throughout rather than useTransform's range form, for the same reason
 // as the offer panels: the range form gets promoted to a native view-timeline
 // animation, which measures the element's own visibility instead of the
 // scene's progress.
 const window01 = (value: number, from: number, to: number) =>
-  easeInOutCubic(Math.min(Math.max((value - from) / (to - from), 0), 1));
+  easeInOutCubic(clamp01((value - from) / (to - from)));
+
+// The landing curve: rises through its window, crosses the resting line by
+// 6% near the end and settles back onto it — an overshoot the scroll replays
+// in reverse on the way back up, not a timed spring.
+const settle01 = (value: number, from: number, to: number) => {
+  const s = clamp01((value - from) / (to - from));
+  return s <= 0.85
+    ? 1.06 * easeInOutCubic(s / 0.85)
+    : 1.06 - 0.06 * easeInOutCubic((s - 0.85) / 0.15);
+};
 
 interface SceneState {
   progress: MotionValue<number>;
@@ -36,17 +48,17 @@ interface SceneState {
 
 const SceneContext = createContext<SceneState | null>(null);
 
-// A section entrance staged in depth. The scene tracks its own approach —
-// its top edge traveling from the viewport bottom to 35% of the viewport —
-// and each layer arrives from a different depth along it: translate and
-// scale are scrubbed by the scroll itself, so the section rises out of the
-// page as the visitor descends into it and scrolling back plays the journey
-// in reverse. The fades are not scrubbed — each layer's opacity is a
+// A section entrance staged as a sunrise, scrubbed by the scene's own
+// approach — its top edge traveling from the viewport bottom to 35% of the
+// viewport. The rule draws first, the heading rises and lands with a settle,
+// and the globe surfaces from well below its resting place while the dawn
+// bloom crests behind it and the ground warms under the whole scene.
+// Translate and scale ride the scroll itself, so scrolling back plays the
+// sunrise in reverse; the fades are not scrubbed — each layer's opacity is a
 // one-shot timed rise on the system's 400/700 scale (the Reveal pattern),
 // so the words are readable moments after they enter no matter how slowly
-// the visitor scrolls, and scrubbing back holds them rather than swallowing
-// them. Natural scroll only: nothing pins, nothing intercepts.
-export function DepthScene({
+// the visitor scrolls. Natural scroll only: nothing pins, nothing intercepts.
+export function SunriseScene({
   className,
   children,
 }: {
@@ -87,15 +99,21 @@ export function DepthScene({
   );
 }
 
-interface DepthLayerProps {
+interface SunriseLayerProps {
   children: ReactNode;
   className?: string;
-  /** Depth travel in px at desktop; mobile runs the same path at 0.6×. */
+  /** Travel in px at desktop; mobile runs 0.6× unless mobileRise is given. */
   rise?: number;
-  /** Dawn: the layer surfaces from slightly smaller as well as lower. */
+  mobileRise?: number;
+  /** Travel as viewport-height percent — the globe's horizon rise. */
+  riseVh?: number;
+  mobileRiseVh?: number;
+  /** The layer surfaces from smaller as well as lower. */
   scaleFrom?: number;
   /** The slice of the scene's approach this layer travels through. */
   enter?: [number, number];
+  /** Land with the settle curve instead of easing straight in. */
+  overshoot?: boolean;
   durationMs?: 400 | 700;
   delayMs?: number;
 }
@@ -103,15 +121,19 @@ interface DepthLayerProps {
 // Before mount and under reduced motion the layer renders its resting state
 // untransformed and visible, so the exported HTML and reduced-motion
 // visitors get the content in place with no translation or scale.
-export function DepthLayer({
+export function SunriseLayer({
   children,
   className,
   rise = 32,
+  mobileRise,
+  riseVh,
+  mobileRiseVh,
   scaleFrom,
   enter = [0, 0.5],
+  overshoot = false,
   durationMs = 400,
   delayMs = 0,
-}: DepthLayerProps) {
+}: SunriseLayerProps) {
   const { progress, active, mobile } = useContext(SceneContext)!;
   const ref = useRef<HTMLDivElement | null>(null);
   const [shown, setShown] = useState(false);
@@ -136,15 +158,30 @@ export function DepthLayer({
   }, []);
 
   // A ref rather than a closed-over value: the transform function only
-  // re-runs on scroll, so it reads the current distance instead of the one
+  // re-runs on scroll, so it reads the current geometry instead of the one
   // captured at the render a resize has since invalidated.
-  const riseRef = useRef(rise);
-  riseRef.current = mobile ? Math.round(rise * 0.6) : rise;
+  const cfg = useRef({ rise, mobileRise, riseVh, mobileRiseVh, mobile });
+  cfg.current = { rise, mobileRise, riseVh, mobileRiseVh, mobile };
+
+  // useTransform computes once during SSR, where the transform is inert
+  // (the style is only applied when active) but the callback still runs.
+  const travel = () => {
+    if (typeof window === "undefined") return 0;
+    const c = cfg.current;
+    if (c.riseVh) {
+      const vh = c.mobile ? (c.mobileRiseVh ?? c.riseVh) : c.riseVh;
+      return (window.innerHeight * vh) / 100;
+    }
+    return c.mobile ? (c.mobileRise ?? Math.round(c.rise * 0.6)) : c.rise;
+  };
 
   const [from, to] = enter;
-  const y = useTransform(
-    () => riseRef.current * (1 - window01(progress.get(), from, to))
-  );
+  const y = useTransform(() => {
+    const k = overshoot
+      ? settle01(progress.get(), from, to)
+      : window01(progress.get(), from, to);
+    return travel() * (1 - k);
+  });
   const scale = useTransform(() =>
     scaleFrom
       ? scaleFrom + (1 - scaleFrom) * window01(progress.get(), from, to)
@@ -171,10 +208,10 @@ export function DepthLayer({
   );
 }
 
-// The scene's one accent flourish: the amber rule draws itself left-to-right
-// at the head of the entrance — the same gesture as the offer panels' bars,
+// The scene's leading accent: the amber rule draws itself left-to-right at
+// the head of the sunrise — the same gesture as the offer panels' bars,
 // scrubbed here because the rule is the scene's leading edge.
-export function DepthRule({
+export function SunriseRule({
   className,
   enter = [0.02, 0.3],
 }: {
@@ -193,27 +230,33 @@ export function DepthRule({
   );
 }
 
-// The ground taking the stage: a light layer whose glow rises with the
-// scene's approach and falls away again if the visitor scrubs back. Glows
-// only, never text — which is why it alone is free to track the scroll
-// exactly.
-export function DepthGround({
+// A scrubbed light layer — the dawn bloom behind the globe, the warming
+// ground under the scene. Opacity tracks the approach exactly (and an
+// optional rise lets the bloom crest with the sun); glows only, never text —
+// which is why these alone are free to track the scroll without a timed
+// fallback.
+export function SunriseGlow({
   className,
   children,
-  enter = [0.05, 0.85],
+  enter = [0.05, 0.9],
+  rise = 0,
 }: {
   className?: string;
   children?: ReactNode;
   enter?: [number, number];
+  rise?: number;
 }) {
   const { progress, active } = useContext(SceneContext)!;
   const [from, to] = enter;
   const opacity = useTransform(() => window01(progress.get(), from, to));
+  const y = useTransform(
+    () => rise * (1 - window01(progress.get(), from, to))
+  );
   return (
     <motion.div
       aria-hidden="true"
       className={cn("pointer-events-none", className)}
-      style={active ? { opacity } : undefined}
+      style={active ? { opacity, y } : undefined}
     >
       {children}
     </motion.div>
