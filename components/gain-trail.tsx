@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 
 const icons = [Compass, Users, Award, HandCoins];
 
-// The rails dissolve at the top instead of stopping on a cut edge. The
+// The rail dissolves at the top instead of stopping on a cut edge. The
 // bottom runs full strength to the container's edge, where the lamp's
 // descent thread picks it up, so the amber line crosses the junction into
 // the closing section unbroken.
@@ -19,6 +19,11 @@ const RAIL_FADE = "linear-gradient(to bottom, transparent, black 7%, black)";
 // reveal one by one as they enter. Before mount and under reduced motion the
 // line renders fully drawn, so exported HTML and reduced-motion users get
 // the resting state.
+//
+// Nothing is painted ahead of the drawn tip. An undrawn "track" behind the
+// line turns the one stroke into two objects — a warm drawn part and a grey
+// remainder — and the eye reads the change of color as a break, which is
+// exactly what the trail exists not to have.
 export function GainTrail({ items }: { items: string[] }) {
   const ref = useRef<HTMLDivElement | null>(null);
   const reducedMotion = useReducedMotion();
@@ -26,20 +31,23 @@ export function GainTrail({ items }: { items: string[] }) {
 
   useEffect(() => setMounted(true), []);
 
+  // The rail hands the stroke to the lamp's descent thread, which starts its
+  // own draw when its top edge — this container's bottom edge, the two are
+  // flush — reaches 0.8 of the viewport. So the rail has to be *finished* at
+  // that same instant, not at 0.5: ending later let the descent begin drawing
+  // while the rail was still short of the junction, and the line came apart
+  // into a drawn stretch, a gap and a second drawn stretch below it. Matching
+  // the two ends also puts the drawn tip on a fixed screen line for the whole
+  // descent, so the trail draws itself where the eye already is.
   const { scrollYProgress } = useScroll({
     target: ref,
-    offset: ["start 0.8", "end 0.5"],
+    offset: ["start 0.8", "end 0.8"],
   });
 
   const drawn = mounted && !reducedMotion;
 
   return (
     <div ref={ref} className="relative">
-      <div
-        aria-hidden="true"
-        className="absolute bottom-0 left-6 top-0 w-0.5 -translate-x-1/2 rounded-full bg-hairline md:left-1/2"
-        style={{ maskImage: RAIL_FADE, WebkitMaskImage: RAIL_FADE }}
-      />
       <motion.div
         aria-hidden="true"
         className="absolute bottom-0 left-6 top-0 w-0.5 origin-top -translate-x-1/2 rounded-full bg-amber shadow-[0_0_18px_3px_color-mix(in_srgb,var(--color-amber-soft)_55%,transparent)] md:left-1/2"

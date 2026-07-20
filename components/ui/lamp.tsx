@@ -190,8 +190,9 @@ export function LampCta({ children, className }: LampCtaProps) {
             bare line over open gold, so every pixel of it is a pixel of the
             page with nothing to read, and at 112/144px it left the bottom
             half of the screen empty while the last gain scrolled away.
-            Before the path is measured, a plain centered line keeps the
-            exported resting state threaded. */}
+            Nothing is painted ahead of the drawn tip — see the trail. Before
+            the path is measured, a plain centered line keeps the exported
+            resting state threaded. */}
         <div
           ref={descentRef}
           aria-hidden="true"
@@ -202,11 +203,6 @@ export function LampCta({ children, className }: LampCtaProps) {
               className="absolute inset-0 size-full overflow-visible"
               fill="none"
             >
-              <path
-                d={threadPath}
-                stroke="var(--color-hairline)"
-                strokeWidth="2"
-              />
               <motion.path
                 d={threadPath}
                 stroke="var(--color-amber)"
@@ -261,13 +257,21 @@ export function LampCta({ children, className }: LampCtaProps) {
             />
           </div>
           {/* The lamp line itself, brightest at its center where the node
-              feeds it. */}
+              feeds it. Unlit it is the fixture and not the light: held at
+              0.2 so it reads as the dark bar the lamp hangs from, well under
+              the descending thread's own weight. At full strength it read as
+              a lit continuation of a line that had not arrived yet — the eye
+              took it for the far end of the stroke and the descent in
+              between for a gap. */}
           <div
             style={{ backgroundImage: BLADE_HOTSPOT }}
             className={cn(
               "absolute left-1/2 top-0 z-50 h-0.5 -translate-x-1/2 -translate-y-1/2",
-              lit && "transition-[width] duration-[700ms] ease-in-out-cubic",
-              on ? "w-[17rem] md:w-[30rem]" : "w-[8.5rem] md:w-[15rem]"
+              lit &&
+                "transition-[width,opacity] duration-[700ms] ease-in-out-cubic",
+              on
+                ? "w-[17rem] opacity-100 md:w-[30rem]"
+                : "w-[8.5rem] opacity-20 md:w-[15rem]"
             )}
           />
           {/* The trail's final stop: a node in the gains' dot vocabulary,

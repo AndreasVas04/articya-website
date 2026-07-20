@@ -380,12 +380,26 @@ text keep them.
   in its own bottom dissolve, the hero card is centered in its own screen and
   leaves ~120px of gold below it, and the lamp's pool spreads well past the
   button. Stacking `py-16` on top of that reads as dead gold rather than as
-  breathing room. So on mobile the "What we do" section opens at `pt-6`, the
-  gains section at `pt-12`, the offer panels close at `pb-10` and the lamp at
-  `pb-20`; the joins then measure 88–146px rather than 160–186px. Desktop
-  keeps the full rhythm — the wider frame earns it. The gold-field ramp is
-  `72px` on mobile against `150px` on desktop for the same reason: the fade
-  has to complete inside the shorter section.
+  breathing room. So on mobile both "What we do" and "What you gain" open with
+  **no top padding at all**, the offer panels close at `pb-10` and the lamp at
+  `pb-20`. Desktop keeps the full rhythm — the wider frame earns it. The
+  gold-field ramp is `72px` on mobile against `150px` on desktop for the same
+  reason: the fade has to complete inside the shorter section.
+
+  **A join is one beat, and the beat is measured where the reader is.** A
+  section's own top padding is not the whole gap: the panel above already
+  closes on its `pb-10`, and the panels are pinned, so the distance that
+  matters is the one between two *rendered* beats mid-release, not between two
+  resting section edges. Measured that way the Training Courses paragraph sat
+  **113px** from the "What you gain" heading (40 panel `pb-10` + 48 section
+  `pt-12` + 25 rule and its `mt-6`) with another **106px** below the heading
+  before the first gain (`mt-14` plus the first station's own `py-10`) — a
+  254px stretch carrying one heading and a 64px tick. Dropping the section's
+  top padding and taking the trail's margin to `mt-6` leaves **65px** above
+  the heading and **74px** below it: one beat each side, the panel's and the
+  station's own padding doing the work. The gains-to-panel margin above the
+  offer panels came down the same way (`mt-16` → `mt-10`), since that join is
+  a photograph dissolving in rather than an edge.
 - **The mobile first screen is the hero, and nothing else.** At 390×844,
   scroll 0, no part of "What we do" may be visible — not the heading, not its
   accent rule, not the section's top edge. The section begins exactly at the
@@ -471,6 +485,29 @@ eye down the dark toward the closing line:
 5. **Final CTA** — the lamp itself, the source of the whole thread: its line,
    cone and glow deliver "Your adventure starts here." and the primary
    button.
+
+**The thread is one stroke, and nothing is painted ahead of its tip.** From
+the first gain node to wherever the line has currently drawn to, it must read
+as a single continuous stroke; past the tip there is nothing at all. Two rules
+follow, and both were once broken at the same time.
+
+No undrawn "track". The trail's rail and the lamp's descent path each used to
+paint a `hairline` line under the amber, so the remainder showed as grey and
+the eye read the change of colour as the line ending — the one stroke became a
+warm piece and a cold piece with a visible join.
+
+One clock. The rail and the descent are two elements, so they are also two
+scroll ranges, and they only look like one line if their ends coincide: the
+rail must be *finished* at the instant the descent starts drawing. Ending the
+rail at `end 0.5` while the descent began at `start 0.8` let the descent run
+ahead, and the finale showed a drawn stretch, a gap, and a second drawn
+stretch below it. The rail now ends at `end 0.8` — the descent's own start —
+which also pins the drawn tip to a fixed screen line for the whole walk down.
+
+The lamp's blade is the third piece and is not part of the stroke: unlit it
+holds at **0.2 opacity**, the dark bar the fixture hangs from. At full
+strength it read as the far end of a line that had not arrived yet, and the
+undrawn descent between them read as a gap in it.
 
 **Ignition is visual contact, not a shared number.** The lamp fires when the
 descending thread has *visibly landed* on its node — so the thread completes

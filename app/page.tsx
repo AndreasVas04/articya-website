@@ -117,7 +117,11 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="mt-16 md:mt-24">
+          {/* The first panel opens on a photograph that dissolves in over its
+              own top edge, so the join already reads as a fade rather than a
+              cut. On mobile the full `mt-16` on top of that dissolve left the
+              stats hanging over ~120px of bare gold. */}
+          <div className="mt-10 md:mt-24">
             {whatWeDo.cards.map((card, i) => (
               <OfferPanel
                 key={card.title}
@@ -137,7 +141,12 @@ export default function HomePage() {
             carries no bottom padding: the lamp's descent owns the gap below,
             so the trail's line runs straight on into the thread rather than
             stopping short of a section edge. */}
-        <section className="gold-field relative px-4 pt-12 text-ink md:pt-32">
+        {/* No top padding on mobile, like "What we do": the panel above closes
+            on its own `pb-10`, so the section's own padding stacked a second
+            beat on top of a gap the panel had already opened — 113px from the
+            last line of the panel to this heading. The accent rule sits on the
+            section's top edge instead and the join reads as one beat. */}
+        <section className="gold-field relative px-4 text-ink md:pt-32">
           <div className="relative mx-auto max-w-6xl">
             <Reveal className="text-center">
               <span
@@ -149,7 +158,10 @@ export default function HomePage() {
               </h2>
             </Reveal>
 
-            <div className="mt-14 md:mt-20">
+            {/* The first station carries its own `py-10` before the node, so
+                on mobile this margin was the second half of a 106px gap
+                between the heading and the first gain. */}
+            <div className="mt-6 md:mt-20">
               <GainTrail items={gain.items} />
             </div>
           </div>
