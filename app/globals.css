@@ -35,16 +35,21 @@
      `gold-anchor` is the same gold a shade deeper: it fills the chrome and
      the hero's tagline card, and it is what every section fades to at its
      top and bottom edges, so section meets section, nav and footer in one
-     unbroken band. `bark` is the chrome's resting nav label (6.00 on the
-     anchor). The amber fills are the accent lightened just far enough that
+     unbroken band. `gold-chrome` is the header and footer only: the anchor
+     lifted back toward paper so the two flat bars read as soft warm gold
+     rather than saturated, while the sections keep the anchor at their
+     edges. `bark` is the chrome's resting nav label (6.30 on the chrome).
+     The amber fills are the accent lightened just far enough that
      `ink` on them clears AA — `amber` itself measures 4.46, a hair short. */
   --color-bark: #5c4b32;
   --color-gold-wash: #ede2c8;
   --color-gold-anchor: #e9d9b4;
-  /* The anchor gold at zero alpha. Fades name this explicitly rather than
-     ending on `transparent`, which is a colorless black and can pull a
+  --color-gold-chrome: #efe4cb;
+  /* The two edge golds at zero alpha. Fades name these explicitly rather
+     than ending on `transparent`, which is a colorless black and can pull a
      gradient through grey. */
   --color-gold-anchor-0: rgb(233 217 180 / 0);
+  --color-gold-chrome-0: rgb(239 228 203 / 0);
   --color-amber-fill: #ce9440;
   --color-amber-lit: #d8a254;
   --color-amber-edge: #b87a28;
@@ -149,22 +154,60 @@ body {
    is why no section carries a rule at its edge. */
 .gold-field {
   --gold-edge: 90px;
+  --gold-hold: 0px;
+  --gold-top: var(--color-gold-anchor);
+  --gold-top-0: var(--color-gold-anchor-0);
+  --gold-bottom: var(--color-gold-anchor);
+  --gold-bottom-0: var(--color-gold-anchor-0);
   background:
     linear-gradient(
       to bottom,
-      var(--color-gold-anchor) 0%,
-      var(--color-gold-anchor-0) var(--gold-edge)
+      var(--gold-top) 0%,
+      var(--gold-top) var(--gold-hold),
+      var(--gold-top-0) calc(var(--gold-hold) + var(--gold-edge))
     ),
-    linear-gradient(
-      to top,
-      var(--color-gold-anchor) 0%,
-      var(--color-gold-anchor-0) var(--gold-edge)
-    );
+    linear-gradient(to top, var(--gold-bottom) 0%, var(--gold-bottom-0) var(--gold-edge));
 }
 @media (min-width: 768px) {
   .gold-field {
     --gold-edge: 150px;
   }
+}
+/* The two edges that meet the chrome rather than another section end on the
+   chrome's own lighter gold instead of the anchor. Section to section, both
+   sides arrive at the anchor and the seam is invisible; against the header
+   and footer the anchor would land a step darker than the bar and draw a line
+   straight across the page. Ending these two edges on `gold-chrome` puts the
+   whole tone change inside the field's own 150px ramp, where it reads as the
+   ground warming rather than as an edge. Only these two edges change — every
+   internal seam keeps the anchor. */
+/* The top edge additionally holds its gold flat for the header's height
+   before the ramp starts. The header is fixed, so it covers the first 80px
+   of this section: without the hold the ramp has already fallen most of the
+   way to the floor by the time it emerges, and the first visible row sits a
+   step below the bar. Holding puts the ramp's start at the header's lower
+   edge, where the eye actually picks it up. */
+.gold-field-chrome-top {
+  --gold-top: var(--color-gold-chrome);
+  --gold-top-0: var(--color-gold-chrome-0);
+  --gold-hold: 64px;
+}
+@media (min-width: 768px) {
+  .gold-field-chrome-top {
+    --gold-hold: 80px;
+  }
+}
+/* Fades the hero's backdrop photograph in below the header for the same
+   reason: it too starts at the section's top, hidden behind the bar, and
+   would otherwise appear all at once along the bar's lower edge. */
+.hero-backdrop-fade {
+  --backdrop-mask: linear-gradient(to bottom, transparent 0px, #000 176px);
+  -webkit-mask-image: var(--backdrop-mask);
+  mask-image: var(--backdrop-mask);
+}
+.gold-field-chrome-bottom {
+  --gold-bottom: var(--color-gold-chrome);
+  --gold-bottom-0: var(--color-gold-chrome-0);
 }
 .plaster-light {
   background: radial-gradient(

@@ -12,17 +12,17 @@ function isActive(pathname: string, href: string) {
   return normalize(pathname) === normalize(href);
 }
 
-// Chrome, not content: one gold bar on every page, matched by the footer and
-// by the hero's tagline card — the same `gold-anchor` fill in all three, so
-// they read as one surface. It carries no rule along its lower edge: the home
-// page's first section fades to this same gold at its top, and a hairline
-// there would draw the seam the shared fill exists to erase.
+// Chrome, not content: one gold bar on every page, matched by the footer —
+// both carry `gold-chrome`, the anchor gold lifted toward paper so the two
+// flat bars stay soft where the sections stay rich. It carries no rule along
+// its lower edge: the home page's first section fades to a gold a half-step
+// deeper, and a hairline there would draw the seam the shared warmth erases.
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 bg-gold-anchor">
+    <header className="fixed inset-x-0 top-0 z-50 bg-gold-chrome">
       <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 md:h-20">
         <Link href="/" className="flex shrink-0 items-center gap-2.5">
           <Image
@@ -52,7 +52,7 @@ export function SiteHeader() {
 
         <ul
           className={cn(
-            "absolute inset-x-0 top-full flex-col gap-1 border-b border-hairline bg-gold-anchor px-4 pb-6 pt-2 md:static md:flex md:flex-row md:items-center md:gap-8 md:border-0 md:bg-transparent md:p-0",
+            "absolute inset-x-0 top-full flex-col gap-1 border-b border-hairline bg-gold-chrome px-4 pb-6 pt-2 md:static md:flex md:flex-row md:items-center md:gap-8 md:border-0 md:bg-transparent md:p-0",
             open ? "flex" : "hidden"
           )}
         >
@@ -74,7 +74,7 @@ export function SiteHeader() {
                   <span
                     aria-hidden="true"
                     className={cn(
-                      "absolute -bottom-px left-0 hidden h-[3px] w-full origin-left bg-amber transition-transform duration-200 ease-out-quart md:block",
+                      "absolute -bottom-px left-0 hidden h-[1.5px] w-full origin-left bg-amber transition-transform duration-200 ease-out-quart md:block",
                       active ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
                     )}
                   />

@@ -201,9 +201,9 @@ const ScrollExpandMedia = ({
   // bottom down into the first section's.
   return (
     <div className="overflow-hidden">
-      <section className="gold-field relative flex min-h-[100dvh] flex-col items-center justify-start overflow-hidden">
+      <section className="gold-field gold-field-chrome-top relative flex min-h-[100dvh] flex-col items-center justify-start overflow-hidden">
         <motion.div
-          className="absolute inset-0 z-0"
+          className="hero-backdrop-fade absolute inset-0 z-0"
           initial={false}
           animate={{ opacity: 1 - progress }}
           transition={{ duration: 0.2, ease: EASE_IN_OUT_CUBIC }}
@@ -314,7 +314,7 @@ const ScrollExpandMedia = ({
                       the photograph's lower edge down into the pill. */}
                   <span
                     aria-hidden="true"
-                    className="h-[3px] w-[88px] rounded-[3px] bg-amber"
+                    className="h-[1.25px] w-[88px] bg-amber"
                     style={{ transform: `translateX(${textTranslateX}vw)` }}
                   />
                   <p
@@ -403,18 +403,26 @@ const ScrollExpandMedia = ({
                 <div className="relative flex flex-col items-center">
                   {children}
                 </div>
-                {/* The gold outline, as an inset ring on its own topmost
-                    layer rather than a border on the band. A border sits
-                    under the band's absolutely positioned fill, and an inset
-                    shadow on the band itself paints beneath its children —
-                    either way the atmosphere covers it. Here the ring is the
-                    last thing painted, it inherits the band's exact radius,
-                    and being inset it lies 2.5px inside the clip boundary, so
-                    a subpixel disagreement between arc and clip can only
-                    touch antialiasing, never break the line. */}
+                {/* The gold frame, drawn around the tagline panel's whole
+                    perimeter as an inset ring on its own topmost layer rather
+                    than a border on the band. A border sits under the band's
+                    absolutely positioned fill, and an inset shadow on the band
+                    itself paints beneath its children — either way the
+                    atmosphere covers it. Here the ring is the last thing
+                    painted and it inherits the band's exact radius, so the
+                    line curves through the two lower corners without the
+                    subpixel disagreement a hand-matched value would leave.
+
+                    It frames this panel and not the photo frame around it for
+                    the reason the photo frame keeps a hairline: that frame is
+                    centered in the viewport, so once expanded its top edge
+                    passes under the fixed header, where a gold line would stop
+                    dead and read as broken. The panel is anchored to the
+                    frame's bottom edge and never rises anywhere near the
+                    chrome, so all four of its sides stay visible. */}
                 <span
                   aria-hidden="true"
-                  className="pointer-events-none absolute inset-0 rounded-[inherit] shadow-[inset_0_0_0_2.5px_var(--color-amber)]"
+                  className="pointer-events-none absolute inset-0 rounded-[inherit] shadow-[inset_0_0_0_1.25px_var(--color-amber)]"
                 />
               </div>
             </div>

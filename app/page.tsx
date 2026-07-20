@@ -41,7 +41,7 @@ export default function HomePage() {
         >
           <span
             aria-hidden="true"
-            className="block h-[3px] w-[82px] translate-y-6 bg-amber opacity-0 duration-[700ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] motion-reduce:translate-y-0"
+            className="block h-[1.25px] w-[82px] translate-y-6 bg-amber opacity-0 duration-[700ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] motion-reduce:translate-y-0"
           />
           <p className="mt-4 max-w-[30rem] translate-y-6 text-balance text-center font-display text-[1.0625rem] font-medium md:max-w-[46rem] md:text-[1.25rem] leading-[1.35] tracking-[-0.01em] text-ink opacity-0 duration-[700ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] group-data-[expanded]:delay-100 motion-reduce:translate-y-0">
             {hero.text}
@@ -65,7 +65,10 @@ export default function HomePage() {
             <div className="md:grid md:grid-cols-12 md:items-start md:gap-x-12">
               <div className="md:col-span-6 md:self-center">
                 <Reveal>
-                  <span aria-hidden="true" className="block h-1 w-16 bg-amber" />
+                  <span
+                  aria-hidden="true"
+                  className="block h-[1.25px] w-16 bg-amber"
+                />
                   <h2 className="mt-6 font-display text-[clamp(2rem,4vw,3rem)] font-semibold leading-[1.1] tracking-[-0.01em]">
                     {whatWeDo.title}
                   </h2>
@@ -122,7 +125,7 @@ export default function HomePage() {
             <Reveal className="text-center">
               <span
                 aria-hidden="true"
-                className="mx-auto block h-1 w-16 bg-amber"
+                className="mx-auto block h-[1.25px] w-16 bg-amber"
               />
               <h2 className="mt-6 font-display text-[clamp(2rem,4vw,3rem)] font-semibold leading-[1.1] tracking-[-0.01em]">
                 {gain.title}
@@ -140,7 +143,7 @@ export default function HomePage() {
             the ground it has been lighting all page. The headline is the one
             place the accent carries text, so it takes the text-safe amber
             and leaves the bright one to the glow around it. */}
-        <section className="gold-field relative overflow-hidden text-ink">
+        <section className="gold-field gold-field-chrome-bottom relative overflow-hidden text-ink">
           <LampCta>
             {/* ink, not ink-soft: this line sits deepest in the pool, where
                 the warm wash measures 4.14 against ink-soft — under AA. */}
