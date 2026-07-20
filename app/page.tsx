@@ -1,6 +1,12 @@
 import ScrollExpandMedia from "@/components/ui/scroll-expansion-hero";
 import { StatCounter } from "@/components/stat-counter";
 import { Reveal } from "@/components/reveal";
+import {
+  DepthGround,
+  DepthLayer,
+  DepthRule,
+  DepthScene,
+} from "@/components/depth-entrance";
 import { LivingAtmosphere } from "@/components/living-atmosphere";
 import { OfferPanel } from "@/components/offer-panel";
 import { GainTrail } from "@/components/gain-trail";
@@ -71,37 +77,43 @@ export default function HomePage() {
             {/* The globe is the living center of the clearing: text left, the
                 lit world right, the stats ledger reading under it — with the
                 countries column landing directly beneath the globe, since the
-                globe is that number made visible. The reveals stagger down the
-                same path the eye takes: title, lead, globe, then the numerals. */}
-            <div className="md:grid md:grid-cols-12 md:items-start md:gap-x-12">
+                globe is that number made visible. The section enters as a
+                depth journey rather than a flat block: the scene scrubs its
+                own approach, the rule and heading rise foreground, the lead
+                follows a beat behind from a little deeper, and the globe
+                surfaces last and slowest like a horizon while its halo
+                brightens the ground under it. */}
+            <DepthScene className="md:grid md:grid-cols-12 md:items-start md:gap-x-12">
               <div className="md:col-span-6 md:self-center">
-                <Reveal>
-                  <span
-                  aria-hidden="true"
-                  className="block h-[1.25px] w-16 bg-amber"
-                />
+                <DepthLayer rise={28} enter={[0, 0.45]}>
+                  <DepthRule />
                   <h2 className="mt-6 font-display text-[clamp(2rem,4vw,3rem)] font-semibold leading-[1.1] tracking-[-0.01em]">
                     {whatWeDo.title}
                   </h2>
-                </Reveal>
-                <Reveal delayMs={100}>
+                </DepthLayer>
+                <DepthLayer rise={44} enter={[0.1, 0.6]} delayMs={150}>
                   <p className="mt-5 border-l border-hairline pl-5 text-xl leading-[1.55] text-ink-soft md:mt-8">
                     {whatWeDo.lead}
                   </p>
-                </Reveal>
+                </DepthLayer>
               </div>
               <div className="relative mt-8 md:col-span-6 md:mt-0 md:self-center">
                 {/* The warm halo the globe's dots sit in — the light of the
-                    ground gathered behind it, not a second source. */}
-                <div
-                  aria-hidden="true"
-                  className="pointer-events-none absolute left-1/2 top-1/2 h-2/3 w-2/3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-amber-soft/25 blur-[100px]"
-                />
-                <Reveal delayMs={150} className="duration-[700ms]">
+                    ground gathered behind it, not a second source. It rises
+                    with the scene, so the gold visibly takes the stage as the
+                    section arrives. */}
+                <DepthGround className="absolute left-1/2 top-1/2 h-2/3 w-2/3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-amber-soft/25 blur-[100px]" />
+                <DepthLayer
+                  rise={72}
+                  scaleFrom={0.93}
+                  enter={[0.12, 0.95]}
+                  durationMs={700}
+                  delayMs={250}
+                >
                   <DottedGlobe className="mx-auto w-full max-w-[16rem] md:max-w-[24rem]" />
-                </Reveal>
+                </DepthLayer>
               </div>
-            </div>
+            </DepthScene>
 
             {/* The ledger carries no rules of its own beyond the desktop
                 column dividers: horizontal lines are the one mark this page

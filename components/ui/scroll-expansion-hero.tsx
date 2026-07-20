@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import { LivingAtmosphere } from "@/components/living-atmosphere";
@@ -210,7 +210,13 @@ const ScrollExpandMedia = ({
           exactly as the first offer panel's top edge would. Painting nothing
           lets the atmosphere's floor run straight through the join. Desktop
           keeps the anchor: there the two edges still land on each other. */}
-      <section className="gold-field gold-field-chrome-top hero-drop-scope relative flex min-h-[100dvh] flex-col items-center justify-start overflow-hidden">
+      {/* --hero-drop-progress feeds the mobile stage drop from the same
+          value that sizes the card, so the drop arrives with the growth
+          rather than sitting under the collapsed card. */}
+      <section
+        className="gold-field gold-field-chrome-top hero-drop-scope relative flex min-h-[100dvh] flex-col items-center justify-start overflow-hidden"
+        style={{ "--hero-drop-progress": progress } as CSSProperties}
+      >
         <motion.div
           className="hero-backdrop-fade absolute inset-0 z-0"
           initial={false}
@@ -284,10 +290,12 @@ const ScrollExpandMedia = ({
 
         <div className="relative z-10 mx-auto flex w-full flex-col items-center">
           {/* hero-stage-drop: on phones the whole stage — card, headline,
-              pill and intro band together — rests lower in the screen, a
-              constant offset spending the gold the fold decision strands
-              under the expanded card. See the class in globals.css for the
-              clamp; desktop resolves to zero. */}
+              pill and intro band together — sinks lower in the screen as the
+              card expands, spending the gold the fold decision strands under
+              the expanded card. The offset rides the expansion progress (the
+              CSS var on the section), so the collapsed card opens centered.
+              See the class in globals.css for the clamp; desktop resolves to
+              zero. */}
           <div className="hero-stage-drop relative flex h-[100dvh] w-full flex-col items-center justify-center">
             <div
               className="absolute left-1/2 top-1/2 z-0 -translate-x-1/2 -translate-y-1/2"

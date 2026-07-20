@@ -247,31 +247,34 @@ body {
     --backdrop-hold: 80px;
   }
 }
-/* On phones the hero card rests lower in its screen. The card is centered in
-   100dvh and the fold decision keeps the next section below it, which fixes a
-   geometric floor of gold under the expanded card — 122px at 390×844 — that
-   padding can no longer touch. Dropping the card's resting position spends
-   that gold directly. The drop is constant across the collapsed and expanded
-   states (a scroll-varying one would jump mid-animation) and clamped against
-   the viewport: 50dvh − 344px is the room left under the expanded card
-   (half its 600px height plus 44px kept clear of the fold), so a short phone
-   where the card already fills its screen gets no drop at all rather than a
-   clipped card. The var is scoped on the hero section so the backdrop's
-   headline pool can follow the same offset; the embers canvas mirrors the
-   same expression in JS. Desktop resolves to zero and is untouched. */
+/* On phones the expanded hero card rests lower in its screen. The card is
+   centered in 100dvh and the fold decision keeps the next section below it,
+   which fixes a geometric floor of gold under the expanded card that padding
+   can no longer touch. Dropping the card spends that gold directly — but only
+   once the card has grown into it: the drop is scaled by the hero's own
+   expansion progress (`--hero-drop-progress`, written by the hero from the
+   same value that sizes the card), so the collapsed card opens centered where
+   the composition wants it and the offset eases in with the growth, on the
+   one clock the hero already keeps. 50dvh − 357px is the room under the
+   expanded card (half its 600px height plus 57px kept clear of the fold), so
+   a short phone where the card already fills its screen gets no drop at all
+   rather than a clipped card. The var is scoped on the hero section so the
+   backdrop's headline pool can follow the same offset. Desktop resolves to
+   zero and is untouched. */
 .hero-drop-scope {
   --hero-card-drop: 0px;
+  --hero-drop-progress: 0;
 }
 @media (max-width: 767px) {
   .hero-drop-scope {
-    --hero-card-drop: clamp(0px, 50dvh - 344px, 52px);
+    --hero-card-drop: clamp(0px, 50dvh - 357px, 96px);
   }
 }
 .hero-stage-drop {
-  transform: translateY(var(--hero-card-drop));
+  transform: translateY(calc(var(--hero-card-drop) * var(--hero-drop-progress)));
 }
 .hero-pool-drop {
-  top: calc(50% + var(--hero-card-drop));
+  top: calc(50% + var(--hero-card-drop) * var(--hero-drop-progress));
 }
 .gold-field-chrome-bottom {
   --gold-bottom: var(--color-gold-chrome);
