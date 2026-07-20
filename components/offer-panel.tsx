@@ -188,9 +188,14 @@ export function OfferPanel({
           <div className="film-grain pointer-events-none absolute inset-0" />
         </div>
 
+        {/* These panels are full-bleed, so their text tracks the viewport
+            edge rather than the 72rem content column: inside the column a
+            576px block starts 400px in on a 1920 screen and reads as
+            floating toward the middle instead of anchored to its side.
+            `offer-panel-inset` carries the gutter — see globals.css. */}
         <div
           className={cn(
-            "relative mx-auto flex w-full max-w-6xl items-end px-4 pb-10 md:items-center md:pb-0",
+            "offer-panel-inset relative mx-auto flex w-full items-end pb-10 md:items-center md:pb-0",
             active ? "h-full" : "min-h-[92svh] pt-[46svh] md:py-32"
           )}
         >

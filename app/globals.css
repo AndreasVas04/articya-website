@@ -244,23 +244,23 @@ body {
   --gold-top: transparent;
   --gold-top-0: transparent;
 }
-/* The same rule, applied to the one join that only comes apart on mobile.
-   Below md the "What we do" section is pulled up over the gold the centered
-   hero card leaves under it, so the two edges that meet at the hero's lower
-   boundary on desktop no longer meet at all: the section's top edge lands in
-   the middle of the hero's own floor, and the hero's bottom edge is left
-   opening onto nothing. Each then has no second edge to land on, and each
-   draws the full-width line the shared anchor exists to erase — measured at
-   that join, 12 with both painted against 2 with both open. Desktop keeps
-   them: there the two still meet exactly. */
-@media (max-width: 767px) {
-  .gold-field-mobile-open-top {
-    --gold-top: transparent;
-    --gold-top-0: transparent;
+/* The offer panels are full-bleed, so their text is inset from the viewport
+   edge rather than held in the 72rem content column: in the column a 576px
+   block starts 400px in on a 1920 screen, which reads as floating toward the
+   middle rather than anchored to its side. The gutter grows with the screen
+   — ~90px at 1440, ~140px at 1920 — and is clamped at both ends so a laptop
+   keeps a frame and an ultrawide never drifts the block back inward. */
+.offer-panel-inset {
+  padding-inline: 1rem;
+}
+@media (min-width: 768px) {
+  .offer-panel-inset {
+    padding-inline: 4rem;
   }
-  .gold-field-mobile-open-bottom {
-    --gold-bottom: transparent;
-    --gold-bottom-0: transparent;
+}
+@media (min-width: 1280px) {
+  .offer-panel-inset {
+    padding-inline: clamp(5rem, 10.42vw - 60px, 10rem);
   }
 }
 .plaster-light {

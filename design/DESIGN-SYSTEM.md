@@ -113,9 +113,11 @@ photograph across on its own. Measured at that join on the built page: 1
 painted the anchor. Every internal seam on the page now measures 3 or under at
 both viewports.
 
-Because the seam does the joining, **no section carries a rule at its edge**,
-and the header and footer carry none either. A hairline there would draw
-exactly the line the shared gold exists to erase.
+Because the seam does the joining, **no section carries a rule at its edge**.
+A hairline between two sections would draw exactly the line the shared gold
+exists to erase. The two **chrome** bars are the exception, and for the
+opposite reason — see the amber hairline below: their line is not a seam being
+patched but a mark being made.
 
 **The chrome is soft, not a frame.** Header and footer are both
 `gold-chrome`, one value across the two bars, and the hero's tagline card is
@@ -131,12 +133,37 @@ underline never carries the active state alone — `resin-deep` on the label
 does — since `amber` measures 2.32 on `gold-chrome` and, as everywhere on the
 warm ground, is a mark and never text.
 
+**The chrome signs itself with one amber hairline.** The header carries it on
+its bottom edge and the footer on its top: **1.25px solid `amber` at 0.5
+alpha**, the accent marks' own weight and alpha family. This is the one rule
+allowed on an edge of the gold field, and it is decorative rather than
+structural — a55c04c removed the *old* chrome hairlines because they were
+neutral borders sitting exactly where the shared gold was working to erase a
+seam. This line does the opposite: it is the same amber that draws the heading
+bars, the offer panels' accents, the hero rule and the nav underline, so the
+two flat bars stop reading as untreated chrome and join the gold-line system.
+Rendered, it composites to `rgb(219,183,130)` over `gold-chrome` — measured
+identical on both viewports and on all four pages. At 1× the 1.25px declaration
+rasterizes to a crisp single device row, which is the intent: a hairline that
+resolves sharp, never a soft 2px band.
+
+The mobile nav panel carries the same hairline on **its** lower edge. The open
+`<ul>` is absolutely positioned against the header's padding box, so it covers
+the bar's own line; giving the panel the line instead means the chrome closes
+on the signature wherever the menu happens to end, open or shut.
+
+On the inner pages the line lands against the pine-dusk hero rather than gold,
+where it reads as a warm rule marking the threshold between chrome and the dark
+— the same mark doing the same job on a darker ground.
+
 **Decorative amber lines are thin.** Amber's structural role on the home page
 is the short accent mark: heading bars, the offer panels' card accents, the
-hero rule, the nav underline. Each is solid `amber` at **1.25px** — fully
-opaque and sharp-ended, never rounded, faded or bolder. The one exception is
-the nav underline at 1.5px, where the mark also has to read as an interactive
-affordance. These are minimal-luxury rules, not bars: at 3–4px the same marks
+hero rule, the nav underline, and the chrome's own hairline. Each is solid
+`amber` at **1.25px** — sharp-ended, never rounded, faded or bolder. Two
+exceptions: the nav underline at 1.5px, where the mark also has to read as an
+interactive affordance, and the chrome hairline at 0.5 alpha, where a
+full-strength line across the whole viewport would read as a border rather
+than a signature. These are minimal-luxury rules, not bars: at 3–4px the same marks
 read as heavy blocks and the accent starts competing with the type instead of
 pointing at it. Amber never draws a full-width line between two sections;
 there are no section dividers on this page at all, and no horizontal rules
@@ -326,6 +353,25 @@ text keep them.
 
 - 4px base grid; Tailwind spacing scale only, no arbitrary pixel values.
 - Content max-width `72rem` (max-w-6xl); text blocks max `65ch`.
+- **The full-bleed offer panels are the one exception to the content column.**
+  Their text alternates sides on `md`+ — Youth Exchanges left, Training
+  Courses right — and each block sits over a reading fade anchored to **its**
+  side, so legibility comes from the gradient rather than from a scrim: the
+  wash direction always follows the text (`bg-gradient-to-r` under a left
+  block, `bg-gradient-to-l` under a right one). Held inside the 72rem column,
+  a 576px block starts 400px in on a 1920 screen and reads as floating toward
+  the middle instead of anchored to its edge. So these panels inset from the
+  **viewport** instead, on a gutter that grows with the screen
+  (`.offer-panel-inset`: 1rem, 4rem at `md`, then
+  `clamp(5rem, 10.42vw - 60px, 10rem)` at `xl`) — measured 90px at 1440 and
+  140px at 1920, clamped at both ends so a laptop keeps a frame and an
+  ultrawide never drifts the block back inward. The inner side stays open:
+  774px of gap at 1440, 1204px at 1920. Mobile keeps the stacked layout
+  anchored to the bottom wash — a narrow screen cannot afford side placement.
+  Moving the text outboard puts it *deeper* into the opaque end of its own
+  fade, so contrast improves rather than degrades: worst case over the faded
+  photograph, swept across each panel's pinned range, **7.26** (`ink`, at
+  1440 on Training Courses) against a 4.5 floor.
 - Section rhythm: `py-24` desktop / `py-16` mobile. Adjacent plaster sections
   alternate `plaster` / `plaster-muted` so light stretches read green, never
   neutral cream.
@@ -340,25 +386,27 @@ text keep them.
   keeps the full rhythm — the wider frame earns it. The gold-field ramp is
   `72px` on mobile against `150px` on desktop for the same reason: the fade
   has to complete inside the shorter section.
-- **The mobile pull-up.** Padding could not reach all of that gold. The hero
-  card is centered in its own screen, so on a 390×844 phone ~122px of gold
-  sits below it that belongs to the *hero's geometry*, not to the next
-  section's rhythm — and the hero's centering is scroll-choreography, not
-  something to retune for spacing. So the "What we do" section climbs over it
-  instead: `-mt-16` below `md`, leaving 58px of breathing room under the card.
-  Desktop keeps `mt-0` — there the card is wider, the air reads as frame, and
-  the two section edges still meet exactly at the hero's lower boundary.
+- **The mobile first screen is the hero, and nothing else.** At 390×844,
+  scroll 0, no part of "What we do" may be visible — not the heading, not its
+  accent rule, not the section's top edge. The section begins exactly at the
+  fold (measured on the built page: section top at 844, accent rule at 892,
+  heading at 917).
 
-  Two consequences are load-bearing. The section's heading now peeks above
-  the fold on mobile, which is the point: the gold it replaces was empty, and
-  a heading at the fold reads as an invitation to scroll where dead gold read
-  as the end of the page. And the pull-up **separates two field edges that
-  used to meet** — the section's top now lands in the middle of the hero's
-  own floor, and the hero's bottom is left opening onto nothing. Each then
-  has no second edge to land on and each draws the full-width line the shared
-  anchor exists to erase, so both take the mobile open-edge classes. Measured
-  at that join on the built page: **12** with both edges painted, **3** with
-  both open — back inside the ≤3 every internal seam holds.
+  This costs ~120px of gold below the hero card, and that gap is **accepted**.
+  It belongs to the *hero's geometry* — the card is centered in its own screen,
+  and that centering is scroll-choreography, not spacing to retune. A `-mt-16`
+  pull-up was tried (cb6721b) to spend the gap and let the heading peek above
+  the fold as an invitation to scroll; it was reverted, because a first screen
+  that shows the top of the next section stops being one composed image. Dead
+  gold below a centered card is the cheaper problem. Padding is the only lever
+  allowed on it — the section still opens at `pt-6` on mobile, which keeps the
+  gap at that baseline rather than letting it grow.
+
+  Reverting also removed the reason for the mobile open-edge classes: the
+  hero's bottom edge and the section's top edge meet again exactly, at every
+  viewport, so both keep the anchor and neither paints nothing. Measured at
+  that join after the revert: worst row-delta **2.37**, and its worst row sits
+  36px off the boundary — gradient stepping, not an edge.
 - **Ground is decided per page, not per section.**
   - **Home** is one continuous gold world from the header to the footer — the
     `gold-wash` floor everywhere, `gold-anchor` at every section edge and
@@ -374,8 +422,9 @@ text keep them.
     inner page reads as the same forest at a different hour.
   - **Header and footer** are one `gold-chrome` surface site-wide, solid on every
     page and never transparent over a hero — so navigation reads the same
-    everywhere. On the home page they carry no edge rule: the first and last
-    sections fade to this same gold, so chrome and body meet as one band.
+    everywhere. The first and last sections fade to this same gold, so chrome
+    and body meet as one band; the amber hairline on the shared edge is the
+    only rule either bar carries, and it is a signature, not a seam.
 - Every page's first screen must read "green outdoors": photography plus at
   least two green token roles above the fold. On light grounds those are
   lichen labels, sage pills/borders, plaster-muted bands; on the dark home
@@ -457,7 +506,6 @@ section. Nothing else may put a gradient or texture on a ground:
 | `.gold-field` | Top and bottom edges at `gold-anchor`, falling to it at zero alpha toward the middle where the `gold-wash` floor takes over | Every home section, and every full-bleed offer panel — it is what makes the seams continuous |
 | `.gold-field-chrome-top` / `-bottom` | The same field with that one edge ending on `gold-chrome` instead, and — on the top variant — held flat for the header's height before the ramp starts | The hero (top) and the closing section (bottom) only: the two edges that meet a chrome bar rather than another section |
 | `.gold-field-open-top` | The same field with its top edge painting nothing at all | A section or panel whose top opens onto its own section's floor rather than onto another field edge — the first offer panel only |
-| `.gold-field-mobile-open-top` / `-open-bottom` | The same open edge, but only below `md` | The one join that comes apart on mobile alone: the hero's bottom edge and the "What we do" section's top edge, which the mobile pull-up separates (see Layout & spacing) |
 | Hero headline pool | Soft `gold-wash` ellipse, heavily blurred, inside the hero backdrop layer | Behind the home hero headline only, so it keeps AA over the now-fully-present backdrop photograph |
 | `.hero-backdrop-fade` | Top-down mask over a hero backdrop layer, held at 32% at the header's own height and full 170px later | The home hero's backdrop photograph, so it does not appear all at once along the fixed header's lower edge — while still reading as a photograph from the hero's first visible row |
 | `.plaster-light` | Soft pool of `plaster-bright` | Behind the About scenes and the finale mosaic |
@@ -580,7 +628,7 @@ integration time.
 
 | Component | Hardcoded value | Token |
 |---|---|---|
-| Header / footer | chrome surface | `gold-chrome`, no edge rule |
+| Header / footer | chrome surface | `gold-chrome`, 1.25px `amber`/0.5 hairline on the edge shared with the body |
 | Header | wordmark | `ink` |
 | Header | resting nav label | `bark` |
 | Header | active + `:hover` nav label | `resin-deep` |

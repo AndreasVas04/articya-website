@@ -60,21 +60,11 @@ export default function HomePage() {
 
         {/* overflow-clip (not hidden) so the offer panels' sticky frames can
             pin against the viewport. */}
-        {/* The mobile pull-up: the hero card is centered in its own screen,
-            so ~122px of gold sits below it that belongs to the hero's
-            geometry, not to this section's rhythm — padding here cannot
-            reach it. The section climbs over it instead, leaving ~58px of
-            breathing room under the card. The join stays continuous because
-            58px of clearance keeps the section off the expanded card at
-            every scroll position, and both this edge and the hero's now
-            paint nothing below md — pulled apart, they have no second edge
-            to meet, so the atmosphere's floor carries the join instead.
-            Desktop, where the card is wider and the air reads as frame,
-            keeps the full rhythm. */}
-        <section className="gold-field gold-field-mobile-open-top relative -mt-16 overflow-clip text-ink md:mt-0">
-          {/* pt is small on mobile by design: the pull-up above already
-              spends most of the gap the hero leaves. Desktop keeps the
-              full rhythm. */}
+        <section className="gold-field relative overflow-clip text-ink">
+          {/* pt is small on mobile by design: the hero card is centered in
+              its own screen and already leaves gold below it, so the first
+              screen stays hero-only and this section starts just under it.
+              Desktop keeps the full rhythm. */}
           <div className="relative mx-auto max-w-6xl px-4 pt-6 md:pt-24">
             {/* The globe is the living center of the clearing: text left, the
                 lit world right, the stats ledger reading under it — with the

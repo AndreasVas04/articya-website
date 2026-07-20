@@ -209,7 +209,7 @@ const ScrollExpandMedia = ({
           exactly as the first offer panel's top edge would. Painting nothing
           lets the atmosphere's floor run straight through the join. Desktop
           keeps the anchor: there the two edges still land on each other. */}
-      <section className="gold-field gold-field-chrome-top gold-field-mobile-open-bottom relative flex min-h-[100dvh] flex-col items-center justify-start overflow-hidden">
+      <section className="gold-field gold-field-chrome-top relative flex min-h-[100dvh] flex-col items-center justify-start overflow-hidden">
         <motion.div
           className="hero-backdrop-fade absolute inset-0 z-0"
           initial={false}

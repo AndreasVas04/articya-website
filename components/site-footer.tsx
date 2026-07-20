@@ -21,12 +21,12 @@ const icons: Record<string, React.ReactNode> = {
 };
 
 // The lower half of the site's chrome: the same gold-chrome surface as the
-// header, closing every page on the gold it opened with. Like the header it
-// carries no rule on the edge it shares with the body — the last section
-// fades to the anchor gold a half-step deeper, so the two meet as one band.
+// header, closing every page on the gold it opened with — and carrying the
+// same amber hairline on the edge it shares with the body, so the two bars
+// bracket every page with one mark.
 export function SiteFooter() {
   return (
-    <footer className="bg-gold-chrome py-8">
+    <footer className="border-t-[1.25px] border-amber/50 bg-gold-chrome py-8">
       <div className="mx-auto flex max-w-5xl flex-col items-center gap-4 px-4">
         <div className="flex gap-4">
           {footer.social.map((s) => (

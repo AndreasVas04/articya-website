@@ -14,15 +14,16 @@ function isActive(pathname: string, href: string) {
 
 // Chrome, not content: one gold bar on every page, matched by the footer —
 // both carry `gold-chrome`, the anchor gold lifted toward paper so the two
-// flat bars stay soft where the sections stay rich. It carries no rule along
-// its lower edge: the home page's first section fades to a gold a half-step
-// deeper, and a hairline there would draw the seam the shared warmth erases.
+// flat bars stay soft where the sections stay rich. The amber hairline on its
+// lower edge is a signature, not a seam: it is the accent marks' own weight
+// and alpha, so the two chrome bars join the gold-line system that draws the
+// heading bars, the card frames and the nav underline.
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 bg-gold-chrome">
+    <header className="fixed inset-x-0 top-0 z-50 border-b-[1.25px] border-amber/50 bg-gold-chrome">
       <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 md:h-20">
         <Link href="/" className="flex shrink-0 items-center gap-2.5">
           <Image
@@ -52,7 +53,11 @@ export function SiteHeader() {
 
         <ul
           className={cn(
-            "absolute inset-x-0 top-full flex-col gap-1 border-b border-hairline bg-gold-chrome px-4 pb-6 pt-2 md:static md:flex md:flex-row md:items-center md:gap-8 md:border-0 md:bg-transparent md:p-0",
+            // The open panel is positioned against the header's padding box,
+            // so it covers the bar's own hairline — it carries the same one
+            // on its lower edge instead, and the chrome still closes on the
+            // signature line wherever the menu ends.
+            "absolute inset-x-0 top-full flex-col gap-1 border-b-[1.25px] border-amber/50 bg-gold-chrome px-4 pb-6 pt-2 md:static md:flex md:flex-row md:items-center md:gap-8 md:border-0 md:bg-transparent md:p-0",
             open ? "flex" : "hidden"
           )}
         >
