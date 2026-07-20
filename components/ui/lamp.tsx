@@ -95,14 +95,14 @@ export function LampCta({ children, className }: LampCtaProps) {
           height * 0.45
         }, ${width / 2} ${height}`
       );
-      // Mirror useScroll's ["start 0.5", "end 0.35"] mapping to find the
+      // Mirror useScroll's ["start 0.8", "end 0.45"] mapping to find the
       // progress reachable at max scroll, and keep the arrival a hair
       // inside it. The floor guards against a mid-load mis-measure firing
       // the lamp while the trail is still drawing.
       const vh = window.innerHeight;
       const top = rect.top + window.scrollY;
-      const rangeStart = top - vh * 0.5;
-      const rangeEnd = top + height - vh * 0.35;
+      const rangeStart = top - vh * 0.8;
+      const rangeEnd = top + height - vh * 0.45;
       const maxScroll = document.documentElement.scrollHeight - vh;
       const atBottom = (maxScroll - rangeStart) / (rangeEnd - rangeStart);
       arrivalRef.current = Math.min(
@@ -126,12 +126,16 @@ export function LampCta({ children, className }: LampCtaProps) {
     if (reducedMotion) setLit(true);
   }, [reducedMotion]);
 
-  // Drawing picks up at the offset where the trail's line finishes (its
-  // bottom crossing mid-viewport) and completes with the lamp line high
-  // enough that the bloom and the rising words play out in view.
+  // Drawing picks up while the last gain is still on screen and completes
+  // with the lamp line just above mid-viewport, where the words below it
+  // are already in frame. Ending on 0.45 rather than 0.35 is what buys the
+  // finale its slack: the closing section carries about 0.64 of a screen
+  // below the junction, so demanding the junction climb to the top third
+  // left the arrival unreachable until the very last pixel of the document
+  // — the lamp fired as the page ran out, and a 2px shortfall left it dark.
   const { scrollYProgress } = useScroll({
     target: descentRef,
-    offset: ["start 0.5", "end 0.35"],
+    offset: ["start 0.8", "end 0.45"],
   });
 
   useMotionValueEvent(scrollYProgress, "change", (v) => {
@@ -177,17 +181,21 @@ export function LampCta({ children, className }: LampCtaProps) {
       {/* pb compensates the text pull-up so the page keeps its length —
           the descent's scroll progress must still clear the ignition
           threshold at natural scroll bottom on every viewport. */}
-      <div className="relative mx-auto flex w-full max-w-6xl flex-col items-center px-4 pb-20 md:pb-36">
+      <div className="relative mx-auto flex w-full max-w-6xl flex-col items-center px-4 pb-16 md:pb-28">
         {/* The descent: the trail's thread crossing from the section above
             down onto the lamp line. It starts flush with the trail's last
             rail pixel — the section above carries no bottom padding — and
             owns the whole gap between the two sections, so the amber line
-            is unbroken across the junction. Before the path is measured, a
-            plain centered line keeps the exported resting state threaded. */}
+            is unbroken across the junction. Kept short: this stretch is a
+            bare line over open gold, so every pixel of it is a pixel of the
+            page with nothing to read, and at 112/144px it left the bottom
+            half of the screen empty while the last gain scrolled away.
+            Before the path is measured, a plain centered line keeps the
+            exported resting state threaded. */}
         <div
           ref={descentRef}
           aria-hidden="true"
-          className="relative z-10 h-28 w-full md:h-36"
+          className="relative z-10 h-16 w-full md:h-24"
         >
           {threadPath ? (
             <svg
@@ -219,7 +227,7 @@ export function LampCta({ children, className }: LampCtaProps) {
             where the thread lands — and the light falls from it. Re-anchored
             to the top so the section can size to its content instead of a
             full screen. */}
-        <div aria-hidden="true" className="relative isolate h-56 w-full">
+        <div aria-hidden="true" className="relative isolate h-44 w-full">
           {/* The pool carries the light through the text zone: warmest in
               the short throat above the paragraph, then a long fade the
               paragraph and headline stand inside, gone by the button. The
@@ -290,7 +298,7 @@ export function LampCta({ children, className }: LampCtaProps) {
         {/* The words live inside the pool: pulled up so the paragraph sits
             in the pool's upper-to-mid band and the headline in its warm
             middle, with only the button reaching the dying edge. */}
-        <div className="relative z-10 -mt-40 flex w-full flex-col items-center">
+        <div className="relative z-10 -mt-32 flex w-full flex-col items-center">
           {children}
         </div>
       </div>

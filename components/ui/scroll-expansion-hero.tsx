@@ -223,36 +223,44 @@ const ScrollExpandMedia = ({
               reading gray; here the warm field drifts through and the photo
               carries the depth behind the frame.
 
-              This one sits above the environment cap the other backdrops keep
-              (≤20% at ≥64px) and that is deliberate: the collapsed hero is the
-              first screen anyone sees, and it has to read as our photographs
-              behind frosted glass — the forest green legible as green, the
-              shapes recognizable. Under the cap the picture dissolved into an
-              even gold and the page opened on an empty field. Saturation is
-              held near full for the same reason: desaturated to 0.6 the greens
-              went to a warm gray and the glass read as an abstract wash. */}
+              It sits back inside the environment cap: the glass that opens the
+              page is meant to read as gold first and photograph second, so the
+              picture is a faint organic texture under the veil below rather
+              than a legible image. At 40%/20px it read as a photograph with a
+              tint over it and the gold stopped being the subject. Saturation
+              stays above 1 so the little of it that shows keeps its warmth
+              instead of going to a flat gray. */}
           <Image
             src={withBasePath(bgImageSrc)}
             alt=""
             fill
             priority
             sizes="100vw"
-            className="scale-110 object-cover opacity-[0.40] blur-[20px] saturate-[1.1]"
+            className="scale-110 object-cover opacity-[0.18] blur-[28px] saturate-[1.2]"
           />
-          {/* The headline's own pocket of ground. At the top state the
-              backdrop reads at full strength and the headline is wider than
-              the collapsed card, so the outer end of "are ArtiCYa" lands on
-              open photograph — where the darkest patch of hillside took ink
-              to 3.48, under AA. A soft cream pool lifts that patch back to
-              the field's own value. It sits inside the backdrop layer rather
-              than behind the words: the card is painted after this, so the
-              pool only ever touches the photograph the headline overhangs,
-              and it fades out on the same opacity as the backdrop as the
-              card expands and the headline slides away. Blurred well past
-              its own box so it reads as light gathering, not as a panel. */}
+          {/* The gold the glass glows with. The photograph alone at this
+              opacity leaves the field flat, so the warmth is painted here
+              rather than left to the ground below: a warm pool over a gentle
+              top-to-bottom gold, both mixed from the page's own two golds so
+              the hero cannot drift to a third. It stays translucent — the
+              living atmosphere still drifts through it — and it rides inside
+              the backdrop layer, so it fades out with the photograph as the
+              card expands and takes the header fade with it. */}
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute left-1/2 top-1/2 h-[17rem] w-[32rem] max-w-[94vw] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold-wash/60 blur-[64px]"
+            className="hero-glass-veil pointer-events-none absolute inset-0"
+          />
+          {/* The headline's own pocket of ground. The headline is wider than
+              the collapsed card, so the outer end of "are ArtiCYa" lands on
+              open backdrop rather than on the card. With the photograph now
+              far back behind the veil the pool has little left to lift, so it
+              is thin — enough to settle the darkest patch the words overhang,
+              not enough to read as a lighter patch against the gold. Blurred
+              well past its own box so it reads as light gathering, not as a
+              panel. */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute left-1/2 top-1/2 h-[17rem] w-[32rem] max-w-[94vw] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold-wash/25 blur-[64px]"
           />
           {/* Grain rides the backdrop rather than the section, so it fades out
               with it: past full expansion the ground behind the frame is the

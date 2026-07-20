@@ -389,18 +389,27 @@ text keep them.
 - **The mobile first screen is the hero, and nothing else.** At 390×844,
   scroll 0, no part of "What we do" may be visible — not the heading, not its
   accent rule, not the section's top edge. The section begins exactly at the
-  fold (measured on the built page: section top at 844, accent rule at 892,
-  heading at 917).
+  fold (measured on the built page: section top at 844, accent rule at 844,
+  heading at 869).
 
-  This costs ~120px of gold below the hero card, and that gap is **accepted**.
-  It belongs to the *hero's geometry* — the card is centered in its own screen,
+  This costs gold below the hero card, and that gap is **accepted**. It
+  belongs to the *hero's geometry* — the card is centered in its own screen,
   and that centering is scroll-choreography, not spacing to retune. A `-mt-16`
   pull-up was tried (cb6721b) to spend the gap and let the heading peek above
   the fold as an invitation to scroll; it was reverted, because a first screen
   that shows the top of the next section stops being one composed image. Dead
-  gold below a centered card is the cheaper problem. Padding is the only lever
-  allowed on it — the section still opens at `pt-6` on mobile, which keeps the
-  gap at that baseline rather than letting it grow.
+  gold below a centered card is the cheaper problem.
+
+  Padding is the only lever allowed on it, and on mobile that lever is now
+  **fully spent**: the section carries no top padding at all there, so the
+  accent rule sits on the section's own top edge, which sits exactly at the
+  fold. Those two constraints — card centered in 100dvh, nothing of the
+  section above the fold — fix a geometric floor at **viewport bottom minus
+  card bottom**, and the gap is at it. Measured on the built page at 390×844:
+  card bottom 722, accent rule 844 — **122px, the floor exactly**; heading top
+  869, so **147px** card-to-heading, the floor plus the rule's own `mt-6`.
+  Nothing but the type scale is left to give. Desktop keeps `pt-24`; the wider
+  frame earns the rhythm and its card leaves only 67px besides.
 
   Reverting also removed the reason for the mobile open-edge classes: the
   hero's bottom edge and the section's top edge meet again exactly, at every
@@ -471,13 +480,37 @@ events happen in the same frame, and the bloom covers the contact it exists
 to confirm; on a phone, where the whole descent plays out inside the last
 screen of scroll, that reads as the words arriving while the line is still
 short of the junction. The lead buys a beat the eye can actually read —
-measured on the built page, contact lands **32px** of scroll before ignition
-on mobile and **40px** on desktop. Two guards keep it honest: the threshold
+measured on the built page, contact lands **56px** of scroll before ignition
+on mobile and **60px** on desktop. Two guards keep it honest: the threshold
 is clamped never to exceed the progress the page can deliver at its natural
 scroll bottom, so a short viewport still ignites; and the document-end
 fallback waits for the same contact point, so it can never fire on a line
 still in the air. Under reduced motion the thread renders fully drawn and the
 lamp is lit from the start — connected, trivially.
+
+**The finale is short, and it must not end on the scrollbar.** The descent is
+a bare amber line over open gold: every pixel of it is page with nothing to
+read, so it is kept to **64px** on mobile and **96px** on desktop. At 112/144
+it left the bottom half of the screen empty while the last gain scrolled
+away, which is the whole of what "the finale drags" meant — the scroll cost
+was never the problem, and cannot be: ignition can never land past the
+document's own bottom, which caps the runway at about a third of a screen
+whatever the geometry. Measured from the last gain node reaching centre:
+contact at **0.13** (mobile) / **0.17** (desktop) viewports, ignition at
+**0.20** / **0.23**.
+
+The clamp is what makes that cap bite, and it used to bite all the way. The
+descent's scroll range ends on `end 0.45` rather than `end 0.35` because the
+closing section carries only about 0.64 of a screen below the junction:
+demanding the junction climb to the top third left the arrival unreachable
+until the document's last pixel, so the lamp fired exactly as the page ran
+out and a 2px shortfall left it dark. Ending at 0.45 puts ignition **46px**
+(mobile) / **92px** (desktop) inside the scroll bottom, with the paragraph,
+the closing line and the button all in frame when it fires. The stage and its
+bottom padding shortened with it (`h-44`, `-mt-32`, `pb-16`/`pb-28`), which
+pulls the words up into the pool rather than leaving them to be found below
+it. The gold stays continuous across the shortened section: worst adjacent
+row delta **3** at both viewports, top edge landing on `gold-anchor` exactly.
 
 And on the inner pages, exactly one placement:
 
@@ -506,7 +539,8 @@ section. Nothing else may put a gradient or texture on a ground:
 | `.gold-field` | Top and bottom edges at `gold-anchor`, falling to it at zero alpha toward the middle where the `gold-wash` floor takes over | Every home section, and every full-bleed offer panel — it is what makes the seams continuous |
 | `.gold-field-chrome-top` / `-bottom` | The same field with that one edge ending on `gold-chrome` instead, and — on the top variant — held flat for the header's height before the ramp starts | The hero (top) and the closing section (bottom) only: the two edges that meet a chrome bar rather than another section |
 | `.gold-field-open-top` | The same field with its top edge painting nothing at all | A section or panel whose top opens onto its own section's floor rather than onto another field edge — the first offer panel only |
-| Hero headline pool | Soft `gold-wash` ellipse, heavily blurred, inside the hero backdrop layer | Behind the home hero headline only, so it keeps AA over the now-fully-present backdrop photograph |
+| `.hero-glass-veil` | Warm pool over a gentle `gold-anchor` → `gold-wash` fall, every stop translucent | Over the home hero's backdrop photograph, inside the same fading layer — it is what makes the glass read gold |
+| Hero headline pool | Soft `gold-wash` ellipse at 25%, heavily blurred, inside the hero backdrop layer | Behind the home hero headline only, settling the patch the headline overhangs |
 | `.hero-backdrop-fade` | Top-down mask over a hero backdrop layer, held at 32% at the header's own height and full 170px later | The home hero's backdrop photograph, so it does not appear all at once along the fixed header's lower edge — while still reading as a photograph from the hero's first visible row |
 | `.plaster-light` | Soft pool of `plaster-bright` | Behind the About scenes and the finale mosaic |
 | `.print-shadow` | Soft `pine-950` drop shadow | Under framed prints on plaster; the raised state of interactive cards (open accordion, hovered contact card) |
@@ -523,44 +557,60 @@ line so the glow zone keeps its measured contrast. Always our own outdoor
 photography from `/public/images` — never stock textures, generic forest
 wallpaper, or leaf patterns.
 
-The home hero's backdrop is the one that **breaks** the cap rather than
-sitting under it: **40% opacity at a 20px blur, saturated 1.1**, where the
-others run nearer 10% at 64px and desaturated. It has a job the others do not
-— the collapsed hero is the first screen anyone sees, and it has to read as
-our photographs behind frosted glass: shapes recognizable, the hillsides and
-water legible as themselves, softly blurred and calm. Inside the envelope it
-could not do that job. At 10%/64px the picture dissolved into an even gold
-and the page opened on an empty field; at 18%/32px it was still a suggestion
-rather than a photograph. Saturation is lifted above 1 for the same reason —
-desaturated to 0.6 the greens went to a warm gray and the glass read as an
-abstract wash.
+**The home hero's backdrop is golden glass, and the gold leads.** It sits
+back inside the envelope — **18% opacity at a 28px blur, saturated 1.2** —
+and the warmth is painted rather than borrowed: `.hero-glass-veil` lays a
+warm pool over a gentle fall from `gold-anchor` to `gold-wash` on top of the
+photograph, inside the same layer, so the first screen reads as a luminous
+frosted-gold pane with a hint of life behind it. The photograph is a faint
+organic texture under that veil, not a legible image.
+
+This replaces an earlier reading (40% at a 20px blur) that chased the
+opposite goal — shapes recognizable, the hillsides legible as themselves. It
+worked on its own terms and was the wrong subject: at 40% the pane read as a
+photograph with a tint over it, and the gold stopped being what the page
+opens on. Both halves of the trade have to move together, and neither alone
+lands the read — dropping the photograph without the veil leaves the field
+flat and empty, exactly the failure the 40% version was reacting to. Measured
+on the built page, the surviving texture is **1.9–2.1 mean row-sd** of
+horizontal luminance variation in the open backdrop: present to the eye as
+mottling, far short of a picture. Saturation stays above 1 so the little that
+shows keeps its warmth instead of going to a flat gray.
+
+The veil is translucent at every stop, so the living atmosphere still drifts
+through it and the ground is never sealed under a flat wash — the failure
+that made an opaque cream wash unusable here. It rides inside the backdrop
+layer, so it inherits `.hero-backdrop-fade` under the header and fades out
+with the photograph as the card expands. Measured at the header seam on the
+built page: **5** (desktop) / **4** (mobile) maximum channel jump below the
+chrome hairline, inside the seam budget.
 
 **What the gold ground will and will not give back.** The greens can read as
 *vegetation* here; they cannot read as *forest green*. The ground under this
 layer is `gold-wash`, whose channels run R>G>B by roughly 37, and any
 photograph composited over it at glass-level opacity inherits that bias: the
-composite lands as a darker, cooler gold rather than as green. Measured on
-the built page at 40%, every sample across both viewports is warm-leaning
-(green excess −14 to +5), and swapping in the page's most saturated forest
-photograph moved nothing — it only made the blur read as mottled khaki and
-cost the picture its recognizable shapes. Green above the fold on this page
-therefore comes from the token roles that carry it — the pine marks, the
-sage strokes — and from the card photograph itself, not from the backdrop.
-Raising opacity further to chase it would spend the contrast budget below
-without buying the hue.
+composite lands as a darker, cooler gold rather than as green. Swapping in
+the page's most saturated forest photograph moved nothing — it only made the
+blur read as mottled khaki. Under the veil the point is settled rather than
+argued: every backdrop sample across both viewports is warm-leaning (green
+excess **+7.0 to +9.0**), by design. Green above the fold on this page comes
+from the token roles that carry it — the pine marks, the sage strokes — and
+from the card photograph itself, never from the backdrop.
 
-Because the photograph now reads at full strength, the headline needs a
-ground of its own: `We are ArtiCYa` is wider than the collapsed card, so the
-outer end of the second line lands on open photograph, where the darkest
-patch of hillside took `ink` to **3.48** — under AA. A soft cream pool sits
-inside the backdrop layer, blurred well past its own box, and lifts exactly
-that patch. It sits inside the backdrop rather than behind the words on
-purpose: the card is painted after it, so the pool only ever touches the
-photograph the headline overhangs, and it fades out on the backdrop's own
-opacity as the card expands and the headline slides away — no second piece of
-scroll logic. Measured on the rendered composite at the top state, worst case
-over the whole text box: headline **5.44** mobile / **4.60** desktop, hint
-pill **4.82** / **4.67**. All clear AA.
+The headline keeps a pool of its own, thinned to match: `We are ArtiCYa` is
+wider than the collapsed card, so the outer end of the second line lands on
+open backdrop rather than on the card. With the photograph now far back
+behind the veil the pool has little left to lift, so it runs at **25%**
+rather than 60% — enough to settle the darkest patch the words overhang, not
+enough to read as a lighter patch against the gold. It sits inside the
+backdrop rather than behind the words on purpose: the card is painted after
+it, so the pool only ever touches the ground the headline overhangs, and it
+fades out on the backdrop's own opacity as the card expands and the headline
+slides away — no second piece of scroll logic. Measured on the rendered
+composite at the top state, worst case over the whole text box: headline
+**10.77** and hint pill **10.00**, identical on both viewports — the contrast
+the old backdrop spent on legibility comes back when the photograph steps
+behind the gold.
 
 Rules, in order of precedence:
 

@@ -61,11 +61,13 @@ export default function HomePage() {
         {/* overflow-clip (not hidden) so the offer panels' sticky frames can
             pin against the viewport. */}
         <section className="gold-field relative overflow-clip text-ink">
-          {/* pt is small on mobile by design: the hero card is centered in
-              its own screen and already leaves gold below it, so the first
-              screen stays hero-only and this section starts just under it.
+          {/* No top padding at all on mobile. The hero card is centered in its
+              own screen, which leaves gold below it that the fold decision
+              will not let this section climb into, so the only lever left on
+              that gap is this padding — and it is spent: the accent rule sits
+              on the section's own top edge, which sits exactly at the fold.
               Desktop keeps the full rhythm. */}
-          <div className="relative mx-auto max-w-6xl px-4 pt-6 md:pt-24">
+          <div className="relative mx-auto max-w-6xl px-4 md:pt-24">
             {/* The globe is the living center of the clearing: text left, the
                 lit world right, the stats ledger reading under it — with the
                 countries column landing directly beneath the globe, since the
