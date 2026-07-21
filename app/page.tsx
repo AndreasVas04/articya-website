@@ -93,7 +93,7 @@ export default function HomePage() {
                   aria-hidden="true"
                   className="stage-rule block h-[1.25px] w-16 bg-amber"
                 />
-                <div className="stage-mask mt-4 md:mt-6">
+                <div className="stage-mask mt-2">
                   <h2 className="stage-mask-rise font-display text-[clamp(2rem,4vw,3rem)] font-semibold leading-[1.1] tracking-[-0.01em]">
                     {whatWeDo.title}
                   </h2>
@@ -186,7 +186,7 @@ export default function HomePage() {
                 aria-hidden="true"
                 className="mx-auto block h-[1.25px] w-16 bg-amber"
               />
-              <h2 className="mt-6 font-display text-[clamp(2rem,4vw,3rem)] font-semibold leading-[1.1] tracking-[-0.01em]">
+              <h2 className="mt-3 font-display text-[clamp(2rem,4vw,3rem)] font-semibold leading-[1.1] tracking-[-0.01em]">
                 {gain.title}
               </h2>
             </Reveal>

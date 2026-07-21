@@ -333,12 +333,13 @@ body {
 .stage-rise {
   --stage-rise: 64px;
 }
-/* A clipped line the masked text rises out of. The padding/negative-margin
-   pair gives descenders headroom at rest without changing layout. */
+/* A clipped line the masked text rises out of. The padding gives the glyphs
+   headroom at rest; only the bottom is margin-compensated, so the gap above
+   the mask stays owned by the layout's own margin utility. */
 .stage-mask {
   overflow: clip;
   padding-block: 0.15em;
-  margin-block: -0.15em;
+  margin-bottom: -0.15em;
 }
 .stage[data-armed]:not([data-on]) .stage-mask-rise {
   translate: 0 118%;

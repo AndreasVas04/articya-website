@@ -215,7 +215,7 @@ export function OfferPanel({
             </motion.h3>
             <motion.span
               aria-hidden="true"
-              className="mt-5 block h-[1.25px] w-16 origin-left bg-amber"
+              className="mt-4 block h-[1.25px] w-16 origin-left bg-amber"
               style={active ? { scaleX: barScaleX } : undefined}
             />
             <p className="mt-5 leading-[1.7] text-ink md:text-xl md:leading-[1.55]">
