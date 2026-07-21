@@ -464,9 +464,13 @@ text keep them.
 
 ## Motion
 
-- Durations — exactly three: **200ms** (hover, focus, small fades),
+- Durations — three system steps: **200ms** (hover, focus, small fades),
   **400ms** (reveals, card entrances, accordion), **700ms** (hero moments,
-  scroll-linked transitions, the lamp/globe lighting up).
+  scroll-linked transitions, the lamp/globe lighting up). Entrance
+  choreographies compose these freely; one longer curve is sanctioned — the
+  hero title card's frame settle at **1100ms**, the single master element of
+  the first load (its veil warm-up and dawn flash, as glows rather than
+  moving objects, may run to ~1200ms).
 - Easings — exactly two: `--ease-out-quart` `cubic-bezier(0.25, 1, 0.5, 1)`
   for entrances and hovers; `--ease-in-out-cubic`
   `cubic-bezier(0.65, 0, 0.35, 1)` for continuous or scroll-linked motion.
@@ -476,26 +480,58 @@ text keep them.
 - Nothing autoplays on loop except the globe's slow rotation and the lamp
   glow, both of which stop under reduced motion.
 
-**The "What we do" sunrise.** The section enters as a sunrise scrubbed by its
-own approach (top edge traveling viewport bottom → 35% of the viewport),
-natural scroll only — nothing pins, and scrolling back plays it in reverse.
-The amber rule draws first; the heading rises 72px (56px mobile), crossing
-its resting line by 6% near the end of its window and settling back on it;
-the globe is the sun, surfacing from 24vh below its resting place (15vh
-mobile) while scaling 0.8 → 1; a dawn bloom crests behind it from nothing to
-full; and a broad ground wash warms the scene's gold as it rises. Amplitude
-is the point — at half progress the frame must be unmistakably different
-from the resting one (globe still low and small, bloom obvious, heading
-mid-rise); the earlier depth pass failed precisely by being too quiet to
-notice. Translate and scale ride the scroll; opacity is a one-shot timed
-rise per layer (the Reveal pattern) so the words stay readable at any scroll
-speed. The two glow layers (`.dawn-bloom`, `.sunrise-ground`) are the one
-sanctioned exception to "atmosphere is static": they are scrubbed, glows
-only, never grounds for text — measured at rest on the rendered composite,
-worst pixels keep `ink` ≥ 8.1 and `ink-soft` ≥ 4.6 on both viewports. The
-stats count up from 0 over 700ms when they enter view, client-side only and
-once per load: the server HTML always carries the final frozen strings, and
-reduced motion renders everything in place, full opacity, counters static.
+**Signature entrances play on the clock, not the scrollbar.** The page's two
+set-piece moments — the hero's first-load title card and the "What we do"
+stage entrance — are time-based and once per load. An earlier pass scrubbed
+these choreographies by scroll progress; at a real flick speed the whole
+performance elapsed inside ~200ms of finger travel and read as nothing at
+all. The technique, not the tuning, was the failure. Entrances now trigger
+once — page load for the hero, the first in-view crossing for sections — and
+play on fixed durations, identical at any scroll speed; a visitor who blasts
+past still finds every element settled where it belongs, because the
+transitions run to their end states regardless of where the viewport went.
+
+**The hero title card** (~1.4s from the first paint): the golden veil warms
+up from 45% over 1200ms while the photo frame settles in on the one long
+master curve (1100ms, opacity 0 → 1, scale 1.08 → 1, its shadow container
+fading with it so no orphaned shadow ever floats alone); the headline's two
+lines rise out of clipped masks, staggered 120/300ms; one glare sweeps the
+glass (750–1850ms, resting opacity 0 at both ends); the amber strike draws
+from its center at 850ms and the hint pill lands last at 1000ms. The
+choreography is pure CSS keyed off a `hero-load` class the page's inline
+script sets before the hero parses — it runs from the very first frame, a
+no-JS visitor renders the resting state (the class never lands), and the
+finished animations hold their fill instead of snapping when hydration
+lands. Movement uses the individual `translate`/`scale` properties, never
+`transform`: the expansion writes inline transforms on these elements or
+their parents, and the two channels must compose rather than fight. The
+same rule bans Tailwind translate utilities from any element a keyframe
+translates — they set the same `translate` property, and the animation
+silently overrides the utility for its whole run.
+
+**The "What we do" stage entrance** (~1.2s per scene): a `StageScene` arms
+after hydration and fires the first time it crosses into view — 14% up from
+the viewport bottom, except the globe's own scene at 30%, so the sun
+surfaces once a real share of it is on screen. The rule draws left-to-right;
+the heading rises out of a clipped line (700ms); the lead follows a 250ms
+beat later; the globe surfaces from 120px below (88px mobile) at scale 0.85
+with an 8° tilt, settling upright over 700ms while a dawn flash riding
+inside the globe's own rising layer crests to 0.9 and dies back to nothing;
+the stats rows rise as a third scene staggered 130ms apart, each counter
+writing itself in over 700ms when it enters view (server HTML always carries
+the final frozen strings). Text, globe and stats are separate scenes, so on
+a phone — where they stack a screen apart — each moment plays where the
+visitor is actually looking. Hidden states exist only between arming and
+firing, so exported HTML carries everything at rest and reduced motion never
+arms a scene at all. The flash is the only glow in the choreography and it
+is strictly transient: keyframes end at 0, resting opacity is 0, and the
+section ground is clean gold in every resting frame — the earlier always-on
+dawn bloom and sunrise ground wash are gone precisely because a glow that
+persists at rest reads as a stain, not light. Measured on the built page:
+the dawn's warmth returns to the resting baseline within 1.4s of firing, the
+resting frame is pixel-identical to the pre-entrance ground, and the worst
+rest-state pixels behind text keep `ink` ≥ 9.1 and `ink-soft` ≥ 4.88 on
+both viewports.
 
 ## Signature element — the single light source
 

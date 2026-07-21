@@ -313,33 +313,103 @@ body {
     padding-inline: clamp(5rem, 10.42vw - 60px, 10rem);
   }
 }
-/* The sunrise entrance's two scrubbed light layers. The dawn bloom is the
-   warm sky cresting behind the globe as it surfaces — a hot heart falling
-   through a wide halo, big enough to read as a bloom in a still frame rather
-   than a tint. The ground layer is the same light landing: a broad wash
-   rising from the scene's base, so the section's gold visibly warms as the
-   sun comes up. Both are glows, never grounds for text — the hottest bloom
-   pixel composites to about rgb(230,190,123), where ink still measures 7.4,
-   and the ground wash tops out at 18% amber-soft: measured on the rendered
-   composite behind the stats ledger, the worst pixel keeps ink-soft above
-   4.5 on both viewports (26% failed there at 4.32 on a phone). The bloom's
-   gradient runs on closest-side so it dies inside its own box — on
-   farthest-corner it was still colored at the edges and printed a soft
-   rectangle into the scene. */
-.dawn-bloom {
+/* Stage entrance — time-based, once per load. A StageScene arms after
+   hydration (never under reduced motion) and fires the first time it enters
+   view; from that instant every layer plays on the clock, not the
+   scrollbar, so a flick and a crawl get the same performance. Hidden states
+   exist only between arming and the trigger — the exported HTML carries
+   everything at rest. All movement is the individual translate/scale/rotate
+   properties, never `transform`, so a layer can share an element with
+   Tailwind transform utilities or inline transforms without a fight. */
+.stage[data-armed]:not([data-on]) .stage-rise {
+  opacity: 0;
+  translate: 0 var(--stage-rise);
+}
+.stage[data-on] .stage-rise {
+  transition:
+    opacity 400ms var(--ease-out-quart),
+    translate 700ms var(--ease-out-quart);
+}
+.stage-rise {
+  --stage-rise: 64px;
+}
+/* A clipped line the masked text rises out of. The padding/negative-margin
+   pair gives descenders headroom at rest without changing layout. */
+.stage-mask {
+  overflow: clip;
+  padding-block: 0.15em;
+  margin-block: -0.15em;
+}
+.stage[data-armed]:not([data-on]) .stage-mask-rise {
+  translate: 0 118%;
+}
+.stage[data-on] .stage-mask-rise {
+  transition: translate 700ms var(--ease-out-quart);
+}
+/* The accent rule draws itself left-to-right at the head of the scene. */
+.stage-rule {
+  transform-origin: left center;
+}
+.stage[data-armed]:not([data-on]) .stage-rule {
+  scale: 0 1;
+}
+.stage[data-on] .stage-rule {
+  transition: scale 400ms var(--ease-out-quart);
+}
+/* The globe takes the stage: surfacing from well below its resting place,
+   smaller and tilted, and settling upright at full size. */
+.stage[data-armed]:not([data-on]) .stage-globe {
+  opacity: 0;
+  translate: 0 120px;
+  scale: 0.85;
+  rotate: -8deg;
+}
+@media (max-width: 767px) {
+  .stage[data-armed]:not([data-on]) .stage-globe {
+    translate: 0 88px;
+  }
+}
+.stage[data-on] .stage-globe {
+  transition:
+    opacity 400ms var(--ease-out-quart),
+    translate 700ms var(--ease-out-quart),
+    scale 700ms var(--ease-out-quart),
+    rotate 700ms var(--ease-out-quart);
+}
+/* The one glow in the choreography, and it is transient: dawn light riding
+   inside the globe's own rising layer — slightly above its center, so it
+   reads as the sky the sun surfaces into — cresting and dying back to
+   nothing as the globe settles. The keyframes end at 0 and the resting
+   opacity is 0, so the section ground is clean gold in every resting
+   frame. Never a ground for text. Centered with margins, not translate
+   utilities: Tailwind's translate utilities set the same `translate`
+   property the stage transitions use, and the two must never share an
+   element. The element is square and sized from its parent's width, so
+   -55% margins (half its 110% width) center it on both axes. */
+.stage-flash {
+  opacity: 0;
+  margin-left: -55%;
+  margin-top: -55%;
   background: radial-gradient(
-    circle closest-side at 50% 55%,
-    color-mix(in srgb, var(--color-amber-soft) 62%, transparent),
-    color-mix(in srgb, var(--color-amber-soft) 26%, transparent) 48%,
-    transparent 95%
+    circle closest-side,
+    color-mix(in srgb, var(--color-amber-soft) 45%, transparent),
+    color-mix(in srgb, var(--color-amber-soft) 18%, transparent) 55%,
+    transparent 92%
   );
 }
-.sunrise-ground {
-  background: radial-gradient(
-    ellipse 120% 85% at 50% 100%,
-    color-mix(in srgb, var(--color-amber-soft) 18%, transparent),
-    transparent 72%
-  );
+.stage[data-on] .stage-flash {
+  animation: stage-flash 1200ms var(--ease-in-out-cubic) 150ms both;
+}
+@keyframes stage-flash {
+  0% {
+    opacity: 0;
+  }
+  40% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 .plaster-light {
   background: radial-gradient(
@@ -454,6 +524,101 @@ body {
   }
 }
 
+/* Hero first-load title card — once per load, on the clock. The same inline
+   script adds `hero-load` before the hero parses, so the choreography runs
+   from the very first paint; without JS the class never lands and the hero
+   renders at rest. The frame settles on the page's one long master curve,
+   the headline words rise out of clipped lines, a glare sweeps the glass,
+   the gold veil warms up under all of it, and the strike and pill land
+   last. Movement is the individual translate/scale properties, never
+   `transform` — the expansion writes inline transforms on these elements or
+   their parents, and the two must compose rather than fight. */
+.hero-mask {
+  overflow: clip;
+  padding-block: 0.15em;
+  margin-block: -0.15em;
+}
+.hero-sheen {
+  opacity: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 36%,
+    color-mix(in srgb, var(--color-plaster-bright) 70%, transparent) 50%,
+    transparent 64%
+  );
+}
+@media (prefers-reduced-motion: no-preference) {
+  .hero-load .hero-card {
+    animation: hero-card-in 500ms var(--ease-out-quart) both;
+  }
+  .hero-load .hero-frame {
+    animation: hero-frame-in 1100ms var(--ease-out-quart) both;
+  }
+  .hero-load .hero-word {
+    animation: hero-word-rise 900ms var(--ease-out-quart) 120ms both;
+  }
+  .hero-load .hero-word-late {
+    animation-delay: 300ms;
+  }
+  .hero-load .hero-sheen {
+    animation: hero-sheen-sweep 1100ms var(--ease-in-out-cubic) 750ms both;
+  }
+  .hero-load .hero-glass-veil {
+    animation: hero-veil-in 1200ms var(--ease-in-out-cubic) both;
+  }
+  .hero-load .hero-strike {
+    animation: hero-strike-in 400ms var(--ease-out-quart) 850ms both;
+  }
+  .hero-load .hero-pill {
+    animation: hero-pill-in 400ms var(--ease-out-quart) 1000ms both;
+  }
+}
+@keyframes hero-card-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes hero-frame-in {
+  from {
+    opacity: 0;
+    scale: 1.08;
+  }
+}
+@keyframes hero-word-rise {
+  from {
+    translate: 0 115%;
+  }
+}
+@keyframes hero-sheen-sweep {
+  from {
+    opacity: 1;
+    translate: -110% 0;
+  }
+  60% {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    translate: 110% 0;
+  }
+}
+@keyframes hero-veil-in {
+  from {
+    opacity: 0.45;
+  }
+}
+@keyframes hero-strike-in {
+  from {
+    scale: 0 1;
+  }
+}
+@keyframes hero-pill-in {
+  from {
+    opacity: 0;
+    translate: 0 18px;
+  }
+}
+
 /* FAQ answers rise softly into place as their details element opens; the
    reduced-motion rule below collapses the duration. */
 @keyframes accordion-open {
@@ -486,8 +651,13 @@ details[open] .accordion-answer {
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+    /* Delays too: an animation with `both` fill holds its hidden first
+       frame for its whole delay, so an uncollapsed delay would blank the
+       element for that long even at zero duration. */
+    animation-delay: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    transition-delay: 0.01ms !important;
     scroll-behavior: auto !important;
   }
 }

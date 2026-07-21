@@ -298,7 +298,7 @@ const ScrollExpandMedia = ({
               zero. */}
           <div className="hero-stage-drop relative flex h-[100dvh] w-full flex-col items-center justify-center">
             <div
-              className="absolute left-1/2 top-1/2 z-0 -translate-x-1/2 -translate-y-1/2"
+              className="hero-card absolute left-1/2 top-1/2 z-0 -translate-x-1/2 -translate-y-1/2"
               style={{
                 width: `${mediaWidth}px`,
                 height: `${mediaHeight}px`,
@@ -315,7 +315,7 @@ const ScrollExpandMedia = ({
                   corner arcs re-emerge mid-curve below the chrome and read as
                   cut; straight lines die under the bar cleanly. `isolate`
                   keeps the grain's blend inside the frame. */}
-              <div className="relative isolate h-full w-full overflow-hidden ring-1 ring-hairline">
+              <div className="hero-frame relative isolate h-full w-full overflow-hidden ring-1 ring-hairline">
                 {restingState ? (
                   <Image
                     src={withBasePath(slides[0])}
@@ -362,6 +362,14 @@ const ScrollExpandMedia = ({
                   aria-hidden="true"
                   className="film-grain pointer-events-none absolute inset-0 rounded-[inherit] mix-blend-multiply"
                 />
+                {/* The first-load glare: one pass of light across the glass
+                    while the title settles. Resting opacity is 0 and the
+                    sweep's keyframes end at 0, so no static frame after the
+                    entrance carries it. */}
+                <span
+                  aria-hidden="true"
+                  className="hero-sheen pointer-events-none absolute inset-0"
+                />
               </div>
 
               {hintLabel && (
@@ -370,11 +378,11 @@ const ScrollExpandMedia = ({
                       the photograph's lower edge down into the pill. */}
                   <span
                     aria-hidden="true"
-                    className="h-[1.25px] w-[88px] bg-amber"
+                    className="hero-strike h-[1.25px] w-[88px] bg-amber"
                     style={{ transform: `translateX(${textTranslateX}vw)` }}
                   />
                   <p
-                    className="rounded-full border border-amber bg-gold-wash/85 px-4 py-1 text-[0.8125rem] font-semibold leading-[1.4] text-ink"
+                    className="hero-pill rounded-full border border-amber bg-gold-wash/85 px-4 py-1 text-[0.8125rem] font-semibold leading-[1.4] text-ink"
                     style={{ transform: `translateX(${textTranslateX}vw)` }}
                   >
                     {hintSeparator ? (
@@ -392,19 +400,27 @@ const ScrollExpandMedia = ({
             </div>
 
             {title && (
+              /* Each line rides inside a clipped mask, and the first-load
+                 choreography raises it from below the clip — so the headline
+                 arrives as two staggered lines surfacing out of nothing. The
+                 mask wrapper carries the expansion's inline transform and the
+                 inner span carries the load animation (individual `translate`
+                 property), so the two never touch the same channel. */
               <h1 className="relative z-10 flex flex-col items-center gap-4 text-center font-display text-[clamp(2.75rem,6vw,4.5rem)] font-semibold leading-[1.05] tracking-[-0.02em] text-ink">
                 <span
-                  className="block"
+                  className="hero-mask block"
                   style={{ transform: `translateX(-${textTranslateX}vw)` }}
                 >
-                  {firstWord}
+                  <span className="hero-word block">{firstWord}</span>
                 </span>
                 {restOfTitle && (
                   <span
-                    className="block"
+                    className="hero-mask block"
                     style={{ transform: `translateX(${textTranslateX}vw)` }}
                   >
-                    {restOfTitle}
+                    <span className="hero-word hero-word-late block">
+                      {restOfTitle}
+                    </span>
                   </span>
                 )}
               </h1>
