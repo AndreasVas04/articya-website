@@ -125,10 +125,10 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
   // grid. No pinning, no scroll-linked transforms.
   if (!mounted || reducedMotion) {
     return (
-      <section className="bg-plaster-muted pt-16 md:pt-24">
+      <section className="bg-gold-anchor pt-16 md:pt-24">
         <div className="mx-auto max-w-6xl px-4 pb-16 md:pb-24">
-          <span aria-hidden="true" className="block h-1 w-16 bg-resin-deep" />
-          <p className="mt-6 max-w-3xl leading-[1.7] text-pine-950 md:mt-8 md:text-xl md:leading-[1.55]">
+          <span aria-hidden="true" className="block h-[1.25px] w-16 bg-amber" />
+          <p className="mt-6 max-w-3xl leading-[1.7] text-ink md:mt-8 md:text-xl md:leading-[1.55]">
             {groups.join(" ")}
           </p>
         </div>
@@ -154,22 +154,22 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
   return (
     <section
       ref={container}
-      className="relative h-[300vh] bg-plaster-muted md:h-[440vh]"
+      className="relative h-[300vh] bg-gold-anchor md:h-[440vh]"
     >
       <div
         key={compact ? "compact" : "wide"}
         className="sticky top-0 h-svh overflow-hidden"
       >
-        {/* The same pool of daylight the scenes sit in, under the gathering
+        {/* The same pool of late sun the scenes sit in, under the gathering
             mosaic. */}
-        <div aria-hidden="true" className="plaster-light absolute inset-0" />
+        <div aria-hidden="true" className="gold-pool absolute inset-0" />
         <motion.div
           className="absolute inset-0 z-10 flex items-center justify-center px-4"
           style={{ opacity: textOut, y: textDrift }}
         >
           <div className="max-w-2xl text-center">
             <TextBar stage={stage} />
-            <p className="mt-8 text-xl leading-[1.55] text-pine-950">
+            <p className="mt-8 text-xl leading-[1.55] text-ink">
               {groups.map((group, i) => (
                 <FinaleGroup key={i} stage={stage} start={0.13 + i * seg} end={0.13 + i * seg + seg * 1.5}>
                   {group}
@@ -200,7 +200,7 @@ function TextBar({ stage }: { stage: ReturnType<typeof useScroll>["scrollYProgre
   return (
     <motion.span
       aria-hidden="true"
-      className="mx-auto block h-1 w-16 bg-resin-deep"
+      className="mx-auto block h-[1.25px] w-16 bg-amber"
       style={{ scaleX }}
     />
   );
@@ -275,7 +275,7 @@ function FinaleTile({
     >
       <div
         className={cn(
-          "relative overflow-hidden rounded-xl ring-1 ring-sage/40",
+          "relative overflow-hidden rounded-xl ring-1 ring-amber/55",
           TILES[index]
         )}
       >

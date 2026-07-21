@@ -54,12 +54,13 @@ function TextGroup({
 }
 
 // One scene of the About story: a daylight sibling of the home offer panel.
-// The section pins while the photograph rises into its plaster mat and
-// settles, a resin bar draws itself, and the paragraph completes group by
-// group at reading pace before the scene releases. Scenes stay on the
-// plaster grounds — the photo is a framed print, never a full-bleed dark
-// panel. Before mount and under reduced motion the scene renders unpinned
-// with everything visible, so the exported HTML is the resting state.
+// The section pins while the photograph rises into its bright mat and
+// settles, an amber bar draws itself, and the paragraph completes group by
+// group at reading pace before the scene releases. Scenes alternate between
+// the two golds — chrome and anchor bands — and the photo is a framed
+// print, never a full-bleed dark panel. Before mount and under reduced
+// motion the scene renders unpinned with everything visible, so the
+// exported HTML is the resting state.
 export function StoryScene({
   groups,
   image,
@@ -108,7 +109,7 @@ export function StoryScene({
       ref={ref}
       className={cn(
         "relative",
-        muted ? "bg-plaster-muted" : "bg-plaster",
+        muted ? "bg-gold-anchor" : "bg-gold-chrome",
         active && (groups.length > 1 ? "h-[170svh] md:h-[190svh]" : "h-[150svh] md:h-[160svh]")
       )}
     >
@@ -118,12 +119,12 @@ export function StoryScene({
           active ? "sticky top-0 flex h-svh items-center" : "py-16 md:py-24"
         )}
       >
-        {/* A soft pool of daylight where the print and its words sit. */}
-        <div aria-hidden="true" className="plaster-light absolute inset-0" />
+        {/* A soft pool of late sun where the print and its words sit. */}
+        <div aria-hidden="true" className="gold-pool absolute inset-0" />
         <div className="relative mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-8 px-4 md:grid-cols-12 md:gap-x-0">
           <motion.div
             className={cn(
-              "print-shadow bg-plaster-bright p-2 ring-1 ring-sage/50 md:p-3",
+              "print-shadow bg-plaster-bright p-2 ring-1 ring-amber/55 md:p-3",
               image.wide ? "md:col-span-6" : "md:col-span-5",
               flip
                 ? image.wide
@@ -168,10 +169,10 @@ export function StoryScene({
           >
             <motion.span
               aria-hidden="true"
-              className="block h-1 w-16 origin-left bg-resin-deep"
+              className="block h-[1.25px] w-16 origin-left bg-amber"
               style={active ? { scaleX: barScaleX } : undefined}
             />
-            <p className="mt-6 leading-[1.7] text-pine-950 md:mt-8 md:text-xl md:leading-[1.55]">
+            <p className="mt-6 leading-[1.7] text-ink md:mt-8 md:text-xl md:leading-[1.55]">
               {groups.map((group, i) => (
                 <TextGroup
                   key={i}
