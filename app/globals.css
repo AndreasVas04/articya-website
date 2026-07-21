@@ -347,6 +347,15 @@ body {
 .stage[data-on] .stage-mask-rise {
   transition: translate 700ms var(--ease-out-quart);
 }
+/* An opacity-only layer for inline text spans, which translate cannot move:
+   the opening words of an About scene ride the clock with the rule and the
+   print, while the rest of the paragraph completes at reading pace. */
+.stage[data-armed]:not([data-on]) .stage-fade {
+  opacity: 0;
+}
+.stage[data-on] .stage-fade {
+  transition: opacity 700ms var(--ease-out-quart);
+}
 /* The accent rule draws itself left-to-right at the head of the scene. */
 .stage-rule {
   transform-origin: left center;

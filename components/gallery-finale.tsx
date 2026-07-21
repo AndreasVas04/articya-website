@@ -4,10 +4,12 @@ import { useEffect, useRef, useState } from "react";
 import {
   cubicBezier,
   motion,
+  useMotionValueEvent,
   useReducedMotion,
   useScroll,
   useTransform,
 } from "framer-motion";
+import { ResinEmbers } from "@/components/resin-embers";
 import { cn, withBasePath } from "@/lib/utils";
 
 const easeInOutCubic = cubicBezier(0.65, 0, 0.35, 1);
@@ -88,6 +90,7 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
   const reducedMotion = useReducedMotion();
   const [mounted, setMounted] = useState(false);
   const [compact, setCompact] = useState(false);
+  const [emberOn, setEmberOn] = useState(false);
 
   // One travel-based timeline (section top at viewport bottom → section
   // bottom at viewport top), so the words are already arriving while the
@@ -112,6 +115,14 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
     () => -24 * stageWindow(stage.get(), fadeFrom, fadeTo)
   );
 
+  // The embers run only while the words hold the frame: they wake as the
+  // finale enters, fade out with the paragraph, and their loop stops the
+  // moment their layer is invisible so the zoom pays no frame cost.
+  useMotionValueEvent(stage, "change", (value) => {
+    const on = value > 0.02 && value < fadeTo;
+    setEmberOn((prev) => (prev === on ? prev : on));
+  });
+
   useEffect(() => {
     const query = window.matchMedia("(min-width: 768px)");
     const update = () => setCompact(!query.matches);
@@ -125,10 +136,10 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
   // grid. No pinning, no scroll-linked transforms.
   if (!mounted || reducedMotion) {
     return (
-      <section className="bg-plaster-muted pt-16 md:pt-24">
+      <section className="gold-field gold-field-chrome-bottom relative pt-16 md:pt-24">
         <div className="mx-auto max-w-6xl px-4 pb-16 md:pb-24">
-          <span aria-hidden="true" className="block h-1 w-16 bg-resin-deep" />
-          <p className="mt-6 max-w-3xl leading-[1.7] text-pine-950 md:mt-8 md:text-xl md:leading-[1.55]">
+          <span aria-hidden="true" className="block h-[1.25px] w-16 bg-amber" />
+          <p className="mt-4 max-w-3xl leading-[1.7] text-ink md:text-xl md:leading-[1.55]">
             {groups.join(" ")}
           </p>
         </div>
@@ -154,22 +165,29 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
   return (
     <section
       ref={container}
-      className="relative h-[300vh] bg-plaster-muted md:h-[440vh]"
+      className="gold-field gold-field-chrome-bottom relative h-[300vh] md:h-[440vh]"
     >
       <div
         key={compact ? "compact" : "wide"}
         className="sticky top-0 h-svh overflow-hidden"
       >
-        {/* The same pool of daylight the scenes sit in, under the gathering
-            mosaic. */}
-        <div aria-hidden="true" className="plaster-light absolute inset-0" />
+        {/* About's one ember moment: the motes gather loosely around the
+            closing words — the same field that rings the home hero card —
+            and fade out with the paragraph as the mosaic takes the frame. */}
+        <motion.div
+          aria-hidden="true"
+          className="absolute inset-0"
+          style={{ opacity: textOut }}
+        >
+          <ResinEmbers paused={!emberOn} />
+        </motion.div>
         <motion.div
           className="absolute inset-0 z-10 flex items-center justify-center px-4"
           style={{ opacity: textOut, y: textDrift }}
         >
           <div className="max-w-2xl text-center">
             <TextBar stage={stage} />
-            <p className="mt-8 text-xl leading-[1.55] text-pine-950">
+            <p className="mt-4 text-xl leading-[1.55] text-ink">
               {groups.map((group, i) => (
                 <FinaleGroup key={i} stage={stage} start={0.13 + i * seg} end={0.13 + i * seg + seg * 1.5}>
                   {group}
@@ -200,7 +218,7 @@ function TextBar({ stage }: { stage: ReturnType<typeof useScroll>["scrollYProgre
   return (
     <motion.span
       aria-hidden="true"
-      className="mx-auto block h-1 w-16 bg-resin-deep"
+      className="mx-auto block h-[1.25px] w-16 bg-amber"
       style={{ scaleX }}
     />
   );
@@ -274,15 +292,19 @@ function FinaleTile({
       className="absolute top-0 flex h-full w-full items-center justify-center"
     >
       <div
-        className={cn(
-          "relative overflow-hidden rounded-xl ring-1 ring-sage/40",
-          TILES[index]
-        )}
+        className={cn("relative overflow-hidden rounded-xl", TILES[index])}
       >
         <img
           src={withBasePath(src)}
           alt={alt}
           className="h-full w-full object-cover"
+        />
+        {/* Hairline gold frame above the photograph, radius inherited so the
+            arc rasterizes on the clip's own subpixel boundary and the
+            corners stay continuous. */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 rounded-[inherit] ring-1 ring-inset ring-amber/55"
         />
       </div>
     </motion.div>

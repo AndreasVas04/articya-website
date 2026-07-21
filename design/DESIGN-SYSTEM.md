@@ -40,15 +40,22 @@ gradients — the only gradients are atmosphere (see Atmospheric grounds).
 
 ## Warm palette — the home page's living atmosphere
 
-> **The home page is fully converted.** Every section — hero, "What we do"
-> with the stats and the globe, both offer panels, "What you gain" and the
-> closing lamp — now stands in the warm gold world described below, and this
-> table is the direction of record for all of it. The dusk palette above still
-> governs the inner pages. Passages elsewhere in this document that describe
-> home as "one continuous pine-950 world" — the narrative, the signature
-> element thread, parts of the atmospheric-ground table — are **stale for
-> home and correct for the inner pages**; read them that way rather than
-> resolving the conflict by reverting a section.
+> **The home page and the About page are fully converted.** Every home
+> section — hero, "What we do" with the stats and the globe, both offer
+> panels, "What you gain" and the closing lamp — and the whole About page
+> (gold hero, the five story scenes, the gallery finale) now stand in the
+> warm gold world described below, and this table is the direction of record
+> for all of it. The dusk palette above still governs the remaining inner
+> pages (FAQ, Contact). Passages elsewhere in this document that describe
+> home as "one continuous pine-950 world" or the inner-page heroes as
+> pine-dusk photographs — the narrative, the signature element thread, parts
+> of the atmospheric-ground table — are **stale for home and About and
+> correct for FAQ and Contact**; read them that way rather than resolving
+> the conflict by reverting a section. On About the entrance language is the
+> home page's: `hero-load` clock choreography on the hero, arm-and-fire
+> clock entrances per scene (rule draw, print rise, opening words), the pin
+> retained only as the reading beat, and the finale's scroll-scrubbed
+> zoom-parallax with the page's one ember moment around the closing words.
 
 | Token | Hex | Role |
 |---|---|---|
