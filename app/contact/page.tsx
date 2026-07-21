@@ -46,19 +46,19 @@ function ChannelCard({
     <a
       href={href}
       {...(external ? { target: "_blank", rel: "noreferrer" } : {})}
-      className="group flex h-full items-center gap-5 rounded-lg border border-sage/50 bg-plaster-bright p-5 transition duration-200 ease-out-quart hover:-translate-y-0.5 hover:border-resin-deep/50 hover:print-shadow md:flex-col md:px-6 md:py-10 md:text-center"
+      className="group flex h-full items-center gap-5 rounded-lg border border-amber/55 bg-gold-card p-5 transition duration-200 ease-out-quart hover:-translate-y-0.5 hover:border-amber/80 hover:print-shadow md:flex-col md:px-6 md:py-10 md:text-center"
     >
       <span
         aria-hidden="true"
-        className="flex size-12 shrink-0 items-center justify-center rounded-full border border-sage/60 text-lichen transition-colors duration-200 ease-out-quart group-hover:border-resin-deep/50 group-hover:text-resin-deep md:size-14"
+        className="flex size-12 shrink-0 items-center justify-center rounded-full border border-pine/30 text-pine transition-colors duration-200 ease-out-quart group-hover:border-resin-deep/50 group-hover:text-resin-deep md:size-14"
       >
         {icon}
       </span>
       <span className="min-w-0">
-        <span className="block text-[0.8125rem] font-semibold uppercase leading-[1.4] tracking-[0.08em] text-lichen md:mt-6">
+        <span className="block text-[0.8125rem] font-semibold uppercase leading-[1.4] tracking-[0.08em] text-ink-soft md:mt-6">
           {label}
         </span>
-        <span className="mt-1 block break-words font-semibold text-pine-950 transition-colors duration-200 ease-out-quart group-hover:text-resin-deep md:mt-2">
+        <span className="mt-1 block break-words font-semibold text-ink transition-colors duration-200 ease-out-quart group-hover:text-resin-deep md:mt-2">
           {value}
         </span>
       </span>
@@ -73,11 +73,11 @@ export default function ContactPage() {
     <>
       <PageHero image={hero.image} heading={hero.heading} text={hero.text} />
 
-      <section className="bg-plaster px-4 py-20 md:py-28">
+      <section className="gold-field gold-field-chrome-bottom gold-floor px-4 py-20 md:py-28">
         <div className="mx-auto max-w-4xl">
           <Reveal className="text-center">
-            <span aria-hidden="true" className="mx-auto block h-1 w-16 bg-resin-deep" />
-            <h2 className="mt-8 font-display text-[clamp(2.25rem,5vw,3.75rem)] font-semibold leading-[1.15] tracking-[-0.01em] text-pine-950">
+            <span aria-hidden="true" className="mx-auto block h-[1.25px] w-16 bg-amber" />
+            <h2 className="mt-4 font-display text-[clamp(2.25rem,5vw,3.75rem)] font-semibold leading-[1.15] tracking-[-0.01em] text-ink">
               {details.heading}
             </h2>
           </Reveal>
