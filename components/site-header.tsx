@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -21,6 +21,49 @@ function isActive(pathname: string, href: string) {
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const toggleRef = useRef<HTMLButtonElement>(null);
+  const panelRef = useRef<HTMLUListElement>(null);
+
+  // Close paths for the open mobile panel, attached only while it is open:
+  // scrolling away (past a small threshold so touch jitter doesn't count),
+  // pointing anywhere outside the panel and its toggle, Escape (which also
+  // hands focus back to the toggle), and the viewport crossing to desktop —
+  // where the panel becomes static nav and an orphaned open state would
+  // reappear on the next narrow resize.
+  useEffect(() => {
+    if (!open) return;
+
+    const startY = window.scrollY;
+    const onScroll = () => {
+      if (Math.abs(window.scrollY - startY) > 8) setOpen(false);
+    };
+    const onPointerDown = (event: PointerEvent) => {
+      const target = event.target as Node;
+      if (panelRef.current?.contains(target)) return;
+      if (toggleRef.current?.contains(target)) return;
+      setOpen(false);
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      setOpen(false);
+      toggleRef.current?.focus();
+    };
+    const desktop = window.matchMedia("(min-width: 768px)");
+    const onBreakpoint = () => {
+      if (desktop.matches) setOpen(false);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    document.addEventListener("pointerdown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    desktop.addEventListener("change", onBreakpoint);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      document.removeEventListener("pointerdown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+      desktop.removeEventListener("change", onBreakpoint);
+    };
+  }, [open]);
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b-[1.25px] border-amber/50 bg-gold-chrome">
@@ -40,6 +83,7 @@ export function SiteHeader() {
         </Link>
 
         <button
+          ref={toggleRef}
           type="button"
           aria-label={nav.menuToggleLabel}
           aria-expanded={open}
@@ -52,6 +96,7 @@ export function SiteHeader() {
         </button>
 
         <ul
+          ref={panelRef}
           className={cn(
             // The open panel is positioned against the header's padding box,
             // so it covers the bar's own hairline — it carries the same one
