@@ -93,8 +93,8 @@ body {
 .gold-light {
   background: linear-gradient(
     to bottom,
-    color-mix(in srgb, var(--color-gold-chrome) 92%, transparent) 0px,
-    color-mix(in srgb, var(--color-gold-chrome) 92%, transparent) 80px,
+    color-mix(in srgb, var(--color-gold-chrome) 97%, transparent) 0px,
+    color-mix(in srgb, var(--color-gold-chrome) 97%, transparent) 80px,
     transparent 100%
   );
 }
@@ -468,12 +468,12 @@ body {
     linear-gradient(
       to top,
       color-mix(in srgb, var(--color-gold-anchor) 88%, transparent),
-      transparent 45%
+      transparent 38%
     ),
     radial-gradient(
       ellipse 85% 80% at 50% 38%,
-      color-mix(in srgb, var(--color-gold-wash) 86%, transparent) 30%,
-      color-mix(in srgb, var(--color-gold-anchor) 92%, transparent)
+      color-mix(in srgb, var(--color-gold-wash) 58%, transparent) 30%,
+      color-mix(in srgb, var(--color-gold-anchor) 82%, transparent)
     );
 }
 /* Fine photographic grain over dark surfaces, tiled from an inline SVG so

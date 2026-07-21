@@ -31,7 +31,7 @@ export function PageHero({ image, heading, text }: PageHeroProps) {
       <div aria-hidden="true" className="film-grain absolute inset-0" />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-1/2 h-56 w-[36rem] max-w-[90vw] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold-chrome/60 blur-[100px]"
+        className="pointer-events-none absolute left-1/2 top-1/2 h-64 w-[64rem] max-w-[92vw] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold-chrome/70 blur-[100px]"
       />
       <div className="relative mx-auto flex min-h-[55vh] max-w-6xl flex-col items-center justify-center px-4 pb-16 pt-28 text-center md:min-h-[65vh] md:pb-20 md:pt-32">
         <Reveal>
