@@ -32,8 +32,12 @@ export default function RootLayout({
   return (
     // suppressHydrationWarning: the home page's inline script adds a
     // pre-hydration flag class to <html> before React attaches.
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${instrumentSans.variable} ${bricolage.variable}`}>
+    <html
+      lang="en"
+      className={`${instrumentSans.variable} ${bricolage.variable}`}
+      suppressHydrationWarning
+    >
+      <body>
         <SiteHeader />
         <main>{children}</main>
         <SiteFooter />
