@@ -34,7 +34,7 @@ export default function FaqPage() {
                   i > 0 && "mt-12 border-t border-hairline pt-12 md:mt-16 md:pt-16"
                 )}
               >
-                <Reveal className="md:col-span-4">
+                <Reveal className="md:col-span-5">
                   <div className="flex items-center gap-4 md:sticky md:top-28">
                     <span
                       aria-hidden="true"
@@ -42,20 +42,24 @@ export default function FaqPage() {
                     >
                       <Icon className="size-5" strokeWidth={1.5} />
                     </span>
-                    <h2 className="font-display text-2xl font-semibold leading-[1.25] text-ink">
+                    <h2 className="font-display text-[clamp(2rem,4vw,3rem)] font-semibold leading-[1.1] tracking-[-0.01em] text-ink">
                       {section.heading}
                     </h2>
                   </div>
                 </Reveal>
-                <Reveal delayMs={100} className="md:col-span-7 md:col-start-6">
+                {/* Six columns, not seven: at seven the answers ran 76–83
+                    characters, where every other 16px block on the site sits
+                    in 576px or less. The rail takes the column back so the
+                    gutter between the two stays one step, not two. */}
+                <Reveal delayMs={100} className="md:col-span-6 md:col-start-7">
                   <div className="space-y-4">
                     {section.items.map((item) => (
                       <details
                         key={item.question}
                         className="group rounded-lg border border-amber/45 bg-gold-card transition-[border-color,box-shadow] duration-200 ease-out-quart open:border-amber/70 open:print-shadow"
                       >
-                        <summary className="flex cursor-pointer list-none items-center justify-between gap-6 rounded-lg p-5 transition-colors duration-200 ease-out-quart hover:bg-amber-soft/20 group-open:rounded-b-none md:px-6 [&::-webkit-details-marker]:hidden">
-                          <h3 className="font-sans text-base font-semibold leading-[1.4] text-ink">
+                        <summary className="flex cursor-pointer list-none items-center justify-between gap-6 rounded-lg p-5 transition-colors duration-200 ease-out-quart hover:bg-amber-soft/20 group-open:rounded-b-none md:px-8 [&::-webkit-details-marker]:hidden">
+                          <h3 className="font-display text-2xl font-semibold leading-[1.25] text-ink">
                             {item.question}
                           </h3>
                           <span
@@ -65,7 +69,7 @@ export default function FaqPage() {
                             {arrow}
                           </span>
                         </summary>
-                        <p className="accordion-answer px-5 pb-5 leading-[1.7] text-ink-soft md:px-6 md:pb-6">
+                        <p className="accordion-answer px-5 pb-5 leading-[1.7] text-ink-soft md:px-8 md:pb-6">
                           {item.answer}
                         </p>
                       </details>

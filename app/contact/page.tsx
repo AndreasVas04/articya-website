@@ -58,7 +58,11 @@ function ChannelCard({
         <span className="block text-[0.8125rem] font-semibold uppercase leading-[1.4] tracking-[0.08em] text-ink-soft md:mt-6">
           {label}
         </span>
-        <span className="mt-1 block break-words font-semibold text-ink transition-colors duration-200 ease-out-quart group-hover:text-resin-deep md:mt-2">
+        {/* Body weight, not semibold: at 16/600 the value sat 3px from its
+            own 13/600 label and the two read as one clump. The label keeps
+            the weight and the uppercase tracking, the value reads as text —
+            the same eyebrow-and-value pairing the stats ledger uses. */}
+        <span className="mt-1 block break-words leading-[1.5] text-ink transition-colors duration-200 ease-out-quart group-hover:text-resin-deep md:mt-2">
           {value}
         </span>
       </span>
@@ -77,7 +81,7 @@ export default function ContactPage() {
         <div className="mx-auto max-w-4xl">
           <Reveal className="text-center">
             <span aria-hidden="true" className="mx-auto block h-[1.25px] w-16 bg-amber" />
-            <h2 className="mt-4 font-display text-[clamp(2.25rem,5vw,3.75rem)] font-semibold leading-[1.15] tracking-[-0.01em] text-ink">
+            <h2 className="mt-4 font-display text-[clamp(2rem,4vw,3rem)] font-semibold leading-[1.1] tracking-[-0.01em] text-ink">
               {details.heading}
             </h2>
           </Reveal>

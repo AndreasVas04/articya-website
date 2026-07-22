@@ -11,6 +11,13 @@ Every number below is measured on the fixed build; the section that follows
 records the bug, the fix, and which of this document's original findings the
 fix changed.
 
+A second pass then repaired the defects this document had measured — the FAQ
+measure and hierarchy, the cross-page heading inconsistency, the undocumented
+steps and the flat Contact label/value pair. **Every number in this document
+is post-repair.** "Before" columns throughout mean the state after the
+typeface fix and before the repair; the repair itself is recorded under
+[What the corrective pass changed](#what-the-corrective-pass-changed).
+
 ## Method
 
 The export in `out/` is served locally and walked in both viewports. Every
@@ -92,7 +99,7 @@ everywhere", on the grounds that Instrument is ~5% wider. **That prediction
 was wrong, and the 5% figure was an artefact of the probe string.**
 "Hamburgefonstiv 12345" is uppercase- and digit-heavy, which is exactly
 where the two faces diverge most. Set in real lowercase prose, in the FAQ's
-own 650px track at 16px, the two faces are within half a percent:
+then-650px track at 16px, the two faces are within half a percent:
 
 | FAQ answer | Total inline width, system | Total inline width, Instrument |
 |---|---|---|
@@ -124,52 +131,61 @@ longest rendered line.
 | Letter-spacing | −1.44px (−0.02em) | −0.88px (−0.02em) |
 | Colour | `ink` | `ink` |
 | Alignment | centre | centre |
-| Container | inner-page hero block is content-driven, not a fixed column: 672px (About, Contact), 942px (FAQ) inside the 1152px band | 358px |
+| Container | inner-page hero block is content-driven, not a fixed column: 576px (About, Contact), 942px (FAQ) inside the 1152px band | 358px |
 | Measure | "are ArtiCYa" 11ch · "About ArtiCYa" 13ch · "Frequently Asked Questions" 26ch · "Contact" 7ch | — |
 
 The inner-page hero block is a `flex flex-col items-center` child, so its
-width is shrink-to-fit. On About and Contact the lede's `max-w-2xl` (672px)
+width is shrink-to-fit. On About and Contact the lede's `max-w-xl` (576px)
 sets it; on FAQ the headline itself is wider (942px) and sets it instead.
+Narrowing the lede from `max-w-2xl` therefore narrows the whole hero block
+on those two pages — the headline is unaffected, and the lede now sits
+inside the headline's width rather than outside it.
 
 ### Showpiece
 
 | | 1440 | 390 |
 |---|---|---|
-| Where | Home closing line; Contact "Get in touch" | same |
+| Where | Home closing line — the only Showpiece on the site | same |
 | Font | Bricolage Grotesque 600 | Bricolage Grotesque 600 |
 | Size | 60px | 36px |
 | Line-height | 69px (1.15) | 41.4px (1.15) |
 | Letter-spacing | −0.6px (−0.01em) | −0.36px |
-| Colour | `resin-deep` (home) · `ink` (contact) | same |
+| Colour | `resin-deep` | same |
 | Alignment | centre | centre |
-| Container | 768px (home, `max-w-3xl`) · 896px (contact, `max-w-4xl`) | 358px |
+| Container | 768px (`max-w-3xl`) | 358px |
 
 ### Section heading (H2)
 
 | | 1440 | 390 |
 |---|---|---|
-| Where | Home "What we do", "What you gain"; Home offer-panel titles (`<h3>`) | same |
+| Where | Home "What we do", "What you gain"; Home offer-panel titles (`<h3>`); Contact "Get in touch"; FAQ question-group headings (`<h2>`) | same |
 | Font | Bricolage Grotesque 600 | Bricolage Grotesque 600 |
 | Size | 48px | 32px |
 | Line-height | 52.8px (1.1) | 35.2px (1.1) |
 | Letter-spacing | −0.48px (−0.01em) | −0.32px |
 | Colour | `ink` | `ink` |
-| Alignment | left ("What we do", panel titles) · centre ("What you gain") | left / centre |
-| Container | 536px in the 6-col track · 1152px band · 576px panel block | 358px |
+| Alignment | left ("What we do", panel titles, FAQ rail) · centre ("What you gain", "Get in touch") | left / centre |
+| Container | 536px in the 6-col track · 1152px band · 576px panel block · 896px (Contact) · 452px FAQ sticky rail, 388px beside its icon | 358px |
 
-### Group heading (FAQ rail)
+One role, one size, on all four pages. Contact's "Get in touch" rendered at
+the 60px Showpiece step and the FAQ group headings at 24px before the
+repair; both are section headings and both now take H2.
+
+### H3 (block heading)
 
 | | 1440 | 390 |
 |---|---|---|
-| Where | FAQ question-group headings (`<h2>`) | same |
+| Where | FAQ questions (`<h3>`, the accordion summaries) | same |
 | Font | Bricolage Grotesque 600 | Bricolage Grotesque 600 |
 | Size | 24px | 24px |
-| Line-height | 30px (1.25) | 28.8px (1.2) |
+| Line-height | 30px (1.25) | 30px (1.25) |
 | Letter-spacing | normal | normal |
 | Colour | `ink` | `ink` |
-| Alignment | left, in a 352px sticky rail | left |
+| Alignment | left, in a 552px card | left, 358px |
 
-The one role that does not change size between viewports.
+The one role that does not change size between viewports. Before the repair
+the FAQ questions rendered at 16px Instrument 600 — the Body size — and H3
+as documented existed nowhere on the site.
 
 ### Trail item
 
@@ -224,24 +240,28 @@ Measured in the expanded card. The line counts match what
 | Letter-spacing | normal | normal |
 | Colour | `ink` (hero ledes, closing) · `ink-soft` ("What we do" lead) | same |
 | Alignment | centre (heroes, closing) · left ("What we do" lead) | same |
-| Container | 672px (`max-w-2xl`) · 536px (6-col track) | 358px |
-| Measure | 72–77ch centred · 56ch left | 37–42ch |
+| Container | 576px (`max-w-xl`, inner-page hero ledes) · 672px (`max-w-2xl`, home closing) · 536px (6-col track) | 358px |
+| Measure | 57–64ch centred · 56ch left | 37–42ch |
 
-The only role that does not shrink between viewports — 20px at both.
+20px at both viewports, and deliberately so: the reading layer — Lede, Body,
+Caption, Label — is viewport-invariant across the whole site, because
+legibility is absolute where presence is relative. The Lede's ratio to Body
+is 1.25× at 1440 and 1.25× at 390. See "Display type scales; reading type
+does not" in `DESIGN-SYSTEM.md`.
 
 ### Body
 
 | | 1440 | 390 |
 |---|---|---|
-| Where | FAQ answers; Home offer-panel copy; About scene paragraphs | same |
+| Where | FAQ answers; Home offer-panel copy; About scene paragraphs; Contact channel values | same |
 | Font | Instrument Sans 400 | Instrument Sans 400 |
-| Size | 16px (FAQ) · 20px (offer panels, About scenes) | 16px |
-| Line-height | 27.2px (1.7) FAQ · 31px (1.55) panels/scenes | 27.2px (1.7) |
+| Size | 16px (FAQ, Contact values) · 20px (offer panels, About scenes) | 16px |
+| Line-height | 27.2px (1.7) FAQ · 31px (1.55) panels/scenes · 24px (1.5) Contact values | 27.2px (1.7) |
 | Letter-spacing | normal | normal |
-| Colour | `ink-soft` (FAQ) · `ink` (panels, scenes) | same |
-| Alignment | left | left |
-| Container | 650px (FAQ) · 576px (panels) · 1152px band, text 462–560px (About) | 356px |
-| Measure | **76–83ch** (FAQ) · 41–63ch (panels) · 53–65ch (About) | 40–50ch |
+| Colour | `ink-soft` (FAQ) · `ink` (panels, scenes, Contact values) | same |
+| Alignment | left · centre (Contact values on `md`+) | left |
+| Container | 552px card, 502px text track (FAQ) · 576px (panels) · 1152px band, text 462–560px (About) | 356px |
+| Measure | **59–70ch** (FAQ) · 41–63ch (panels) · 53–65ch (About) | 40–50ch |
 
 At 1440 the offer panels and About scenes run at the 20px Lede step, not at
 16px Body. Only FAQ uses 16px on desktop.
@@ -299,19 +319,28 @@ them.
 | Colour | `ink` on `amber-fill` | same |
 | Box | 128px wide | 128px wide |
 
-### Roles that do not fit the documented scale
+### Roles outside the ramp, now named in the scale
 
 **Brand wordmark** — Bricolage 600, 20px at 1440 / 18px at 390, lh 28px,
-ls −0.2px, `ink`, no uppercase and no tracking. Correct per the brand-name
-rule, but 18px and 20px are steps that exist nowhere else in the scale.
+ls −0.2px, `ink`, no uppercase and no tracking. 18px and 20px Bricolage
+appear nowhere else in the ramp; the wordmark is now a **named role** in
+`DESIGN-SYSTEM.md` rather than an undocumented step, on the grounds that a
+logotype is sized to its bar and not to the reading ramp.
+
+**Button** — 14px Instrument 600, lh 20px, ls +0.28px (+0.02em on the filled
+gold control), `ink` on `amber-fill`, no uppercase. Also now a **named
+role**: a control label is a role, not a step of the prose ramp, and the
+absence of uppercase is what keeps it from reading as a Label.
 
 **Hero hint pill** — "ArtiCYa Cyprus", 13px Instrument 600, lh 18.2px,
 letter-spacing **normal**, `ink`. The Label step with its tracking and
 uppercase dropped, per the brand-name rule.
 
-**Contact channel value** — "articya4youth@gmail.com" and the two handles.
-16px system **600**, lh 24px (1.5), ls normal, `ink`, centred. Body size at
-a heading weight; this pairing appears nowhere else on the site.
+**Contact channel value** — folded onto Body. "articya4youth@gmail.com" and
+the two handles now render 16px Instrument **400**, lh 24px (1.5), ls normal,
+`ink`, centred on `md`+. Before the repair this was 16px **600** — Body size
+at a heading weight, a pairing that appeared nowhere else on the site and
+sat 3px from its own 13px/600 label.
 
 ---
 
@@ -327,21 +356,22 @@ at and the role it carries.
 | 104 | Bricolage 600 | Stat numeral | ✅ `clamp(3.25rem, 8vw, 6.5rem)` tops out at 104 |
 | 72 | Bricolage 600 | Display | ✅ `clamp(2.75rem, 6vw, 4.5rem)` tops out at 72 |
 | 60 | Bricolage 600 | Showpiece | ✅ `clamp(2.25rem, 5vw, 3.75rem)` tops out at 60 |
-| 48 | Bricolage 600 | H2 + offer-panel titles | ✅ `clamp(2rem, 4vw, 3rem)` tops out at 48 |
+| 48 | Bricolage 600 | H2 — section headings, offer-panel titles, Contact "Get in touch", FAQ group headings | ✅ `clamp(2rem, 4vw, 3rem)` tops out at 48 |
 | 36 | Bricolage 600 | Trail item | ✅ `clamp(1.5rem, 2.5vw, 2.25rem)` tops out at 36 |
-| 24 | Bricolage 600 | FAQ group heading | ✅ H3, `1.5rem` |
-| 20 | Bricolage 600 | Brand wordmark | ❌ **undocumented step** |
+| 24 | Bricolage 600 | H3 — FAQ questions | ✅ H3, `1.5rem` |
+| 20 | Bricolage 600 | Brand wordmark | ✅ **Wordmark**, a named role |
 | 20 | Bricolage 500 | Hero statement | ✅ documented at `1.25rem` desktop |
 | 20 | Instrument 400 | Lede | ✅ Lede, `1.25rem` |
-| 16 | Instrument 600 | FAQ question **and** Contact channel value | ❌ **undocumented** — H3 is documented as 24px Bricolage, and the contact value has no step at all |
-| 16 | Instrument 400 | Body | ✅ Body, `1rem` |
-| 14 | Instrument 600 | Button label | ❌ **undocumented step** |
+| 16 | Instrument 400 | Body, incl. Contact channel values | ✅ Body, `1rem` |
+| 14 | Instrument 600 | Button label | ✅ **Button**, a named role |
 | 14 | Instrument 400 | Caption | ✅ Caption, `0.875rem` |
 | 13 | Instrument 600 | Label, eyebrow, nav | ✅ Label, `0.8125rem` |
 
-**14 distinct size/family/weight combinations across 10 distinct pixel
-sizes** (15 before the fix — 16px system 600 and 16px Instrument 600 were
-the same step described twice).
+**13 distinct size/family/weight combinations across 10 distinct pixel
+sizes** — down from 14, and **every one of them is now documented**. The
+combination that left is 16px Instrument 600: the FAQ question went up to
+H3 and the Contact value down to Body weight, so nothing renders at Body
+size in a heading weight any more.
 
 ### At 390
 
@@ -349,63 +379,61 @@ the same step described twice).
 |---|---|---|
 | 44 | Bricolage 600 | Display **and** Stat numeral |
 | 36 | Bricolage 600 | Showpiece |
-| 32 | Bricolage 600 | H2 + offer-panel titles |
-| 24 | Bricolage 600 | Trail item **and** FAQ group heading |
+| 32 | Bricolage 600 | H2 — section headings, offer-panel titles, Contact heading, FAQ group headings |
+| 24 | Bricolage 600 | Trail item **and** H3 (FAQ questions) |
 | 20 | Instrument 400 | Lede |
 | 18 | Bricolage 600 | Brand wordmark |
-| 16 | Instrument 600 | FAQ question **and** Contact channel value |
-| 16 | Instrument 400 | Body |
+| 16 | Instrument 400 | Body, incl. Contact channel values |
 | 15 | Bricolage 500 | Hero statement |
 | 14 | Instrument 600 | Button label |
 | 14 | Instrument 400 | Caption |
 | 13 | Instrument 600 | Label, eyebrow, nav |
 
-**12 combinations across 10 pixel sizes** (13 before the fix, for the same
-reason).
+**11 combinations across 10 pixel sizes** — down from 12, for the same
+reason as at 1440.
 
 ### Divergences from the documented scale
 
 1. **The `clamp()` ladder is correct at both ends.** Every clamped step
    lands exactly on its documented maximum at 1440 and interpolates as
    specified at 390. No clamp is mis-specified.
-2. **H3 does not exist as documented.** `DESIGN-SYSTEM.md` defines H3 as
-   `1.5rem` Bricolage 600 for "card and block headings". On the built site
-   24px Bricolage appears only as the FAQ *group* heading. The two roles
-   that are structurally H3s — the home offer-panel titles and the FAQ
-   question headings — use neither: the panel titles render at the **H2**
-   step (48px Bricolage), and the FAQ questions render at **16px Instrument
-   600**, the Body size.
-3. **Four sizes carry roles the scale does not document**: 20px Bricolage
-   600 (wordmark), 18px Bricolage 600 (wordmark, mobile), 16px Instrument 600
-   (contact values), 14px Instrument 600 (button labels).
-4. **The Lede step never shrinks.** 20px at 1440 and 20px at 390 — the only
-   role in the system that is viewport-invariant while everything around it
-   scales. At 390 the Lede (20px) is larger than the Body (16px) by the same
-   ratio as at 1440, but it now sits 4px under the mobile Body of the offer
-   panels, which also render at 16px.
+2. **None.** After the corrective pass the rendered scale and the documented
+   scale are the same list. H3 exists (the FAQ questions, 24px Bricolage
+   600); the wordmark and the button label are named roles rather than
+   undocumented steps; the Contact value renders at Body; and the FAQ group
+   headings take H2, the step their role already implied.
+
+The one deliberate divergence from a naive ramp, recorded so it is not
+re-flagged as a defect: **the reading layer does not scale.** Lede 20px,
+Body 16px, Caption 14px and Label 13px hold one size at both viewports while
+everything from Trail item upward is clamped. The Lede is therefore
+viewport-invariant on purpose, and its 1.25× ratio to Body is identical at
+1440 and 390 — Body does not scale either, so the distinction between them
+never narrows.
 
 ### Near-duplicates
 
 | Sizes | Distance | Doing the same job? |
 |---|---|---|
-| 13px label / 14px caption / 14px button | 1px | Three roles inside 1px. The 13px label and 14px caption differ in size by 1px, in weight by 200, and in tracking by 0.76px. |
-| 16px Instrument 400 / 16px Instrument 600 | 0px | **Two roles at one size**, now separated by weight alone. Before the fix this was a three-way collision at 16px whose third member, the FAQ question, was distinguished only by the family accident. |
-| 20px Bricolage 600 / 20px Bricolage 500 / 20px Instrument 400 | 0px | **Three roles at one size**: wordmark, hero statement, Lede. Unchanged by the fix — the separation was already family plus weight. |
-| @390: 44px Display / 44px Stat numeral | 0px | The page's largest type serves two unrelated roles at the same size. |
-| @390: 24px Trail item / 24px FAQ group heading | 0px | Same size, same family, same weight, different roles on different pages. |
-| @390: 15px hero statement / 16px Body | 1px | Bricolage 500 against Instrument 400, 1px apart. |
+| 13px label / 14px caption / 14px button | 1px | Three roles inside 1px. Separated by weight (600/400/600), tracking (+1.04 / normal / +0.28px), case, and context: an eyebrow, a footer line, and a filled control. Never adjacent to one another. |
+| 20px Bricolage 600 / 20px Bricolage 500 / 20px Instrument 400 | 0px | **Three roles at one size**: wordmark, hero statement, Lede. Separated by family plus weight; the wordmark is chrome, the other two content. |
+| @390: 44px Display / 44px Stat numeral | 0px | The two **monumental** roles. Not a ladder — on desktop the stat numeral is the larger of the two (104 against 72), so they are the same *level* rather than two rungs of one. A full screen apart, and one is a centred headline in a photographic card while the other is a numeral on a baseline opposite a 13px uppercase label. |
+| @390: 24px Trail item / 24px H3 | 0px | Same level reached from two directions: both are block headings one step under a section heading. The trail item rises to 36px on desktop because the gains trail is a full-width set piece. |
+| @390: 32px H2 / 32px FAQ group heading | 0px | **Not a collision — one role.** The FAQ group headings are section headings and take H2 at every viewport. |
+| @390: 15px hero statement / 16px Body | 1px | Bricolage 500 against Instrument 400, 1px apart. The hero statement is sized to its line count, not to the ramp (see above). |
 
-At 390 the scale has compressed enough that **six roles collide onto three
-sizes** (44, 24, 16).
+The 16px collision is gone: nothing renders at Body size in a heading weight
+any more. What remains at 390 is **four roles on two sizes** (44, 24), each
+pair documented above as one level carrying two roles rather than two levels
+that failed to separate.
 
-**What the fix changed here:** one collision was retired, and no new one
-appeared. At 1440 the combination count drops from 15 to 14 and at 390 from
-13 to 12 — in both cases because 16px system 600 (the contact channel value)
-and 16px Instrument 600 (the FAQ question) were two combinations describing
-one size and weight, and are now literally the same combination. The
-distinct *pixel* sizes are unchanged at 10 in both viewports. Nothing that
-was separate has merged in a way that costs a distinction: the contact value
-and the FAQ question never appear on the same page.
+**What the corrective pass changed here:** at 1440 the combination count
+drops from 14 to 13 and at 390 from 12 to 11, in both cases because 16px
+Instrument 600 has left the site — the FAQ question went up to H3 and the
+Contact value down to Body weight. The distinct *pixel* sizes are unchanged
+at 10 in both viewports; the FAQ group heading vacated 24px for 48/32, and
+the FAQ question moved into 24px behind it. Nothing that was separate has
+merged in a way that costs a distinction.
 
 ---
 
@@ -415,40 +443,52 @@ Threshold: over ~75 characters or under ~45, on the longest rendered line.
 
 ### At 1440 — over 75
 
-| Page · block | cplMax | Before | Size | Container |
+**Nothing.** The site's longest prose line is now **70 characters**.
+
+The eleven blocks that were over or at the threshold, before the corrective
+pass and after it:
+
+| Page · block | Before | After | Size | Track |
 |---|---|---|---|---|
-| FAQ — "Travel arrangements are usually organised by…" | **83** | 83 | 16px | 650px |
-| FAQ — "No. Erasmus+ projects cover the main costs…" | **82** | 81 | 16px | 650px |
-| FAQ — "Participants gain international experience…" | **82** | 82 | 16px | 650px |
-| FAQ — "At the end of the project, participants…" | **81** | 81 | 16px | 650px |
-| FAQ — "If selected, you will receive detailed…" | **81** | 81 | 16px | 650px |
-| FAQ — "Erasmus+ opportunities are open to young…" | **80** | 80 | 16px | 650px |
-| FAQ — "No previous experience is required…" | **78** | 78 | 16px | 650px |
-| FAQ — "Each opportunity has its own application…" | **78** | 78 | 16px | 650px |
-| Contact — hero lede | **77** | 77 | 20px | 672px |
-| FAQ — "Yes. Projects are organised by accredited…" | **76** | 76 | 16px | 650px |
-| FAQ — "Erasmus+ is a European Union programme that…" | 75 | **81** | 16px | 650px |
+| FAQ — "Travel arrangements are usually organised by…" | **83** | 65 | 16px | 650 → 502px |
+| FAQ — "No. Erasmus+ projects cover the main costs…" | **82** | 65 | 16px | 650 → 502px |
+| FAQ — "Participants gain international experience…" | **82** | 62 | 16px | 650 → 502px |
+| FAQ — "At the end of the project, participants…" | **81** | 68 | 16px | 650 → 502px |
+| FAQ — "If selected, you will receive detailed…" | **81** | **70** | 16px | 650 → 502px |
+| FAQ — "Erasmus+ opportunities are open to young…" | **80** | 65 | 16px | 650 → 502px |
+| FAQ — "No previous experience is required…" | **78** | 64 | 16px | 650 → 502px |
+| FAQ — "Each opportunity has its own application…" | **78** | 63 | 16px | 650 → 502px |
+| Contact — hero lede | **77** | 64 | 20px | 672 → 576px |
+| FAQ — "Yes. Projects are organised by accredited…" | **76** | 66 | 16px | 650 → 502px |
+| FAQ — "Erasmus+ is a European Union programme that…" | 75 | 59 | 16px | 650 → 502px |
 
-**Nine of the eleven FAQ answers still exceed 75 characters**, plus the
-Contact hero lede — ten blocks over the line, against eleven before. Worst
-on the site is unchanged at 83. The cause is structural and the face swap
-did not touch it: the answers sit in a 650px track at 16px, while every
-other 16px block on the site sits in a 576px track or narrower.
+**The eleven FAQ answers now run 59–70 characters, against 75–83.** The
+cause was structural and the cure was structural: the answer column went
+from 7 of 12 grid columns to 6 (652 → 552px) and the card's desktop padding
+from `px-6` to `px-8`, leaving a 502px text track — in line with the 576px
+that every other 16px block on the site already sat in. The rail took the
+freed column (4 → 5 of 12), so the gutter between rail and answers stays one
+step rather than widening to two.
 
-**Which blocks crossed the line, in either direction:** exactly one moved.
-"Erasmus+ is a European Union programme that…" dropped from 81 to 75 and is
-now under the threshold. **No block newly crossed above 75.** One more
-shifted without crossing: "No. Erasmus+ projects cover the main costs…" went
-81 → 82. Every other block over 75 holds its exact previous number.
+The Contact hero lede was the one non-FAQ block over the line, and it came
+down the same way: the inner-page hero lede moved from `max-w-2xl` (672px)
+to `max-w-xl` (576px), which also took About from 73 to 57 and the FAQ hero
+from 62 to 59. Nothing else on the site changed measure.
 
-Just under the line and worth the number: FAQ "Erasmus+ is a European Union
-programme…" **75**, About finale closing text **74**, About hero lede
-**73**, FAQ hero lede **72**, Home closing paragraph **72**.
+**No block newly crossed above 75 — or above 70.** Two blocks land at 68 and
+70; every other prose block on the site is 66 or under.
 
-### The seven blocks that re-wrapped
+The longest blocks now, in order: FAQ "If selected, you will receive
+detailed…" **70**, FAQ "At the end of the project…" **68**, About finale
+closing text **66**, FAQ "Yes. Projects are organised…" **66**, About
+"ArtiCYa contributes meaningfully…" **66**.
+
+### The seven blocks that re-wrapped in the typeface fix
 
 The complete list of line-count changes across both viewports — the whole
-material effect of the swap on layout:
+material effect of the *typeface swap* on layout. (The corrective pass
+re-wrapped the FAQ answers and the three inner-page hero ledes as well, by
+design; those are the tracks it deliberately narrowed.)
 
 | Page · viewport | Block | Lines |
 |---|---|---|
@@ -492,72 +532,85 @@ of the containers.
 | Container | Width @1440 | Used by |
 |---|---|---|
 | `max-w-6xl` | 1152px | Site content column: header, most sections |
-| FAQ answer track | 650px | FAQ answers (7 of 12 grid columns) |
+| FAQ answer card | 552px | FAQ answers (6 of 12 grid columns); 502px text track inside `px-8` |
+| FAQ rail | 452px | FAQ group headings (5 of 12); 388px beside the icon medallion |
 | `max-w-4xl` | 896px | Contact "Get in touch" band |
 | `max-w-3xl` | 768px | Home closing showpiece |
-| `max-w-2xl` | 672px | Hero ledes, closing paragraph, About finale text |
+| `max-w-2xl` | 672px | Home closing paragraph, About finale text |
+| `max-w-xl` | 576px | Inner-page hero ledes |
 | Offer panel block | 576px | Both offer panels |
 | `max-w-[46rem]` | 736px | Hero statement |
 | Footer band | 1024px | Footer |
 
-`DESIGN-SYSTEM.md` states "text blocks max `65ch`". No container on the site
-is expressed in `ch`, and the FAQ answer track renders at up to 83ch.
+`DESIGN-SYSTEM.md` no longer states a `ch` ceiling: no container on the site
+is expressed in `ch`, so the rule is now stated and verified as a measured
+one — no prose block over 70 characters on its longest rendered line, at
+either viewport. The site's worst block is 70.
 
 ---
 
 ## 3. Where is hierarchy flat?
 
-### Same size, weight-only separation
+### The pairs that were flat, and what they read as now
 
-**FAQ question vs FAQ answer** — the flattest pair on the site.
+**FAQ question vs FAQ answer** — was the flattest pair on the site; is now
+one of the clearest.
 
-| | Question | Answer |
-|---|---|---|
-| Size | 16px | 16px |
-| Weight | 600 | 400 |
-| Family | Instrument Sans | Instrument Sans |
-| Line-height | 22.4px (1.4) | 27.2px (1.7) |
-| Colour | `ink` | `ink-soft` |
+| | Question — before | Question — after | Answer |
+|---|---|---|---|
+| Size | 16px | **24px** | 16px |
+| Weight | 600 | 600 | 400 |
+| Family | Instrument Sans | **Bricolage Grotesque** | Instrument Sans |
+| Line-height | 22.4px (1.4) | 30px (1.25) | 27.2px (1.7) |
+| Colour | `ink` | `ink` | `ink-soft` |
 
-Identical size. Separation is carried entirely by weight, colour and the
-accordion's own border.
+Before, the pair was identical in size and family and separated by weight,
+colour and the accordion's border alone — and it had got *flatter*, because
+until the typeface fix an accidental family mismatch had been doing the
+hierarchy work. The question now takes H3: 1.5× the size, a different
+family, a heavier weight and a darker ink. Four signals where there were
+three, and the size one is doing the work at a glance.
 
-**This pair got flatter, and it is the one place the fix cost a
-distinction.** Before, the question and the answer were set in two different
-typefaces — the only place on the site where two adjacent text levels were —
-and that mismatch was doing real separating work, accidentally. With both
-now in Instrument Sans, the pair is down to weight (600 vs 400), colour
-(`ink` vs `ink-soft`) and line-height. It is the flattest pair on the site
-and the strongest remaining candidate for a designed fix.
-
-**Contact channel label vs value** — 13px/600 uppercase against 16px/600.
-3px of size difference, **same weight**, both inside the same card. The
-uppercase transform and tracking do most of the separating.
+**Contact channel label vs value** — was 13px/600 uppercase against
+16px/600: 3px apart at the **same weight**, both inside the same card, with
+the uppercase transform doing all the separating. The value now renders at
+Body weight (16px/400), so the pair is a tracked uppercase 600 label in
+`ink-soft` above a sentence-case 400 value in `ink` — the same
+eyebrow-and-value relationship the stats ledger uses. Size was not the
+available lever: at 20px the email address measures 239px against a 235px
+card, and would break mid-address.
 
 ### Same size, different level
 
 **Home H2 vs offer-panel title** — "What we do" (`<h2>`) and "Youth
 Exchanges" (`<h3>`) both render at **48px Bricolage 600** with identical
-line-height, tracking and colour. Two semantic levels, one visual level.
-`DESIGN-SYSTEM.md` sanctions this ("Section headings; home offer-panel
-titles" share the H2 step), so it is documented rather than accidental — but
-on the page it means the home page has no visual level between its section
-headings and its panel titles.
+line-height, tracking and colour. Two semantic levels, one visual level, and
+sanctioned by `DESIGN-SYSTEM.md`. Kept: the panel titles are titles on
+full-bleed photographic set pieces and are sized to the panel rather than to
+the ramp, so demoting them would shrink a showpiece to populate a table. The
+home page has no H3-level element by composition, not by omission.
 
-**Contact "Get in touch" vs Home "What we do"** — both are the top heading
-of the page's one content section. Contact renders at **60px** (Showpiece),
-home at **48px** (H2). The same structural level takes two different steps
-on two pages.
+**Contact "Get in touch" vs Home "What we do"** — **resolved.** Both are the
+top heading of their page's one content section, and both now render at
+**48px** (H2). Contact was 60px (Showpiece); Showpiece is now the home
+closing line and nothing else, which is what "one key line per page max"
+always meant.
 
 ### Adjacent levels too close to read as different levels
 
-**@390: Display and Stat numeral both at 44px.** The hero headline and the
-stats numerals — the two largest things on the page — are the same size on
-mobile, with the same family and weight. Only line-height (46.2 vs 44) and
-letter-spacing (−0.88 vs normal) differ.
+**@390: Display and Stat numeral both at 44px.** Kept, and reclassified: see
+the near-duplicates table above. These are the two monumental roles rather
+than two rungs of one ladder — on desktop the stat numeral is the *larger*
+of the two — and they sit a full screen apart. Neither available fix earns
+its cost: dropping Display to 40px leaves "are ArtiCYa" visibly short of the
+hero card it is centred in, and raising the mobile stat numeral breaks the
+documented constraint that all three ledger rows share one screen. Either
+way the achievable gap is itself under the perceptual floor, which would
+make the change technically present and perceptually absent.
 
-**@390: Trail item and FAQ group heading both at 24px.** Different pages, so
-never adjacent, but the two roles are indistinguishable in isolation.
+**@390: Trail item and H3 both at 24px.** Kept, and reclassified as one
+level carrying two roles: both are block headings one step under a section
+heading, on different pages.
 
 **@390: hero statement 15px vs Body 16px.** 1px apart, different families
 and weights.
@@ -570,22 +623,22 @@ and tracking (0.28px vs normal).
 
 For contrast, the ratios that read clearly: Stat numeral to its label is
 104→13 (8:1); Display to Lede is 72→20 (3.6:1); Showpiece to the paragraph
-above it is 60→20 (3:1); FAQ group heading to question is 24→16 (1.5:1,
-and the only place a Bricolage/Instrument pairing separates two levels
-cleanly).
+above it is 60→20 (3:1); and the FAQ's ladder is now 48→24→16 (2:1 then
+1.5:1, the section heading to the question to the answer), where before the
+bottom two rungs were 16→16.
 
 ---
 
 ## 4. How many weights are in play?
 
-Element measurements, both viewports, 188 total.
+Element measurements, both viewports, 190 total.
 
 | Family | Weight | Elements | Roles carried |
 |---|---|---|---|
-| Bricolage Grotesque | **600** | 52 of 54 | Display, Showpiece, H2, group heading, trail item, stat numeral, wordmark |
-| Bricolage Grotesque | **500** | 2 of 54 | Hero statement only (one element per viewport) |
-| Instrument Sans | **400** | 74 of 134 | Lede, Body, Caption |
-| Instrument Sans | **600** | 60 of 134 | Label, eyebrow, nav, button, contact value, FAQ question |
+| Bricolage Grotesque | **600** | 72 of 74 | Display, Showpiece, H2, H3, trail item, stat numeral, wordmark |
+| Bricolage Grotesque | **500** | 2 of 74 | Hero statement only (one element per viewport) |
+| Instrument Sans | **400** | 80 of 116 | Lede, Body, Caption, contact values |
+| Instrument Sans | **600** | 36 of 116 | Label, eyebrow, nav, button |
 
 **Three weights are in play — 400, 500 and 600 — which is exactly what
 `DESIGN-SYSTEM.md` sanctions**, and no weight outside that set appears
@@ -599,11 +652,13 @@ Whether each earns its place, as measured:
   specifies ("500 is Bricolage only, and only for the home hero statement").
   It earns its place by the letter of the rule; it is also the single
   narrowest use of any weight on the site.
-- **Instrument Sans 400** carries the whole reading layer — Lede, Body and
-  Caption, 74 elements. Before the fix it carried nothing at all.
-- **Instrument Sans 600** carries the whole labelling layer — Label,
-  eyebrow, nav, button and contact value — plus the FAQ question, 60
-  elements. Before the fix it carried the FAQ question alone.
+- **Instrument Sans 400** carries the whole reading layer — Lede, Body,
+  Caption and now the contact values, 80 elements. Before the typeface fix
+  it carried nothing at all.
+- **Instrument Sans 600** is now purely the labelling layer — Label,
+  eyebrow, nav and button, 36 elements. It shed the two roles that had put
+  a heading weight at reading size: the contact value went to 400 and the
+  FAQ question moved to Bricolage 600 at H3.
 
 **Per family, in practice: Bricolage 2 weights, Instrument 2.** The intent —
 Bricolage 500/600 and Instrument 400/600 — is now exactly what ships, and
@@ -637,7 +692,7 @@ Gutters are measured at 1440.
 | 16 | about | Gallery finale — closing text | **Centred band** | 672px, `text-center` | 384 / 384 | centred, 358px |
 | 17 | about | Gallery finale — mosaic | **Full-bleed** (3-col grid, edge to edge) | 1440px | 0 / 0 | 2-col grid, full-bleed |
 | 18 | faq | Page hero | **Centred band** | 942px, `text-center` | 249 / 249 | centred, 358px |
-| 19 | faq | Q&A groups | **Two-column, asymmetric** (rail 4 / answers 7) | 352 + 652 in 1152px | 144 / 144 | stacked, 358px |
+| 19 | faq | Q&A groups | **Two-column, asymmetric** (rail 5 / answers 6) | 452 + 552 in 1152px | 144 / 144 | stacked, 358px |
 | 20 | contact | Page hero | **Centred band** | 672px, `text-center` | 384 / 384 | centred, 358px |
 | 21 | contact | Get in touch — cards | **Centred band** (3 equal cards) | 896px band, 283 × 3 | 272 / 272 | stacked, 358px |
 | 22 | all | Footer | **Centred band** | 1024px, items centred | 208 / 208 | full-width, centred |
@@ -674,5 +729,29 @@ each) and the About mosaic (both sides).
 
 **The 1152px band dominates.** Eleven of the twenty-two blocks use
 `max-w-6xl` with 144/144 gutters. Four more use a narrower centred band
-(672, 768, 896, 1024). The site has six distinct content-column widths
+(576, 768, 896, 1024). The site has six distinct content-column widths
 across twenty-two blocks.
+
+---
+
+## What the corrective pass changed
+
+Every change was a size, weight, line-height or track width. No section was
+restructured, no element moved, no component changed shape, and no word of
+copy changed — `npm run verify:text` passes unchanged on all four pages.
+
+| # | Defect | Change | Measured before → after |
+|---|---|---|---|
+| B1 | FAQ answers ran 76–83 characters in a 650px track | Answer column 7 → 6 of 12 grid columns, rail 4 → 5, card padding `px-6` → `px-8` on `md`+ | Track 650 → 502px; measure **75–83 → 59–70ch** |
+| B2 | FAQ question and answer both 16px Instrument, separated by weight and colour alone | Question 16px Instrument 600 → **24px Bricolage 600** (H3) | Question:answer **1:1 → 1.5:1**, plus a family and a weight change |
+| B3 | Contact's section heading 60px where the same role on home is 48px | Contact "Get in touch" Showpiece → **H2** | 60 → **48px**; Showpiece now the home closing line only |
+| B4 | No level between H2 and body on home; documented H3 existed nowhere | H3 assigned to the FAQ questions; home's offer-panel titles kept at H2 and the reason documented | H3 goes from 0 rendered elements to the FAQ's ten questions |
+| B5 | Wordmark, contact value and button label outside the documented scale | Contact value folded onto **Body**; wordmark and button named as roles in `DESIGN-SYSTEM.md` | Undocumented steps **4 → 0** |
+| B6 | Three roles at 16px, three at 20px; collisions worse at 390 | 16px Instrument 600 eliminated site-wide; the remaining shared steps documented as one level carrying two roles | Combinations **14 → 13** @1440, **12 → 11** @390; sizes carrying more than one family/weight **3 → 2** and **2 → 1** |
+| B7 | The Lede never shrinks between viewports | None — kept, and the principle documented | Lede:Body is 1.25× at both viewports because Body does not scale either |
+| B8 | Contact label and value 3px apart at the same weight | Value 16px/**600** → 16px/**400** | Weight gap **0 → 200**; size was unavailable, as 20px measures 239px against a 235px card |
+
+Verified on the built export at 1440×900 and 390×844: **zero prose blocks
+over 75 characters** at either viewport, against ten before; no element
+overflows its box; no console errors or page errors on any of the four
+pages at either viewport; and `verify:text` passes on all four.

@@ -322,15 +322,18 @@ Display: **Bricolage Grotesque** · Body: **Instrument Sans** — both loaded vi
 | Step | Size / line height | Font | Use |
 |---|---|---|---|
 | Display | `clamp(2.75rem, 6vw, 4.5rem)` / 1.05, −0.02em | Bricolage 600 | Page hero headline only |
-| H2 | `clamp(2rem, 4vw, 3rem)` / 1.1, −0.01em | Bricolage 600 | Section headings; home offer-panel titles |
-| H3 | `1.5rem` / 1.25 | Bricolage 600 | Card and block headings |
+| H2 | `clamp(2rem, 4vw, 3rem)` / 1.1, −0.01em | Bricolage 600 | Section headings, on every page: home "What we do" / "What you gain", home offer-panel titles, Contact "Get in touch", the FAQ question-group headings |
+| H3 | `1.5rem` / 1.25 | Bricolage 600 | Block headings under a section heading — the FAQ questions |
 | Stat numeral | `clamp(3.25rem, 8vw, 6.5rem)` / 1 desktop · `2.75rem` / 1 mobile | Bricolage 600 | Home stats only — `resin`, glowing. Monumental centered columns on desktop; compact ledger rows on mobile so all three share one screen |
-| Showpiece | `clamp(2.25rem, 5vw, 3.75rem)` / 1.15, −0.01em | Bricolage 600 | One key line per page max (e.g. the home closing line) |
+| Showpiece | `clamp(2.25rem, 5vw, 3.75rem)` / 1.15, −0.01em | Bricolage 600 | One key line per page max — on the built site, the home closing line and nothing else |
 | Trail item | `clamp(1.5rem, 2.5vw, 2.25rem)` / 1.2 | Bricolage 600 | Home gains sequence |
 | Hero statement | `0.9375rem` mobile · `1.25rem` desktop / 1.35, −0.01em | Bricolage 500 | Home hero mission line only — a calm lead under the headline: **exactly 2 lines on desktop, 3 on mobile** |
 | Lede | `1.25rem` / 1.55 | Instrument Sans 400 | Intro paragraph under headings; offer-panel body on desktop, where plain Body reads too small against the full-bleed panel scale |
-| Body | `1rem` / 1.7 | Instrument Sans 400 | Default copy |
-| Label | `0.8125rem` / 1.4, +0.08em, uppercase | Instrument Sans 600 | Section eyebrows (`lichen`), pills |
+| Body | `1rem` / 1.7 | Instrument Sans 400 | Default copy; the Contact channel values |
+| Caption | `0.875rem` / 1.5 | Instrument Sans 400 | Photo credits, footnotes, the footer copyright |
+| Label | `0.8125rem` / 1.4, +0.08em, uppercase | Instrument Sans 600 | Section eyebrows (`lichen`), pills, the Contact channel labels |
+| Button | `0.875rem` / 20px, +0.02em on the filled gold control | Instrument Sans 600 | Control labels — never uppercased, so a button never reads as a Label |
+| Wordmark | `1.125rem` mobile · `1.25rem` desktop / 28px, −0.01em | Bricolage 600 | The header logotype only. A logotype is sized to its bar, not to the reading ramp, which is why it sits off the scale rather than on a step of it |
 
 **The hero statement is sized to its line count, not to a ramp.** It is one
 sentence inside a card, and the card is only 95vw wide on a phone — so the
@@ -347,12 +350,58 @@ The brand name always renders as "ArtiCYa" — never CSS-uppercased. An
 element carrying the brand name (header wordmark, hero hint pill) drops the
 Label step's uppercase and tracking; section labels and other non-brand
 text keep them.
-| Caption | `0.875rem` / 1.5 | Instrument Sans 400 | Photo credits, footnotes |
+
+**Display type scales with the viewport; reading type does not.** Everything
+from Trail item upward is clamped and shrinks on a phone, because its job is
+presence and presence is relative to the screen. Everything from Lede down —
+Lede 20px, Body 16px, Caption 14px, Label 13px — holds one size at every
+viewport, because its job is legibility and legibility is absolute: a
+paragraph is not easier to read on a small screen for having been made
+smaller. So the Lede staying at 20px on a phone is the rule, not an
+oversight in it. Its neighbour Body is invariant too, and the ratio that
+carries the distinction between them — 1.25× — is identical at 1440 and at
+390. Shrinking the Lede to 18px would leave it 2px above Body at the same
+weight and the same family, which is not a hierarchy; it would trade a
+working distinction for a smaller number.
+
+**Some steps carry more than one role, and that is a decision.** A shared
+size is only a defect when the two roles are adjacent — when a reader has to
+tell them apart in one glance. These pairs never are, and each is separated
+by family, weight, or context rather than size:
+
+| Step | Roles sharing it | What separates them |
+|---|---|---|
+| 20px desktop | Wordmark (Bricolage 600), Hero statement (Bricolage 500), Lede (Instrument 400) | Family and weight; the wordmark is chrome, the other two are content |
+| 14px | Button (Instrument 600, +0.02em), Caption (Instrument 400) | Weight, and a filled control against a footer line |
+| 44px @390 | Display, Stat numeral | Not a ladder — these are the two **monumental** roles, and on desktop the stat numeral is deliberately the larger of the two (104 against 72). They sit a full screen apart, one a centred headline in a photographic card, the other a numeral on a baseline opposite a 13px uppercase label |
+| 24px @390 | Trail item, H3 | The same level reached from two directions: both are block headings one step under a section heading. The trail item rises to 36px on desktop because the gains trail is a full-width set piece; the FAQ question does not, because it is a line inside a card |
+| 32px @390 | H2, FAQ group heading | Nothing — they are the same role. The FAQ group headings **are** section headings and take the H2 step at every viewport |
+
+**H3 exists where a page has a block to head, and the home page has none.**
+The FAQ is the only page built as section → block → prose, so H3 lives
+there and nowhere else. The home page runs Display → H2 → Trail item →
+Lede → Body and never needs the step: its offer-panel titles are **not**
+demoted H2s waiting for a middle level, they are titles on full-bleed
+photographic set pieces and are sized to the panel, not to the ramp. A step
+down would shrink a showpiece to fix a table. So the home page has no
+H3-level element by composition, not by omission — the ramp is complete
+without one.
 
 ## Layout & spacing
 
 - 4px base grid; Tailwind spacing scale only, no arbitrary pixel values.
-- Content max-width `72rem` (max-w-6xl); text blocks max `65ch`.
+- Content max-width `72rem` (max-w-6xl).
+- **Measure is a measured rule, not a `ch` declaration.** No container is
+  expressed in `ch` — the tracks are px and the measure is verified on the
+  rendered page instead: **no prose block may exceed 70 characters on its
+  longest rendered line**, at either viewport. The longest line is the one a
+  reader actually scans; an average divides by the short final line and
+  under-reports it by up to 33 characters on a block this size. Measured on
+  the built page, the worst block on the site is 70 and the FAQ answers —
+  once the worst offenders at 76–83 — run 59–70. The tracks that deliver it:
+  no 16px block sits in more than **552px**, and the inner-page hero ledes
+  sit in `max-w-xl` (576px) rather than `max-w-2xl`, which is what took the
+  Contact lede from 77 characters to 64.
 - **The full-bleed offer panels are the one exception to the content column.**
   Their text alternates sides on `md`+ — Youth Exchanges left, Training
   Courses right — and each block sits over a reading fade anchored to **its**

@@ -39,7 +39,10 @@ export function PageHero({ image, heading, text }: PageHeroProps) {
           <h1 className="mt-4 font-display text-[clamp(2.75rem,6vw,4.5rem)] font-semibold leading-[1.05] tracking-[-0.02em] text-ink">
             {heading}
           </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-xl leading-[1.55] text-ink">
+          {/* 36rem, not 42rem: at 42 the Contact lede ran 77 characters on
+              its longest line, over the 70 the system allows a prose block.
+              36rem lands all three inner-page ledes in the sixties. */}
+          <p className="mx-auto mt-6 max-w-xl text-xl leading-[1.55] text-ink">
             {text}
           </p>
         </Reveal>
