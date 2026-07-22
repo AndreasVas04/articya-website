@@ -7,9 +7,8 @@
 // files in public/images/, so it is idempotent and fully revertible.
 //
 //   npm run grade:photos                  # apply the production grade (target strength)
-//   node scripts/grade-photos.mjs --strength=all
-//                                         # bake all three strengths: base and max
-//                                         # into public/images/_grades/, target live
+//   node scripts/grade-photos.mjs --strength=base --out=/tmp/base
+//                                         # bake another strength somewhere else to compare
 //   node scripts/grade-photos.mjs --grade=resinHour --out=/tmp/x --width=520
 //                                         # screen a candidate at preview size
 //
@@ -391,8 +390,7 @@ const PRODUCTION_GRADE = "resinHour";
 
 // Named strengths for the production grade. base is the first bake, target
 // is what ships, max is deliberately past shippable — a range to judge
-// against, not a candidate. --strength takes a name, a number, or "all"
-// (bake base and max into public/images/_grades/<name>/, target live).
+// against, not a candidate. --strength takes a name or a number.
 const STRENGTHS = { base: 1, target: 5, max: 9 };
 
 // ---------------------------------------------------------------------------
@@ -882,7 +880,7 @@ function resolveStrength(v) {
   if (v in STRENGTHS) return STRENGTHS[v];
   const num = parseFloat(v);
   if (!Number.isNaN(num) && num > 0) return num;
-  console.error(`Unknown strength "${v}". Named: ${Object.keys(STRENGTHS).join(", ")}, all`);
+  console.error(`Unknown strength "${v}". Named: ${Object.keys(STRENGTHS).join(", ")}`);
   process.exit(1);
 }
 
@@ -977,11 +975,4 @@ async function bake(strength, label, outDir) {
 }
 
 const strengthArg = args.strength || "target";
-if (strengthArg === "all") {
-  await bake(STRENGTHS.base, "base", path.join(DEST, "_grades/base"));
-  await bake(STRENGTHS.target, "target", args.out ? path.resolve(args.out) : DEST);
-  await bake(STRENGTHS.max, "max", path.join(DEST, "_grades/max"));
-} else {
-  const label = strengthArg in STRENGTHS ? strengthArg : `${strengthArg}`;
-  await bake(resolveStrength(strengthArg), label, args.out ? path.resolve(args.out) : DEST);
-}
+await bake(resolveStrength(strengthArg), `${strengthArg}`, args.out ? path.resolve(args.out) : DEST);

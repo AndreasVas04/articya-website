@@ -132,9 +132,9 @@ already carry natural colour variation. The grade now takes a **strength**:
 a multiplier on each delta from the original — linear for the moves that
 rotate a colour, through a soft knee for the three that displace one (see
 below) — with `1` reproducing the first bake byte-identically. Production
-ships at **5×**;
-`--strength=all` additionally bakes 1× and 9× (1.8 × target) into
-`public/images/_grades/` for the review page.
+ships at **5×**. `base` (1×), `target` (5×) and `max` (9×) are named in the
+script; any other strength can be baked to a scratch directory with
+`--strength=<n> --out=<dir>` to compare against the live files.
 
 ### Rotations scale, displacements saturate
 
@@ -195,13 +195,15 @@ mechanism pass below — the version written here, which counted anything past
 The guards do not scale — above base strength they tighten:
 
 - The tanh shoulder and lift floor never move; clipping stays impossible.
-- The sky is exempt from the warm look entirely: membership is judged on
-  the *original* pixel (a strong warm wb flips pale blue out of the band
-  before the pull could claim it) and is a soft feathered weight rather
-  than a yes/no (see above); wb blends to neutral over it, and vibrance
-  and both split-tone ends are blocked there in proportion to that weight.
-  Sky colour is governed only by the convergence pull and the pinned 0.78
-  saturation scale.
+- The sky takes a *reduced* share of the warm look rather than being exempt
+  from it. Membership is judged on the *original* pixel (a strong warm wb
+  flips pale blue out of the band before the pull could claim it) and is a
+  soft feathered weight rather than a yes/no (see above). Vibrance is
+  blocked over it in proportion to that weight; the warm balance reaches it
+  at `skyWarmShare` 0.35 and the amber highlight split at 0.4, and its
+  saturation scale is pinned at 0.78. Full exemption was the earlier rule
+  and it is **withdrawn** — see "The vista and the sky's share" below for
+  what changed and what it cost.
 - Skin: the split-tone backs off faces, and a saturation cap keeps a face
   within a step of what the camera saw.
 - Vegetation: hue shift clamped at 1.7× and chroma floored at 0.88 —
@@ -267,19 +269,72 @@ through, and the clip guard is clean on every file at target strength.
 (+9.4 b\* against +9.1), so the gap it arrives with is the gap it keeps — it
 is the only wide vista in a set of close-range scenes, and distance haze
 leaves its land paler and cooler. Global grade plus per-shot trim is the
-normal shape of this work, so hero-1 carries the set's one trim: warmer and
+normal shape of this work, so hero-1 took the set's first trim: warmer and
 richer land, sky and water back a step. Measured on the rendered mosaic tile
 below its skyline against the mean of its six neighbours, Δb\* −4.80 → −3.86
 and ΔC\* −6.06 → −5.59; the aggregate whole-frame numbers move less, because
 open sky, lit water and distant haze dominate them and none of those is what
 makes a tile read as a different hour.
 
+## The vista and the sky's share — the fifth pass
+
+The trim above moved hero-1's land and left its sky where it was, and on the
+About mosaic that was not enough: a frame that is 28% sky cannot join the
+afternoon while the sky is held out of it, because the share of the frame
+that is allowed to warm is only the share that is land. The exemption was
+the right rule when the sky in this set was small windows between leaves —
+it is what stopped the green horizons and violet zeniths of the first pass —
+and it does not survive a frame built out of sky.
+
+Three changes followed, all of them above base strength:
+
+- **`skyWarmShare` 0.35** — the warm balance now reaches the sky at 35%
+  instead of 0.
+- **`splitSkyProtect` 0.6** — the amber highlight split reaches it at 40%.
+- **`skyHaze`** — a late-afternoon sky holds its colour overhead and washes
+  pale and warm where the air is deepest. Depth of air is read from the
+  sky's own chroma measured per frame, not from height in the frame and not
+  from brightness: AboutImage2's sky runs 232 at the zenith and 223 at the
+  roofline, so a luminance gate hazes both equally and takes the whole sky
+  grey, where chroma over the same span falls 60% → 44%. Haze thins the
+  colour *before* it warms it, and the order is load-bearing — the path from
+  a cyan horizon to a warm target passes through green, and blending straight
+  to warm put a green band along AboutImage2's roofline (hue 192 original,
+  151 graded). Paling first spends most of that distance as chroma rather
+  than rotation, so what is left cannot cross.
+
+**What it cost, stated plainly.** The convergence claim from the third pass
+no longer holds, and it was traded away deliberately rather than lost. On the
+three files that carry real sky, mean sky hue now moves *away* from the 212°
+target rather than onto it — hero-1 213.2° → 190.3°, AboutImage2 210.3° →
+188.2°, home-training 210.0° → 193.9° — and the circular spread within each
+frame rises from 3–6° to 45–50° instead of falling. Both are the intended
+shape of the change: haze is by definition a gradient across the sky, so a
+sky that hazes correctly must spread, and one converged onto a single hue is
+one that has had its depth flattened out of it. The previous pass bought a
+tight number by holding the sky out of the grade; this pass spends it to put
+the vista in the same hour as the rest of the set.
+
+The 212° pull is still in the pipeline and still does the work it was built
+for on skies seen through canopy. It is no longer the whole story of the sky,
+and **the numbers in the third pass's screening notes should not be read as a
+target to restore.**
+
 ## Measured results (target strength, 5×)
 
+Provenance, because it matters when re-reading these: deep-shadow retention,
+ΔE2000, sky and highlight hue were **re-measured against the currently
+shipped files** after the fifth pass, on a 1200px decode (these are
+population statistics; full resolution moves them in the third decimal). The
+seams, shadow, green, skin, precision and flat-region bullets date from the
+fourth pass and were not re-run — the fifth pass touched only the sky path,
+but if one of those numbers is about to be relied on, re-measure it rather
+than quote it.
+
 - **Deep-shadow retention** — the fraction of pixels below L\* 12, as a share
-  of the original's own fraction, whole frame: hero-1 100% · hero-2 94% ·
-  hero-3 85% · home-youth 100% · home-training 101% · FAQ 112% · About 119% ·
-  AboutImage1 98% · AboutImage2 105% · Contact 114%. Before the knees the
+  of the original's own fraction, whole frame: hero-1 101% · hero-2 93% ·
+  hero-3 85% · home-youth 98% · home-training 101% · FAQ 113% · About 121% ·
+  AboutImage1 98% · AboutImage2 105% · Contact 117%. Before the knees the
   same set ran 8–66% and hero-2 kept 8%; with the knees it ran 64–97%; the
   luminance-preserving split-tone closes the rest, because the shadow tint
   had been the last thing still lifting the black mass. Shadows warm and
@@ -300,11 +355,14 @@ makes a tile read as a different hour.
   sleeve were tens of pixels wide with soft boundaries. A metric tuned to
   hard classifier seams cannot see a soft one. What sees it is a crop of the
   rendered page at the size the visitor reads it.
-- Mean ΔE2000 original → graded per image: hero-1 7.3 · hero-2 4.6 ·
-  hero-3 6.4 · home-youth 6.9 · home-training 7.1 · FAQ 7.0 ·
-  About 6.2 · AboutImage1 7.6 · AboutImage2 6.4 · Contact 7.2.
-  Set mean **6.7**, against 7.0 before the mechanism pass and 10.2 before
-  the knees.
+- Mean ΔE2000 original → graded per image: hero-1 10.2 · hero-2 6.7 ·
+  hero-3 6.6 · home-youth 8.0 · home-training 8.5 · FAQ 7.1 ·
+  About 6.4 · AboutImage1 7.5 · AboutImage2 10.7 · Contact 7.2.
+  Set mean **7.9**, against 6.7 after the mechanism pass, 7.0 before it and
+  10.2 before the knees. The rise is concentrated exactly where the fifth
+  pass worked: the four files carrying real sky (hero-1 7.3 → 10.2,
+  AboutImage2 6.4 → 10.7, home-training 7.1 → 8.5, home-youth 6.9 → 8.0)
+  account for nearly all of it, and the seven others moved by ≤ 0.4.
 
   The earlier acceptance window (8–20 per image, set mean ≥ 10) is
   **withdrawn**. It existed to stop the grade being timid, and it did that
@@ -313,14 +371,26 @@ makes a tile read as a different hour.
   lost the most ΔE because they gained back the most shadow. The grade is
   visibly a grade at display scale (see the crops), and no knob was raised
   anywhere to defend the number.
-- Sky: per-image mean hue over genuine sky pixels lands at **208.7°–212.0°**
-  against the 212° target on six of the seven files carrying any, and the
-  circular spread within each falls under the grade on every one of those
-  six. The seventh is hero-2, at 200.6° — 3.3% of that frame, seen through
-  canopy, and its original was already 198.4°. The tighter chroma gate
-  costs convergence only where there is barely any sky to converge.
-- Highlights: chroma-weighted mean hue of each image's top luminance
-  decile lands at **38–44°** — amber on every image.
+- Sky, measured at full membership under the pipeline's own gate (the blue
+  band at ≥ 26% chroma judged on the original pixel, which is where
+  `SKY_CHROMA` saturates). Only three files carry sky worth reporting —
+  hero-1 28.2% of frame, AboutImage2 32.7%, home-training 18.1%; hero-2 has
+  3.7% seen through canopy and the remaining six have ≤ 0.3%, which is blue
+  *objects*, not sky, and their statistics are noise.
+
+  | File | Sky % | Mean hue | Circular spread |
+  |---|---|---|---|
+  | hero-1 | 28.2 | 213.2° → 190.3° | 3.6° → 50.3° |
+  | AboutImage2 | 32.7 | 210.3° → 188.2° | 6.2° → 44.9° |
+  | home-training | 18.1 | 210.0° → 193.9° | 3.1° → 49.7° |
+  | hero-2 | 3.7 | 198.4° → 200.1° | 4.6° → 42.7° |
+
+  Both columns move the opposite way from the third pass's convergence
+  numbers, and both are the intended shape of the fifth pass — see "The
+  vista and the sky's share". A sky that hazes correctly must spread.
+- Highlights: chroma-weighted mean HSV hue of each image's top luminance
+  decile lands at **38.7°–45.7°** — amber on every image, and the one
+  measurement in this document that the fifth pass left where it was.
 - Shadows: green excess (G − (R+B)/2) of the original's bottom luminance
   decile rises on every image (hero-2 +3.6 → +11.1, hero-1 −1.2 → +1.2);
   nine of ten also move closer to pine in hue, and the tenth (hero-2) was
@@ -338,12 +408,12 @@ makes a tile read as a different hour.
   the error measured in linear light — no intermediate lossy step, no
   intermediate rounding. Pre-encode block-boundary structure measures
   b ≈ 1.0 (none) on every file.
-- Per-file, JPEG quality and KB original → shipped: hero-1 q92 803→839 ·
-  hero-2 q92 1130→1226 · hero-3 q92 827→870 · home-youth q92 777→793 ·
-  home-training q95 475→371 · FAQ q95 611→644 · About q92 1920→2580 ·
-  AboutImage1 q92 2349→1897 · AboutImage2 q93 270→538 ·
-  Contact q95 2462→2433. Home payload **4.48 MB / 4.80**, full set
-  **12.48 MB / 12.50**. Dimensions, formats and EXIF orientation
+- Per-file, JPEG quality and KB original → shipped: hero-1 q92 803→849 ·
+  hero-2 q92 1130→1254 · hero-3 q92 827→869 · home-youth q92 777→790 ·
+  home-training q95 475→376 · FAQ q95 611→643 · About q92 1920→2578 ·
+  AboutImage1 q92 2349→1895 · AboutImage2 q92 270→493 ·
+  Contact q95 2462→2433. Home payload **4.51 MB / 4.80**, full set
+  **12.47 MB / 12.50**. Dimensions, formats and EXIF orientation
   unchanged; clip guard clean on every file at base and target strength.
   The `max` rung (9×) trips it on five files, which is what that rung is
   for — it is a reference past shippable, not a candidate.
@@ -360,8 +430,9 @@ makes a tile read as a different hour.
   exactly those pixels, sampled at the fully covered core of each glyph
   rather than its antialiased fringe. Worst photo-backed zone after the
   regrade **6.76** (about hero lede, 390), best 7.14 (contact hero headline,
-  1440), against a 4.5 floor. Text parity passes on all four pages, and the
-  console is clean on all four plus the review page, both viewports.
+  1440), against a 4.5 floor. Text parity passes on all four pages and the
+  console is clean on all four, both viewports — re-confirmed on the clean
+  rebuild after the review scaffolding was removed.
 
   Two earlier methods were wrong and are recorded so they are not repeated.
   Sampling the *lightest* pixel in a text box is the worst case only for
@@ -379,29 +450,140 @@ makes a tile read as a different hour.
   photographs swapped back in**, so it is a property of the amber pool under
   that lead and not of the grade.
 
-## Re-running and extending
+## Final parameters
 
-- `npm run grade:photos` regrades everything from `_originals/` at the
-  target strength — safe to run any number of times; output is a pure
-  function of the originals. `--strength=<name|number|all>` selects a
-  strength (`base`, `target`, `max` are named in the script); `all` bakes
-  base and max into `public/images/_grades/` with target live.
-- To revert: copy `_originals/` back over the live files.
-- New photograph: drop the untouched file in `_originals/`, add its filename
-  to the matching group in `GROUPS` (or a new group with a `wb` correction
-  that neutralises its cast first — judge the cast the way the inventory
-  table does, by mean R−B), reference it from `/content`, run the script.
-- A shot that will not sit with the others once it is grouped correctly gets
-  an entry in `TRIMS` — `wb`, `sat`, `contrast` and `skySat`, applied on top
-  of its group. Size it against the frames it is printed beside, on the
-  rendered page, not against its own original; the group correction is about
-  the shot, the trim is about the company it keeps.
-- Screening changes: `--grade=<name> --out=<dir> --width=520` renders any
-  candidate at preview size without touching the live files.
-- The review page at `/grade-review` (unlinked) shows every photograph as
-  one slot that flips in place between original / 1.0× / target / 1.8×
-  (keys 1–4 or arrows, state always labelled), with two placements at
-  their true site render size, the About mat example, and 1:1 pixel crops
-  (actual pixels, original against shipped) of the flattest regions of the
-  three files the first encode hurt most — delete `app/grade-review/` and
-  `public/images/_grades/` once the grade is signed off.
+What ships is `resinHour` at strength 5. Everything below lives in
+`scripts/grade-photos.mjs`; this table is a reading aid, and the script is
+the source of truth if the two ever disagree.
+
+**Base look** (strength 1 — the numbers the strength axis scales from):
+
+| Parameter | Value | What it does |
+|---|---|---|
+| `wb` | `[1.04, 1.00, 0.95]` | The warm look, as per-channel gain |
+| `lift` | `0.012` | Black point, applied *after* the contrast curve |
+| `gamma` | `0.985` | Tone curve |
+| `shoulder` | `0.88` | Highlight roll-off (tanh; never scales with strength) |
+| `contrast` | `0.06` | Sigmoid strength around a 0.45 pivot |
+| `vibrance` | `0.05` | Boosts quiet colour only |
+| `split.shadow` | hue 30°, sat 0.28, amount 0.09 | Shadow tint, taken at the pixel's own luminance |
+| `split.highlight` | hue 46°, sat 0.34, amount 0.13 | Highlight tint, same |
+| band 1 — sky/water | centre 215°, width 70°, `hueTarget` 212°, `huePull` 0.5, `satScale` 0.78, `lumScale` 0.94 | The convergence pull |
+| band 2 — vegetation | centre 115°, width 60°, `hueShift` −12°, `satScale` 0.98 | Camera-cyan toward pine |
+
+**Per-group white balance.** The group correction is a fact about the shot
+and does not scale; only the look on top of it does.
+
+| Group | Files | `wb` | Other |
+|---|---|---|---|
+| `trail` | hero-1, AboutImage2 | `[1.05, 1.00, 0.925]` | — |
+| `forest` | hero-2, hero-3 | `[1.03, 1.00, 0.96]` | `contrast` 0.04 |
+| `closeup` | home-youth, home-training | `[1.005, 1.00, 0.985]` | split amounts 0.06 / 0.10 |
+| `office` | FAQ, About, Contact | `[0.995, 1.00, 1.00]` | `contrast` 0.08 |
+| `flash` | AboutImage1 | `[1.045, 1.00, 0.93]` | `contrast` 0.05 |
+
+**Strength axis.** `base` 1 · `target` 5 (ships) · `max` 9 (past shippable,
+a reference to judge against). Rotations scale linearly; the three
+displacing moves pass through a soft knee, `[knee, ceiling]` in strength
+units: `wb [1.5, 3.2]` · `split [1.4, 2.3]` · `lift [1, 1.5]`.
+
+**Moves that exist only above strength 1**, all saturating at strength 2
+(`over = min(s − 1, 1)`): shadow tint drifts 30° → 105° (warm brown to
+pine), highlight tint 46° → 37° (deeper amber), greens sink 12% in
+luminance, `goldenHighlight` pulls the brightest non-sky non-skin pixels
+toward 36°, and the sky's own share of the hour opens up (`skyWarmShare`
+0.35, `splitSkyProtect` 0.6, `skyHaze` pale 0.10 / hue 42° / amount 0.55).
+
+**Guards** — these tighten as strength rises, they never relax: the tanh
+shoulder and the lift floor never move; sky membership is judged on the
+original pixel through `SKY_CHROMA` `[0.12, 0.14]` (zero below 12% chroma,
+full at 26%); the vegetation hue shift is clamped at 1.7× and its chroma
+floored at 0.88; skin saturation is capped near the original's and the
+split-tone backs off faces (`splitSkinProtect` 0.7); and one chroma ceiling,
+`sat0 + 0.05` opening to a bounded multiple, compresses 4:1 above the knee
+rather than clipping.
+
+**Encode.** Quality floor q88, never breached. Payload budgets — home set
+(hero-1/2/3, home-youth, FAQ) ≤ 4.8 MB, full referenced set ≤ 12.5 MB — are
+spent raising quality above the floor, smoothest files first. If the floor
+cannot meet a budget the floor ships anyway and the overage is reported.
+
+## Per-file trims
+
+A trim is about the company a shot keeps, not about the shot: size it
+against the frames it is printed beside, on the rendered page, never against
+its own original. `wb` is the obvious lever and a weak one — a 4% channel
+move buys about 0.3 b\*, because the chroma ceiling absorbs most of what it
+adds. The split-tone amounts run *after* that ceiling, so `warm` is the lever
+with real travel, and `shadowHue` reaches the one part of the look that
+decides whether a shadow-heavy frame reads warm at all.
+
+| File | Trim | Why |
+|---|---|---|
+| hero-1 | `wb [1.035, 1, 0.96]`, `sat` 1.15, `contrast` +0.03, `skySat` 0.75, `warm` 1.5 | The only wide vista; distance haze leaves its land paler and cooler than the close-range set |
+| hero-2 | `wb [1.045, 1, 0.94]`, `sat` 1.22, `warm` 1.4, `shadowHue` −40 | Shadow-heavy canopy — the frame is mostly shadow, so the shadow tint decides whether it reads warm |
+| home-youth | `wb [1.02, 1, 0.96]`, `warm` 1.3 | Washed-out pale ground needed the warmth the group correction alone did not carry |
+| AboutImage1 | `wb [0.99, 1, 1.02]` | Flash interior; a touch back from warm |
+| AboutImage2 | `wb [0.99, 1, 1.02]` | Same, against its vivid greens |
+
+Available keys: `wb`, `sat`, `contrast`, `skySat`, `warm`, `shadowHue`.
+
+## Re-running and reverting
+
+- **Re-run:** `npm run grade:photos` regrades everything from `_originals/`
+  at the target strength. Safe to run any number of times — the output is a
+  pure function of the originals, and re-baking the current tree reproduces
+  every live file **byte for byte** (verified).
+- **Bake another strength without touching the live files:**
+  `node scripts/grade-photos.mjs --strength=base --out=/tmp/base`.
+  `--strength` takes `base`, `target`, `max`, or any positive number.
+- **Screen a different grade:** `--grade=<resinHour|matteArchive|cyprusSummer>
+  --out=<dir> --width=520` renders at preview size, live files untouched.
+- **Revert, completely:** `cp public/images/_originals/*.jpg public/images/`.
+  The originals are never written to by anything in this pipeline.
+- **New photograph:** drop the untouched file in `_originals/`, add its
+  filename to the matching group in `GROUPS` — or a new group whose `wb`
+  neutralises its cast first, judging the cast the way the inventory table
+  does, by mean R−B — reference it from `/content`, and run the script. If
+  it still will not sit with the others once it is grouped correctly, give
+  it a `TRIMS` entry.
+
+## Known limitations
+
+Four things this grade is measured by, or built on, that do not hold as
+generally as the numbers make them look. None is a defect to fix blind;
+each is a place where a future pass should re-measure rather than trust.
+
+1. **The seam metric has a blind spot, and it has already been hit.** Seams
+   are counted as hue flips > 90° between *adjacent* pixels at unchanged
+   luminance. That catches a hard classifier boundary and cannot catch a
+   soft one: the contour zones on white fabric were tens of pixels wide with
+   gentle boundaries, and this metric passed clean the entire time they were
+   shipping. It also runs in image space at 1:1, where a gentle zone
+   boundary across a sleeve reads as nothing. What actually caught the
+   defect was a crop of the *rendered page* at the size a visitor reads it,
+   and that remains the only check known to see this class of failure.
+2. **b\* is confounded by lightness.** The warmth readings that drove the
+   hero-1 trim are b\* differences, and b\* is not independent of how light a
+   region is — a paler region reads lower b\* at the same perceived warmth,
+   which is exactly the confound in a vista whose land is pale from distance
+   haze. This is why the trim was sized on the *rendered mosaic tile below
+   the skyline* against its six neighbours (Δb\* −4.80 → −3.86) rather than
+   on the whole-frame aggregate, where open sky, lit water and haze dominate
+   and none of them is what makes a tile read as a different hour. Any
+   future warmth comparison has to control for lightness the same way, by
+   choosing the region, or it will measure exposure and call it temperature.
+3. **The vista stays slightly cooler than the set, by construction.** After
+   both the trim and the fifth pass's sky work, hero-1 has not been brought
+   to parity and is not meant to be. It is the one wide landscape among
+   close-range scenes, and the atmospheric haze that makes its land pale and
+   cool is the subject, not an error in it — grading that out would cost the
+   depth that makes it worth using as the hero. The residual gap is
+   Δb\* −3.86 against its neighbours. Read that as the accepted resting
+   value, not as remaining work.
+4. **Sky statistics are dominated by four frames.** Only hero-1,
+   AboutImage2, home-training and (marginally) hero-2 carry meaningful sky;
+   the other six are at or below 0.3% of frame, which is blue *objects*
+   rather than sky. Any set-wide sky number is therefore an average over a
+   handful of images and swings hard on whichever of them a change touches.
+   Report sky per-file, as the table above does; a set mean will mislead.
