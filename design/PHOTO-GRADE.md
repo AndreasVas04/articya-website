@@ -75,10 +75,10 @@ wash and the backdrop is glass at 18%/28px — the grade barely reads there.
 ## The three candidates
 
 All three live as named functions in `scripts/grade-photos.mjs` and share one
-pixel pipeline: white balance → tone curve (lift/gamma/soft shoulder) →
-sigmoid contrast → hue-band moves in HSV (raised-cosine falloff, skin
-protected) → vibrance → split-tone. Each defines a base look plus per-group
-corrections. They are three points of view, not three intensities:
+pixel pipeline: white balance → tone curve (gamma/soft shoulder) → sigmoid
+contrast → black point → hue-band moves in HSV (raised-cosine falloff, skin
+protected) → vibrance → chroma ceiling → split-tone. Each defines a base look
+plus per-group corrections, and one shot additionally carries a trim. They are three points of view, not three intensities:
 
 - **`resinHour`** — the site's own hour of light. Warm highlights toward the
   amber accent, shadows toward pine-brown, greens eased from camera-cyan
@@ -172,8 +172,9 @@ across the outdoor set, taking it from 5× to 1.5× costs about **0.1 ΔE2000**
 and returns **25–38 points** of deep-shadow mass — it was almost pure cost, a
 black point climbing with strength, which does not make a stronger look, only
 a shallower photograph. Below the knee `softStrength` is the identity, so the
-base bake is untouched: strength 1 still reproduces the first bake
-byte-for-byte, verified by comparison against the stored `_grades/base` files.
+strength axis leaves the base look's own parameters alone. (The base *bake*
+is no longer byte-identical with the first one — the mechanism pass below
+changed three things that apply at every strength.)
 
 ### Sky membership is a weight, not a verdict
 
@@ -186,12 +187,10 @@ guard snapped every pixel to one of two hues 172° apart on a `blue0 > 0.5`
 test.
 
 Both are now soft. Membership is one feathered weight, judged on the original
-pixel as before, with a loose chroma gate so a pale sky still counts as
-wholly sky and only a near-neutral falls out of the band; a pixel that is 40%
-sky receives 40% of the sky treatment. The neutral guard weights its hue
-unification by how confidently the pixel sits in its camp, so an ambiguous
-pixel keeps its own hue — at that chroma the hue is invisible either way, and
-the chroma cap has already removed the noise the guard exists to remove.
+pixel as before; a pixel that is 40% sky receives 40% of the sky treatment.
+The chroma gate that decides how much of a pixel is sky was retuned in the
+mechanism pass below — the version written here, which counted anything past
+12.5% chroma as wholly sky, is what turned white fabric into camps.
 
 The guards do not scale — above base strength they tighten:
 
@@ -205,33 +204,86 @@ The guards do not scale — above base strength they tighten:
   saturation scale.
 - Skin: the split-tone backs off faces, and a saturation cap keeps a face
   within a step of what the camera saw.
-- Near-neutrals: chroma is capped near the original's and hue unified
-  toward the warm tint (pale blues toward the sky hue instead), so
-  amplified chroma noise cannot posterize white fabric.
 - Vegetation: hue shift clamped at 1.7× and chroma floored at 0.88 —
   greens stay green.
-- Chroma ceiling: no pixel's chroma may run past 2.6× what the camera saw
-  (plus a hair, so true neutrals keep the warm tint), compressing 4:1 above
-  the knee rather than clipping. 2.6 sits above the vegetation band's
-  measured p99 gain on every image, so the pine greens pass untouched; the
-  3–10× tail beyond it was amplified chroma noise — mottle on flat walls.
-  The deliberate warm pull on neutral interiors survives because it is an
-  affine move toward a fixed tint (its noise gain is below 1): flat-region
-  chroma noise ships at or below the original's on every file.
+- Chroma ceiling: one law, `sat0 + 0.05` opening to a bounded multiple
+  where there is real colour, compressing 4:1 above the knee rather than
+  clipping. It replaced a pair of guards in the mechanism pass below.
 
 Four moves exist only above base strength: the shadow tint drifts from
 warm brown to pine (30° → 105°), the highlight tint deepens into amber
 (46° → 37°), greens sink 12% in luminance toward dusk, and the brightest
 non-sky, non-skin pixels pull toward amber — sunlit foliage going golden.
 
+## Mechanisms, not amplitude — the fourth pass
+
+Three defects survived every measurement above and were found by looking at
+the built page at the size a visitor sees it: contour zones on white fabric,
+dark clumps in the hero canopy, and hero-1 sitting outside its own set in the
+About mosaic. The first two had been invisible because every check to that
+point was run on 1:1 crops in image space, where a gentle zone boundary
+across a sleeve reads as nothing at all.
+
+The obvious response was to lower the strength, and a ladder settled it: at
+2× — the lowest rung the strength axis has — the fabric already shows its
+contour ring and the canopy already shows its lifted, blotchy shadow mass.
+Both defects were therefore in mechanisms rather than in amplitude, and no
+strength was going to fix them. Each was found with a negative control, and
+the first control refuted the leading suspect: baking with the near-neutral
+guard switched off made the fabric **worse**, not better. The guard was
+mitigating something upstream, not causing it.
+
+**Fabric.** Sky membership gates three separate moves — the warm balance
+steps aside for sky, the convergence pull claims it, and the highlight
+split-tone releases it. Its chroma gate saturated at 12.5% chroma, so a white
+shirt in open shade, hair and pale walls all read as fully sky. Tracing one
+scanline across a sleeve, membership swung 0 → 1 → 0 → 1 → 0 between adjacent
+patches of cloth, and the output hue went 38° → 212° → 41° → 212° → 175° with
+it: hard cream and blue zones with green fringes along the boundaries. The
+gate now ramps between where those surfaces sit (2–13% chroma, measured) and
+where real sky sits (22–63%), so it never reaches a verdict in the gap. The
+near-neutral guard's own hue unification — which snapped a pixel toward one
+of two targets 172° apart — painted the camps the gate had split, and is
+gone; what remains is a single chroma ceiling with a fixed headroom at the
+neutral end, which also subsumes the old 2.6× amplification ceiling.
+
+**Canopy.** The shadow split-tone targeted a colour at a *fixed* level
+(v 0.28). On a frame whose shadows sit below that — the hero canopy runs at
+0.03–0.10 — "tone toward" becomes "lift toward": the deepest fifth of the
+frame was dragged a fifth of the way to a mid-dark green, which raised the
+compression noise living down there into view and flattened the shadow's own
+variation onto one colour. Both split-tone targets are now taken at the
+pixel's own luminance, so the move is purely chromatic, which is what a
+split-tone is. Switching the split off entirely was the control: the
+clumping vanished with it.
+
+That change took the black point with it — the shadow lift had been applied
+*before* the contrast curve, and the sigmoid pulled a lifted 0.018 back to
+0.0004; the split-tone's lift had been the only thing holding the floor up.
+The lift now runs after the contrast, where it is a floor nothing can fall
+through, and the clip guard is clean on every file at target strength.
+
+**hero-1.** The grade moves hero-1 exactly as much as it moves the set
+(+9.4 b\* against +9.1), so the gap it arrives with is the gap it keeps — it
+is the only wide vista in a set of close-range scenes, and distance haze
+leaves its land paler and cooler. Global grade plus per-shot trim is the
+normal shape of this work, so hero-1 carries the set's one trim: warmer and
+richer land, sky and water back a step. Measured on the rendered mosaic tile
+below its skyline against the mean of its six neighbours, Δb\* −4.80 → −3.86
+and ΔC\* −6.06 → −5.59; the aggregate whole-frame numbers move less, because
+open sky, lit water and distant haze dominate them and none of those is what
+makes a tile read as a different hour.
+
 ## Measured results (target strength, 5×)
 
-- **Deep-shadow retention** — the fraction of pixels below L 0.12, as a share
-  of the original's own fraction, whole frame: hero-1 92% · hero-2 77% ·
-  hero-3 64% · home-youth 88% · home-training 94% · FAQ 84% · About 84% ·
-  AboutImage1 93% · AboutImage2 97% · Contact 78%. Every file holds at least
-  60%; before the knees, the same set ran 8–66% and hero-2 kept 8%.
-  Shadows warm and shift hue under this grade; they no longer evaporate.
+- **Deep-shadow retention** — the fraction of pixels below L\* 12, as a share
+  of the original's own fraction, whole frame: hero-1 100% · hero-2 94% ·
+  hero-3 85% · home-youth 100% · home-training 101% · FAQ 112% · About 119% ·
+  AboutImage1 98% · AboutImage2 105% · Contact 114%. Before the knees the
+  same set ran 8–66% and hero-2 kept 8%; with the knees it ran 64–97%; the
+  luminance-preserving split-tone closes the rest, because the shadow tint
+  had been the last thing still lifting the black mass. Shadows warm and
+  shift hue under this grade; they do not evaporate and they do not float.
 - **Seams** — hue flips greater than 90° between adjacent pixels whose
   luminance is unchanged (a colour boundary with no light boundary, which is
   what a hard classifier leaves behind), counted per 1000 adjacent pairs in
@@ -242,10 +294,17 @@ non-sky, non-skin pixels pull toward amber — sunlit foliage going golden.
   file whose gold↔blue count rises above its original (0.04 → 0.22 per 1000);
   inspected at 1:1 it is a blue lanyard against sunlit grass — real subject,
   not a seam.
-- Mean ΔE2000 original → graded per image: hero-1 6.9 · hero-2 5.9 ·
-  hero-3 7.3 · home-youth 7.3 · home-training 6.8 · FAQ 7.3 ·
-  About 6.5 · AboutImage1 8.0 · AboutImage2 6.9 · Contact 7.4.
-  Set mean **7.0**, down from 10.2 before the knees.
+
+  This measure passed while the fabric defect was shipping, and it is worth
+  being clear why: it counts *adjacent-pixel* flips, and the zones on a
+  sleeve were tens of pixels wide with soft boundaries. A metric tuned to
+  hard classifier seams cannot see a soft one. What sees it is a crop of the
+  rendered page at the size the visitor reads it.
+- Mean ΔE2000 original → graded per image: hero-1 7.3 · hero-2 4.6 ·
+  hero-3 6.4 · home-youth 6.9 · home-training 7.1 · FAQ 7.0 ·
+  About 6.2 · AboutImage1 7.6 · AboutImage2 6.4 · Contact 7.2.
+  Set mean **6.7**, against 7.0 before the mechanism pass and 10.2 before
+  the knees.
 
   The earlier acceptance window (8–20 per image, set mean ≥ 10) is
   **withdrawn**. It existed to stop the grade being timid, and it did that
@@ -254,11 +313,12 @@ non-sky, non-skin pixels pull toward amber — sunlit foliage going golden.
   lost the most ΔE because they gained back the most shadow. The grade is
   visibly a grade at display scale (see the crops), and no knob was raised
   anywhere to defend the number.
-- Sky: per-image mean hue **211.0°–212.4°** against the 212° target, with
-  within-image circular sd 0.9°–3.4°; the spread of the per-image means
-  across the eight files carrying sky is **0.41°** (0.32° before the
-  feathering — softening membership costs a fraction of a degree of
-  convergence and buys the bokeh transitions).
+- Sky: per-image mean hue over genuine sky pixels lands at **208.7°–212.0°**
+  against the 212° target on six of the seven files carrying any, and the
+  circular spread within each falls under the grade on every one of those
+  six. The seventh is hero-2, at 200.6° — 3.3% of that frame, seen through
+  canopy, and its original was already 198.4°. The tighter chroma gate
+  costs convergence only where there is barely any sky to converge.
 - Highlights: chroma-weighted mean hue of each image's top luminance
   decile lands at **38–44°** — amber on every image.
 - Shadows: green excess (G − (R+B)/2) of the original's bottom luminance
@@ -269,22 +329,24 @@ non-sky, non-skin pixels pull toward amber — sunlit foliage going golden.
   chroma at 100–178% of the original — never below it.
 - Skin: mean skin hue 26.1°–33.5° (human), saturation capped — largest
   rise +0.11 on the coolest original.
-- Chroma ceiling: the population sitting above the knee
-  (`s > 2.6·sat0 + 0.02`, where the guard starts compressing 4:1) fell on
-  every file — Contact 23.9% → 0.35%, FAQ 12.3% → 1.3%, About 12.9% → 2.9%,
-  home-youth 11.1% → 3.9%. The looser white balance is doing most of that.
+- Skin, after the trim: mean skin-band saturation shipped against the
+  original runs 0.74×–1.26× across the ten files. The one file above 1.25 is
+  hero-1, whose trim adds saturation and whose faces are then held exactly
+  at the sanctioned step by the skin cap.
 - Precision: the grade runs in floating point end to end and drops to
   8-bit exactly once, through serpentine Floyd–Steinberg dithering with
   the error measured in linear light — no intermediate lossy step, no
   intermediate rounding. Pre-encode block-boundary structure measures
   b ≈ 1.0 (none) on every file.
-- Per-file, JPEG quality and KB original → shipped: hero-1 q92 803→835 ·
-  hero-2 q92 1130→1216 · hero-3 q92 827→863 · home-youth q92 777→787 ·
-  home-training q95 475→375 · FAQ q95 611→630 · About q92 1920→2589 ·
-  AboutImage1 q92 2349→1867 · AboutImage2 q94 270→580 ·
-  Contact q95 2462→2448. Home payload **4.43 MB / 4.80**, full set
+- Per-file, JPEG quality and KB original → shipped: hero-1 q92 803→839 ·
+  hero-2 q92 1130→1226 · hero-3 q92 827→870 · home-youth q92 777→793 ·
+  home-training q95 475→371 · FAQ q95 611→644 · About q92 1920→2580 ·
+  AboutImage1 q92 2349→1897 · AboutImage2 q93 270→538 ·
+  Contact q95 2462→2433. Home payload **4.48 MB / 4.80**, full set
   **12.48 MB / 12.50**. Dimensions, formats and EXIF orientation
-  unchanged; clip guard clean on every file at every strength.
+  unchanged; clip guard clean on every file at base and target strength.
+  The `max` rung (9×) trips it on five files, which is what that rung is
+  for — it is a reference past shippable, not a candidate.
 - Flat-region fidelity (flattest 128px of each file, mean |luma step|
   across 8px block boundaries, original → shipped): every file within
   ±0.2 codes of its original's own structure or smoother; worst absolute
@@ -295,9 +357,11 @@ non-sky, non-skin pixels pull toward amber — sunlit foliage going golden.
   page is screenshotted twice per position, once as rendered and once with
   the glyphs painted transparent, and the two are diffed — the pixels that
   changed are the glyphs, and the blanked frame gives the ground behind
-  exactly those pixels. Worst photo-backed zone **6.16** (about hero lede,
-  390; 6.66 at 1440 on the FAQ hero headline) against a 4.5 floor. Console
-  clean on all four pages, both viewports.
+  exactly those pixels, sampled at the fully covered core of each glyph
+  rather than its antialiased fringe. Worst photo-backed zone after the
+  regrade **6.76** (about hero lede, 390), best 7.14 (contact hero headline,
+  1440), against a 4.5 floor. Text parity passes on all four pages, and the
+  console is clean on all four plus the review page, both viewports.
 
   Two earlier methods were wrong and are recorded so they are not repeated.
   Sampling the *lightest* pixel in a text box is the worst case only for
@@ -327,6 +391,11 @@ non-sky, non-skin pixels pull toward amber — sunlit foliage going golden.
   to the matching group in `GROUPS` (or a new group with a `wb` correction
   that neutralises its cast first — judge the cast the way the inventory
   table does, by mean R−B), reference it from `/content`, run the script.
+- A shot that will not sit with the others once it is grouped correctly gets
+  an entry in `TRIMS` — `wb`, `sat`, `contrast` and `skySat`, applied on top
+  of its group. Size it against the frames it is printed beside, on the
+  rendered page, not against its own original; the group correction is about
+  the shot, the trim is about the company it keeps.
 - Screening changes: `--grade=<name> --out=<dir> --width=520` renders any
   candidate at preview size without touching the live files.
 - The review page at `/grade-review` (unlinked) shows every photograph as

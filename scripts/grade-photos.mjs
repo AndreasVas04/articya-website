@@ -64,8 +64,8 @@ const GROUPS = {
 // shadow 45% of the way to a mid-value tint, and the shadow mass stops being
 // shadow. The displacing moves run through the knee instead, so raising the
 // strength keeps deepening the look without ever flattening the frame out
-// from under it. Below the knee the function is the identity, so strength 1
-// still reproduces the base bake byte-for-byte.
+// from under it. Below the knee the function is the identity, so the
+// strength axis leaves the base look's own parameters alone.
 function softStrength(s, [knee, ceil]) {
   if (s <= knee) return s;
   return knee + (ceil - knee) * Math.tanh((s - knee) / (ceil - knee));
@@ -85,6 +85,11 @@ const KNEE = {
   lift: [1, 1.5],
 };
 
+// Where a pixel stops being a surface and starts being sky, in chroma. Sky
+// membership gates three moves at once, so this gate has to separate real
+// sky from anything merely blue-shaded; see the note where it is used.
+const SKY_CHROMA = [0.12, 0.14]; // 0 below 12% chroma, full at 26%
+
 // Smooth feather: eases in and out with zero slope at both ends. Used where a
 // membership weight would otherwise step across a threshold.
 function feather(x) {
@@ -95,7 +100,7 @@ function feather(x) {
 // toward the amber accent, shadows sinking toward pine, skies converged
 // on one late-day blue, greens eased from camera-cyan toward pine.
 //
-// The grade takes a strength: 1 reproduces the first bake exactly, and
+// The grade takes a strength: 1 is the base look, and
 // higher values scale each delta-from-original — linearly for the moves
 // that rotate a colour, through KNEE for the three that displace one —
 // while the guards hold still: the tanh shoulder never moves, the sky
@@ -260,6 +265,45 @@ function cyprusSummer() {
   };
 }
 
+// Per-shot trims — the matching pass on top of the group grade. A group
+// correction is a fact about shooting conditions; a trim is about how one
+// frame sits beside the ones it is printed next to, which is a different
+// question and the last one a colourist answers.
+//
+// hero-1 is the only trimmed shot, and the About mosaic is why: seven
+// photographs physically touch there, and it holds the centre tile. It is
+// the one frame in the set shot as a wide vista, so distance haze leaves
+// its land paler and cooler than the close-range scenes around it — the
+// grade moves it exactly as much as it moves everything else (+9.4 b*
+// against the set's +9.1), so the gap it arrives with is the gap it keeps.
+// The trim warms and enriches the land and takes the sky and water back a
+// step, which is what closes it. Measured on the rendered mosaic tile below
+// its skyline, against the mean of its six neighbours: Δb* −4.80 → −3.86,
+// ΔC* −6.06 → −5.59.
+const TRIMS = {
+  "hero-1.jpg": {
+    wb: [1.035, 1.0, 0.96],
+    sat: 1.15,
+    contrast: 0.03,
+    skySat: 0.75,
+  },
+};
+
+function applyTrim(p, t) {
+  if (!t) return p;
+  return {
+    ...p,
+    wb: p.wb.map((g, i) => g * (t.wb ? t.wb[i] : 1)),
+    satScale: p.satScale * (t.sat ?? 1),
+    contrast: p.contrast + (t.contrast ?? 0),
+    bands: p.bands.map((b) =>
+      b.hueTarget !== undefined && t.skySat !== undefined
+        ? { ...b, satScale: b.satScale * t.skySat }
+        : b
+    ),
+  };
+}
+
 const GRADES = { resinHour, matteArchive, cyprusSummer };
 const PRODUCTION_GRADE = "resinHour";
 
@@ -320,15 +364,25 @@ function skinWeight(h, s, v) {
   return hw * sw;
 }
 
-// Shadow lift + gamma + soft shoulder, applied per channel. The shoulder is
-// a tanh roll past the knee, so highlights compress instead of clipping; the
-// lift floor means nothing ever maps below it — blacks cannot crush.
-function tone(x, { lift, gamma, shoulder }) {
-  let y = lift + (1 - lift) * Math.pow(Math.min(Math.max(x, 0), 1), gamma);
+// Gamma + soft shoulder, applied per channel. The shoulder is a tanh roll
+// past the knee, so highlights compress instead of clipping. The shadow
+// lift is not applied here but after the contrast curve — see blackPoint.
+function tone(x, { gamma, shoulder }) {
+  let y = Math.pow(Math.min(Math.max(x, 0), 1), gamma);
   if (y > shoulder) {
     y = shoulder + (1 - shoulder) * Math.tanh((y - shoulder) / (1 - shoulder));
   }
   return y;
+}
+
+// The lift is the last thing the tone chain does, so it is a floor nothing
+// can fall back through. Applied before the contrast curve it was not one:
+// the sigmoid pulls hard below its pivot and took a lifted 0.018 back to
+// 0.0004, and the black point only survived because the shadow split-tone
+// happened to raise it again. Once that stopped lifting, the deepest 0.3%
+// of an interior crushed to zero.
+function blackPoint(y, lift) {
+  return lift + (1 - lift) * y;
 }
 
 function sigmoidContrast(x, k) {
@@ -340,8 +394,14 @@ function sigmoidContrast(x, k) {
 // Reads 8-bit source pixels, writes graded values as floats in [0, 1] — the
 // only quantisation back to 8-bit happens once, in ditherTo8bit.
 function gradePixels(src, dst, n, p) {
-  const shadowTint = hsvToRgb(p.split.shadow.hue, p.split.shadow.sat, 0.28);
-  const highlightTint = hsvToRgb(p.split.highlight.hue, p.split.highlight.sat, 1);
+  // Split-tone targets, held at unit luminance. Each is rescaled to the
+  // pixel's own luminance before it is used, so toning a shadow moves its
+  // colour and not its level — see the note at the split itself.
+  const lum = (c) => 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+  const shadowUnit = hsvToRgb(p.split.shadow.hue, p.split.shadow.sat, 1);
+  const highlightUnit = hsvToRgb(p.split.highlight.hue, p.split.highlight.sat, 1);
+  const shadowK = 1 / lum(shadowUnit);
+  const highlightK = 1 / lum(highlightUnit);
 
   for (let i = 0; i < n; i++) {
     const r0 = src[i * 3] / 255;
@@ -353,9 +413,18 @@ function gradePixels(src, dst, n, p) {
     // Membership is a soft weight, not a yes/no. In bokeh, sky and leaf mix
     // inside a handful of pixels, so a binary classifier always cuts a seam
     // there — the gold-against-blue edge around every hole in a canopy. A
-    // pixel that is 40% sky takes 40% of the sky treatment instead. The
-    // chroma gate is deliberately loose: a pale sky is still wholly sky, and
-    // only a near-neutral pixel should fall out of the band.
+    // pixel that is 40% sky takes 40% of the sky treatment instead.
+    //
+    // Both factors have to be gentle, because membership gates three
+    // separate moves at once — the warm balance steps aside for it, the
+    // convergence pull claims it, and the highlight split-tone releases it.
+    // Anywhere the weight can swing across a surface, all three switch
+    // together and the surface separates into camps. That is what an
+    // earlier chroma gate did: saturating at 12.5% chroma, it read shaded
+    // white fabric, hair and pale walls as fully sky, and a shirt in open
+    // shade came out in hard cream and blue zones. Measured on this set,
+    // real sky sits at 22–63% chroma and those surfaces at 2–13%, so the
+    // gate ramps between them and never reaches a verdict in that gap.
     let skyW0 = 0;
     let sat0 = 0;
     let blue0 = 0;
@@ -363,7 +432,7 @@ function gradePixels(src, dst, n, p) {
       const [h0, s0] = rgbToHsv(r0, g0, b0);
       sat0 = s0;
       blue0 = bandWeight(h0, 215, 70);
-      skyW0 = feather(blue0 * Math.min(s0 * 8, 1) * 1.2);
+      skyW0 = blue0 * feather((s0 - SKY_CHROMA[0]) / SKY_CHROMA[1]);
     }
 
     // The warm look is exempted from the sky — sky colour is governed only
@@ -373,9 +442,9 @@ function gradePixels(src, dst, n, p) {
     let g = g0 * (1 + (p.wb[1] - 1) * (1 - skyExempt));
     let b = b0 * (1 + (p.wb[2] - 1) * (1 - skyExempt));
 
-    r = sigmoidContrast(tone(r, p), p.contrast);
-    g = sigmoidContrast(tone(g, p), p.contrast);
-    b = sigmoidContrast(tone(b, p), p.contrast);
+    r = blackPoint(sigmoidContrast(tone(r, p), p.contrast), p.lift);
+    g = blackPoint(sigmoidContrast(tone(g, p), p.contrast), p.lift);
+    b = blackPoint(sigmoidContrast(tone(b, p), p.contrast), p.lift);
 
     let [h, s, v] = rgbToHsv(r, g, b);
     const skin = skinWeight(h, s, v);
@@ -430,27 +499,28 @@ function gradePixels(src, dst, n, p) {
     s *= 1 + (p.satScale - 1) * (1 - skin);
     s = Math.min(s, 1);
 
-    // Neutral guard: a near-neutral pixel's hue is camera noise, and the
-    // scaled look amplifies it into mottling on white fabric. Cap its
-    // chroma near the original's and unify its hue toward the warm tint —
-    // a flat cream instead of pale confetti.
-    if (p.guardStrength && sat0 < 0.2) {
-      const guardW = Math.min((0.2 - sat0) / 0.1, 1) * p.guardStrength; // full below 0.1
-      const cap = sat0 * 1.2 + 0.008;
-      if (s > cap) s -= (s - cap) * guardW;
-      // Pale blue stays under the sky's law; everything else warms as one.
-      // Which camp a near-neutral belongs to is itself uncertain near the
-      // boundary, and the two targets sit 172° apart — snapping every pixel
-      // to one of them is the second way a bokeh transition acquires a seam.
-      // So the unification is weighted by how confidently the pixel sits in
-      // its camp, and an ambiguous pixel simply keeps its own hue: at this
-      // chroma the hue is invisible either way, and the cap above has
-      // already taken the noise out.
-      const skyCamp = feather(blue0);
-      let dN = (skyCamp > 0.5 ? 212 : 40) - h;
-      if (dN > 180) dN -= 360;
-      if (dN < -180) dN += 360;
-      h = (h + dN * guardW * Math.abs(2 * skyCamp - 1) + 360) % 360;
+    // One chroma ceiling for the whole frame. A pixel may gain colour, but
+    // never without limit: the ceiling is a fixed headroom plus a bounded
+    // multiple of what the camera saw. So a surface recorded as near-white
+    // can warm, and cannot acquire a colour of its own; where there is real
+    // colour the multiple opens up and the greens deepen untouched.
+    //
+    // The headroom term is what makes it safe at the neutral end. A pure
+    // ratio collapses to nothing as the source chroma goes to zero, and the
+    // cap then inherits the quantisation of that chroma — on white fabric
+    // the source varies by one or two codes, and a cap that tracks it steps
+    // where it steps. Above the ceiling, gains compress rather than clip, so
+    // the law draws no contour of its own.
+    //
+    // This replaces a pair of guards: a chroma cap on near-neutrals that
+    // also unified their hue toward one of two targets 172° apart, and a
+    // separate 2.6× amplification ceiling. The hue unification was the
+    // second half of the fabric defect — it painted the camps the sky gate
+    // had already split — and the new ceiling is tighter than 2.6× at every
+    // chroma, so the second guard had nothing left to do.
+    if (p.guardStrength && s > 0) {
+      const cap = sat0 + 0.05 + 1.6 * sat0 * feather((sat0 - 0.2) / 0.25);
+      if (s > cap) s -= (s - cap) * 0.8 * p.guardStrength;
     }
 
     // Skin saturation cap: however strong the look, a face can only gain a
@@ -460,31 +530,30 @@ function gradePixels(src, dst, n, p) {
       if (s > cap) s -= (s - cap) * skin * p.guardStrength;
     }
 
-    // Chroma amplification ceiling: however the look's moves stack, a
-    // pixel's chroma may not run past 2.6× what the camera saw (plus a hair,
-    // so true neutrals keep the warm tint). 2.6 sits above the vegetation
-    // band's measured p99 gain on every image, so the pine greens pass
-    // untouched; the 3–10× tail beyond it is amplified chroma noise — the
-    // mottle on flat walls. Above the knee, gains compress 4:1 rather than
-    // clipping, so the cap draws no contour of its own.
-    if (p.guardStrength && s > 0) {
-      const knee = 2.6 * sat0 + 0.02;
-      if (s > knee) s -= (s - knee) * 0.75 * p.guardStrength;
-    }
-
     [r, g, b] = hsvToRgb(h, s, v);
 
     // Split-tone: shadows lean toward the shadow tint, highlights toward the
     // highlight tint, weighted by how deep or bright the pixel sits. Above
     // base strength the split backs off skin, since its amounts grow.
+    //
+    // Each target is taken at the pixel's own luminance, so the move is
+    // purely chromatic. Held at a fixed level instead — the shadow target
+    // used to sit at 0.28 — "tone toward" becomes "lift toward" on any
+    // frame whose shadows sit below it: the canopy in the home hero runs at
+    // 0.03–0.10, so its deepest fifth was dragged a fifth of the way to a
+    // mid-dark green. That raised the compression noise living down there
+    // into view and flattened the shadow's own variation onto one colour,
+    // which is what read as dark clumps in the trees.
     const L = 0.2126 * r + 0.7152 * g + 0.0722 * b;
     const protect = 1 - (p.splitSkinProtect ?? 0) * skin;
     const skyProtect = 1 - (p.splitSkyProtect ?? 0) * skyW0;
     const sw = p.split.shadow.amount * (1 - L) * (1 - L) * protect * skyProtect;
     const hw = p.split.highlight.amount * L * L * protect * skyProtect;
-    r += (shadowTint[0] - r) * sw + (highlightTint[0] - r) * hw;
-    g += (shadowTint[1] - g) * sw + (highlightTint[1] - g) * hw;
-    b += (shadowTint[2] - b) * sw + (highlightTint[2] - b) * hw;
+    const sL = L * shadowK;
+    const hL = L * highlightK;
+    r += (shadowUnit[0] * sL - r) * sw + (highlightUnit[0] * hL - r) * hw;
+    g += (shadowUnit[1] * sL - g) * sw + (highlightUnit[1] * hL - g) * hw;
+    b += (shadowUnit[2] * sL - b) * sw + (highlightUnit[2] * hL - b) * hw;
 
     dst[i * 3] = r < 0 ? 0 : r > 1 ? 1 : r;
     dst[i * 3 + 1] = g < 0 ? 0 : g > 1 ? 1 : g;
@@ -687,7 +756,7 @@ async function bake(strength, label, outDir) {
 
       const before = lumaStats(data, n);
       const graded = new Float32Array(n * 3);
-      gradePixels(data, graded, n, params[group]);
+      gradePixels(data, graded, n, applyTrim(params[group], TRIMS[file]));
       const out8 = ditherTo8bit(graded, info.width, info.height);
       const after = lumaStats(out8, n);
 
