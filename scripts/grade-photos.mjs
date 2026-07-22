@@ -90,6 +90,30 @@ const KNEE = {
 // sky from anything merely blue-shaded; see the note where it is used.
 const SKY_CHROMA = [0.12, 0.14]; // 0 below 12% chroma, full at 26%
 
+// The air membership is that same gate read through a hue weight that
+// saturates instead of falling off as the raised cosine does, because this
+// one also has to serve as a protection, and a protection that decays with
+// hue distance is not one. A cyan horizon sits 23° off the blue band's
+// centre, so the cosine gives it 0.76 and leaks a quarter of every move the
+// mask is meant to be holding off it — a quarter of a rotation toward
+// amber, which is enough to undo the convergence pull and is where
+// AboutImage2's green roofline came from. Within 40° of the centre a pixel
+// is simply air.
+//
+// It shares the chroma gate above rather than opening below it, and that
+// was tried the other way first. Water reflects the sky and arrives paler
+// than the sky it reflects, so a gate opening at 4% chroma reaches it — but
+// it reaches white fabric in shade at the same time, because the two
+// genuinely overlap: the water in the lake vista runs 8–12% chroma and the
+// socks and shorts in home-youth run 2–13%. At 4% the fabric came out
+// mottled green, at 9% it still did, and no threshold separates them
+// because there is nothing between them to separate. Sunlit water is bright
+// and near-neutral, so it is the golden highlight that claims it, and a
+// lake under a low sun going warm silver is the right answer anyway.
+function airHue(blue0) {
+  return feather((blue0 - 0.25) / 0.35);
+}
+
 // Smooth feather: eases in and out with zero slope at both ends. Used where a
 // membership weight would otherwise step across a threshold.
 function feather(x) {
@@ -168,7 +192,44 @@ function resinHour(strength = 1) {
     vibrance: p.vibrance * s,
     satScale: 1 + (p.satScale - 1) * s,
     splitSkinProtect: 0.7 * over,
-    splitSkyProtect: over, // the amber highlight split must never eat the sky
+    // Sky joins the hour at a reduced share rather than being exempt from
+    // it. Holding it at zero was right while the sky in this set was small
+    // windows between leaves — it is what stopped the green horizons and
+    // violet zeniths. But a frame that is half sky then cannot join the
+    // hour at all, whatever the strength: its warmth is capped by the share
+    // of it that is land. The wide lake vista is that frame, and it read as
+    // a different day beside the forest tiles in the About mosaic. So the
+    // warm balance now reaches the sky at 35% and the amber highlight split
+    // at 40%, which is enough for the sky to belong to the afternoon and
+    // far short of what would take it off blue.
+    skyWarmShare: 0.35,
+    splitSkyProtect: 0.6 * over,
+    // Warm haze. A late-afternoon sky holds its colour overhead and washes
+    // pale and warm where the air is deepest, at the horizon. Depth of air
+    // is not something the pixels carry, but thinning the colour is what
+    // haze does, so how far a patch of sky has fallen below the frame's own
+    // deepest blue stands in for it — and unlike a vertical ramp that
+    // stands in correctly whatever angle the frame was shot at.
+    //
+    // Haze thins the air's colour before it warms it, and the order is not
+    // cosmetic. A sky's own gradient runs blue overhead to cyan at the
+    // horizon, and the path from a cyan to a warm target passes through
+    // green: cyan is short of red, the target is short of blue, and every
+    // mixture between them is longest in the channel neither is short of.
+    // Blending straight to warm at a weight strong enough to be felt put a
+    // green band along AboutImage2's roofline — hue 192 in the original,
+    // 151 graded. Paling first spends most of that distance as chroma
+    // rather than as rotation, and the warm step that follows is small
+    // enough that what is left cannot cross.
+    //
+    // Where the air is deep is read from the sky's own chroma, measured per
+    // frame — see skyDeep. Brightness was the first proxy and it does not
+    // survive contact with this set: AboutImage2's sky runs 232 at the top
+    // of the frame and 223 at the roofline, so a luminance gate hazes the
+    // zenith as hard as the horizon and takes the whole sky grey. Chroma
+    // over the same span falls 60% to 44%, which is the gradient the eye is
+    // actually reading as distance.
+    skyHaze: { pale: 0.1 * over, hue: 42, sat: 0.3, amount: 0.55 * over },
     split: {
       shadow: {
         hue: p.split.shadow.hue + 75 * over, // 30 (warm brown) -> 105 (pine)
@@ -270,32 +331,53 @@ function cyprusSummer() {
 // frame sits beside the ones it is printed next to, which is a different
 // question and the last one a colourist answers.
 //
-// hero-1 is the only trimmed shot, and the About mosaic is why: seven
-// photographs physically touch there, and it holds the centre tile. It is
-// the one frame in the set shot as a wide vista, so distance haze leaves
-// its land paler and cooler than the close-range scenes around it — the
-// grade moves it exactly as much as it moves everything else (+9.4 b*
-// against the set's +9.1), so the gap it arrives with is the gap it keeps.
-// The trim warms and enriches the land and takes the sky and water back a
-// step, which is what closes it. Measured on the rendered mosaic tile below
-// its skyline, against the mean of its six neighbours: Δb* −4.80 → −3.86,
-// ΔC* −6.06 → −5.59.
+// The About mosaic is why they exist: seven photographs physically touch
+// there, and a tile that reads as a different day is visible in a way the
+// same tile alone never is. Trims are therefore judged between files rather
+// than against each file's own original — a per-file warmth index (mean b*
+// over non-sky, non-skin content) and the spread of it across the set.
+// Measured over the seven mosaic tiles, that spread runs 7.56 → 6.81 with
+// the trims, its sd 2.95 → 2.48, and the whole-frame spread — which is what
+// a tile of mostly sky actually shows — 21.18 → 14.76.
+//
+// The two vistas take opposite corrections. hero-1 holds the centre tile
+// and arrives paler and cooler than the close-range scenes around it, so it
+// is warmed and enriched. hero-2 is the shadow-heavy one: its warmth is
+// decided almost entirely by the shadow tint, which the look drifts toward
+// pine at strength, so its trim pulls that tint back out of the green and
+// lifts the chroma its dappled canopy loses.
+//
+// The interiors go the other way. AboutImage1 and AboutImage2 arrive
+// warmest of the seven and are cooled a step, because matching is a
+// question about the set and not about how far each file travelled.
 const TRIMS = {
-  "hero-1.jpg": {
-    wb: [1.035, 1.0, 0.96],
-    sat: 1.15,
-    contrast: 0.03,
-    skySat: 0.75,
-  },
+  "hero-1.jpg": { wb: [1.035, 1.0, 0.96], sat: 1.15, contrast: 0.03, skySat: 0.75, warm: 1.5 },
+  "hero-2.jpg": { wb: [1.045, 1.0, 0.94], sat: 1.22, warm: 1.4, shadowHue: -40 },
+  "home-youth.jpg": { wb: [1.02, 1.0, 0.96], warm: 1.3 },
+  "AboutImage1.jpg": { wb: [0.99, 1.0, 1.02] },
+  "AboutImage2.jpg": { wb: [0.99, 1.0, 1.02] },
 };
 
+// wb is the obvious trim lever and it is a weak one: a 4% channel move buys
+// about 0.3 b*, because the chroma ceiling absorbs most of what it adds.
+// The split-tone amounts run after that ceiling, so `warm` is the lever with
+// real travel, and `shadowHue` reaches the one part of the look that decides
+// whether a shadow-heavy frame reads warm at all.
 function applyTrim(p, t) {
   if (!t) return p;
+  const tone = (x, mul) => (mul === undefined ? x : { ...x, amount: x.amount * mul });
   return {
     ...p,
     wb: p.wb.map((g, i) => g * (t.wb ? t.wb[i] : 1)),
     satScale: p.satScale * (t.sat ?? 1),
     contrast: p.contrast + (t.contrast ?? 0),
+    split: {
+      shadow: {
+        ...tone(p.split.shadow, t.warm),
+        hue: p.split.shadow.hue + (t.shadowHue ?? 0),
+      },
+      highlight: tone(p.split.highlight, t.warm),
+    },
     bands: p.bands.map((b) =>
       b.hueTarget !== undefined && t.skySat !== undefined
         ? { ...b, satScale: b.satScale * t.skySat }
@@ -402,6 +484,37 @@ function gradePixels(src, dst, n, p) {
   const highlightUnit = hsvToRgb(p.split.highlight.hue, p.split.highlight.sat, 1);
   const shadowK = 1 / lum(shadowUnit);
   const highlightK = 1 / lum(highlightUnit);
+  const haze = p.skyHaze;
+  const hazeUnit = haze ? hsvToRgb(haze.hue, haze.sat, 1) : null;
+  const hazeK = hazeUnit ? 1 / lum(hazeUnit) : 0;
+
+  // The frame's own deepest sky, as chroma — the 90th percentile among the
+  // pixels the air membership claims. Haze is judged against it rather than
+  // against a fixed number because every frame's air is different: a shot
+  // straight up a canopy has one narrow band of deep blue, a lake vista has
+  // half a frame of it, and a fixed threshold would haze one of them and
+  // not the other. Frames with almost no sky get no reference and no haze,
+  // which is the right answer for them.
+  let skyDeep = 0;
+  let skySeen = 0;
+  if (haze) {
+    const bins = new Uint32Array(101);
+    for (let i = 0; i < n; i++) {
+      const [h0, s0] = rgbToHsv(src[i * 3] / 255, src[i * 3 + 1] / 255, src[i * 3 + 2] / 255);
+      const air = airHue(bandWeight(h0, 215, 70)) * feather((s0 - SKY_CHROMA[0]) / SKY_CHROMA[1]);
+      if (air > 0.5) {
+        bins[Math.min(100, Math.round(s0 * 100))]++;
+        skySeen++;
+      }
+    }
+    if (skySeen > n * 0.005) {
+      let acc = 0;
+      for (let i = 100; i >= 0; i--) {
+        acc += bins[i];
+        if (acc >= skySeen * 0.1) { skyDeep = i / 100; break; }
+      }
+    }
+  }
 
   for (let i = 0; i < n; i++) {
     const r0 = src[i * 3] / 255;
@@ -426,6 +539,7 @@ function gradePixels(src, dst, n, p) {
     // real sky sits at 22–63% chroma and those surfaces at 2–13%, so the
     // gate ramps between them and never reaches a verdict in that gap.
     let skyW0 = 0;
+    let airW0 = 0;
     let sat0 = 0;
     let blue0 = 0;
     if (p.guardStrength) {
@@ -433,11 +547,12 @@ function gradePixels(src, dst, n, p) {
       sat0 = s0;
       blue0 = bandWeight(h0, 215, 70);
       skyW0 = blue0 * feather((s0 - SKY_CHROMA[0]) / SKY_CHROMA[1]);
+      airW0 = airHue(blue0) * feather((s0 - SKY_CHROMA[0]) / SKY_CHROMA[1]);
     }
 
-    // The warm look is exempted from the sky — sky colour is governed only
-    // by the convergence pull, so wb blends to neutral over sky pixels.
-    const skyExempt = skyW0 * (p.guardStrength ?? 0);
+    // The warm look reaches the sky at a reduced share — see skyWarmShare.
+    const skyExempt =
+      skyW0 * (p.guardStrength ?? 0) * (1 - (p.skyWarmShare ?? 0));
     let r = r0 * (1 + (p.wb[0] - 1) * (1 - skyExempt));
     let g = g0 * (1 + (p.wb[1] - 1) * (1 - skyExempt));
     let b = b0 * (1 + (p.wb[2] - 1) * (1 - skyExempt));
@@ -454,9 +569,17 @@ function gradePixels(src, dst, n, p) {
       // Above base strength the sky pull bypasses the saturation gate via
       // the original-pixel membership: a pale sky must converge like a
       // vivid one, and rotating near-neutral hue costs nothing visually.
+      //
+      // It reaches as wide as the haze does, and it has to. The pale band
+      // just above a horizon sits below the sky gate, so on the narrow
+      // membership it received the warm balance and the haze with nothing
+      // holding its hue — and a pale blue with its blue channel eased down
+      // lands in cyan-green, which is where AboutImage2's roofline came out
+      // banded green. Whatever the wider membership warms, the pull keeps
+      // on one sky.
       const wPull =
         band.hueTarget !== undefined
-          ? Math.max(w, skyW0 * (1 - skin) * (p.guardStrength ?? 0))
+          ? Math.max(w, airW0 * (1 - skin) * (p.guardStrength ?? 0))
           : w;
       if (w === 0 && wPull === 0) continue;
       if (band.hueTarget !== undefined) {
@@ -473,15 +596,35 @@ function gradePixels(src, dst, n, p) {
       v *= 1 + (band.lumScale - 1) * w;
     }
 
-    // Above base strength: the brightest non-sky, non-skin pixels pull
+    // Haze, first half: the air thins toward the horizon. Gated on the
+    // pixel's own brightness, so the zenith keeps every point of its
+    // chroma and only the bright end pales. The warm half follows in RGB
+    // once the chroma is down — see the note on skyHaze.
+    let hazeW = 0;
+    if (skyDeep > 0 && airW0 > 0) {
+      // 0 at the frame's deepest sky, 1 where its chroma has fallen by half.
+      hazeW = feather((skyDeep - sat0) / (skyDeep * 0.5)) * airW0 * (1 - skin);
+      s *= 1 - haze.pale * hazeW;
+    }
+
+    // Above base strength: the brightest non-air, non-skin pixels pull
     // toward amber — the sunlit-foliage-going-golden move.
+    //
+    // It stands off the air on the wide membership, and the narrow one was
+    // a bug rather than a choice. A bright sky pixel kept a quarter share
+    // of this move, and from a converged 208 the short way to amber runs
+    // backwards through cyan and green: a quarter share was enough to undo
+    // the convergence pull and land the roofline at 187. That is where
+    // AboutImage2's green horizon came from, in the shipped grade as much
+    // as in any candidate here. Sunlit foliage is the subject of this move;
+    // air never was.
     if (p.goldenHighlight && v > 0.6) {
       const gh = p.goldenHighlight;
       const w =
         gh.amount *
         ((v - 0.6) / 0.4) *
         (1 - skin) *
-        (1 - skyW0) *
+        (1 - airW0) *
         Math.min(s * 5, 1);
       if (w > 0) {
         let d = gh.hue - h;
@@ -554,6 +697,17 @@ function gradePixels(src, dst, n, p) {
     r += (shadowUnit[0] * sL - r) * sw + (highlightUnit[0] * hL - r) * hw;
     g += (shadowUnit[1] * sL - g) * sw + (highlightUnit[1] * hL - g) * hw;
     b += (shadowUnit[2] * sL - b) * sw + (highlightUnit[2] * hL - b) * hw;
+
+    // Haze, second half: the thinned air takes the hour's colour. Same rule
+    // as the split above — the target is held at the pixel's own luminance,
+    // so this moves the colour of the air and never its level.
+    if (hazeW > 0) {
+      const w = haze.amount * hazeW;
+      const hzL = L * hazeK;
+      r += (hazeUnit[0] * hzL - r) * w;
+      g += (hazeUnit[1] * hzL - g) * w;
+      b += (hazeUnit[2] * hzL - b) * w;
+    }
 
     dst[i * 3] = r < 0 ? 0 : r > 1 ? 1 : r;
     dst[i * 3 + 1] = g < 0 ? 0 : g > 1 ? 1 : g;
