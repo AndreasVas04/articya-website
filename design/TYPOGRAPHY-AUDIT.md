@@ -18,6 +18,17 @@ is post-repair.** "Before" columns throughout mean the state after the
 typeface fix and before the repair; the repair itself is recorded under
 [What the corrective pass changed](#what-the-corrective-pass-changed).
 
+> **Correction — B2 was reverted.** Everything this document says about the
+> FAQ question rendering at 24px Bricolage (H3) is stale. Ten display-face
+> headings stacked in a list read as shouting rather than as structure, so the
+> question went back to reading size: **17px Instrument Sans 600**, separated
+> from its answer by weight, colour and space instead of by size and family.
+> H3 no longer exists on the site. The rest of the repair — B1 measure, B3 one
+> section-heading size, B8 the Contact value weight, the hero-lede narrowing —
+> stands as recorded. `DESIGN-SYSTEM.md` carries the principle this correction
+> established: hierarchy is built with space, weight, colour and rules first,
+> and a size step is the last tool, not the first.
+
 ## Method
 
 The export in `out/` is served locally and walked in both viewports. Every

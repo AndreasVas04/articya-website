@@ -323,7 +323,7 @@ Display: **Bricolage Grotesque** · Body: **Instrument Sans** — both loaded vi
 |---|---|---|---|
 | Display | `clamp(2.75rem, 6vw, 4.5rem)` / 1.05, −0.02em | Bricolage 600 | Page hero headline only |
 | H2 | `clamp(2rem, 4vw, 3rem)` / 1.1, −0.01em | Bricolage 600 | Section headings, on every page: home "What we do" / "What you gain", home offer-panel titles, Contact "Get in touch", the FAQ question-group headings |
-| H3 | `1.5rem` / 1.25 | Bricolage 600 | Block headings under a section heading — the FAQ questions |
+| FAQ question | `1.0625rem` / 1.45 | Instrument Sans 600 | The FAQ accordion questions — reading size, body face, separated from the answer by weight, colour and space |
 | Stat numeral | `clamp(3.25rem, 8vw, 6.5rem)` / 1 desktop · `2.75rem` / 1 mobile | Bricolage 600 | Home stats only — `resin`, glowing. Monumental centered columns on desktop; compact ledger rows on mobile so all three share one screen |
 | Showpiece | `clamp(2.25rem, 5vw, 3.75rem)` / 1.15, −0.01em | Bricolage 600 | One key line per page max — on the built site, the home closing line and nothing else |
 | Trail item | `clamp(1.5rem, 2.5vw, 2.25rem)` / 1.2 | Bricolage 600 | Home gains sequence |
@@ -374,18 +374,44 @@ by family, weight, or context rather than size:
 | 20px desktop | Wordmark (Bricolage 600), Hero statement (Bricolage 500), Lede (Instrument 400) | Family and weight; the wordmark is chrome, the other two are content |
 | 14px | Button (Instrument 600, +0.02em), Caption (Instrument 400) | Weight, and a filled control against a footer line |
 | 44px @390 | Display, Stat numeral | Not a ladder — these are the two **monumental** roles, and on desktop the stat numeral is deliberately the larger of the two (104 against 72). They sit a full screen apart, one a centred headline in a photographic card, the other a numeral on a baseline opposite a 13px uppercase label |
-| 24px @390 | Trail item, H3 | The same level reached from two directions: both are block headings one step under a section heading. The trail item rises to 36px on desktop because the gains trail is a full-width set piece; the FAQ question does not, because it is a line inside a card |
 | 32px @390 | H2, FAQ group heading | Nothing — they are the same role. The FAQ group headings **are** section headings and take the H2 step at every viewport |
 
-**H3 exists where a page has a block to head, and the home page has none.**
-The FAQ is the only page built as section → block → prose, so H3 lives
-there and nowhere else. The home page runs Display → H2 → Trail item →
-Lede → Body and never needs the step: its offer-panel titles are **not**
-demoted H2s waiting for a middle level, they are titles on full-bleed
-photographic set pieces and are sized to the panel, not to the ramp. A step
-down would shrink a showpiece to fix a table. So the home page has no
-H3-level element by composition, not by omission — the ramp is complete
-without one.
+**Hierarchy is built with space, weight, colour and rules first. A size step
+is the last tool, not the first — and a display face is reserved for headings
+that carry a section, never for repeated list items.**
+
+This supersedes an earlier working rule that every level had to be *visible at
+a glance* as a size difference. That rule came from a different problem — a
+page where two adjacent roles rendered identically — and it does not transfer
+to a list. Applied to the FAQ it produced ten 24px Bricolage questions in a
+column, which read as shouting rather than as structure: at that size and in
+that face each row claims to carry a section, and ten of them claim it at
+once. The face is doing the work of a heading in a place that has no heading
+to give.
+
+**The FAQ question is the worked example.** It sits at 17px Instrument Sans
+600 — a hair over the 16px answer, and below the 18.66px large-text threshold,
+so nothing about it is a size event. The four levers carry it instead: the
+answer is `ink-soft` against the question's `ink`, 400 against 600, and the
+question's own top padding plus the 16px gap to the card above leaves **36px
+of air over each question against 12px under it**, so the pair groups
+downward and the eye reads question-then-answer rather than two peers. No
+rule is drawn between the two: the card's amber border already encloses the
+pair, and a hairline at the question/answer join would cut exactly where the
+space is working to join. A rule earns its place when it separates things
+nothing else separates — here nothing was left over for it to do. Measured
+on the built page, the closed rows come out at one uniform height (70px at
+1440, 70/91px at 390), which is what lets the list be scanned without being
+read.
+
+**There is no level between a section heading and body copy.** The FAQ is the
+only page built as section → question → prose, and its questions are list
+items, not a middle heading tier — so no page has a rendered step between H2
+and Body, and none needs one. The home page runs Display → H2 → Trail item →
+Lede → Body: its offer-panel titles are **not** demoted H2s waiting for a
+middle level, they are titles on full-bleed photographic set pieces and are
+sized to the panel, not to the ramp. A step down would shrink a showpiece to
+fix a table.
 
 ## Layout & spacing
 

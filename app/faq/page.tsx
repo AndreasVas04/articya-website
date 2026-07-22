@@ -58,13 +58,20 @@ export default function FaqPage() {
                         key={item.question}
                         className="group rounded-lg border border-amber/45 bg-gold-card transition-[border-color,box-shadow] duration-200 ease-out-quart open:border-amber/70 open:print-shadow"
                       >
-                        <summary className="flex cursor-pointer list-none items-center justify-between gap-6 rounded-lg p-5 transition-colors duration-200 ease-out-quart hover:bg-amber-soft/20 group-open:rounded-b-none md:px-8 [&::-webkit-details-marker]:hidden">
-                          <h3 className="font-display text-2xl font-semibold leading-[1.25] text-ink">
+                        {/* The question sits a step above its answer on weight
+                            and colour, not on size or family: ten display-face
+                            headings in a column read as a shouted list rather
+                            than a scannable one. Its own top padding plus the
+                            gap to the card above leaves 36px over the question
+                            against 12px under it when open, so the pair groups
+                            downward. */}
+                        <summary className="flex cursor-pointer list-none items-center justify-between gap-6 rounded-lg p-5 transition-colors duration-200 ease-out-quart hover:bg-amber-soft/20 group-open:rounded-b-none group-open:pb-3 md:px-8 [&::-webkit-details-marker]:hidden">
+                          <h3 className="font-sans text-[1.0625rem] font-semibold leading-[1.45] text-ink">
                             {item.question}
                           </h3>
                           <span
                             aria-hidden="true"
-                            className="flex size-8 shrink-0 items-center justify-center rounded-full border border-amber/55 text-[0.625rem] text-resin-deep transition-transform duration-200 ease-out-quart group-open:rotate-180"
+                            className="flex size-7 shrink-0 items-center justify-center rounded-full border border-amber/45 text-[0.625rem] text-resin-deep transition-transform duration-200 ease-out-quart group-open:rotate-180"
                           >
                             {arrow}
                           </span>
