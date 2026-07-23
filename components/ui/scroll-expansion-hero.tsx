@@ -1,11 +1,23 @@
 "use client";
 
-import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
+import {
+  useEffect,
+  useLayoutEffect,
+  useState,
+  type CSSProperties,
+  type ReactNode,
+} from "react";
 import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import { LivingAtmosphere } from "@/components/living-atmosphere";
 import { ResinEmbers } from "@/components/resin-embers";
 import { cn, withBasePath } from "@/lib/utils";
+
+// useLayoutEffect on the client, useEffect on the server: the effect it runs
+// only ever touches the DOM, so it is a no-op during server rendering, and
+// this avoids React's warning about useLayoutEffect there.
+const useIsomorphicLayoutEffect =
+  typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 const EASE_IN_OUT_CUBIC: [number, number, number, number] = [0.65, 0, 0.35, 1];
 const SLIDE_INTERVAL_MS = 4500;
@@ -46,9 +58,20 @@ const ScrollExpandMedia = ({
     setMounted(true);
   }, []);
 
-  // The pre-hydration veil (set by the page's inline script) hands over to
-  // React's own hidden state here — removed only after the mounted
-  // re-render has applied it, so no frame shows the intro in between.
+  // Re-arm the pre-hydration veil for client-side navigation. The page's
+  // inline script sets `hero-js` before the hero parses on a hard load, but
+  // that script does not run when home is entered through the client router,
+  // so on that path the intro — rendered in its expanded state until `mounted`
+  // flips below — would otherwise flash inside the collapsed card. Adding the
+  // class in a layout effect lands it before the first paint on a route change
+  // too; on a hard load it is already present and this is a no-op.
+  useIsomorphicLayoutEffect(() => {
+    document.documentElement.classList.add("hero-js");
+  }, []);
+
+  // The veil then hands over to React's own hidden state — removed only after
+  // the mounted re-render has applied it, so no frame shows the intro in
+  // between.
   useEffect(() => {
     if (mounted) document.documentElement.classList.remove("hero-js");
   }, [mounted]);
