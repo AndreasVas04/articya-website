@@ -374,7 +374,7 @@ by family, weight, or context rather than size:
 | 20px desktop | Wordmark (Bricolage 600), Hero statement (Bricolage 500), Lede (Instrument 400) | Family and weight; the wordmark is chrome, the other two are content |
 | 14px | Button (Instrument 600, +0.02em), Caption (Instrument 400) | Weight, and a filled control against a footer line |
 | 44px @390 | Display, Stat numeral | Not a ladder — these are the two **monumental** roles, and on desktop the stat numeral is deliberately the larger of the two (104 against 72). They sit a full screen apart, one a centred headline in a photographic card, the other a numeral on a baseline opposite a 13px uppercase label |
-| 32px @390 | H2, FAQ group heading | Nothing — they are the same role. The FAQ group headings **are** section headings and take the H2 step at every viewport |
+| 32px @390 | H2 (the FAQ group heading no longer shares it) | The FAQ group heading was pulled off this step to a flat 1.75rem. It is a group label, not a section heading — a label that carries a set of rows sits between the page title and the rows, not level with a section heading — so it sits a notch below H2 on a step of its own |
 
 **Hierarchy is built with space, weight, colour and rules first. A size step
 is the last tool, not the first — and a display face is reserved for headings
