@@ -33,16 +33,27 @@ export function PageHero({ image, heading, text }: PageHeroProps) {
         aria-hidden="true"
         className="pointer-events-none absolute left-1/2 top-1/2 h-64 w-[64rem] max-w-[92vw] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold-chrome/70 blur-[100px]"
       />
-      <div className="relative mx-auto flex min-h-[55vh] max-w-6xl flex-col items-center justify-center px-4 pb-16 pt-28 text-center md:min-h-[65vh] md:pb-20 md:pt-32">
+      {/* The block's rise above true centre is set by the padding alone:
+          below − above = header − pt + pb, whatever the band height or the
+          length of the title. md:pt-36/pb-20 against the 80px header leaves
+          16px of rise; the band is then only as tall as it needs to be to
+          hold the longest hero without the padding pushing it open. */}
+      <div className="relative mx-auto flex min-h-[55vh] max-w-6xl flex-col items-center justify-center px-4 pb-16 pt-28 text-center md:min-h-[54vh] md:pb-20 md:pt-36">
         <Reveal>
           <span aria-hidden="true" className="mx-auto block h-[1.25px] w-16 bg-amber" />
-          <h1 className="mt-4 font-display text-[clamp(2.75rem,6vw,4.5rem)] font-semibold leading-[1.05] tracking-[-0.02em] text-ink">
+          {/* 16ch of the display face, so the constraint travels with the
+              clamped size: the longest title measures 20.4ch at every
+              viewport, and 16 breaks it onto two balanced lines while
+              staying clear of the 12.2ch where a third line would start. */}
+          <h1 className="mx-auto mt-4 max-w-[16ch] text-balance font-display text-[clamp(2.75rem,6vw,4.5rem)] font-semibold leading-[1.05] tracking-[-0.02em] text-ink">
             {heading}
           </h1>
-          {/* 36rem, not 42rem: at 42 the Contact lede ran 77 characters on
-              its longest line, over the 70 the system allows a prose block.
-              36rem lands all three inner-page ledes in the sixties. */}
-          <p className="mx-auto mt-6 max-w-xl text-xl leading-[1.55] text-ink">
+          {/* 38.75rem, not 36: at 36 the About lede broke to three lines
+              against two on the other pages, and left "programmes." alone on
+              the last. 38.75 lands all three on two lines with the longest
+              rendered line at 66 characters, inside the 70 a prose block
+              gets. Past 40rem the Contact lede runs 71. */}
+          <p className="mx-auto mt-6 max-w-[38.75rem] text-pretty text-xl leading-[1.55] text-ink">
             {text}
           </p>
         </Reveal>

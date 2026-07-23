@@ -417,17 +417,27 @@ fix a table.
 
 - 4px base grid; Tailwind spacing scale only, no arbitrary pixel values.
 - Content max-width `72rem` (max-w-6xl).
-- **Measure is a measured rule, not a `ch` declaration.** No container is
-  expressed in `ch` — the tracks are px and the measure is verified on the
-  rendered page instead: **no prose block may exceed 70 characters on its
-  longest rendered line**, at either viewport. The longest line is the one a
-  reader actually scans; an average divides by the short final line and
-  under-reports it by up to 33 characters on a block this size. Measured on
-  the built page, the worst block on the site is 70 and the FAQ answers —
-  once the worst offenders at 76–83 — run 59–70. The tracks that deliver it:
-  no 16px block sits in more than **552px**, and the inner-page hero ledes
-  sit in `max-w-xl` (576px) rather than `max-w-2xl`, which is what took the
-  Contact lede from 77 characters to 64.
+- **Measure is a measured rule, verified on the rendered page.** With one
+  exception the reading tracks are px, and the measure is checked by rendered
+  character count rather than by the declaration: **no prose block may exceed
+  70 characters on its longest rendered line**, at either viewport. The
+  longest line is the one a reader actually scans; an average divides by the
+  short final line and under-reports it by up to 33 characters on a block this
+  size. Measured on the built page, the worst block on the site is 70 and the
+  FAQ answers — once the worst offenders at 76–83 — run 59–70. The tracks that
+  deliver it: no 16px block sits in more than **552px**, and the inner-page
+  hero ledes sit in `max-w-[38.75rem]` (620px), which lands all three on two
+  lines with the longest rendered at 66 characters (Contact, desktop) — a
+  count read off the built page, not inferred from the 620px value.
+- **The hero title is the one container expressed in `ch`, at `16ch`.**
+  Everywhere else the reading type holds a fixed size and its track is px; the
+  title is the exception because its display size is clamped
+  (`clamp(2.75rem, 6vw, 4.5rem)`). A `ch` value holds the same break at every
+  viewport where a `px` cap would not — `16ch` breaks the longest title,
+  "Frequently Asked Questions", onto two balanced lines and keeps that break
+  identical at 72px on desktop and 44px on mobile, whereas a px width would let
+  the break migrate as the clamp interpolates the glyph size up and down. The
+  constraint travels with the type precisely because the type here is fluid.
 - **The full-bleed offer panels are the one exception to the content column.**
   Their text alternates sides on `md`+ — Youth Exchanges left, Training
   Courses right — and each block sits over a reading fade anchored to **its**
