@@ -136,12 +136,12 @@ export default function HomePage() {
                   the turn it never stops making, so the entrance belongs to
                   the object. No glow behind it — the halo is the section's,
                   not a flash of the entrance. */}
-              <div className="relative mt-8 md:col-span-6 md:mt-0 md:self-center">
+              <div className="relative mt-6 md:col-span-6 md:mt-0 md:self-center">
                 <div
                   className="stage-globe relative isolate"
                   style={{ transitionDelay: "200ms" }}
                 >
-                  <DottedGlobe className="mx-auto w-full max-w-[16rem] md:max-w-[24rem]" />
+                  <DottedGlobe className="mx-auto w-full max-w-[13rem] md:max-w-[24rem]" />
                 </div>
               </div>
             </div>
@@ -153,7 +153,7 @@ export default function HomePage() {
                 into the gold below. The rows are the wave's last beats, and
                 each counter still starts its 700ms count only when it
                 crosses into view — the ledger writes itself. */}
-            <div className="mt-8 grid md:mt-12 md:grid-cols-3 md:divide-x md:divide-hairline">
+            <div className="mt-6 grid md:mt-12 md:grid-cols-3 md:divide-x md:divide-hairline">
               {whatWeDo.stats.map((stat, i) => (
                 <div
                   key={stat.label}
