@@ -26,8 +26,11 @@ const icons: Record<string, React.ReactNode> = {
 // bracket every page with one mark.
 export function SiteFooter() {
   return (
-    <footer className="border-t-[1.25px] border-amber/50 bg-gold-chrome py-8">
-      <div className="mx-auto flex max-w-5xl flex-col items-center gap-4 px-4">
+    <footer className="border-t-[1.25px] border-amber/50 bg-gold-chrome py-12 md:py-16">
+      <div className="mx-auto flex max-w-5xl flex-col items-center gap-7 px-4">
+        {/* The site's signature accent mark, closing the page as the section
+            rules open each block above it. */}
+        <span aria-hidden="true" className="block h-[1.25px] w-16 bg-amber" />
         <div className="flex gap-4">
           {footer.social.map((s) => (
             <a
@@ -36,7 +39,10 @@ export function SiteFooter() {
               target="_blank"
               rel="noreferrer"
               aria-label={s.label}
-              className="text-ink-soft transition-colors duration-200 hover:text-resin-deep"
+              // Outlined circle in the Contact cards' language, so the footer
+              // reads as the same family. The circle is exactly 44px so the
+              // touch target meets the minimum with the drawn ring itself.
+              className="flex size-11 items-center justify-center rounded-full border border-pine/30 text-ink-soft transition-colors duration-200 ease-out-quart hover:border-resin-deep/50 hover:text-resin-deep"
             >
               {icons[s.label]}
             </a>
