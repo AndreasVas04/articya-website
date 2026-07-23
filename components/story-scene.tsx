@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import {
   cubicBezier,
   motion,
@@ -10,7 +9,8 @@ import {
   useTransform,
   type MotionValue,
 } from "framer-motion";
-import { cn, withBasePath } from "@/lib/utils";
+import { ResponsiveImage } from "@/components/responsive-image";
+import { cn } from "@/lib/utils";
 
 const easeInOutCubic = cubicBezier(0.65, 0, 0.35, 1);
 
@@ -146,8 +146,8 @@ export function StoryScene({
                 className="absolute -inset-y-[6%] inset-x-0"
                 style={active ? { scale: imageScale, y: imageDrift } : undefined}
               >
-                <Image
-                  src={withBasePath(image.src)}
+                <ResponsiveImage
+                  src={image.src}
                   alt={image.alt}
                   fill
                   sizes="(min-width: 768px) 40vw, 100vw"

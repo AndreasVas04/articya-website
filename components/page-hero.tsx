@@ -1,5 +1,6 @@
 import { Reveal } from "@/components/reveal";
-import { withBasePath } from "@/lib/utils";
+import { ResponsiveImage } from "@/components/responsive-image";
+import { imagePreload } from "@/lib/images";
 
 interface PageHeroProps {
   image: string;
@@ -7,16 +8,35 @@ interface PageHeroProps {
   text: string;
 }
 
+const HERO_SIZES = "100vw";
+
 // Inner pages open on the same golden world as home: the page's photograph
 // glowing through a warm cream-to-amber veil, with a pool of light behind
 // the headline — one gold field from the header on down.
 export function PageHero({ image, heading, text }: PageHeroProps) {
+  // This photograph is the page's LCP, so it is preloaded (the preload scanner
+  // cannot see a CSS background) and never lazy-loaded.
+  const preload = imagePreload(image, HERO_SIZES);
   return (
     <section className="relative overflow-hidden bg-gold-wash">
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: `url(${withBasePath(image)})` }}
+      {preload && (
+        <link
+          rel="preload"
+          as="image"
+          href={preload.href}
+          imageSrcSet={preload.imageSrcSet}
+          imageSizes={preload.imageSizes}
+          type={preload.type}
+          fetchPriority="high"
+        />
+      )}
+      <ResponsiveImage
+        src={image}
+        alt=""
+        fill
+        priority
+        sizes={HERO_SIZES}
+        className="object-cover object-center"
       />
       {/* Graded veil instead of a flat one: a calm pool of cream where the
           headline sits, deepening toward amber at the edges and base, so the

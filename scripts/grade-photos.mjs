@@ -29,7 +29,7 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import sharp from "sharp";
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -860,7 +860,44 @@ async function allocateQualities(items, encodeAt) {
 }
 
 // ---------------------------------------------------------------------------
+// Shared entry point. The responsive-variant pipeline resizes from these
+// graded pixels rather than from the encoded master, so a variant is one
+// clean encode off the grade — never a re-encode of an already-lossy JPEG.
 
+// Which shooting-condition group each source file belongs to.
+const FILE_GROUP = {};
+for (const [group, files] of Object.entries(GROUPS)) {
+  for (const file of files) FILE_GROUP[file] = group;
+}
+
+export const gradedFiles = Object.keys(FILE_GROUP);
+export const productionStrength = STRENGTHS.target;
+
+// Grade one source file (from _originals) to raw 8-bit RGB pixels, exactly as
+// bake() does before it encodes — the production grade at the shipped
+// strength, group correction and per-shot trim applied, one dithered
+// quantisation to 8-bit. Orientation is returned as a flag, never baked, so
+// the caller decides how to carry it (the master keeps the flag; variants
+// bake it, see responsive-images.mjs).
+export async function gradeToRaw(file, strength = STRENGTHS.target) {
+  const group = FILE_GROUP[file];
+  if (!group) throw new Error(`No grade group for "${file}"`);
+  const params = GRADES[PRODUCTION_GRADE](strength)[group];
+  const srcPath = path.join(SRC, file);
+  const meta = await sharp(srcPath).metadata();
+  const { data, info } = await sharp(srcPath).raw().toBuffer({ resolveWithObject: true });
+  const n = info.width * info.height;
+  const graded = new Float32Array(n * 3);
+  gradePixels(data, graded, n, applyTrim(params, TRIMS[file]));
+  const out8 = ditherTo8bit(graded, info.width, info.height);
+  return { out8, width: info.width, height: info.height, orientation: meta.orientation };
+}
+
+// ---------------------------------------------------------------------------
+// CLI — only when run directly, so importing the module above is side-effect
+// free (importing must not kick off a full grade run).
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
 const args = Object.fromEntries(
   process.argv.slice(2).filter((a) => a.startsWith("--")).map((a) => {
     const [k, v] = a.slice(2).split("=");
@@ -976,3 +1013,4 @@ async function bake(strength, label, outDir) {
 
 const strengthArg = args.strength || "target";
 await bake(resolveStrength(strengthArg), `${strengthArg}`, args.out ? path.resolve(args.out) : DEST);
+}

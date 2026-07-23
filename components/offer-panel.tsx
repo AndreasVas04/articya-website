@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import {
   cubicBezier,
   motion,
@@ -11,7 +10,8 @@ import {
   type MotionValue,
 } from "framer-motion";
 import { Globe, GraduationCap } from "lucide-react";
-import { cn, withBasePath } from "@/lib/utils";
+import { ResponsiveImage } from "@/components/responsive-image";
+import { cn } from "@/lib/utils";
 
 // Icons live here because component references can't cross the
 // server/client boundary as props.
@@ -161,8 +161,8 @@ export function OfferPanel({
             className="absolute inset-x-0 -inset-y-[8%]"
             style={active ? { y: photoY, scale: photoScale } : undefined}
           >
-            <Image
-              src={withBasePath(image)}
+            <ResponsiveImage
+              src={image}
               alt=""
               fill
               sizes="100vw"

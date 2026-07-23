@@ -5,6 +5,10 @@
 /.next/
 /out/
 
+# generated responsive image variants (rebuilt at build time from the
+# committed originals + grade; deterministic, so never committed)
+/public/images/variants/
+
 # misc
 .DS_Store
 *.tsbuildinfo

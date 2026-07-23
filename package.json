@@ -3,9 +3,10 @@
   "version": "2.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "build:pages": "GITHUB_PAGES=true next build && node scripts/postexport.mjs",
+    "dev": "npm run images && next dev",
+    "build": "npm run images && next build",
+    "build:pages": "npm run images && GITHUB_PAGES=true next build && node scripts/postexport.mjs",
+    "images": "node scripts/responsive-images.mjs",
     "grade:photos": "node scripts/grade-photos.mjs",
     "verify:text": "node scripts/verify-text-parity.mjs"
   },

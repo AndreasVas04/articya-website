@@ -7,11 +7,11 @@ import {
   type CSSProperties,
   type ReactNode,
 } from "react";
-import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import { LivingAtmosphere } from "@/components/living-atmosphere";
 import { ResinEmbers } from "@/components/resin-embers";
-import { cn, withBasePath } from "@/lib/utils";
+import { ResponsiveImage } from "@/components/responsive-image";
+import { cn } from "@/lib/utils";
 
 // useLayoutEffect on the client, useEffect on the server: the effect it runs
 // only ever touches the DOM, so it is a no-op during server rendering, and
@@ -277,12 +277,16 @@ const ScrollExpandMedia = ({
               tint over it and the gold stopped being the subject. Saturation
               stays above 1 so the little of it that shows keeps its warmth
               instead of going to a flat gray. */}
-          <Image
-            src={withBasePath(bgImageSrc)}
+          {/* Same src and sizes as the first slide, so the browser picks the
+              identical variant URL and one download serves both — the backdrop
+              is this photograph blurred to a texture, it needs no file of its
+              own. */}
+          <ResponsiveImage
+            src={bgImageSrc}
             alt=""
             fill
             priority
-            sizes="100vw"
+            sizes="95vw"
             className="scale-110 object-cover opacity-[0.18] blur-[28px] saturate-[1.2]"
           />
           {/* The gold the glass glows with. The photograph alone at this
@@ -357,8 +361,8 @@ const ScrollExpandMedia = ({
                   keeps the grain's blend inside the frame. */}
               <div className="hero-frame relative isolate h-full w-full overflow-hidden ring-1 ring-hairline">
                 {restingState ? (
-                  <Image
-                    src={withBasePath(slides[0])}
+                  <ResponsiveImage
+                    src={slides[0]}
                     alt=""
                     fill
                     priority
@@ -374,8 +378,8 @@ const ScrollExpandMedia = ({
                       animate={{ opacity: activeSlide === i ? 1 : 0 }}
                       transition={{ duration: 0.7, ease: EASE_IN_OUT_CUBIC }}
                     >
-                      <Image
-                        src={withBasePath(src)}
+                      <ResponsiveImage
+                        src={src}
                         alt=""
                         fill
                         priority={i === 0}

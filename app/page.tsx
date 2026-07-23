@@ -8,9 +8,14 @@ import { GainTrail } from "@/components/gain-trail";
 import { DottedGlobe } from "@/components/ui/dotted-globe";
 import { LampCta } from "@/components/ui/lamp";
 import { ButtonLink } from "@/components/ui/button";
+import { imagePreload } from "@/lib/images";
 import { hero, whatWeDo, gain } from "@/content/home";
 
 const offerIcons = ["globe", "graduation"] as const;
+
+// The first hero slide is the LCP; the backdrop reuses the same variant, so
+// this one preload covers both.
+const heroPreload = imagePreload(hero.slides[0], "95vw");
 
 export default function HomePage() {
   return (
@@ -29,6 +34,17 @@ export default function HomePage() {
             'history.scrollRestoration="manual";window.scrollTo(0,0);document.documentElement.classList.add("hero-js","hero-load");',
         }}
       />
+      {heroPreload && (
+        <link
+          rel="preload"
+          as="image"
+          href={heroPreload.href}
+          imageSrcSet={heroPreload.imageSrcSet}
+          imageSizes={heroPreload.imageSizes}
+          type={heroPreload.type}
+          fetchPriority="high"
+        />
+      )}
       {/* The whole page shares one warm ground, hero included: a single
           atmosphere instance spans the wrapper, so the drifting light is one
           continuous field rather than a per-section grid that restarts — and

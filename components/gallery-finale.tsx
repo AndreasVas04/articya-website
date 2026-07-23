@@ -8,7 +8,8 @@ import {
   useScroll,
   useTransform,
 } from "framer-motion";
-import { cn, withBasePath } from "@/lib/utils";
+import { ResponsiveImage } from "@/components/responsive-image";
+import { cn } from "@/lib/utils";
 
 const easeInOutCubic = cubicBezier(0.65, 0, 0.35, 1);
 
@@ -134,11 +135,11 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
         </div>
         <div className="grid grid-cols-2 gap-1 p-1 md:grid-cols-3 md:gap-2 md:p-2">
           {images.slice(0, TILES.length).map(({ src, alt }, index) => (
-            <img
+            <ResponsiveImage
               key={src}
-              src={withBasePath(src)}
+              src={src}
               alt={alt}
-              loading="lazy"
+              sizes={index === 0 ? "100vw" : "(min-width: 768px) 33vw, 50vw"}
               className={cn(
                 "h-full w-full object-cover",
                 index === 0
@@ -280,11 +281,12 @@ function FinaleTile({
           TILES[index]
         )}
       >
-        <img
-          src={withBasePath(src)}
+        <ResponsiveImage
+          src={src}
           alt={alt}
-          loading="lazy"
-          className="h-full w-full object-cover"
+          fill
+          sizes={index === 0 ? "100vw" : "(min-width: 768px) 55vw, 80vw"}
+          className="object-cover"
         />
       </div>
     </motion.div>
