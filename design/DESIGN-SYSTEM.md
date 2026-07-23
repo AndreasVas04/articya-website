@@ -552,10 +552,12 @@ fix a table.
 - Durations — three system steps: **200ms** (hover, focus, small fades),
   **400ms** (reveals, card entrances, accordion), **700ms** (hero moments,
   scroll-linked transitions, the lamp/globe lighting up). Entrance
-  choreographies compose these freely; one longer curve is sanctioned — the
+  choreographies compose these freely; two longer curves are sanctioned — the
   hero title card's frame settle at **1100ms**, the single master element of
-  the first load (its veil warm-up and dawn flash, as glows rather than
-  moving objects, may run to ~1200ms).
+  the first load (its veil warm-up, a glow rather than a moving object, may
+  run to ~1200ms), and the "What we do" globe's rise, which settles over
+  **1200ms** so its tail is the last, quietest motion of the clearing's
+  arrival.
 - Easings — exactly two: `--ease-out-quart` `cubic-bezier(0.25, 1, 0.5, 1)`
   for entrances and hovers; `--ease-in-out-cubic`
   `cubic-bezier(0.65, 0, 0.35, 1)` for continuous or scroll-linked motion.
@@ -594,29 +596,41 @@ same rule bans Tailwind translate utilities from any element a keyframe
 translates — they set the same `translate` property, and the animation
 silently overrides the utility for its whole run.
 
-**The "What we do" stage entrance** (~1.2s per scene): a `StageScene` arms
-after hydration and fires the first time it crosses into view — 14% up from
-the viewport bottom, except the globe's own scene at 30%, so the sun
-surfaces once a real share of it is on screen. The rule draws left-to-right;
-the heading rises out of a clipped line (700ms); the lead follows a 250ms
-beat later; the globe surfaces from 120px below (88px mobile) at scale 0.85
-with an 8° tilt, settling upright over 700ms while a dawn flash riding
-inside the globe's own rising layer crests to 0.9 and dies back to nothing;
-the stats rows rise as a third scene staggered 130ms apart, each counter
-writing itself in over 700ms when it enters view (server HTML always carries
-the final frozen strings). Text, globe and stats are separate scenes, so on
-a phone — where they stack a screen apart — each moment plays where the
-visitor is actually looking. Hidden states exist only between arming and
-firing, so exported HTML carries everything at rest and reduced motion never
-arms a scene at all. The flash is the only glow in the choreography and it
-is strictly transient: keyframes end at 0, resting opacity is 0, and the
-section ground is clean gold in every resting frame — the earlier always-on
-dawn bloom and sunrise ground wash are gone precisely because a glow that
-persists at rest reads as a stain, not light. Measured on the built page:
-the dawn's warmth returns to the resting baseline within 1.4s of firing, the
-resting frame is pixel-identical to the pre-entrance ground, and the worst
-rest-state pixels behind text keep `ink` ≥ 9.1 and `ink-soft` ≥ 4.88 on
-both viewports.
+**The "What we do" stage entrance** (~1.5s, one event): a single
+`StageScene` wraps the whole section — text, globe and stats ledger — arms
+after hydration, and fires once, the first time the section rises 30% above
+the viewport bottom, so a real share of the composition is on screen when
+the wave starts. From that one cue everything plays as one arrival with
+internal order, on the clock: the rule draws left-to-right (400ms) while
+the whole text column lifts from 72px below (0ms); the heading additionally
+surfaces out of its clipped line (80ms, 700ms); the globe takes the stage
+at 200ms, rising from 120px below (88px mobile) — opacity a 200ms reveal,
+the rise a long 1200ms settle, and nothing stacked on top of it: no scale,
+no tilt, no glow; the lead's own 72px rise
+follows at 250ms; and the ledger rows land last at 550/680/810ms, each
+rising 72px, each counter still writing itself in over 700ms only when it
+enters view (server HTML always carries the final frozen strings). The last
+row settles at ~1.5s. Opacity fades are 200ms against the 700ms travels —
+measured on the built page, an element is ~88% opaque with 43px of its
+journey still to run, so the movement itself is what the eye sees, not a
+fade. An earlier build gave text, globe and stats three separate observers
+(-14%/-30%/-14%); on a steady scroll they fired ~220ms apart as three
+disconnected drips, and the text scene fired with the heading at the fold's
+last 180px, so its rise played clipped and finished before it was
+comfortably visible. One trigger replaced them. Hidden states exist only
+between arming and firing, so exported HTML carries everything at rest and
+reduced motion never arms the scene at all. The globe's arrival finishes as
+its own turn: on its first −30% crossing — its own, not the section's, so on
+mobile, where the globe sits a screen below the heading, the spin plays with
+the globe on screen rather than under the fold — the canvas carries ~58°/s
+of extra rotation that bleeds off exponentially (τ ≈ 520ms) into the steady
+4°/s, so the entrance emerges out of the rotation the globe never stops
+making and settles into motion instead of stopping dead at a target. There
+is no glow in the choreography at all: the earlier dawn flash cresting behind
+the globe is gone — a glow behind a moving object is the plainest
+cheap-motion tell — and the section ground is clean gold in every resting
+frame. The worst rest-state pixels behind text keep `ink` ≥ 9.1 and
+`ink-soft` ≥ 4.88 on both viewports.
 
 ## Signature element — the single light source
 

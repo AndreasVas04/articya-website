@@ -75,26 +75,34 @@ export default function HomePage() {
               looking. Dropping it lands the heading area ~155px under the
               card block, so the entrance starts while the card is still
               leaving the viewport and the two moments overlap. */}
-          <div className="relative mx-auto max-w-6xl px-4">
-            {/* The globe is the living center of the clearing: text left, the
-                lit world right, the stats ledger reading under it — with the
-                countries column landing directly beneath the globe, since the
-                globe is that number made visible. The section takes the stage
-                on the clock, once per load, the moment it enters view: the
-                rule draws, the heading rises out of a clipped line, the lead
-                follows a beat later, and the globe surfaces from below —
-                smaller and tilted, settling upright while a warm flash crests
-                behind it and dies away. Text and globe are separate scenes,
-                so on a phone, where the globe sits a screen below the
-                heading, each moment plays where the visitor is looking. */}
+          {/* The whole clearing arrives as one event: a single scene wraps
+              the text, the globe and the stats ledger, fires once at -30% —
+              deep enough that a real share of the composition is on screen —
+              and plays a single rising wave with internal order on the
+              clock: the rule draws and the text column lifts, the heading
+              surfaces out of its clipped line a beat in, the globe takes
+              the stage from below while the flash crests behind it, and the
+              ledger rows land last, left to right. One trigger, one
+              direction, staggered beats — never three sections drip-feeding
+              their own entrances. */}
+          <StageScene
+            fireMargin="-30%"
+            className="relative mx-auto max-w-6xl px-4"
+          >
+            {/* Text left, the lit world right, the stats ledger reading
+                under it — with the countries column landing directly beneath
+                the globe, since the globe is that number made visible. */}
             <div className="relative md:grid md:grid-cols-12 md:items-start md:gap-x-12">
-              <StageScene className="md:col-span-6 md:self-center">
+              <div className="stage-lift md:col-span-6 md:self-center">
                 <span
                   aria-hidden="true"
                   className="stage-rule block h-[1.25px] w-16 bg-amber"
                 />
                 <div className="stage-mask mt-2">
-                  <h2 className="stage-mask-rise font-display text-[clamp(2rem,4vw,3rem)] font-semibold leading-[1.1] tracking-[-0.01em]">
+                  <h2
+                    className="stage-mask-rise font-display text-[clamp(2rem,4vw,3rem)] font-semibold leading-[1.1] tracking-[-0.01em]"
+                    style={{ transitionDelay: "80ms" }}
+                  >
                     {whatWeDo.title}
                   </h2>
                 </div>
@@ -106,49 +114,41 @@ export default function HomePage() {
                     {whatWeDo.lead}
                   </p>
                 </div>
-              </StageScene>
-              {/* The globe fires later than the text (-30% against -14%), so
-                  it surfaces once a real share of it is on screen rather
-                  than while its lower half is still under the fold. The
-                  flash rides inside the globe's own rising layer — dawn
-                  light traveling up with the sun, always exactly where the
-                  globe is — and dies to nothing as it settles. */}
-              <StageScene
-                fireMargin="-30%"
-                className="relative mt-8 md:col-span-6 md:mt-0 md:self-center"
-              >
+              </div>
+              {/* The globe rises with the wave, then its own rotation
+                  finishes the arrival: the sphere spins in and settles into
+                  the turn it never stops making, so the entrance belongs to
+                  the object. No glow behind it — the halo is the section's,
+                  not a flash of the entrance. */}
+              <div className="relative mt-8 md:col-span-6 md:mt-0 md:self-center">
                 <div
                   className="stage-globe relative isolate"
-                  style={{ transitionDelay: "120ms" }}
+                  style={{ transitionDelay: "200ms" }}
                 >
-                  <div
-                    aria-hidden="true"
-                    className="stage-flash absolute left-1/2 top-[40%] -z-10 aspect-square w-[110%]"
-                  />
                   <DottedGlobe className="mx-auto w-full max-w-[16rem] md:max-w-[24rem]" />
                 </div>
-              </StageScene>
+              </div>
             </div>
 
             {/* The ledger carries no rules of its own beyond the desktop
                 column dividers: horizontal lines are the one mark this page
                 never draws, so the mobile rows structure themselves on the
                 numeral/label baseline alone and the grid fades straight
-                into the gold below. The rows rise as their own staggered
-                scene, and each counter starts its 700ms count when it
+                into the gold below. The rows are the wave's last beats, and
+                each counter still starts its 700ms count only when it
                 crosses into view — the ledger writes itself. */}
-            <StageScene className="mt-8 grid md:mt-12 md:grid-cols-3 md:divide-x md:divide-hairline">
+            <div className="mt-8 grid md:mt-12 md:grid-cols-3 md:divide-x md:divide-hairline">
               {whatWeDo.stats.map((stat, i) => (
                 <div
                   key={stat.label}
                   className="stage-rise"
-                  style={{ transitionDelay: `${i * 130}ms` }}
+                  style={{ transitionDelay: `${550 + i * 130}ms` }}
                 >
                   <StatCounter num={stat.num} label={stat.label} />
                 </div>
               ))}
-            </StageScene>
-          </div>
+            </div>
+          </StageScene>
 
           {/* The first panel opens on a photograph that dissolves in over its
               own top edge, so the join already reads as a fade rather than a

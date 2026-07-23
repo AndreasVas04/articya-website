@@ -348,11 +348,23 @@ body {
 }
 .stage[data-on] .stage-rise {
   transition:
-    opacity 400ms var(--ease-out-quart),
+    opacity 200ms var(--ease-out-quart),
     translate 700ms var(--ease-out-quart);
 }
 .stage-rise {
-  --stage-rise: 64px;
+  --stage-rise: 72px;
+}
+/* The block that carries a whole column into the scene — the text column
+   lifts as one object while the heading additionally surfaces out of its
+   mask, so every line travels well past the mask's own height. */
+.stage[data-armed]:not([data-on]) .stage-lift {
+  opacity: 0;
+  translate: 0 72px;
+}
+.stage[data-on] .stage-lift {
+  transition:
+    opacity 200ms var(--ease-out-quart),
+    translate 700ms var(--ease-out-quart);
 }
 /* A clipped line the masked text rises out of. The padding gives the glyphs
    headroom at rest; only the bottom is margin-compensated, so the gap above
@@ -378,13 +390,17 @@ body {
 .stage[data-on] .stage-rule {
   transition: scale 400ms var(--ease-out-quart);
 }
-/* The globe takes the stage: surfacing from well below its resting place,
-   smaller and tilted, and settling upright at full size. */
+/* The globe rises into the clearing and does no more on top of that: the
+   tilt-and-zoom is gone. Its own turn carries the rest of the arrival — the
+   canvas spins the sphere in on entry and lets that extra speed bleed off
+   into the steady rotation the globe never stops making (see the entrance
+   spin in dotted-globe), so the entrance emerges out of the object rather
+   than sitting on it. Two things only: a fast opacity reveal so the eye
+   follows the movement rather than a fade, and a long, quiet settle on the
+   rise — the last of the clearing's beats to come to rest. */
 .stage[data-armed]:not([data-on]) .stage-globe {
   opacity: 0;
   translate: 0 120px;
-  scale: 0.85;
-  rotate: -8deg;
 }
 @media (max-width: 767px) {
   .stage[data-armed]:not([data-on]) .stage-globe {
@@ -393,45 +409,8 @@ body {
 }
 .stage[data-on] .stage-globe {
   transition:
-    opacity 400ms var(--ease-out-quart),
-    translate 700ms var(--ease-out-quart),
-    scale 700ms var(--ease-out-quart),
-    rotate 700ms var(--ease-out-quart);
-}
-/* The one glow in the choreography, and it is transient: dawn light riding
-   inside the globe's own rising layer — slightly above its center, so it
-   reads as the sky the sun surfaces into — cresting and dying back to
-   nothing as the globe settles. The keyframes end at 0 and the resting
-   opacity is 0, so the section ground is clean gold in every resting
-   frame. Never a ground for text. Centered with margins, not translate
-   utilities: Tailwind's translate utilities set the same `translate`
-   property the stage transitions use, and the two must never share an
-   element. The element is square and sized from its parent's width, so
-   -55% margins (half its 110% width) center it on both axes. */
-.stage-flash {
-  opacity: 0;
-  margin-left: -55%;
-  margin-top: -55%;
-  background: radial-gradient(
-    circle closest-side,
-    color-mix(in srgb, var(--color-amber-soft) 45%, transparent),
-    color-mix(in srgb, var(--color-amber-soft) 18%, transparent) 55%,
-    transparent 92%
-  );
-}
-.stage[data-on] .stage-flash {
-  animation: stage-flash 1200ms var(--ease-in-out-cubic) 150ms both;
-}
-@keyframes stage-flash {
-  0% {
-    opacity: 0;
-  }
-  40% {
-    opacity: 0.9;
-  }
-  100% {
-    opacity: 0;
-  }
+    opacity 200ms var(--ease-out-quart),
+    translate 1200ms var(--ease-out-quart);
 }
 /* A soft pool of late sun where a scene's print and words sit — the same
    warmth as the home page's drifting amber pools, held still. */

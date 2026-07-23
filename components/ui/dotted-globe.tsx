@@ -24,8 +24,17 @@ const TAU = 2 * Math.PI;
 
 // Entry view: Europe and the Mediterranean face the visitor, not the Pacific.
 const START_ROTATION: [number, number] = [-20, -30];
-const ROTATION_SPEED = 4; // degrees per second
+const ROTATION_SPEED = 4; // degrees per second, the steady turn
 const DOT_STEP = 1.3; // degrees between halftone dots
+
+// The entrance spin. On the globe's first arrival it carries extra angular
+// velocity that bleeds off exponentially into the steady rotation, so the
+// entrance emerges out of the turn the globe never stops making rather than
+// being an effect stacked on top of it — and it settles into motion instead
+// of stopping dead at a target. The exponential is the long, quiet tail:
+// ~58°/s at the moment of arrival, down to a whisper over roughly 1.5s.
+const ENTRANCE_BOOST = 58; // deg/sec of extra spin at the moment of arrival
+const ENTRANCE_TAU = 520; // ms decay constant
 
 // The warm heart of the globe — dots near Europe and the Mediterranean render
 // brighter and slightly larger, tying the globe to the countries the projects
@@ -237,6 +246,11 @@ export function DottedGlobe({ className }: DottedGlobeProps) {
     let rotationTimer: Timer | null = null;
     let lastElapsed = 0;
     let dragging = false;
+    // Entrance spin: `entrancePending` is armed once the globe crosses into
+    // view (below); the running timer picks it up on its next frame and
+    // records the elapsed reading it began at.
+    let entrancePending = false;
+    let entranceAt: number | null = null;
 
     const startTimer = () => {
       if (rotationTimer || reducedMotion) return;
@@ -245,13 +259,26 @@ export function DottedGlobe({ className }: DottedGlobeProps) {
         const delta = elapsed - lastElapsed;
         lastElapsed = elapsed;
         if (dragging) return;
-        rotation[0] = (rotation[0] + (delta / 1000) * ROTATION_SPEED) % 360;
+        if (entrancePending) {
+          entranceAt = elapsed;
+          entrancePending = false;
+        }
+        let speed = ROTATION_SPEED;
+        if (entranceAt !== null) {
+          const boost = ENTRANCE_BOOST * Math.exp(-(elapsed - entranceAt) / ENTRANCE_TAU);
+          if (boost < 0.05) entranceAt = null; // settled into the steady turn
+          else speed += boost;
+        }
+        rotation[0] = (rotation[0] + (delta / 1000) * speed) % 360;
         render();
       });
     };
     const stopTimer = () => {
       rotationTimer?.stop();
       rotationTimer = null;
+      // A fresh timer restarts `elapsed` from zero, so an entrance caught
+      // mid-flight can't carry its old reading across the gap.
+      entranceAt = null;
     };
 
     const intersection = new IntersectionObserver(([entry]) => {
@@ -259,6 +286,25 @@ export function DottedGlobe({ className }: DottedGlobeProps) {
       else stopTimer();
     });
     intersection.observe(wrapper);
+
+    // The spin fires the first time the globe itself is a real share into
+    // view — its own crossing, not the section's, so on mobile, where the
+    // globe sits a screen below the heading, the arrival always plays while
+    // the globe is on screen rather than completing under the fold. Once,
+    // on the clock, never under reduced motion.
+    let entranceObserver: IntersectionObserver | null = null;
+    if (!reducedMotion) {
+      entranceObserver = new IntersectionObserver(
+        ([entry]) => {
+          if (!entry.isIntersecting) return;
+          entranceObserver?.disconnect();
+          entranceObserver = null;
+          entrancePending = true;
+        },
+        { rootMargin: "0px 0px -30% 0px" }
+      );
+      entranceObserver.observe(wrapper);
+    }
 
     const resizeObserver = new ResizeObserver(() => {
       resize();
@@ -313,6 +359,7 @@ export function DottedGlobe({ className }: DottedGlobeProps) {
       disposed = true;
       stopTimer();
       intersection.disconnect();
+      entranceObserver?.disconnect();
       resizeObserver.disconnect();
       canvas.removeEventListener("pointerdown", handlePointerDown);
     };
