@@ -12,6 +12,17 @@ function isActive(pathname: string, href: string) {
   return normalize(pathname) === normalize(href);
 }
 
+// The home logo when already on home. Next does not remount a route you are
+// already on, so the hero keeps its expansion state and manual
+// scrollRestoration leaves the scroll where it is — the click reads as dead.
+// Reset to the fresh-load view instead: scroll to the top (instant, so it
+// never fights the hero's own scroll pin) and fire the event the hero resets
+// on. preventDefault drops the no-op navigation, adding no history entry, so
+// back/forward keep pointing where the visitor actually came from. The logo
+// stays a link; focus rests on it, which is where a returning visitor expects
+// to be.
+const HOME_RESET_EVENT = "home:reset";
+
 // Chrome, not content: one gold bar on every page, matched by the footer —
 // both carry `gold-chrome`, the anchor gold lifted toward paper so the two
 // flat bars stay soft where the sections stay rich. The amber hairline on its
@@ -68,7 +79,17 @@ export function SiteHeader() {
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b-[1.25px] border-amber/50 bg-gold-chrome">
       <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 md:h-20">
-        <Link href="/" className="flex shrink-0 items-center gap-2.5">
+        <Link
+          href="/"
+          onClick={(event) => {
+            if (!isActive(pathname, "/")) return;
+            event.preventDefault();
+            setOpen(false);
+            window.scrollTo(0, 0);
+            window.dispatchEvent(new Event(HOME_RESET_EVENT));
+          }}
+          className="flex shrink-0 items-center gap-2.5"
+        >
           <Image
             src={withBasePath(nav.logo.src)}
             alt={nav.logo.alt}

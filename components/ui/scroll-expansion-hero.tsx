@@ -157,6 +157,23 @@ const ScrollExpandMedia = ({
     };
   }, [scrollProgress, mediaFullyExpanded, touchStartY, reducedMotion]);
 
+  // Clicking the logo while already on home fires this instead of navigating
+  // (Next would not remount the route, so the state below would persist). It
+  // returns the hero to its collapsed opening — the same view a fresh load
+  // shows. The header has already scrolled to the top; the collapsed state
+  // then re-pins scroll there via the handler above. Under reduced motion the
+  // resting state keeps the hero expanded regardless, matching a fresh load.
+  useEffect(() => {
+    const reset = () => {
+      setScrollProgress(0);
+      setMediaFullyExpanded(false);
+      setShowContent(false);
+      setActiveSlide(0);
+    };
+    window.addEventListener("home:reset", reset);
+    return () => window.removeEventListener("home:reset", reset);
+  }, []);
+
   useEffect(() => {
     const checkIfMobile = () => setIsMobile(window.innerWidth < 768);
     checkIfMobile();
