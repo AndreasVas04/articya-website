@@ -26,11 +26,8 @@ const icons: Record<string, React.ReactNode> = {
 // bracket every page with one mark.
 export function SiteFooter() {
   return (
-    <footer className="border-t-[1.25px] border-amber/50 bg-gold-chrome py-12 md:py-16">
-      <div className="mx-auto flex max-w-5xl flex-col items-center gap-7 px-4">
-        {/* The site's signature accent mark, closing the page as the section
-            rules open each block above it. */}
-        <span aria-hidden="true" className="block h-[1.25px] w-16 bg-amber" />
+    <footer className="border-t-[1.25px] border-amber/50 bg-gold-chrome py-8">
+      <div className="mx-auto flex max-w-5xl flex-col items-center gap-5 px-4">
         <div className="flex gap-4">
           {footer.social.map((s) => (
             <a
