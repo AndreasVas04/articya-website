@@ -171,7 +171,12 @@ export function DottedGlobe({ className }: DottedGlobeProps) {
     const resize = () => {
       size = wrapper.clientWidth;
       if (size === 0) return;
-      const dpr = window.devicePixelRatio || 1;
+      // The globe is a field of sub-pixel dots, so backing resolution above 2×
+      // buys nothing the eye can see — but a phone's 3× device ratio triples
+      // the pixels this canvas re-fills on every rotation frame. Capping at 2×
+      // is an invisible change that cuts that per-frame fill by ~55% on a
+      // phone, where the CPU can least afford it.
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
       canvas.width = size * dpr;
       canvas.height = size * dpr;
       context.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -312,56 +317,138 @@ export function DottedGlobe({ className }: DottedGlobeProps) {
     });
     resizeObserver.observe(wrapper);
 
-    // Drag-to-rotate is desktop-pointer only. Touch is left completely
-    // alone so the globe never traps vertical scrolling on mobile.
-    const handlePointerDown = (event: PointerEvent) => {
-      if (event.pointerType !== "mouse") return;
-      dragging = true;
-      const startX = event.clientX;
-      const startY = event.clientY;
-      const startRotation: [number, number] = [...rotation];
+    // Drag-to-rotate, for mouse and touch alike. The globe never traps
+    // vertical scrolling: the canvas carries `touch-action: pan-y`, so the
+    // browser keeps the page's vertical scroll for itself and only hands us
+    // the horizontal axis. A mostly-vertical finger scrolls the page (and the
+    // browser cancels our pointer); a mostly-horizontal one turns the globe.
+    // We claim a touch gesture only once it has declared itself horizontal, so
+    // pointer capture never swallows a scroll that was about to begin. Mouse
+    // has no scroll to protect, so it locks on press and keeps its vertical
+    // tilt; touch turns on the horizontal axis alone.
+    let pointerId: number | null = null;
+    let startX = 0;
+    let startY = 0;
+    const startRotation: [number, number] = [0, 0];
+    // "none" until a touch gesture declares its axis; "drag" turns the globe,
+    // "scroll" bows out and lets the page move.
+    let axis: "none" | "drag" | "scroll" = "none";
 
-      const handlePointerMove = (move: PointerEvent) => {
-        rotation[0] = startRotation[0] + (move.clientX - startX) * 0.25;
-        rotation[1] = Math.max(
-          -90,
-          Math.min(90, startRotation[1] - (move.clientY - startY) * 0.25)
-        );
-        render();
-      };
-      const handlePointerUp = () => {
-        window.removeEventListener("pointermove", handlePointerMove);
-        window.removeEventListener("pointerup", handlePointerUp);
-        dragging = false;
-      };
-      window.addEventListener("pointermove", handlePointerMove);
-      window.addEventListener("pointerup", handlePointerUp);
+    const handlePointerDown = (event: PointerEvent) => {
+      if (!event.isPrimary || pointerId !== null) return;
+      pointerId = event.pointerId;
+      startX = event.clientX;
+      startY = event.clientY;
+      startRotation[0] = rotation[0];
+      startRotation[1] = rotation[1];
+      if (event.pointerType === "mouse") {
+        axis = "drag";
+        dragging = true;
+        canvas.setPointerCapture(pointerId);
+      } else {
+        axis = "none";
+      }
     };
+
+    const handlePointerMove = (event: PointerEvent) => {
+      if (event.pointerId !== pointerId) return;
+      const dx = event.clientX - startX;
+      const dy = event.clientY - startY;
+
+      if (axis === "none") {
+        // Wait for a definite direction before committing the gesture.
+        if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
+        if (Math.abs(dx) > Math.abs(dy)) {
+          axis = "drag";
+          dragging = true;
+          canvas.setPointerCapture(pointerId);
+        } else {
+          axis = "scroll";
+          pointerId = null; // release it back to the page
+          return;
+        }
+      }
+      if (axis !== "drag") return;
+
+      rotation[0] = startRotation[0] + dx * 0.25;
+      if (event.pointerType === "mouse") {
+        rotation[1] = Math.max(-90, Math.min(90, startRotation[1] - dy * 0.25));
+      }
+      render();
+    };
+
+    const endPointer = (event: PointerEvent) => {
+      if (event.pointerId !== pointerId) return;
+      if (canvas.hasPointerCapture(pointerId)) {
+        canvas.releasePointerCapture(pointerId);
+      }
+      pointerId = null;
+      axis = "none";
+      dragging = false;
+    };
+
     canvas.addEventListener("pointerdown", handlePointerDown);
+    canvas.addEventListener("pointermove", handlePointerMove);
+    canvas.addEventListener("pointerup", endPointer);
+    canvas.addEventListener("pointercancel", endPointer);
 
     resize();
     render();
 
-    fetch(withBasePath("/data/ne_110m_land.json"))
-      .then((response) => (response.ok ? response.json() : null))
-      .then((data: FeatureCollection | null) => {
-        if (disposed || !data) return;
-        land = data;
-        dots = generateDots(data);
-        render();
-        setLit(true);
-      })
-      // A globe that fails to load leaves the ground as it was; the section
-      // reads fine without it.
-      .catch(() => {});
+    // The land outline is ~66KB (brotli) for a decorative globe that sits a
+    // screen below the fold, so it stays off the hero's critical path: it's
+    // fetched once the browser goes idle after first paint, or the moment the
+    // globe nears the viewport, whichever comes first — ready before it's
+    // scrolled to, never contending with the hero's LCP images.
+    let landRequested = false;
+    const loadLand = () => {
+      if (landRequested || disposed) return;
+      landRequested = true;
+      fetch(withBasePath("/data/ne_110m_land.json"))
+        .then((response) => (response.ok ? response.json() : null))
+        .then((data: FeatureCollection | null) => {
+          if (disposed || !data) return;
+          land = data;
+          dots = generateDots(data);
+          render();
+          setLit(true);
+        })
+        // A globe that fails to load leaves the ground as it was; the section
+        // reads fine without it.
+        .catch(() => {});
+    };
+
+    const preloadObserver = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        preloadObserver.disconnect();
+        loadLand();
+      },
+      { rootMargin: "0px 0px 150% 0px" }
+    );
+    preloadObserver.observe(wrapper);
+
+    const idleWindow = window as typeof window & {
+      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+      cancelIdleCallback?: (handle: number) => void;
+    };
+    const idleHandle = idleWindow.requestIdleCallback
+      ? idleWindow.requestIdleCallback(loadLand, { timeout: 3000 })
+      : window.setTimeout(loadLand, 1500);
 
     return () => {
       disposed = true;
       stopTimer();
       intersection.disconnect();
       entranceObserver?.disconnect();
+      preloadObserver.disconnect();
+      if (idleWindow.cancelIdleCallback) idleWindow.cancelIdleCallback(idleHandle);
+      else window.clearTimeout(idleHandle);
       resizeObserver.disconnect();
       canvas.removeEventListener("pointerdown", handlePointerDown);
+      canvas.removeEventListener("pointermove", handlePointerMove);
+      canvas.removeEventListener("pointerup", endPointer);
+      canvas.removeEventListener("pointercancel", endPointer);
     };
   }, []);
 
@@ -370,7 +457,10 @@ export function DottedGlobe({ className }: DottedGlobeProps) {
       <canvas
         ref={canvasRef}
         className={cn(
-          "absolute inset-0 h-full w-full transition-opacity duration-[700ms] ease-out-quart",
+          // touch-pan-y: the browser keeps vertical scroll, we take the
+          // horizontal axis for drag-to-turn. cursor-grab so the drag reads
+          // as an affordance on a pointer device.
+          "absolute inset-0 h-full w-full cursor-grab touch-pan-y transition-opacity duration-[700ms] ease-out-quart",
           lit ? "opacity-100" : "opacity-0"
         )}
       />
