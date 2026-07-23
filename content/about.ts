@@ -12,9 +12,10 @@ export const hero = {
 
 export const background = "/images/AboutBack.jpg";
 
-// The five body paragraphs staged as scroll scenes, in original order. Each
-// scene's groups join with single spaces to reproduce the source paragraphs
-// exactly (guarded by scripts/verify-text-parity.mjs).
+// The body paragraphs staged as scroll scenes, in original order, regrouped
+// into three fuller scenes. Each scene's groups join with single spaces to
+// reproduce the source paragraphs exactly, so the visible text is unchanged
+// (guarded by scripts/verify-text-parity.mjs).
 export const story = [
   {
     groups: [
@@ -30,15 +31,6 @@ export const story = [
     groups: [
       "Rooted in the values of creativity, inclusion and social responsibility,",
       "ArtiCYa focuses particularly on the arts as a powerful tool for dialogue, self-expression and intercultural understanding.",
-    ],
-    image: {
-      src: "/images/hero-3.jpg",
-      alt: "Participants talking on mossy rocks in the forest",
-      wide: true,
-    },
-  },
-  {
-    groups: [
       "The organization is deeply committed to social inclusion, working to empower individuals from diverse backgrounds",
       "and to create safe, open and respectful spaces for participation and learning.",
     ],
@@ -51,14 +43,6 @@ export const story = [
     groups: [
       "ArtiCYa places special emphasis on the promotion of equality and human rights,",
       "actively supporting LGBTQ+ individuals and advocating for diversity, acceptance and mutual respect within local and international communities.",
-    ],
-    image: {
-      src: "/images/home-youth.jpg",
-      alt: "Hands joined by a rope web during a group exercise",
-    },
-  },
-  {
-    groups: [
       "Furthermore, the organization strongly supports and promotes volunteering as a means of personal development, active citizenship and positive social impact.",
     ],
     image: {
