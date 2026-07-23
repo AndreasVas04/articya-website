@@ -1,14 +1,15 @@
-import type { Metadata } from "next";
 import { Backpack, Compass, Send, ShieldCheck } from "lucide-react";
 import { PageHero } from "@/components/page-hero";
 import { Reveal } from "@/components/reveal";
+import { pageMetadata } from "@/lib/metadata";
 import { meta, hero, arrow, sections } from "@/content/faq";
 import { cn } from "@/lib/utils";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: meta.title,
   description: meta.description,
-};
+  path: "/faq/",
+});
 
 // One icon per question group, in section order.
 const sectionIcons = [Compass, ShieldCheck, Backpack, Send];

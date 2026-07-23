@@ -138,6 +138,7 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
               key={src}
               src={withBasePath(src)}
               alt={alt}
+              loading="lazy"
               className={cn(
                 "h-full w-full object-cover",
                 index === 0
@@ -282,6 +283,7 @@ function FinaleTile({
         <img
           src={withBasePath(src)}
           alt={alt}
+          loading="lazy"
           className="h-full w-full object-cover"
         />
       </div>

@@ -1,13 +1,14 @@
-import type { Metadata } from "next";
 import { Mail } from "lucide-react";
 import { PageHero } from "@/components/page-hero";
 import { Reveal } from "@/components/reveal";
+import { pageMetadata } from "@/lib/metadata";
 import { meta, hero, details } from "@/content/contact";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: meta.title,
   description: meta.description,
-};
+  path: "/contact/",
+});
 
 // Brand marks matching the footer's set; lucide dropped its brand icons.
 const instagramIcon = (

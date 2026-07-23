@@ -3,6 +3,7 @@ import { Bricolage_Grotesque, Instrument_Sans } from "next/font/google";
 import "./globals.css";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { pageMetadata, siteUrl } from "@/lib/metadata";
 import { meta } from "@/content/home";
 
 const bricolage = Bricolage_Grotesque({
@@ -16,14 +17,8 @@ const instrumentSans = Instrument_Sans({
 });
 
 export const metadata: Metadata = {
-  title: meta.title,
-  description: meta.description,
-  openGraph: {
-    title: meta.title,
-    description: meta.description,
-    type: "website",
-    locale: "en_US",
-  },
+  metadataBase: new URL(siteUrl),
+  ...pageMetadata({ title: meta.title, description: meta.description, path: "/" }),
 };
 
 export default function RootLayout({
