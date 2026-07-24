@@ -50,6 +50,7 @@
      gradient through grey. */
   --color-gold-anchor-0: rgb(233 217 180 / 0);
   --color-gold-chrome-0: rgb(239 228 203 / 0);
+  --color-gold-wash-0: rgb(237 226 200 / 0);
   --color-amber-fill: #ce9440;
   --color-amber-lit: #d8a254;
   --color-amber-edge: #b87a28;
@@ -219,6 +220,26 @@ body {
       color-mix(in srgb, var(--color-gold-anchor) 55%, transparent),
       color-mix(in srgb, var(--color-gold-wash) 66%, transparent)
     );
+}
+/* The home hero's local lift — the intro's ground once the card is open. The
+   statement sits inside the photograph now, low in the frame, so a soft-edged
+   gold rise carries the dark ink over it: near-solid `gold-wash` at the card's
+   base, fading to nothing well above the words so the rest of the picture
+   stays at full strength. Every stop is `gold-wash` at a falling alpha, ending
+   on the zero-alpha token rather than `transparent`, so the ramp never pulls
+   through grey. This is the lamp CTA's local lightening applied to a
+   photograph, not a veil over the whole frame — the offer panels' reading wash
+   is the same idea, and clears 4.5:1 the same way, measured on the composite
+   over every slide. */
+.hero-photo-lift {
+  background: linear-gradient(
+    to top,
+    var(--color-gold-wash) 0%,
+    color-mix(in srgb, var(--color-gold-wash) 92%, transparent) 22%,
+    color-mix(in srgb, var(--color-gold-wash) 68%, transparent) 46%,
+    color-mix(in srgb, var(--color-gold-wash) 30%, transparent) 70%,
+    var(--color-gold-wash-0) 100%
+  );
 }
 /* Fades the hero's backdrop photograph in below the header for the same
    reason: it too starts at the section's top, hidden behind the bar, and

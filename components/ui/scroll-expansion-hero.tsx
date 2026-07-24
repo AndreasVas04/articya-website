@@ -8,7 +8,6 @@ import {
   type ReactNode,
 } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { LivingAtmosphere } from "@/components/living-atmosphere";
 import { ResinEmbers } from "@/components/resin-embers";
 import { ResponsiveImage } from "@/components/responsive-image";
 import { cn } from "@/lib/utils";
@@ -219,11 +218,12 @@ const ScrollExpandMedia = ({
   const textTranslateX = progress * (isMobile ? 180 : 150);
 
   // The headline reads as ink, so the frame carries a cream wash while the
-  // two can overlap: held at 0.75 through progress < 0.35, then eased down
-  // to 0.22 — by full expansion the headline has slid away and the content
-  // band carries the text, so the photo can show through.
+  // two can overlap: held at 0.75 through progress < 0.35, then eased down to
+  // a thin 0.15 — by full expansion the headline has slid away and the intro
+  // sits low in the photograph over its own local lift, so the rest of the
+  // frame keeps the picture at near-full strength rather than under a veil.
   const overlayOpacity =
-    progress < 0.35 ? 0.75 : Math.max(0.22, 0.75 - (progress - 0.35) * 0.82);
+    progress < 0.35 ? 0.75 : Math.max(0.15, 0.75 - (progress - 0.35) * 1.0);
 
   const firstWord = title ? title.split(" ")[0] : "";
   const restOfTitle = title ? title.split(" ").slice(1).join(" ") : "";
@@ -471,9 +471,9 @@ const ScrollExpandMedia = ({
             )}
 
             {/* The payoff of the expansion: once the frame is full, the intro
-                rises inside a band anchored to its bottom edge. A second
-                overlay with the frame's geometry keeps the intro after the
-                headline in document order. Children opt into the stagger via
+                rises low inside the photograph itself. A second overlay with
+                the frame's geometry keeps the intro after the headline in
+                document order. Children opt into the stagger via
                 group-data-[expanded] classes. */}
             <div
               className="pointer-events-none absolute left-1/2 top-1/2 z-10 isolate -translate-x-1/2 -translate-y-1/2 overflow-hidden"
@@ -484,6 +484,19 @@ const ScrollExpandMedia = ({
                 maxHeight: "85vh",
               }}
             >
+              {/* The local lift. The statement now sits inside the photograph
+                  rather than on a gold band cut out beneath it, so the ground
+                  behind the words is the image. A soft-edged gold rise carries
+                  the dark ink over it — near-solid at the card's base, fading
+                  to nothing well above the text, so the rest of the frame
+                  stays at full photographic strength. This is the lamp CTA's
+                  technique, applied to a photograph: a local lightening, not a
+                  veil over the whole picture. It fades in with the intro. */}
+              <div
+                aria-hidden="true"
+                data-expanded={!mounted || contentVisible ? "" : undefined}
+                className="hero-intro hero-photo-lift pointer-events-none absolute inset-x-0 bottom-0 h-[56%] rounded-[inherit] rounded-t-none opacity-0 duration-[400ms] ease-out-quart data-[expanded]:opacity-100 data-[expanded]:transition-opacity"
+              />
               <div
                 data-expanded={!mounted || contentVisible ? "" : undefined}
                 className={cn(
@@ -496,24 +509,13 @@ const ScrollExpandMedia = ({
                   mounted && !contentVisible && "pointer-events-none"
                 )}
               >
-                {/* The statement stands in the page's own warm field rather
-                    than on a cream panel cut out of it. The field is painted
-                    here rather than shown through: what sits behind this band
-                    is the photograph's lower half, not the ground, so a
-                    transparent band would reveal forest, not light. Same
-                    component as the page ground, so both sides of the frame
-                    edge drift on one light. The card's fill is the chrome's
-                    `gold-anchor`, the same value the header and footer carry,
-                    so the gold that opens the page is the gold that closes
-                    it — and the three read as one surface, not three shades. */}
-                <LivingAtmosphere className="rounded-[inherit] bg-gold-anchor" />
-                {/* The pocket of light the statement rests in. Kept smaller
-                    than the band and centered on the words: a glow that spans
-                    the full height stops reading as depth and starts reading
-                    as an amber gradient with the band's own edges. */}
+                {/* The pocket of warm light the statement rests in — a soft
+                    amber pool centered on the words, riding over the lift so
+                    the region reads as sun gathering low in the frame rather
+                    than as a panel edge. */}
                 <div
                   aria-hidden="true"
-                  className="pointer-events-none absolute left-1/2 top-[45%] h-[80%] w-[58%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-amber-soft/18 blur-[100px]"
+                  className="pointer-events-none absolute left-1/2 top-[42%] h-[85%] w-[62%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-amber-soft/16 blur-[100px]"
                 />
                 <div className="relative flex flex-col items-center">
                   {children}
