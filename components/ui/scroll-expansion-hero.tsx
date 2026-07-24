@@ -371,11 +371,18 @@ const ScrollExpandMedia = ({
                   />
                 ) : (
                   slides.map((src, i) => (
+                    // Each slide crosses in by uncovering rather than a plain
+                    // fade: the incoming frame eases from slightly in (scale
+                    // 1.05 → 1) as it rises to full opacity, so the change
+                    // reads as one photograph settling forward into the next.
                     <motion.div
                       key={src}
-                      className="absolute inset-0 rounded-[inherit]"
+                      className="absolute inset-0 origin-center rounded-[inherit]"
                       initial={false}
-                      animate={{ opacity: activeSlide === i ? 1 : 0 }}
+                      animate={{
+                        opacity: activeSlide === i ? 1 : 0,
+                        scale: activeSlide === i ? 1 : 1.05,
+                      }}
                       transition={{ duration: 0.7, ease: EASE_IN_OUT_CUBIC }}
                     >
                       <ResponsiveImage

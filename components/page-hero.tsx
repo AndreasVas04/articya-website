@@ -44,14 +44,19 @@ export function PageHero({ image, heading, text }: PageHeroProps) {
           mobile (on top) and sits on the right on desktop, passing under the
           fixed header the way the home hero's photograph does. */}
       <div className="page-hero-photo relative h-[44vh] w-full overflow-hidden md:col-span-7 md:col-start-6 md:h-auto">
-        <ResponsiveImage
-          src={image}
-          alt=""
-          fill
-          priority
-          sizes={HERO_SIZES}
-          className="object-cover object-center"
-        />
+        {/* A slow scale-from-in on load, so the frame arrives by settling into
+            place rather than snapping on — full opacity from the first frame,
+            so the LCP paint is not held back. */}
+        <div className="page-hero-photo-rise absolute inset-0">
+          <ResponsiveImage
+            src={image}
+            alt=""
+            fill
+            priority
+            sizes={HERO_SIZES}
+            className="object-cover object-center"
+          />
+        </div>
         {/* Whisper grain, the same texture the offer panels and story prints
             carry — a photographic surface, not a wash over it. */}
         <div aria-hidden="true" className="film-grain pointer-events-none absolute inset-0 mix-blend-multiply" />

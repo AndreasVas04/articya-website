@@ -116,6 +116,37 @@ body {
     color-mix(in srgb, var(--color-gold-wash) 55%, transparent)
   );
 }
+/* Inner-page hero photograph — a slow scale-from-in on load, so the frame
+   arrives by settling rather than snapping on. The parent clips the overscan,
+   so the picture eases from 6% in to flush; opacity is untouched, so the LCP
+   paint is never held back. Under reduced motion the global reduce block
+   collapses the duration and the frame rests flush. The gentle continuous
+   breath keeps the largest still image on the page alive while it is read —
+   scale only, compositor-cheap, and it too stops under reduced motion. */
+.page-hero-photo-rise {
+  animation:
+    page-hero-photo-in 1100ms var(--ease-out-quart) both,
+    page-hero-photo-breathe 26s var(--ease-in-out-cubic) 1100ms infinite alternate;
+  transform-origin: 50% 42%;
+}
+@keyframes page-hero-photo-in {
+  from {
+    scale: 1.06;
+  }
+}
+@keyframes page-hero-photo-breathe {
+  from {
+    scale: 1;
+  }
+  to {
+    scale: 1.045;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .page-hero-photo-rise {
+    animation: none;
+  }
+}
 /* Dissolves a full-bleed photographic frame into the ground at its top and
    bottom edges. It masks rather than painting cream over the photo: the
    ground here is the living atmosphere, so a flat repaint lands a shade
