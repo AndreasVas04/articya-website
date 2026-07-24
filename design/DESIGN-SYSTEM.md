@@ -26,7 +26,7 @@ gradients — the only gradients are atmosphere (see Atmospheric grounds).
 
 | Token | Hex | Role |
 |---|---|---|
-| `pine-950` | `#22301C` | Dark ground (the whole home page, inner-page heroes); text on light |
+| `pine-950` | `#22301C` | Dark ground (dark sections); text on light |
 | `pine-900` | `#2D4024` | Soft raised surfaces/cards on dark; secondary text on light |
 | `pine-800` | `#3E5433` | Muted surfaces, borders, hairlines and hover fills on dark |
 | `lichen` | `#566350` | Green mid tone: section labels, icon strokes, captions on light |
@@ -426,9 +426,10 @@ fix a table.
   size. Measured on the built page, the worst block on the site is 70 and the
   FAQ answers — once the worst offenders at 76–83 — run 59–70. The tracks that
   deliver it: no 16px block sits in more than **552px**, and the inner-page
-  hero ledes sit in `max-w-[38.75rem]` (620px), which lands all three on two
-  lines with the longest rendered at 66 characters (Contact, desktop) — a
-  count read off the built page, not inferred from the 620px value.
+  hero ledes now sit beside their photograph in `max-w-[34rem]` (544px),
+  which lands the longest rendered line at 55 characters (Contact, desktop —
+  three lines there, four at 390) — a count read off the built page, not
+  inferred from the track width.
 - **The hero title is the one container expressed in `ch`, at `16ch`.**
   Everywhere else the reading type holds a fixed size and its track is px; the
   title is the exception because its display size is clamped
@@ -531,12 +532,21 @@ fix a table.
     cream. Depth inside the gold comes from the living atmosphere's amber
     pools, full-bleed photography and the resin light, never from switching
     ground.
-  - **Inner pages** (about, faq, contact) are text-heavy and
-    keep `plaster` as the default background below their heroes; no dark
-    section may appear there outside the hero. The hero itself is the bridge
-    to the home world: the same pine-dusk photograph treatment (`pine-950`
-    wash) with the resin halo behind the headline, so navigating home → an
-    inner page reads as the same forest at a different hour.
+  - **Inner pages** (about, faq, contact) are text-heavy and keep `plaster`
+    as the default background below their heroes; no dark section may appear
+    there outside the hero. The hero is a **two-part split**, not a centred
+    block over a treated photograph: the photograph runs to the edge at full
+    strength with **no veil**, and the type sits **beside** it on clean gold.
+    On desktop the type is left (about 42%) and the photograph right; at 390
+    the two stack with the **photograph leading on top** and the type on gold
+    below. Photography is the lead material, so the visitor meets the picture
+    first — edge to edge, under the chrome — and reads the paragraph on the
+    ground most comfortable for it. This supersedes the earlier reading where
+    the hero was a gold/`pine-950` wash over the whole photograph with the
+    headline centred on top; that veil existed only to keep dark ink readable
+    over the picture, and moving the type off the picture retired it. **Do not
+    restore a centred block or a full-frame hero veil, and do not lead with
+    the type on mobile.**
   - **Header and footer** are one `gold-chrome` surface site-wide, solid on every
     page and never transparent over a hero — so navigation reads the same
     everywhere. The first and last sections fade to this same gold, so chrome
@@ -714,13 +724,15 @@ pulls the words up into the pool rather than leaving them to be found below
 it. The gold stays continuous across the shortened section: worst adjacent
 row delta **3** at both viewports, top edge landing on `gold-anchor` exactly.
 
-And on the inner pages, exactly one placement:
+The inner pages no longer carry a placement of their own. Their heroes were
+rebuilt to lead with the photograph at full strength on a gold ground, with
+the headline **beside** it on clean gold rather than over a dusk photograph —
+so there is no halo to place, and there are no glows on light grounds, ever.
+The one warm mark behind an inner headline is a `gold-chrome` pool: a cream
+lift that settles the ground, not resin light.
 
-6. **Inner-page hero** — the halo behind the hero headline, the lamp meeting
-   the visitor at every page's dusk threshold before daylight.
-
-One thread, one hue, one temperature. Nowhere else — below their heroes the
-inner pages are light grounds, and there are no glows on light grounds, ever.
+So the thread is now the home page's alone — one hue, one temperature, from
+the hero lamp to the closing line, and nowhere else.
 
 ## Atmospheric grounds
 
@@ -732,10 +744,10 @@ section. Nothing else may put a gradient or texture on a ground:
 
 | Class | What it is | Where it may sit |
 |---|---|---|
-| `.dusk-light` | Top-down wash of `pine-900` fading out — the sky a shade lighter than the ground it settles into | Top of dark sections and inner-page heroes |
+| `.dusk-light` | Top-down wash of `pine-900` fading out — the sky a shade lighter than the ground it settles into | Top of dark sections |
 | `.dusk-ambient` | Centered radial pocket of `pine-900` | Behind content on long dark stretches |
 | `.lamp-falloff` | The seam lamp given direction: a warm whisper directly under the halo inside a wider `pine-800` light dome, shading the ground from lit to deep | Astride the home hero seam only — mirrored above it inside the hero, falling away below it, so the two grounds meet with no edge |
-| `.dusk-scrim` | Graded photo wash — most open where the lamp halo sits, near-solid pine at the edges and base of the frame | Inner-page hero photographs |
+| `.hero-photo-lift` | Soft-edged `gold-wash` rising from the card's base to nothing above the words — a **local** lightening, not a full-frame veil | Behind the home hero intro only, so dark ink reads low inside the photograph while the rest of the frame stays at full strength (4.5 floor; **5.9–7.3** measured on the composite, every slide) |
 | `.photo-vignette` | Edges falling toward `pine-950` | Inside photographic frames and hero photos only |
 | `.film-grain` | Fine tiled SVG grain at 5% opacity, killing the flat digital-paint feel | Over dark grounds and photographic frames |
 | `.gold-field` | Top and bottom edges at `gold-anchor`, falling to it at zero alpha toward the middle where the `gold-wash` floor takes over | Every home section, and every full-bleed offer panel — it is what makes the seams continuous |
@@ -813,6 +825,20 @@ composite at the top state, worst case over the whole text box: headline
 **10.77** and hint pill **10.00**, identical on both viewports — the contrast
 the old backdrop spent on legibility comes back when the photograph steps
 behind the gold.
+
+**The expanded card carries its intro inside the photograph.** Once the card
+opens, the lede and the Contact Us button sit **low in the frame over the
+photograph itself**, not on a gold band beneath it — the old band read as a
+card stuck under a picture. A local `.hero-photo-lift` carries the dark ink:
+near-solid `gold-wash` at the card's base, fading to nothing above the words.
+It is the same local-lightening technique the lamp CTA uses, applied to a
+photograph rather than the dark ground — a **lift, not a veil**, so the rest
+of the frame stays at full photographic strength (the residual expansion wash
+was eased back to match). Ink text throughout, on every slide. The anchor is
+low because all three slides keep their subject in the upper frame, so the
+lift never has to touch it. Measured on the rendered composite, worst case
+over the whole text box, every slide, both viewports: **5.9–7.3** — clear of
+the **4.5** floor, checked on each of the three slideshow frames.
 
 Rules, in order of precedence:
 
