@@ -152,9 +152,11 @@ The mobile nav panel carries the same hairline on **its** lower edge. The open
 the bar's own line; giving the panel the line instead means the chrome closes
 on the signature wherever the menu happens to end, open or shut.
 
-On the inner pages the line lands against the pine-dusk hero rather than gold,
-where it reads as a warm rule marking the threshold between chrome and the dark
-— the same mark doing the same job on a darker ground.
+On the inner pages the line lands against the full-bleed hero photograph rather
+than gold, where it reads as a warm rule marking the threshold between chrome
+and the picture — the same mark doing the same job over a photographic ground.
+(The hero also carries the same amber hairline on its own lower edge, the
+signed threshold where the photograph ends and the body begins.)
 
 **Decorative amber lines are thin.** Amber's structural role on the home page
 is the short accent mark: heading bars, the offer panels' card accents, the
@@ -426,10 +428,9 @@ fix a table.
   size. Measured on the built page, the worst block on the site is 70 and the
   FAQ answers — once the worst offenders at 76–83 — run 59–70. The tracks that
   deliver it: no 16px block sits in more than **552px**, and the inner-page
-  hero ledes now sit beside their photograph in `max-w-[34rem]` (544px),
-  which lands the longest rendered line at 55 characters (Contact, desktop —
-  three lines there, four at 390) — a count read off the built page, not
-  inferred from the track width.
+  hero ledes are centred over the photograph in `max-w-[38.75rem]` (620px),
+  which lands the longest rendered line inside the 70 a prose block gets — a
+  count read off the built page, not inferred from the track width.
 - **The hero title is the one container expressed in `ch`, at `16ch`.**
   Everywhere else the reading type holds a fixed size and its track is px; the
   title is the exception because its display size is clamped
@@ -534,19 +535,20 @@ fix a table.
     ground.
   - **Inner pages** (about, faq, contact) are text-heavy and keep `plaster`
     as the default background below their heroes; no dark section may appear
-    there outside the hero. The hero is a **two-part split**, not a centred
-    block over a treated photograph: the photograph runs to the edge at full
-    strength with **no veil**, and the type sits **beside** it on clean gold.
-    On desktop the type is left (about 42%) and the photograph right; at 390
-    the two stack with the **photograph leading on top** and the type on gold
-    below. Photography is the lead material, so the visitor meets the picture
-    first — edge to edge, under the chrome — and reads the paragraph on the
-    ground most comfortable for it. This supersedes the earlier reading where
-    the hero was a gold/`pine-950` wash over the whole photograph with the
-    headline centred on top; that veil existed only to keep dark ink readable
-    over the picture, and moving the type off the picture retired it. **Do not
-    restore a centred block or a full-frame hero veil, and do not lead with
-    the type on mobile.**
+    there outside the hero. The hero is the **photograph full-bleed with the
+    type centred over it** — heading, lede and accent rule vertically centred,
+    the picture running edge to edge under the chrome. What carries the dark
+    ink is **not** a full-frame veil: the old flat scrim at ~85–90% across the
+    whole frame is what made the photographs read as ghosts and is retired. In
+    its place a **local, vertically-graded `gold-wash` lift** sits only behind
+    the words — the same technique as `.hero-sky-lift` and `.hero-photo-lift`,
+    centred rather than edge-anchored — strong where the type falls and gone by
+    the sides, so the left, right, top and bottom of every frame stay pure
+    photograph. The lift is the *lowest* that clears the contrast floors (see
+    below), the remaining margin spent on the picture. This supersedes an
+    interim "two-part split" (type beside the photograph on gold), which read
+    as taking too much space; and it is not the old veil it looks like — the
+    lift is local and graded, not a wash over the picture.
   - **Header and footer** are one `gold-chrome` surface site-wide, solid on every
     page and never transparent over a hero — so navigation reads the same
     everywhere. The first and last sections fade to this same gold, so chrome
@@ -724,12 +726,12 @@ pulls the words up into the pool rather than leaving them to be found below
 it. The gold stays continuous across the shortened section: worst adjacent
 row delta **3** at both viewports, top edge landing on `gold-anchor` exactly.
 
-The inner pages no longer carry a placement of their own. Their heroes were
-rebuilt to lead with the photograph at full strength on a gold ground, with
-the headline **beside** it on clean gold rather than over a dusk photograph —
-so there is no halo to place, and there are no glows on light grounds, ever.
-The one warm mark behind an inner headline is a `gold-chrome` pool: a cream
-lift that settles the ground, not resin light.
+The inner pages no longer carry a placement of their own. Their heroes lead
+with the photograph at full strength and set the headline **centred over it**,
+carried by a local `gold-wash` lift rather than a dusk wash or a halo — so
+there is no glow to place, and there are no glows on light grounds, ever. The
+one warm thing behind an inner headline is that lift: a cream lightening that
+settles the ground the words sit on, not resin light.
 
 So the thread is now the home page's alone — one hue, one temperature, from
 the hero lamp to the closing line, and nowhere else.
@@ -747,14 +749,15 @@ section. Nothing else may put a gradient or texture on a ground:
 | `.dusk-light` | Top-down wash of `pine-900` fading out — the sky a shade lighter than the ground it settles into | Top of dark sections |
 | `.dusk-ambient` | Centered radial pocket of `pine-900` | Behind content on long dark stretches |
 | `.lamp-falloff` | The seam lamp given direction: a warm whisper directly under the halo inside a wider `pine-800` light dome, shading the ground from lit to deep | Astride the home hero seam only — mirrored above it inside the hero, falling away below it, so the two grounds meet with no edge |
-| `.hero-photo-lift` | Soft-edged `gold-wash` rising from the card's base to nothing above the words — a **local** lightening, not a full-frame veil | Behind the home hero intro only, so dark ink reads low inside the photograph while the rest of the frame stays at full strength (4.5 floor; **5.9–7.3** measured on the composite, every slide) |
+| `.hero-photo-lift` | Soft-edged `gold-wash` rising from the card's base to nothing above the words — a **local** lightening, not a full-frame veil. The model for every lift on the site (`.hero-sky-lift`, the inner-page hero lift): strong where the words fall, gone by the edges, ending on the zero-alpha gold so the ramp never pulls through grey | Behind the home hero intro only, so dark ink reads low inside the photograph while the rest of the frame stays at full strength (4.5 floor; **5.9–7.3** measured on the composite, every slide) |
+| `.hero-sky-lift` | The poster opening's version: a top-anchored `gold-wash` fall, held across the headline band and easing into the sky by mid-frame | Behind the home collapsed headline, over the full-strength `home-hero.jpg` vista — carries the dark headline while the mountains and lake below stay at full strength (headline is large type, see the floors below; **5.6/6.0** measured) |
+| Inner-page hero lift | A **vertically graded** `gold-wash` pool: lighter across the large heading (3.0 floor), full behind the body-size lede (4.5 floor), masked to a central ellipse so the sides stay pure photograph. Two profiles, split by `md`, because the lede sits at a different height on the two viewports | Behind the centred type on the About/FAQ/Contact heroes only — the local lift that replaced the old full-frame scrim (measured: heading **3.7–3.9**, lede **4.6–4.75**) |
 | `.photo-vignette` | Edges falling toward `pine-950` | Inside photographic frames and hero photos only |
 | `.film-grain` | Fine tiled SVG grain at 5% opacity, killing the flat digital-paint feel | Over dark grounds and photographic frames |
 | `.gold-field` | Top and bottom edges at `gold-anchor`, falling to it at zero alpha toward the middle where the `gold-wash` floor takes over | Every home section, and every full-bleed offer panel — it is what makes the seams continuous |
 | `.gold-field-chrome-top` / `-bottom` | The same field with that one edge ending on `gold-chrome` instead, and — on the top variant — held flat for the header's height before the ramp starts | The hero (top) and the closing section (bottom) only: the two edges that meet a chrome bar rather than another section |
 | `.gold-field-open-top` | The same field with its top edge painting nothing at all | A section or panel whose top opens onto its own section's floor rather than onto another field edge — the first offer panel only |
-| `.hero-glass-veil` | Warm pool over a gentle `gold-anchor` → `gold-wash` fall, every stop translucent | Over the home hero's backdrop photograph, inside the same fading layer — it is what makes the glass read gold |
-| Hero headline pool | Soft `gold-wash` ellipse at 25%, heavily blurred, inside the hero backdrop layer | Behind the home hero headline only, settling the patch the headline overhangs |
+| Hero title pool | Soft `gold-wash` ellipse at ~26%, heavily blurred, inside the poster's lift layer | Behind the home collapsed headline only, concentrating a little more light where the words sit (`.hero-glass-veil` and the old 25% pool are retired) |
 | `.hero-backdrop-fade` | Top-down mask over a hero backdrop layer, held at 32% at the header's own height and full 170px later | The home hero's backdrop photograph, so it does not appear all at once along the fixed header's lower edge — while still reading as a photograph from the hero's first visible row |
 | `.plaster-light` | Soft pool of `plaster-bright` | Behind the About scenes and the finale mosaic |
 | `.print-shadow` | Soft `pine-950` drop shadow | Under framed prints on plaster; the raised state of interactive cards (open accordion, hovered contact card) |
@@ -771,60 +774,58 @@ line so the glow zone keeps its measured contrast. Always our own outdoor
 photography from `/public/images` — never stock textures, generic forest
 wallpaper, or leaf patterns.
 
-**The home hero's backdrop is golden glass, and the gold leads.** It sits
-back inside the envelope — **18% opacity at a 28px blur, saturated 1.2** —
-and the warmth is painted rather than borrowed: `.hero-glass-veil` lays a
-warm pool over a gentle fall from `gold-anchor` to `gold-wash` on top of the
-photograph, inside the same layer, so the first screen reads as a luminous
-frosted-gold pane with a hint of life behind it. The photograph is a faint
-organic texture under that veil, not a legible image.
+**The home hero's backdrop is the poster vista, and the sky lift carries the
+headline.** The collapsed opening is a full-strength graded photograph —
+`home-hero.jpg`, the Gerês reservoir vista from the same shoot as the card
+slides — read as the *place* the page opens on, not a texture. It is the
+first slide too, so the poster cross-dissolves into the gallery as the card
+grows rather than being swapped for it.
 
-This replaces an earlier reading (40% at a 20px blur) that chased the
-opposite goal — shapes recognizable, the hillsides legible as themselves. It
-worked on its own terms and was the wrong subject: at 40% the pane read as a
-photograph with a tint over it, and the gold stopped being what the page
-opens on. Both halves of the trade have to move together, and neither alone
-lands the read — dropping the photograph without the veil leaves the field
-flat and empty, exactly the failure the 40% version was reacting to. Measured
-on the built page, the surviving texture is **1.9–2.1 mean row-sd** of
-horizontal luminance variation in the open backdrop: present to the eye as
-mottling, far short of a picture. Saturation stays above 1 so the little that
-shows keeps its warmth instead of going to a flat gray.
+Dark ink cannot sit over the centre of this photograph, and this was measured
+before it was built: the frame's middle is the dark ridge and pine, and even
+the graded sky is a *saturated medium blue*, not a gold field — a centred
+headline there needs a **40–64%** gold pool poured onto the exact patch the
+eye lands on first, which is the wash-out the page exists to undo. So the
+headline is anchored **high**, over the sky, where the frame is calmest and
+lightest — chosen by measuring the frame, not by eye — and it is carried by
+`.hero-sky-lift`: a top-anchored `gold-wash` fall, held across the headline
+band and easing into the sky by mid-frame, so the words clear their floor
+while the vista below keeps the photograph at full strength. Edge-anchored
+from the top, it reads as morning light gathering in the sky, never a panel.
+A thinned title pool (`gold-wash`, ~26%, heavily blurred) concentrates a
+little more light on exactly where the words sit. Measured on the rendered
+composite, worst case at glyph cores: headline **5.6** (desktop) / **6.0**
+(mobile), both clear.
 
-The veil is translucent at every stop, so the living atmosphere still drifts
-through it and the ground is never sealed under a flat wash — the failure
-that made an opaque cream wash unusable here. It rides inside the backdrop
-layer, so it inherits `.hero-backdrop-fade` under the header and fades out
-with the photograph as the card expands. Measured at the header seam on the
-built page: **5** (desktop) / **4** (mobile) maximum channel jump below the
-chrome hairline, inside the seam budget.
+The headline hands off to the expanded state by **fading and settling up on
+the scroll clock**, not by splitting apart — the old 180vw slide whipped the
+two lines off inside a single flick and read as an instant vanish on a phone.
 
-**What the gold ground will and will not give back.** The greens can read as
-*vegetation* here; they cannot read as *forest green*. The ground under this
-layer is `gold-wash`, whose channels run R>G>B by roughly 37, and any
-photograph composited over it at glass-level opacity inherits that bias: the
-composite lands as a darker, cooler gold rather than as green. Swapping in
-the page's most saturated forest photograph moved nothing — it only made the
-blur read as mottled khaki. Under the veil the point is settled rather than
-argued: every backdrop sample across both viewports is warm-leaning (green
-excess **+7.0 to +9.0**), by design. Green above the fold on this page comes
-from the token roles that carry it — the pine marks, the sage strokes — and
-from the card photograph itself, never from the backdrop.
+This supersedes the earlier golden-glass reading, where the backdrop was the
+photograph sunk to **18% under a warm `.hero-glass-veil`** so the first screen
+read as a frosted-gold pane and the picture as a faint texture. That treatment
+kept the gold leading at the cost of the photograph, which never read as a
+place; the poster keeps both — the gold leads in the sky band, the place leads
+below it. `.hero-glass-veil` and the 25% headline pool it describes are
+retired.
 
-The headline keeps a pool of its own, thinned to match: `We are ArtiCYa` is
-wider than the collapsed card, so the outer end of the second line lands on
-open backdrop rather than on the card. With the photograph now far back
-behind the veil the pool has little left to lift, so it runs at **25%**
-rather than 60% — enough to settle the darkest patch the words overhang, not
-enough to read as a lighter patch against the gold. It sits inside the
-backdrop rather than behind the words on purpose: the card is painted after
-it, so the pool only ever touches the ground the headline overhangs, and it
-fades out on the backdrop's own opacity as the card expands and the headline
-slides away — no second piece of scroll logic. Measured on the rendered
-composite at the top state, worst case over the whole text box: headline
-**10.77** and hint pill **10.00**, identical on both viewports — the contrast
-the old backdrop spent on legibility comes back when the photograph steps
-behind the gold.
+**Large-text and body-text floors govern the lifts.** Every lift is tuned to
+the *lowest* strength that clears the AA floor of the text it carries, and the
+floor depends on the size of that text. A hero heading is large display type
+(clamp to 4.5rem, 600 weight, always ≥ the 24px / 18.66px-bold large-text
+threshold) and answers to **3.0:1**; a lede or body line answers to
+**4.5:1**. Where a lift carries both — the inner-page heroes — it is **graded
+vertically**: lighter across the heading rows (3.0), full behind the lede rows
+(4.5), so the photograph reads strongest under the largest, most present
+element and the small print still holds its floor. Neither line is landed on
+its floor exactly: the heading is kept **comfortably above 3.0** (measured
+3.7–3.9) because it falls on busy photographic detail rather than a flat
+field, and the eye is the final judge — if a heading starts to fight the
+picture, the lift on that page comes up regardless of the meter. The home
+collapsed headline is large type on the same principle; its `.hero-sky-lift`
+is presently tuned to the 4.5 reading (measured 5.6/6.0), so it has room to
+lighten toward the 3.0 floor and let the vista read stronger — a change to
+weigh, not yet made.
 
 **The expanded card carries its intro inside the photograph.** Once the card
 opens, the lede and the Contact Us button sit **low in the frame over the
