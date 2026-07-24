@@ -13,7 +13,6 @@ export const hero = {
 };
 
 export const whatWeDo = {
-  background: "/images/HomeBack.jpg",
   title: "What we do",
   lead: "We work with young people in Cyprus and across Europe through Erasmus+ projects that bring people together to learn, share experiences and participate actively.",
   stats: [

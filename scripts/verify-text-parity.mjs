@@ -1,5 +1,7 @@
-// Compares the visible text of the original static HTML pages against the
-// exported Next.js pages, character for character. Run after `next build`.
+// Compares the visible text of the original static pages against the exported
+// Next.js pages, character for character. Run after `next build`. The
+// originals are kept as frozen snapshots in scripts/parity/ — the reference
+// this check exists to guard against content drift.
 
 import { readFileSync } from "node:fs";
 import path from "node:path";
@@ -13,15 +15,14 @@ const root = process.cwd();
 // content file are gone, the "Opportunities" nav item is dropped on every
 // page, and the home closing CTA swaps from "Explore Opportunities"
 // (→ /opportunities/) to the existing frozen string "Contact Us"
-// (→ /contact/), as already used on the home hero. The legacy
-// opportunities.html stays in the repo as part of the still-deployed legacy
-// site; it just has no exported counterpart to compare. See
-// normalizeRemovedOpportunities below for the original-side normalization.
+// (→ /contact/), as already used on the home hero. The snapshots below still
+// carry the original "Opportunities" nav item, so it is normalized away on
+// the original side — see normalizeRemovedOpportunities.
 const pages = [
-  { name: "home", original: "index.html", exported: "out/index.html" },
-  { name: "about", original: "about.html", exported: "out/about/index.html" },
-  { name: "contact", original: "contact.html", exported: "out/contact/index.html" },
-  { name: "faq", original: "faq.html", exported: "out/faq/index.html" },
+  { name: "home", original: "scripts/parity/home.html", exported: "out/index.html" },
+  { name: "about", original: "scripts/parity/about.html", exported: "out/about/index.html" },
+  { name: "contact", original: "scripts/parity/contact.html", exported: "out/contact/index.html" },
+  { name: "faq", original: "scripts/parity/faq.html", exported: "out/faq/index.html" },
 ];
 
 const namedEntities = {

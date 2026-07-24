@@ -23,10 +23,11 @@ articya-website/
 ├── lib/                  # Utilities (cn, withBasePath)
 ├── public/images/        # Site images
 └── scripts/
-    └── verify-text-parity.mjs
+    ├── verify-text-parity.mjs
+    └── parity/           # Frozen HTML snapshots the parity check compares against
 ```
 
-All visible text lives in `/content` as typed constants; pages render only from those. The legacy static pages (`*.html`, `css/`, `images/`) are kept in place while the current GitHub Pages deployment still serves them.
+All visible text lives in `/content` as typed constants; pages render only from those. The original HTML pages are retained as frozen snapshots in `scripts/parity/`, used solely by the text-parity check to guard against content drift.
 
 ## Development
 ```bash
@@ -54,7 +55,7 @@ Both output to `out/`.
 
 ### Text parity check
 
-Verifies that the visible text of the exported pages matches the legacy HTML pages character for character:
+Verifies that the visible text of the exported pages matches the original HTML snapshots (`scripts/parity/`) character for character:
 
 ```bash
 npm run verify:text

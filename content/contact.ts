@@ -10,8 +10,6 @@ export const hero = {
   text: "If you are interested in Erasmus+ opportunities, collaboration, or have any questions, feel free to get in touch with us.",
 };
 
-export const background = "/images/ContactBack.jpg";
-
 export const details = {
   heading: "Get in touch",
   email: { label: "Email:", value: "articya4youth@gmail.com" },

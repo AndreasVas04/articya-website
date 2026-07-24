@@ -20,8 +20,6 @@ export const hero = {
   text: "Here you can find answers to the most common questions about Erasmus+ opportunities and participation with ArtiCYa.",
 };
 
-export const background = "/images/FAQBack.jpg";
-
 export const arrow = "▼";
 
 export const sections: FaqSection[] = [

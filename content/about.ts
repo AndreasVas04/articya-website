@@ -10,8 +10,6 @@ export const hero = {
   text: "A Cyprus-based organization committed to non-formal education, creativity, and social inclusion through Erasmus+ programmes.",
 };
 
-export const background = "/images/AboutBack.jpg";
-
 // The body paragraphs staged as scroll scenes, in original order, regrouped
 // into three fuller scenes. Each scene's groups join with single spaces to
 // reproduce the source paragraphs exactly, so the visible text is unchanged
