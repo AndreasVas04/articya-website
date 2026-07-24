@@ -125,13 +125,13 @@ body {
    scale only, compositor-cheap, and it too stops under reduced motion. */
 .page-hero-photo-rise {
   animation:
-    page-hero-photo-in 1100ms var(--ease-out-quart) both,
-    page-hero-photo-breathe 26s var(--ease-in-out-cubic) 1100ms infinite alternate;
+    page-hero-photo-in 1600ms var(--ease-out-quart) both,
+    page-hero-photo-breathe 26s var(--ease-in-out-cubic) 1600ms infinite alternate;
   transform-origin: 50% 42%;
 }
 @keyframes page-hero-photo-in {
   from {
-    scale: 1.06;
+    scale: 1.07;
   }
 }
 @keyframes page-hero-photo-breathe {

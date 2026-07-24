@@ -8,26 +8,69 @@ interface PageHeroProps {
   text: string;
 }
 
-// The photograph carries about 55% of the frame on desktop and the full
-// width on mobile, so it downloads at those two widths.
-const HERO_SIZES = "(min-width: 768px) 58vw, 100vw";
+const HERO_SIZES = "100vw";
 
-// Inner pages open the same way home does: photography leads. The type sits
-// beside the photograph on clean gold rather than on top of it, and the
-// photograph runs to the edge at full strength with no veil — the veil the
-// old centred layout needed to keep dark ink readable is gone, so three
-// heroes that used to show a ghost now show the picture.
+// The inner pages open the way they originally did: the photograph full-bleed
+// and the type centred over it. What is gone is the old flat scrim — a wash at
+// ~85–90% across the whole frame, which is why the photographs read as ghosts.
+// In its place the dark ink is carried the way the home opening now carries it:
+// a local, soft-edged gold lift sits only behind the words, strongest where
+// they fall and fading to nothing outward, so the rest of the frame keeps the
+// picture at full strength. Same technique as `.hero-sky-lift` and
+// `.hero-photo-lift`, centred rather than edge-anchored.
 //
-// The two parts stack at 390 with the photograph on top: this pass makes the
-// photograph the lead material, so the visitor meets it first — edge to edge,
-// under the chrome — and the type then sits on clean gold below it, where a
-// paragraph is most comfortable to read.
+// The lift is graded vertically, because the two lines answer to two different
+// contrast floors. The heading is large display type (72/44px, 600) — WCAG and
+// this project's own table put its floor at 3.0:1, not 4.5 — so behind the
+// heading the gold eases back and lets the photograph read strongest under the
+// largest, most present element. The lede is body-size (20px), so it holds the
+// 4.5 floor. Neither sits on 3.0: the heading is landed comfortably above it
+// because it falls on busy photographic detail, not a flat field.
+//
+// Values are the lowest that clear those floors at glyph cores on the rendered
+// composite, both viewports — the remaining margin spent on the picture. The
+// three photographs converge (each has near-black detail — hair, dark wood,
+// corkboard shadow — under the centred type, and the worst glyph pixel
+// governs), so the per-page differences are small; Contact's bright wall still
+// takes nearly the most, because object-center crops onto the dark-haired
+// group. See the report for the measured numbers.
+const LIFT: Record<string, { heading: number; lede: number }> = {
+  "About.jpg": { heading: 0.6, lede: 0.68 },
+  "FAQ.jpg": { heading: 0.6, lede: 0.68 },
+  "Contact.jpg": { heading: 0.6, lede: 0.67 },
+};
+
+// The lift, in two parts. A vertical `gold-wash` profile carries the grade —
+// weaker across the heading rows, stronger across the lede rows, easing to the
+// zero-alpha gold above and below so the ramp never pulls through grey. A mask
+// localises it horizontally: a wide ellipse holds the longest heading and
+// fades the sides to nothing, so the left and right of every frame stay pure
+// photograph. (rem, not %, so the plateau is one width on both viewports —
+// full-bleed on a phone, centred on a desktop.)
+//
+// The heading→lede boundary is at a different height on the two viewports: on a
+// phone the lede is three or four lines and climbs to just under the heading,
+// so the strong band has to start high; on a desktop the lede sits well below a
+// one- or two-line heading, so the weak band can run the whole heading down.
+// One boundary cannot serve both, so the two profiles are split by `md`, and
+// the desktop heading gets the fuller benefit its clean separation earns.
+function liftBackground(aH: number, aL: number, hEnd: number, lStart: number) {
+  const gw = (v: number) =>
+    `color-mix(in srgb, var(--color-gold-wash) ${(v * 100).toFixed(1)}%, transparent)`;
+  const z = "var(--color-gold-wash-0)";
+  return `linear-gradient(to bottom, ${z} 0%, ${z} 20%, ${gw(aH)} 30%, ${gw(aH)} ${hEnd}%, ${gw(aL)} ${lStart}%, ${gw(aL)} 85%, ${z} 93%, ${z} 100%)`;
+}
+const LIFT_MASK =
+  "radial-gradient(ellipse 48rem 96% at 50% 57%, #000 60%, transparent 100%)";
+
 export function PageHero({ image, heading, text }: PageHeroProps) {
-  // This photograph is the page's LCP, so it is preloaded (the preload
-  // scanner cannot see it inside the component) and never lazy-loaded.
+  // This photograph is the page's LCP, so it is preloaded (the preload scanner
+  // cannot see it inside the component) and never lazy-loaded.
   const preload = imagePreload(image, HERO_SIZES);
+  const file = image.split("/").pop() ?? "";
+  const lift = LIFT[file] ?? { heading: 0.6, lede: 0.68 };
   return (
-    <section className="gold-field gold-field-chrome-top gold-floor relative overflow-hidden md:grid md:min-h-[70vh] md:grid-cols-12">
+    <section className="relative overflow-hidden bg-gold-wash">
       {preload && (
         <link
           rel="preload"
@@ -40,54 +83,73 @@ export function PageHero({ image, heading, text }: PageHeroProps) {
         />
       )}
 
-      {/* The photograph — full strength, no veil, to the edge. It leads on
-          mobile (on top) and sits on the right on desktop, passing under the
-          fixed header the way the home hero's photograph does. */}
-      <div className="page-hero-photo relative h-[44vh] w-full overflow-hidden md:col-span-7 md:col-start-6 md:h-auto">
-        {/* A slow scale-from-in on load, so the frame arrives by settling into
-            place rather than snapping on — full opacity from the first frame,
-            so the LCP paint is not held back. */}
-        <div className="page-hero-photo-rise absolute inset-0">
-          <ResponsiveImage
-            src={image}
-            alt=""
-            fill
-            priority
-            sizes={HERO_SIZES}
-            className="object-cover object-center"
-          />
-        </div>
-        {/* Whisper grain, the same texture the offer panels and story prints
-            carry — a photographic surface, not a wash over it. */}
-        <div aria-hidden="true" className="film-grain pointer-events-none absolute inset-0 mix-blend-multiply" />
-      </div>
-
-      {/* The type — on clean gold, vertically centred beside the photograph. */}
-      <div className="relative flex flex-col justify-center px-6 py-14 md:col-span-5 md:col-start-1 md:row-start-1 md:px-12 md:py-24 lg:px-16">
-        {/* A soft pool of the chrome's own gold behind the headline — a cream
-            lift that settles the ground the words sit on, not a glow: there
-            are no glows on light grounds. */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute left-1/2 top-1/2 h-72 w-[42rem] max-w-[120%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold-chrome/60 blur-[110px]"
+      {/* The photograph — full-bleed, to the edge, at full strength. It settles
+          in on load with a slow scale-from-in and then breathes, both scale
+          only so the LCP paint is never held back (see .page-hero-photo-rise).
+          It passes under the fixed header the way the home hero's does. */}
+      <div className="page-hero-photo-rise absolute inset-0">
+        <ResponsiveImage
+          src={image}
+          alt=""
+          fill
+          priority
+          sizes={HERO_SIZES}
+          className="object-cover object-center"
         />
-        <Reveal className="relative">
-          <span aria-hidden="true" className="block h-[1.25px] w-16 bg-amber" />
-          {/* 16ch of the display face, so the constraint travels with the
+      </div>
+      {/* Whisper grain — the same photographic surface the offer panels and
+          story prints carry, not a wash over the picture. */}
+      <div
+        aria-hidden="true"
+        className="film-grain pointer-events-none absolute inset-0 mix-blend-multiply"
+      />
+      {/* The local lift — the only thing between the photograph and the words.
+          It is not a frame veil: it grades vertically (lighter over the large
+          heading, full behind the body-size lede) and is gone by the sides.
+          Two profiles, split by `md`, because the lede sits at a different
+          height on the two viewports. Strength is per-photograph (see LIFT). */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 md:hidden"
+        style={{
+          background: liftBackground(lift.heading, lift.lede, 46, 52),
+          WebkitMaskImage: LIFT_MASK,
+          maskImage: LIFT_MASK,
+        }}
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 hidden md:block"
+        style={{
+          background: liftBackground(lift.heading, lift.lede, 58, 63),
+          WebkitMaskImage: LIFT_MASK,
+          maskImage: LIFT_MASK,
+        }}
+      />
+
+      {/* The centred type — heading and lede over the photograph, on the lift.
+          The block rises a little above true centre on the padding alone, the
+          way the original opened. */}
+      <div className="relative mx-auto flex min-h-[55vh] max-w-6xl flex-col items-center justify-center px-4 pb-16 pt-28 text-center md:min-h-[54vh] md:pb-20 md:pt-36">
+        <Reveal>
+          <span aria-hidden="true" className="mx-auto block h-[1.25px] w-16 bg-amber" />
+          {/* 16ch of the display face, so the two-line break travels with the
               clamped size across viewports. */}
-          <h1 className="mt-5 max-w-[16ch] text-balance font-display text-[clamp(2.75rem,6vw,4.5rem)] font-semibold leading-[1.05] tracking-[-0.02em] text-ink">
+          <h1 className="mx-auto mt-4 max-w-[16ch] text-balance font-display text-[clamp(2.75rem,6vw,4.5rem)] font-semibold leading-[1.05] tracking-[-0.02em] text-ink">
             {heading}
           </h1>
-          <p className="mt-6 max-w-[34rem] text-pretty text-xl leading-[1.55] text-ink">
+          <p className="mx-auto mt-6 max-w-[38.75rem] text-pretty text-xl leading-[1.55] text-ink">
             {text}
           </p>
         </Reveal>
       </div>
 
       {/* The signed threshold between the hero and the body below — the same
-          amber hairline the chrome carries, marking where the photograph ends
-          and the page proper begins. */}
-      <div aria-hidden="true" className="absolute inset-x-0 bottom-0 z-10 h-px bg-amber/50" />
+          amber hairline the chrome carries. */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-x-0 bottom-0 z-10 h-px bg-amber/50"
+      />
     </section>
   );
 }
