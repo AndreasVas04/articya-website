@@ -112,6 +112,17 @@ function warmTier(x: number, y: number, z: number): number {
   return Math.ceil(((WARM_FADE - arc) / (WARM_FADE - WARM_FULL)) * WARM_TIERS);
 }
 
+// The land dot field is ~12k points, each found by a point-in-polygon test —
+// ~600ms on a fast desktop and several seconds on a throttled phone. Run on
+// the main thread it lands as one long synchronous task that freezes the
+// hero's opening animation a screen above (the globe's data loads eagerly, a
+// screen ahead of being scrolled to). So the field is precomputed at rest and
+// shipped as `/data/globe-dots.json` — a flat `[lng, lat, tier, …]` array
+// derived from the same land data and the constants above by
+// `scripts/globe-dots.mjs`. At load we only rebuild each dot's unit vector
+// (a handful of cheap trig calls, no polygon tests), which is fast enough not
+// to block. `generateDots` remains the fallback for the rare case the
+// precomputed file is missing.
 function generateDots(land: FeatureCollection): DotData[] {
   const dots: DotData[] = [];
   for (const feature of land.features as LandFeature[]) {
@@ -123,6 +134,19 @@ function generateDots(land: FeatureCollection): DotData[] {
         dots.push({ lng, lat, x, y, z, tier: warmTier(x, y, z) });
       }
     }
+  }
+  return dots;
+}
+
+// Rebuild the dot field from the precomputed flat array: only the unit vector
+// is recomputed here, which is cheap, so no polygon work touches the client.
+function hydrateDots(flat: number[]): DotData[] {
+  const dots: DotData[] = [];
+  for (let i = 0; i + 2 < flat.length; i += 3) {
+    const lng = flat[i];
+    const lat = flat[i + 1];
+    const [x, y, z] = toVector(lng, lat);
+    dots.push({ lng, lat, x, y, z, tier: flat[i + 2] });
   }
   return dots;
 }
@@ -250,7 +274,15 @@ export function DottedGlobe({ className }: DottedGlobeProps) {
     // is off-screen, never started under reduced motion.
     let rotationTimer: Timer | null = null;
     let lastElapsed = 0;
+    let lastRenderElapsed = 0;
     let dragging = false;
+    // Redrawing the ~12k-dot field is the globe's per-frame cost, so the
+    // steady 4°/s turn is rendered at ~30fps: at that speed the eye cannot
+    // tell 30 from 60fps, and halving the redraws frees the main thread while
+    // the globe is on screen (it otherwise drops scroll frames as the section
+    // passes). The entrance spin is fast, so it keeps every frame; a drag
+    // renders directly and is unaffected.
+    const RENDER_INTERVAL = 1000 / 30;
     // Entrance spin: `entrancePending` is armed once the globe crosses into
     // view (below); the running timer picks it up on its next frame and
     // records the elapsed reading it began at.
@@ -269,13 +301,21 @@ export function DottedGlobe({ className }: DottedGlobeProps) {
           entrancePending = false;
         }
         let speed = ROTATION_SPEED;
+        let entranceActive = false;
         if (entranceAt !== null) {
           const boost = ENTRANCE_BOOST * Math.exp(-(elapsed - entranceAt) / ENTRANCE_TAU);
           if (boost < 0.05) entranceAt = null; // settled into the steady turn
-          else speed += boost;
+          else {
+            speed += boost;
+            entranceActive = true;
+          }
         }
         rotation[0] = (rotation[0] + (delta / 1000) * speed) % 360;
-        render();
+        // Full rate through the entrance spin; ~30fps once it settles.
+        if (entranceActive || elapsed - lastRenderElapsed >= RENDER_INTERVAL) {
+          lastRenderElapsed = elapsed;
+          render();
+        }
       });
     };
     const stopTimer = () => {
@@ -401,15 +441,23 @@ export function DottedGlobe({ className }: DottedGlobeProps) {
     // globe nears the viewport, whichever comes first — ready before it's
     // scrolled to, never contending with the hero's LCP images.
     let landRequested = false;
+    const fetchJson = <T,>(path: string): Promise<T | null> =>
+      fetch(withBasePath(path))
+        .then((response) => (response.ok ? response.json() : null))
+        .catch(() => null);
     const loadLand = () => {
       if (landRequested || disposed) return;
       landRequested = true;
-      fetch(withBasePath("/data/ne_110m_land.json"))
-        .then((response) => (response.ok ? response.json() : null))
-        .then((data: FeatureCollection | null) => {
+      // Land geometry (for the outline stroke) and the precomputed dot field
+      // load together; neither is on the hero's critical path.
+      Promise.all([
+        fetchJson<FeatureCollection>("/data/ne_110m_land.json"),
+        fetchJson<number[]>("/data/globe-dots.json"),
+      ])
+        .then(([data, flat]) => {
           if (disposed || !data) return;
           land = data;
-          dots = generateDots(data);
+          dots = flat ? hydrateDots(flat) : generateDots(data);
           render();
           setLit(true);
         })

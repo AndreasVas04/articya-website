@@ -8,6 +8,7 @@
     "build:pages": "npm run images && GITHUB_PAGES=true next build && node scripts/postexport.mjs",
     "images": "node scripts/responsive-images.mjs",
     "grade:photos": "node scripts/grade-photos.mjs",
+    "globe:dots": "node scripts/globe-dots.mjs",
     "verify:text": "node scripts/verify-text-parity.mjs"
   },
   "dependencies": {
