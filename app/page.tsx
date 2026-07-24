@@ -116,7 +116,7 @@ export default function HomePage() {
                 />
                 <div className="stage-mask mt-2">
                   <h2
-                    className="stage-mask-rise font-display text-[clamp(2rem,4vw,3rem)] font-semibold leading-[1.1] tracking-[-0.01em]"
+                    className="stage-mask-rise font-display text-[1.75rem] font-semibold leading-[1.1] tracking-[-0.01em] md:text-[clamp(2rem,4vw,3rem)]"
                     style={{ transitionDelay: "80ms" }}
                   >
                     {whatWeDo.title}
@@ -126,7 +126,7 @@ export default function HomePage() {
                   className="stage-rise"
                   style={{ transitionDelay: "250ms" }}
                 >
-                  <p className="mt-5 border-l border-hairline pl-5 text-xl leading-[1.55] text-ink-soft md:mt-8">
+                  <p className="mt-2 border-l border-hairline pl-5 text-[1.0625rem] leading-[1.5] text-ink-soft md:mt-8 md:text-xl md:leading-[1.55]">
                     {whatWeDo.lead}
                   </p>
                 </div>
@@ -136,12 +136,12 @@ export default function HomePage() {
                   the turn it never stops making, so the entrance belongs to
                   the object. No glow behind it — the halo is the section's,
                   not a flash of the entrance. */}
-              <div className="relative mt-6 md:col-span-6 md:mt-0 md:self-center">
+              <div className="relative mt-2 md:col-span-6 md:mt-0 md:self-center">
                 <div
                   className="stage-globe relative isolate"
                   style={{ transitionDelay: "200ms" }}
                 >
-                  <DottedGlobe className="mx-auto w-full max-w-[13rem] md:max-w-[24rem]" />
+                  <DottedGlobe className="mx-auto w-full max-w-[16rem] md:max-w-[24rem]" />
                 </div>
               </div>
             </div>
@@ -153,7 +153,7 @@ export default function HomePage() {
                 into the gold below. The rows are the wave's last beats, and
                 each counter still starts its 700ms count only when it
                 crosses into view — the ledger writes itself. */}
-            <div className="mt-6 grid md:mt-12 md:grid-cols-3 md:divide-x md:divide-hairline">
+            <div className="mt-2 grid md:mt-12 md:grid-cols-3 md:divide-x md:divide-hairline">
               {whatWeDo.stats.map((stat, i) => (
                 <div
                   key={stat.label}

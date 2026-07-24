@@ -55,7 +55,7 @@ export function StatCounter({ num, label }: StatCounterProps) {
   return (
     <div
       ref={ref}
-      className="relative flex items-baseline justify-between gap-4 px-1 py-4 md:block md:px-4 md:py-8 md:text-center"
+      className="relative flex items-baseline justify-between gap-4 px-1 py-2 md:block md:px-4 md:py-8 md:text-center"
     >
       <div className="font-display text-[2.75rem] font-semibold leading-none text-ink md:text-[clamp(3.25rem,8vw,6.5rem)]">
         {display}
