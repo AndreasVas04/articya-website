@@ -5,7 +5,12 @@ export const meta = {
 };
 
 export const hero = {
-  slides: ["/images/hero-1.jpg", "/images/hero-2.jpg", "/images/hero-3.jpg"],
+  slides: [
+    "/images/home-hero.jpg",
+    "/images/hero-1.jpg",
+    "/images/hero-2.jpg",
+    "/images/hero-3.jpg",
+  ],
   location: "ArtiCYa · Cyprus",
   heading: "We are ArtiCYa",
   text: "A youth organization connecting young people in Cyprus with Erasmus+ opportunities, meaningful learning and real impact.",

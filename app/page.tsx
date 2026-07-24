@@ -101,14 +101,19 @@ export default function HomePage() {
               ledger rows land last, left to right. One trigger, one
               direction, staggered beats — never three sections drip-feeding
               their own entrances. */}
+          {/* Desktop breathes into the frame it has: above xl the composition
+              widens past the 72rem column and the globe and type take the width
+              they were sitting inside of, so the section stops floating in the
+              middle of a 1440 frame. Capped against the viewport so it never
+              crowds the edges on a 1280 laptop. Mobile and md are untouched. */}
           <StageScene
             fireMargin="-30%"
-            className="relative mx-auto max-w-6xl px-4"
+            className="relative mx-auto max-w-6xl px-4 xl:max-w-[min(84rem,92vw)]"
           >
             {/* Text left, the lit world right, the stats ledger reading
                 under it — with the countries column landing directly beneath
                 the globe, since the globe is that number made visible. */}
-            <div className="relative md:grid md:grid-cols-12 md:items-start md:gap-x-12">
+            <div className="relative md:grid md:grid-cols-12 md:items-start md:gap-x-12 xl:gap-x-20">
               <div className="stage-lift md:col-span-6 md:self-center">
                 <span
                   aria-hidden="true"
@@ -141,7 +146,7 @@ export default function HomePage() {
                   className="stage-globe relative isolate"
                   style={{ transitionDelay: "200ms" }}
                 >
-                  <DottedGlobe className="mx-auto w-full max-w-[16rem] md:max-w-[24rem]" />
+                  <DottedGlobe className="mx-auto w-full max-w-[16rem] md:max-w-[24rem] xl:max-w-[30rem]" />
                 </div>
               </div>
             </div>

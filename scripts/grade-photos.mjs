@@ -40,7 +40,7 @@ const DEST = path.join(ROOT, "public/images");
 // one preset on everything: each grade defines a base look plus per-group
 // corrections that pull every group onto that same look.
 const GROUPS = {
-  trail: ["hero-1.jpg", "AboutImage2.jpg"], // open midday, cool cast, big blue sky
+  trail: ["hero-1.jpg", "AboutImage2.jpg", "home-hero.jpg"], // open midday, cool cast, big blue sky
   forest: ["hero-2.jpg", "hero-3.jpg"], // canopy light, deep shadows
   closeup: ["home-youth.jpg", "home-training.jpg"], // washed midday close-ups, already warm
   office: ["FAQ.jpg", "About.jpg", "Contact.jpg"], // even indoor light, beige on beige

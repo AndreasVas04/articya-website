@@ -215,13 +215,26 @@ const ScrollExpandMedia = ({
 
   const mediaWidth = 300 + progress * (isMobile ? 650 : 1250);
   const mediaHeight = 400 + progress * (isMobile ? 200 : 400);
-  const textTranslateX = progress * (isMobile ? 180 : 150);
 
-  // The headline reads as ink, so the frame carries a cream wash while the
-  // two can overlap: held at 0.75 through progress < 0.35, then eased down to
-  // a thin 0.15 — by full expansion the headline has slid away and the intro
-  // sits low in the photograph over its own local lift, so the rest of the
-  // frame keeps the picture at near-full strength rather than under a veil.
+  // The card cross-dissolves out of the poster as it grows. The collapsed
+  // opening is the full-bleed photograph itself, so a small frame sitting on
+  // top of it would read as a photo-in-photo; instead the card is hidden until
+  // the growth begins and is full by the time it has any size — the poster
+  // becomes the gallery rather than floating a second picture over it.
+  const cardOpacity = Math.min(Math.max((progress - 0.02) / 0.28, 0), 1);
+
+  // The poster title hands off to the expanded state instead of being cut. As
+  // the card grows the headline settles up and fades over the first third of
+  // the expansion, so the opening *becomes* the gallery. The old split-and-
+  // slide whipped the two lines 180vw apart on mobile inside a single flick,
+  // which read as an instant vanish rather than a transition (see the brief).
+  const titleExit = Math.min(Math.max((progress - 0.03) / 0.32, 0), 1);
+  const titleOpacity = 1 - titleExit;
+  const titleShift = -titleExit * (isMobile ? 30 : 40);
+
+  // The card's own legibility wash for the intro once it is open — held while
+  // the headline could overlap, then eased to a thin lift so the rest of the
+  // photograph stays at strength.
   const overlayOpacity =
     progress < 0.35 ? 0.75 : Math.max(0.15, 0.75 - (progress - 0.35) * 1.0);
 
@@ -263,62 +276,30 @@ const ScrollExpandMedia = ({
           animate={{ opacity: 1 - progress }}
           transition={{ duration: 0.2, ease: EASE_IN_OUT_CUBIC }}
         >
-          {/* The backdrop photograph sinks into the ground the way the page's
-              other environment photographs do — blurred and softened rather
-              than hidden under a flat cream wash. A wash is opaque, so it
-              sealed the living atmosphere out and left the first screen
-              reading gray; here the warm field drifts through and the photo
-              carries the depth behind the frame.
-
-              It sits back inside the environment cap: the glass that opens the
-              page is meant to read as gold first and photograph second, so the
-              picture is a faint organic texture under the veil below rather
-              than a legible image. At 40%/20px it read as a photograph with a
-              tint over it and the gold stopped being the subject. Saturation
-              stays above 1 so the little of it that shows keeps its warmth
-              instead of going to a flat gray. */}
-          {/* Same src and sizes as the first slide, so the browser picks the
-              identical variant URL and one download serves both — the backdrop
-              is this photograph blurred to a texture, it needs no file of its
-              own. */}
+          {/* The backdrop is the collapsed opening's presence: the graded
+              home-hero vista at full photographic strength — a place, not a
+              texture. It reads as the poster the page opens on, and fades out
+              as the card grows so the poster becomes the gallery. Same src and
+              sizes as the first slide, so the browser picks the identical
+              variant URL and one download serves both. The top gold fall that
+              carries the headline lives in its own layer below, so the
+              photograph here is never veiled — only the sky band the words
+              overhang is lifted, the rest stays at strength. */}
           <ResponsiveImage
             src={bgImageSrc}
             alt=""
             fill
             priority
             sizes="95vw"
-            className="scale-110 object-cover opacity-[0.18] blur-[28px] saturate-[1.2]"
+            className="hero-poster object-cover saturate-[1.06] sepia-[0.08]"
+            style={{ objectPosition: "50% 32%" }}
           />
-          {/* The gold the glass glows with. The photograph alone at this
-              opacity leaves the field flat, so the warmth is painted here
-              rather than left to the ground below: a warm pool over a gentle
-              top-to-bottom gold, both mixed from the page's own two golds so
-              the hero cannot drift to a third. It stays translucent — the
-              living atmosphere still drifts through it — and it rides inside
-              the backdrop layer, so it fades out with the photograph as the
-              card expands and takes the header fade with it. */}
-          <div
-            aria-hidden="true"
-            className="hero-glass-veil pointer-events-none absolute inset-0"
-          />
-          {/* The headline's own pocket of ground. The headline is wider than
-              the collapsed card, so the outer end of "are ArtiCYa" lands on
-              open backdrop rather than on the card. With the photograph now
-              far back behind the veil the pool has little left to lift, so it
-              is thin — enough to settle the darkest patch the words overhang,
-              not enough to read as a lighter patch against the gold. Blurred
-              well past its own box so it reads as light gathering, not as a
-              panel. */}
-          <div
-            aria-hidden="true"
-            className="hero-pool-drop pointer-events-none absolute left-1/2 h-[17rem] w-[32rem] max-w-[94vw] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold-wash/25 blur-[64px]"
-          />
-          {/* The resin embers — the glass gaining life. They ride inside this
-              backdrop layer on purpose: behind the card and headline, above
-              the veil, masked under the header with the photograph, and faded
-              out with the whole layer as the card expands — so the moment
-              needs no scroll logic of its own. `paused` only stops the loop
-              once the layer is invisible. They hold still in the frame (no
+          {/* The resin embers — the atmosphere gaining life. They ride inside
+              this backdrop layer on purpose: over the photograph, behind the
+              card and headline, masked under the header with the photograph,
+              and faded out with the whole layer as the card expands — so the
+              moment needs no scroll logic of its own. `paused` only stops the
+              loop once the layer is invisible. They hold still in the frame (no
               pointer parallax), so the atmosphere's gentle lean drifts past
               them instead of the two fighting over the cursor. */}
           <ResinEmbers paused={progress >= 1} />
@@ -332,6 +313,29 @@ const ScrollExpandMedia = ({
           />
         </motion.div>
 
+        {/* The top gold fall — the sky lift that carries the dark headline.
+            Held at strength across the headline band, then eased into the sky
+            by mid-frame, so the words clear 4.5:1 while the vista below keeps
+            the photograph at full strength. Edge-anchored from the top, so it
+            reads as morning light gathering in the sky rather than a panel cut
+            over the picture. It sits in its own layer above the photograph
+            (not under the header mask, so it is at full strength behind the
+            words) and fades out with the poster as the card grows. The title
+            pool concentrates a little more light on exactly where the words
+            sit, blurred well past its box so it reads as light, not an edge. */}
+        <motion.div
+          className="pointer-events-none absolute inset-0 z-[1]"
+          initial={false}
+          animate={{ opacity: 1 - progress }}
+          transition={{ duration: 0.2, ease: EASE_IN_OUT_CUBIC }}
+        >
+          <div aria-hidden="true" className="hero-sky-lift absolute inset-0" />
+          <div
+            aria-hidden="true"
+            className="hero-title-pool absolute left-1/2 top-[23%] h-[15rem] w-[38rem] max-w-[92vw] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold-wash/26 blur-[72px]"
+          />
+        </motion.div>
+
         <div className="relative z-10 mx-auto flex w-full flex-col items-center">
           {/* hero-stage-drop: on phones the whole stage — card, headline,
               pill and intro band together — sinks lower in the screen as the
@@ -341,6 +345,9 @@ const ScrollExpandMedia = ({
               See the class in globals.css for the clamp; desktop resolves to
               zero. */}
           <div className="hero-stage-drop relative flex h-[100dvh] w-full flex-col items-center justify-center">
+            {/* The gallery card — hidden while the opening is the full-bleed
+                poster, cross-dissolved in as it grows so it never reads as a
+                second picture floating over the first. */}
             <div
               className="hero-card absolute left-1/2 top-1/2 z-0 -translate-x-1/2 -translate-y-1/2"
               style={{
@@ -348,6 +355,7 @@ const ScrollExpandMedia = ({
                 height: `${mediaHeight}px`,
                 maxWidth: "95vw",
                 maxHeight: "85vh",
+                opacity: cardOpacity,
                 boxShadow:
                   "0 0 50px color-mix(in srgb, var(--color-ink) 14%, transparent)",
               }}
@@ -422,59 +430,69 @@ const ScrollExpandMedia = ({
                   className="hero-sheen pointer-events-none absolute inset-0"
                 />
               </div>
-
-              {hintLabel && (
-                <div className="mt-4 flex flex-col items-center gap-3">
-                  {/* A short strike of the same gold, carrying the eye from
-                      the photograph's lower edge down into the pill. */}
-                  <span
-                    aria-hidden="true"
-                    className="hero-strike h-[1.25px] w-[88px] bg-amber"
-                    style={{ transform: `translateX(${textTranslateX}vw)` }}
-                  />
-                  <p
-                    className="hero-pill rounded-full border border-amber bg-gold-wash/85 px-4 py-1 text-[0.8125rem] font-semibold leading-[1.4] text-ink"
-                    style={{ transform: `translateX(${textTranslateX}vw)` }}
-                  >
-                    {hintSeparator ? (
-                      <>
-                        {hintBefore}
-                        <span className="text-amber">{hintSeparator}</span>
-                        {hintAfter}
-                      </>
-                    ) : (
-                      hintLabel
-                    )}
-                  </p>
-                </div>
-              )}
             </div>
 
-            {title && (
-              /* Each line rides inside a clipped mask, and the first-load
-                 choreography raises it from below the clip — so the headline
-                 arrives as two staggered lines surfacing out of nothing. The
-                 mask wrapper carries the expansion's inline transform and the
-                 inner span carries the load animation (individual `translate`
-                 property), so the two never touch the same channel. */
-              <h1 className="relative z-10 flex flex-col items-center gap-4 text-center font-display text-[clamp(2.75rem,6vw,4.5rem)] font-semibold leading-[1.05] tracking-[-0.02em] text-ink">
-                <span
-                  className="hero-mask block"
-                  style={{ transform: `translateX(-${textTranslateX}vw)` }}
-                >
-                  <span className="hero-word block">{firstWord}</span>
-                </span>
-                {restOfTitle && (
-                  <span
-                    className="hero-mask block"
-                    style={{ transform: `translateX(${textTranslateX}vw)` }}
-                  >
-                    <span className="hero-word hero-word-late block">
-                      {restOfTitle}
-                    </span>
-                  </span>
+            {/* The poster title, high in the frame over the sky lift where the
+                photograph is calmest and lightest — measured, not guessed: the
+                dark ridge and forest at the centre cannot carry dark ink, but
+                the lifted sky band clears 4.5:1 while the vista stays at full
+                strength. It hands off to the expanded state rather than being
+                cut: the group settles up and fades over the first third of the
+                expansion (`titleOpacity`/`titleShift`), on the same clock that
+                grows the card, so the opening becomes the gallery. The exit
+                transform rides this wrapper; each line's own load-rise rides
+                the inner span (individual `translate`), so the two channels
+                never fight. */}
+            {(title || hintLabel) && (
+              <div
+                className="pointer-events-none absolute inset-x-0 top-[15%] z-10 flex flex-col items-center px-4"
+                style={{
+                  opacity: titleOpacity,
+                  transform: `translateY(${titleShift}px)`,
+                }}
+              >
+                {/* The hint precedes the headline in the source, then renders
+                    below it (`order-last`): the frozen visible-text order is
+                    "ArtiCYa · Cyprus" then "We are ArtiCYa" (it was the card's
+                    pill, ahead of the headline, in the original), and that
+                    order is content and must not drift — `order` moves only the
+                    paint, never the DOM text. */}
+                {hintLabel && (
+                  <div className="order-last mt-6 flex flex-col items-center gap-3">
+                    {/* A short strike of the same gold, carrying the eye from
+                        the headline down into the pill. */}
+                    <span
+                      aria-hidden="true"
+                      className="hero-strike h-[1.25px] w-[88px] bg-amber"
+                    />
+                    <p className="hero-pill rounded-full border border-amber bg-gold-wash/85 px-4 py-1 text-[0.8125rem] font-semibold leading-[1.4] text-ink">
+                      {hintSeparator ? (
+                        <>
+                          {hintBefore}
+                          <span className="text-amber">{hintSeparator}</span>
+                          {hintAfter}
+                        </>
+                      ) : (
+                        hintLabel
+                      )}
+                    </p>
+                  </div>
                 )}
-              </h1>
+                {title && (
+                  <h1 className="flex flex-col items-center gap-3 text-center font-display text-[clamp(2.75rem,6vw,4.5rem)] font-semibold leading-[1.05] tracking-[-0.02em] text-ink md:gap-4">
+                    <span className="hero-mask block">
+                      <span className="hero-word block">{firstWord}</span>
+                    </span>
+                    {restOfTitle && (
+                      <span className="hero-mask block">
+                        <span className="hero-word hero-word-late block">
+                          {restOfTitle}
+                        </span>
+                      </span>
+                    )}
+                  </h1>
+                )}
+              </div>
             )}
 
             {/* The payoff of the expansion: once the frame is full, the intro
