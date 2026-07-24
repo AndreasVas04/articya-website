@@ -8,17 +8,26 @@ interface PageHeroProps {
   text: string;
 }
 
-const HERO_SIZES = "100vw";
+// The photograph carries about 55% of the frame on desktop and the full
+// width on mobile, so it downloads at those two widths.
+const HERO_SIZES = "(min-width: 768px) 58vw, 100vw";
 
-// Inner pages open on the same golden world as home: the page's photograph
-// glowing through a warm cream-to-amber veil, with a pool of light behind
-// the headline — one gold field from the header on down.
+// Inner pages open the same way home does: photography leads. The type sits
+// beside the photograph on clean gold rather than on top of it, and the
+// photograph runs to the edge at full strength with no veil — the veil the
+// old centred layout needed to keep dark ink readable is gone, so three
+// heroes that used to show a ghost now show the picture.
+//
+// The two parts stack at 390 with the photograph on top: this pass makes the
+// photograph the lead material, so the visitor meets it first — edge to edge,
+// under the chrome — and the type then sits on clean gold below it, where a
+// paragraph is most comfortable to read.
 export function PageHero({ image, heading, text }: PageHeroProps) {
-  // This photograph is the page's LCP, so it is preloaded (the preload scanner
-  // cannot see a CSS background) and never lazy-loaded.
+  // This photograph is the page's LCP, so it is preloaded (the preload
+  // scanner cannot see it inside the component) and never lazy-loaded.
   const preload = imagePreload(image, HERO_SIZES);
   return (
-    <section className="relative overflow-hidden bg-gold-wash">
+    <section className="gold-field gold-field-chrome-top gold-floor relative overflow-hidden md:grid md:min-h-[70vh] md:grid-cols-12">
       {preload && (
         <link
           rel="preload"
@@ -30,55 +39,50 @@ export function PageHero({ image, heading, text }: PageHeroProps) {
           fetchPriority="high"
         />
       )}
-      <ResponsiveImage
-        src={image}
-        alt=""
-        fill
-        priority
-        sizes={HERO_SIZES}
-        className="object-cover object-center"
-      />
-      {/* Graded veil instead of a flat one: a calm pool of cream where the
-          headline sits, deepening toward amber at the edges and base, so the
-          photograph glows through the gold rather than sitting under
-          uniform paint. */}
-      <div aria-hidden="true" className="gold-scrim absolute inset-0" />
-      {/* Soft top light and an edge vignette keep the golden photograph
-          luminous: the chrome hands over gently below the header, the
-          corners lift toward the frame. */}
-      <div aria-hidden="true" className="gold-light absolute inset-x-0 top-0 h-48" />
-      <div aria-hidden="true" className="photo-vignette-warm absolute inset-0" />
-      <div aria-hidden="true" className="film-grain absolute inset-0" />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-1/2 h-64 w-[64rem] max-w-[92vw] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold-chrome/70 blur-[100px]"
-      />
-      {/* The block's rise above true centre is set by the padding alone:
-          below − above = header − pt + pb, whatever the band height or the
-          length of the title. md:pt-36/pb-20 against the 80px header leaves
-          16px of rise; the band is then only as tall as it needs to be to
-          hold the longest hero without the padding pushing it open. */}
-      <div className="relative mx-auto flex min-h-[55vh] max-w-6xl flex-col items-center justify-center px-4 pb-16 pt-28 text-center md:min-h-[54vh] md:pb-20 md:pt-36">
-        <Reveal>
-          <span aria-hidden="true" className="mx-auto block h-[1.25px] w-16 bg-amber" />
+
+      {/* The photograph — full strength, no veil, to the edge. It leads on
+          mobile (on top) and sits on the right on desktop, passing under the
+          fixed header the way the home hero's photograph does. */}
+      <div className="page-hero-photo relative h-[44vh] w-full overflow-hidden md:col-span-7 md:col-start-6 md:h-auto">
+        <ResponsiveImage
+          src={image}
+          alt=""
+          fill
+          priority
+          sizes={HERO_SIZES}
+          className="object-cover object-center"
+        />
+        {/* Whisper grain, the same texture the offer panels and story prints
+            carry — a photographic surface, not a wash over it. */}
+        <div aria-hidden="true" className="film-grain pointer-events-none absolute inset-0 mix-blend-multiply" />
+      </div>
+
+      {/* The type — on clean gold, vertically centred beside the photograph. */}
+      <div className="relative flex flex-col justify-center px-6 py-14 md:col-span-5 md:col-start-1 md:row-start-1 md:px-12 md:py-24 lg:px-16">
+        {/* A soft pool of the chrome's own gold behind the headline — a cream
+            lift that settles the ground the words sit on, not a glow: there
+            are no glows on light grounds. */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute left-1/2 top-1/2 h-72 w-[42rem] max-w-[120%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold-chrome/60 blur-[110px]"
+        />
+        <Reveal className="relative">
+          <span aria-hidden="true" className="block h-[1.25px] w-16 bg-amber" />
           {/* 16ch of the display face, so the constraint travels with the
-              clamped size: the longest title measures 20.4ch at every
-              viewport, and 16 breaks it onto two balanced lines while
-              staying clear of the 12.2ch where a third line would start. */}
-          <h1 className="mx-auto mt-4 max-w-[16ch] text-balance font-display text-[clamp(2.75rem,6vw,4.5rem)] font-semibold leading-[1.05] tracking-[-0.02em] text-ink">
+              clamped size across viewports. */}
+          <h1 className="mt-5 max-w-[16ch] text-balance font-display text-[clamp(2.75rem,6vw,4.5rem)] font-semibold leading-[1.05] tracking-[-0.02em] text-ink">
             {heading}
           </h1>
-          {/* 38.75rem, not 36: at 36 the About lede broke to three lines
-              against two on the other pages, and left "programmes." alone on
-              the last. 38.75 lands all three on two lines with the longest
-              rendered line at 66 characters, inside the 70 a prose block
-              gets. Past 40rem the Contact lede runs 71. */}
-          <p className="mx-auto mt-6 max-w-[38.75rem] text-pretty text-xl leading-[1.55] text-ink">
+          <p className="mt-6 max-w-[34rem] text-pretty text-xl leading-[1.55] text-ink">
             {text}
           </p>
         </Reveal>
       </div>
-      <div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-px bg-amber/50" />
+
+      {/* The signed threshold between the hero and the body below — the same
+          amber hairline the chrome carries, marking where the photograph ends
+          and the page proper begins. */}
+      <div aria-hidden="true" className="absolute inset-x-0 bottom-0 z-10 h-px bg-amber/50" />
     </section>
   );
 }

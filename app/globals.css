@@ -91,18 +91,6 @@ body {
    existing pine/plaster tokens, so every text pair stays between two
    measured grounds that both pass; the lamp falloff and film grain are
    capped so no composite behind text exceeds pine-800 lightness. */
-/* Top light for the inner-page heroes: near-solid chrome held for the fixed
-   header's height, then falling open — so the photograph emerges below the
-   bar instead of appearing all at once along its lower edge, the same job
-   the home hero's backdrop hold does. */
-.gold-light {
-  background: linear-gradient(
-    to bottom,
-    color-mix(in srgb, var(--color-gold-chrome) 97%, transparent) 0px,
-    color-mix(in srgb, var(--color-gold-chrome) 97%, transparent) 80px,
-    transparent 100%
-  );
-}
 .dusk-ambient {
   background: radial-gradient(
     ellipse 75% 55% at 50% 40%,
@@ -441,23 +429,6 @@ body {
       ellipse 90% 60% at 50% 0%,
       color-mix(in srgb, var(--color-pine-800) 35%, transparent),
       transparent 78%
-    );
-}
-/* Graded veil for the inner-page hero photographs: a calm pool of cream
-   where the headline sits, deepening toward amber at the edges and base —
-   the photograph glows through the gold the way the home hero's glass does,
-   and the text zone stays a measured ground rather than open picture. */
-.gold-scrim {
-  background:
-    linear-gradient(
-      to top,
-      color-mix(in srgb, var(--color-gold-anchor) 88%, transparent),
-      transparent 38%
-    ),
-    radial-gradient(
-      ellipse 85% 80% at 50% 38%,
-      color-mix(in srgb, var(--color-gold-wash) 58%, transparent) 30%,
-      color-mix(in srgb, var(--color-gold-anchor) 82%, transparent)
     );
 }
 /* Fine photographic grain over dark surfaces, tiled from an inline SVG so
