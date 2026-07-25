@@ -51,6 +51,7 @@
   --color-gold-anchor-0: rgb(233 217 180 / 0);
   --color-gold-chrome-0: rgb(239 228 203 / 0);
   --color-gold-wash-0: rgb(237 226 200 / 0);
+  --color-amber-soft-0: rgb(226 171 82 / 0);
   --color-amber-fill: #ce9440;
   --color-amber-lit: #d8a254;
   --color-amber-edge: #b87a28;
@@ -330,14 +331,147 @@ body {
 .hero-drop-scope {
   --hero-card-drop: 0px;
   --hero-drop-progress: 0;
+  /* The depth of the card's foot: how far up from its base the photograph,
+     its hairline and its gold frame have finished dissolving. `--hero-foot`
+     is the depth at the card's outer corners; `--hero-foot-arc` is the reach
+     of the second, elliptical mask that takes the centre higher still. */
+  --hero-foot: 280px;
+  --hero-foot-arc: 340px;
 }
 @media (max-width: 767px) {
   .hero-drop-scope {
     --hero-card-drop: clamp(0px, 50dvh - 350px, 96px);
+    --hero-foot: 176px;
+    --hero-foot-arc: 230px;
   }
 }
 .hero-stage-drop {
   transform: translateY(calc(var(--hero-card-drop) * var(--hero-drop-progress)));
+}
+/* The card's foot. The expanded hero used to stop on a ruled line: photograph,
+   hairline, gold frame and drop shadow all ending in the same row with the
+   gold floor starting underneath it, which is the one join on this page that
+   read as a handover rather than as ground. These masks take that row away
+   instead of painting over it — the same reason `.photo-edge-dissolve` masks:
+   the ground here is the living atmosphere under the field's own ramp, so a
+   flat repaint would land a shade off whatever is really behind and draw back
+   the seam it was meant to erase. Masking resolves to the real ground, which
+   can never differ from itself.
+
+   The ramp rides the elements the expansion sizes — the card, the intro's lift
+   and the gold frame — so the edge stays pinned to the card's own base through
+   the whole growth instead of sliding up through the picture.
+
+   `--foot-halo` inflates the mask box past the border box so the card's soft
+   shadow falls inside it: the mask then takes the shadow's lower edge away
+   with the photograph, and leaves the other three sides at full strength. */
+.hero-foot-fade {
+  --foot-halo: 0px;
+  --foot-mask: linear-gradient(
+    to top,
+    transparent 0px,
+    transparent var(--foot-halo),
+    rgb(0 0 0 / 0.03) calc(var(--foot-halo) + var(--hero-foot) * 0.14),
+    rgb(0 0 0 / 0.13) calc(var(--foot-halo) + var(--hero-foot) * 0.3),
+    rgb(0 0 0 / 0.36) calc(var(--foot-halo) + var(--hero-foot) * 0.5),
+    rgb(0 0 0 / 0.66) calc(var(--foot-halo) + var(--hero-foot) * 0.68),
+    rgb(0 0 0 / 0.9) calc(var(--foot-halo) + var(--hero-foot) * 0.85),
+    #000 calc(var(--foot-halo) + var(--hero-foot))
+  );
+  -webkit-mask-image: var(--foot-mask);
+  mask-image: var(--foot-mask);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: calc(100% + var(--foot-halo) * 2)
+    calc(100% + var(--foot-halo) * 2);
+  mask-size: calc(100% + var(--foot-halo) * 2) calc(100% + var(--foot-halo) * 2);
+}
+.hero-foot-halo {
+  --foot-halo: 80px;
+}
+/* The foot is not a ruled edge either. A second mask on the frame inside the
+   ramp lifts the picture higher at the centre than at the corners, so what is
+   left reads as a shallow arc with the gold gathering up into the middle,
+   exactly where the words sit. Nesting the two masks multiplies them, which is
+   the result `mask-composite: intersect` would give without depending on it.
+   The mask box is inflated by 4px so the frame's 1px hairline ring, which
+   sits outside the border box, is not clipped away on the other three sides. */
+.hero-foot-arc {
+  --arc-mask: radial-gradient(
+    ellipse 62% var(--hero-foot-arc) at 50% 100%,
+    transparent 0%,
+    rgb(0 0 0 / 0.08) 20%,
+    rgb(0 0 0 / 0.3) 42%,
+    rgb(0 0 0 / 0.62) 64%,
+    rgb(0 0 0 / 0.88) 84%,
+    #000 100%
+  );
+  -webkit-mask-image: var(--arc-mask);
+  mask-image: var(--arc-mask);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: calc(100% + 4px) calc(100% + 4px);
+  mask-size: calc(100% + 4px) calc(100% + 4px);
+}
+/* The light the picture leaves on the ground. A wide amber pool anchored to
+   the hero's own lower edge, so it gathers through the band where the card is
+   dissolving and has relaxed back into the field by the section's last row —
+   the seam below it still meets `What we do` on one `gold-anchor`. It reads as
+   a tonal event rather than a line because it is elliptical and blurred: there
+   is no row anywhere in it where the value steps. It sits behind the backdrop
+   photograph, so the collapsed poster covers it entirely and it is uncovered
+   by the same fade that hands the poster over to the card. */
+.hero-foot-pool {
+  --pool: 34%;
+  height: 240px;
+  /* Vertical profile: nothing at the section's last row, crest a little above
+     the card's base where the dissolve is thinnest and the pool is actually
+     visible, then away again over the rest of the band. Rising to the crest
+     from zero across the ~50-140px the card's base sits above the section's
+     edge is what keeps the seam below intact — the whole climb is a gradient,
+     so no row in it steps. */
+  background: linear-gradient(
+    to top,
+    var(--color-amber-soft-0) 0%,
+    color-mix(in srgb, var(--color-amber-soft) calc(var(--pool) * 0.62), transparent) 14%,
+    color-mix(in srgb, var(--color-amber-soft) var(--pool), transparent) 30%,
+    color-mix(in srgb, var(--color-amber-soft) calc(var(--pool) * 0.72), transparent) 52%,
+    color-mix(in srgb, var(--color-amber-soft) calc(var(--pool) * 0.3), transparent) 74%,
+    var(--color-amber-soft-0) 100%
+  );
+  /* And it gathers in the middle rather than running the full width, so it
+     reads as light pooling under the picture instead of a band across it. */
+  --pool-mask: linear-gradient(
+    to right,
+    transparent 0%,
+    rgb(0 0 0 / 0.18) 12%,
+    rgb(0 0 0 / 0.62) 28%,
+    #000 46%,
+    #000 54%,
+    rgb(0 0 0 / 0.62) 72%,
+    rgb(0 0 0 / 0.18) 88%,
+    transparent 100%
+  );
+  -webkit-mask-image: var(--pool-mask);
+  mask-image: var(--pool-mask);
+  filter: blur(20px);
+}
+@media (min-width: 768px) {
+  .hero-foot-pool {
+    height: 320px;
+  }
+}
+/* A phone shows ~50px of gold between the card's base and the section's edge
+   against ~70 on a laptop, so the crest sits in a shorter visible band and has
+   to be carried a step further to read as the same event. */
+@media (max-width: 767px) {
+  .hero-foot-pool {
+    --pool: 42%;
+  }
 }
 .gold-field-chrome-bottom {
   --gold-bottom: var(--color-gold-chrome);

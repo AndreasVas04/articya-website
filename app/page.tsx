@@ -59,19 +59,24 @@ export default function HomePage() {
           title={hero.heading}
           hintLabel={hero.location}
         >
+          {/* The intro rises 56px, not 24: it now arrives out of the card's
+              dissolving foot rather than off a fixed lower edge, and at 24 the
+              travel finished before the eye had picked up that anything was
+              moving. The band is clipped to the card, so the first part of each
+              rise plays inside the dissolve and the words surface out of it. */}
           <span
             aria-hidden="true"
-            className="block h-px w-[82px] translate-y-6 bg-amber/55 opacity-0 duration-[700ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] motion-reduce:translate-y-0"
+            className="block h-px w-[82px] translate-y-14 bg-amber/55 opacity-0 duration-[700ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] motion-reduce:translate-y-0"
           />
           {/* 15px on mobile, against 17px before: at 17 the statement broke
               to four ragged lines inside the card's width and the tagline
               stopped reading as one calm sentence. 15px with `text-balance`
               settles it to three even lines, and 15 is the floor — below it
               the line stops being comfortable at arm's length. */}
-          <p className="mt-4 max-w-[30rem] translate-y-6 text-balance text-center font-display text-[0.9375rem] font-medium md:max-w-[46rem] md:text-[1.25rem] leading-[1.35] tracking-[-0.01em] text-ink opacity-0 duration-[700ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] group-data-[expanded]:delay-100 motion-reduce:translate-y-0">
+          <p className="mt-4 max-w-[30rem] translate-y-14 text-balance text-center font-display text-[0.9375rem] font-medium md:max-w-[46rem] md:text-[1.25rem] leading-[1.35] tracking-[-0.01em] text-ink opacity-0 duration-[700ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] group-data-[expanded]:delay-100 motion-reduce:translate-y-0">
             {hero.text}
           </p>
-          <div className="mt-5 translate-y-6 opacity-0 duration-[400ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] group-data-[expanded]:delay-300 motion-reduce:translate-y-0">
+          <div className="mt-5 translate-y-14 opacity-0 duration-[700ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] group-data-[expanded]:delay-300 motion-reduce:translate-y-0">
             <ButtonLink href={hero.cta.href} variant="gold">
               {hero.cta.label}
             </ButtonLink>

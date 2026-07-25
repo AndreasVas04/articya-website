@@ -180,12 +180,17 @@ trail's descending line, its nodes and the lamp's line and cone are the
 signature light source (see below), not decoration, and thinning them would
 break the continuity from the trail into the lamp.
 
-**The expanded hero card is framed — whole, and square.** The expanded hero
+**The expanded hero card is framed — whole, square, and open at its foot.**
+The expanded hero
 card — photograph and tagline panel as one object — carries a single hairline
-gold frame around its full perimeter: **1px `amber` at 0.55 alpha**, painted
+gold frame: **1px `amber` at 0.55 alpha**, painted
 as an inset ring on the card overlay's own topmost layer (see Do) so nothing
-covers it. The frame fades in with the intro and shares its pre-hydration
-veil; the resting collapsed card stays frameless. The card's corners are
+covers it. It runs the top and both sides; its **lower edge is dissolved
+away** with everything else at the card's base (see The card's foot below), so
+the two verticals die out as they descend rather than turning a corner into a
+line across the page. The frame fades in with the intro and shares its
+pre-hydration veil; the resting collapsed card stays frameless. The card's
+corners are
 **square** (`border-radius: 0`), deliberately: the card is centered in the
 viewport, so on a short desktop window its top edge passes under the fixed
 header — a rounded frame's corner arcs re-emerge mid-curve below the chrome
@@ -752,6 +757,9 @@ section. Nothing else may put a gradient or texture on a ground:
 | `.hero-photo-lift` | Soft-edged `gold-wash` rising from the card's base to nothing above the words — a **local** lightening, not a full-frame veil. The model for every lift on the site (`.hero-sky-lift`, the inner-page hero lift): strong where the words fall, gone by the edges, ending on the zero-alpha gold so the ramp never pulls through grey | Behind the home hero intro only, so dark ink reads low inside the photograph while the rest of the frame stays at full strength (4.5 floor; **5.9–7.3** measured on the composite, every slide) |
 | `.hero-sky-lift` | The poster opening's version: a top-anchored `gold-wash` fall, held across the headline band and easing into the sky by mid-frame | Behind the home collapsed headline, over the full-strength `home-hero.jpg` vista — carries the dark headline while the mountains and lake below stay at full strength (headline is large type, see the floors below; **5.6/6.0** measured) |
 | Inner-page hero lift | A **vertically graded** `gold-wash` pool: lighter across the large heading (3.0 floor), full behind the body-size lede (4.5 floor), masked to a central ellipse so the sides stay pure photograph. Two profiles, split by `md`, because the lede sits at a different height on the two viewports | Behind the centred type on the About/FAQ/Contact heroes only — the local lift that replaced the old full-frame scrim (measured: heading **3.7–3.9**, lede **4.6–4.75**) |
+| `.hero-foot-fade` | The card's foot: an eased bottom ramp taking the photograph, the intro's lift and the gold frame to nothing over `--hero-foot` (280px desktop / 176px mobile). `--foot-halo` inflates the mask box past the border box on the card, so the drop shadow's lower edge goes with it and the other three sides keep theirs | The expanded hero card, its intro lift and its frame ring — the elements the expansion sizes, never a parent |
+| `.hero-foot-arc` | A second mask nested inside the ramp, an ellipse reaching `--hero-foot-arc` (340/230px) up from the base, so the picture retreats higher at the centre than at the corners and the foot is a curve rather than a line | The hero frame only |
+| `.hero-foot-pool` | The light the picture leaves on the ground: `amber-soft` cresting just above the card's base, gathered in the middle rather than run across the width, gone by the section's last row so the seam below is untouched | Anchored to the home hero's lower edge, behind the backdrop photograph |
 | `.photo-vignette` | Edges falling toward `pine-950` | Inside photographic frames and hero photos only |
 | `.film-grain` | Fine tiled SVG grain at 5% opacity, killing the flat digital-paint feel | Over dark grounds and photographic frames |
 | `.gold-field` | Top and bottom edges at `gold-anchor`, falling to it at zero alpha toward the middle where the `gold-wash` floor takes over | Every home section, and every full-bleed offer panel — it is what makes the seams continuous |
@@ -827,6 +835,46 @@ is presently tuned to the 4.5 reading (measured 5.6/6.0), so it has room to
 lighten toward the 3.0 floor and let the vista read stronger — a change to
 weigh, not yet made.
 
+**The card's foot — the one join on this page that was a handover.** The
+expanded hero used to stop on a ruled line: photograph, hairline, gold frame
+and drop shadow all ending in the same row, with the gold floor starting
+underneath it. Everywhere else on the page two grounds meet on one value and
+the seam disappears; here a picture ended and a floor began, and the eye read
+it as one system finishing and another starting. The card's base is now
+**dissolved** instead, by three things working together:
+
+- **A ramp** on the elements the expansion sizes — the card, the intro's lift
+  and the gold frame — so the edge stays pinned to the card's own base through
+  the whole growth instead of sliding up through the picture. Measured on the
+  built page at successive expansion steps, the alpha-50% row holds at
+  **216–218px** above the base while the card grows 573 → 765px, and at
+  **141–142px** while it grows 486 → 600px on a phone: ±2px, which is
+  rounding.
+- **An arc**, a second mask nested inside the ramp on the frame itself, taking
+  the picture higher at the centre than at the corners. So the foot is a
+  shallow curve with the gold gathering up into the middle where the words
+  sit, not a ruled edge softened. Measured depth: **220 / 321 / 215px**
+  (left corner, centre, right corner) at 1440, **145 / 210 / 144px** at 390.
+- **A pool** — the light the picture leaves on the ground. `amber-soft`
+  cresting a little above the card's base where the dissolve is thinnest, gone
+  again by the section's last row so the seam below still meets "What we do"
+  on one `gold-anchor`. Measured on the composite, the ground at the crest is
+  **ΔE76 10.7** (desktop) / **11.1** (mobile) warmer than the same page
+  renders without it.
+
+Both masks **mask rather than paint**, for the reason `photo-edge-dissolve`
+does: the ground here is the living atmosphere under the field's own ramp, so
+a flat repaint would land a shade off whatever is really behind and draw back
+the seam it was meant to erase. Masking resolves to the real ground, which can
+never differ from itself. Measured through the whole handoff on the built page,
+worst adjacent row delta **2.6** (desktop) / **2.0** (mobile) — the same order
+as every seam on the page that already reads as continuous. Nothing about this
+is scroll-linked: the masks are fixed lengths on the card's own box and the
+pool is a static layer, so the handoff costs one clock the page already keeps
+and none of its own. Before the card grows the whole thing is invisible —
+the pool sits under the backdrop photograph and the masks have nothing but
+gold to act on — measured **zero differing pixels** in the collapsed opening.
+
 **The expanded card carries its intro inside the photograph.** Once the card
 opens, the lede and the Contact Us button sit **low in the frame over the
 photograph itself**, not on a gold band beneath it — the old band read as a
@@ -839,7 +887,17 @@ was eased back to match). Ink text throughout, on every slide. The anchor is
 low because all three slides keep their subject in the upper frame, so the
 lift never has to touch it. Measured on the rendered composite, worst case
 over the whole text box, every slide, both viewports: **5.9–7.3** — clear of
-the **4.5** floor, checked on each of the three slideshow frames.
+the **4.5** floor, checked on each of the three slideshow frames. Measured
+again once the foot was dissolved, at the statement's glyph cores over the
+rendered composite: **7.79** (desktop) / **6.42** (mobile); the button's label
+on its own `amber-fill` is unchanged at **4.95**.
+
+The three intro elements rise **56px** into place — the rule at 0ms, the
+statement at 100 and the button at 300, each over 700ms. They used to travel
+24px, which finished before the eye had picked up that anything was moving.
+The band is clipped to the card, so the first part of each rise now plays
+inside the dissolve and the words surface out of the foot rather than
+appearing on a fixed lower edge.
 
 Rules, in order of precedence:
 

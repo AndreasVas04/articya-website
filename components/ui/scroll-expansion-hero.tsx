@@ -294,6 +294,14 @@ const ScrollExpandMedia = ({
         className="gold-field gold-field-chrome-top hero-drop-scope relative flex min-h-[100dvh] flex-col items-center justify-start overflow-hidden"
         style={{ "--hero-drop-progress": progress } as CSSProperties}
       >
+        {/* The pool the card's foot dissolves into — first in the section, so
+            the collapsed poster paints straight over it and it is uncovered by
+            the same fade that hands the poster to the card. No clock of its
+            own. */}
+        <div
+          aria-hidden="true"
+          className="hero-foot-pool pointer-events-none absolute inset-x-0 bottom-0 z-0"
+        />
         <motion.div
           className="hero-backdrop-fade absolute inset-0 z-0"
           initial={false}
@@ -373,7 +381,7 @@ const ScrollExpandMedia = ({
                 poster, cross-dissolved in as it grows so it never reads as a
                 second picture floating over the first. */}
             <div
-              className="hero-card absolute left-1/2 top-1/2 z-0 -translate-x-1/2 -translate-y-1/2"
+              className="hero-card hero-foot-fade hero-foot-halo absolute left-1/2 top-1/2 z-0 -translate-x-1/2 -translate-y-1/2"
               style={{
                 width: `${mediaWidth}px`,
                 height: `${mediaHeight}px`,
@@ -391,7 +399,7 @@ const ScrollExpandMedia = ({
                   corner arcs re-emerge mid-curve below the chrome and read as
                   cut; straight lines die under the bar cleanly. `isolate`
                   keeps the grain's blend inside the frame. */}
-              <div className="hero-frame relative isolate h-full w-full overflow-hidden ring-1 ring-hairline">
+              <div className="hero-frame hero-foot-arc relative isolate h-full w-full overflow-hidden ring-1 ring-hairline">
                 {restingState ? (
                   <ResponsiveImage
                     src={slides[0]}
@@ -544,7 +552,7 @@ const ScrollExpandMedia = ({
               <div
                 aria-hidden="true"
                 data-expanded={!mounted || contentVisible ? "" : undefined}
-                className="hero-intro hero-photo-lift pointer-events-none absolute inset-x-0 bottom-0 h-[56%] rounded-[inherit] rounded-t-none opacity-0 duration-[400ms] ease-out-quart data-[expanded]:opacity-100 data-[expanded]:transition-opacity"
+                className="hero-intro hero-photo-lift hero-foot-fade pointer-events-none absolute inset-x-0 bottom-0 h-[56%] rounded-[inherit] rounded-t-none opacity-0 duration-[400ms] ease-out-quart data-[expanded]:opacity-100 data-[expanded]:transition-opacity"
               />
               <div
                 data-expanded={!mounted || contentVisible ? "" : undefined}
@@ -579,7 +587,7 @@ const ScrollExpandMedia = ({
               <span
                 aria-hidden="true"
                 data-expanded={!mounted || contentVisible ? "" : undefined}
-                className="hero-intro pointer-events-none absolute inset-0 rounded-[inherit] opacity-0 shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-amber)_55%,transparent)] duration-[400ms] ease-out-quart data-[expanded]:opacity-100 data-[expanded]:transition-opacity"
+                className="hero-intro hero-foot-fade pointer-events-none absolute inset-0 rounded-[inherit] opacity-0 shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-amber)_55%,transparent)] duration-[400ms] ease-out-quart data-[expanded]:opacity-100 data-[expanded]:transition-opacity"
               />
             </div>
           </div>
