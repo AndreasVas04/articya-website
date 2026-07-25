@@ -30,7 +30,10 @@ const MANIFEST = path.join(OUT, "manifest.json");
 // Width ladder in device pixels. Each image emits the rungs at or below the
 // largest size it is ever displayed (never upscaled); the cap keeps a 6000px
 // source from ever emitting more than a full-bleed hero can use.
-const LADDER = [384, 640, 768, 1024, 1366, 1600, 1920, 2560];
+// 1152 is the phone rung: a 393px viewport at DPR 3 asks for 1120 device px
+// for a 95vw image, and without a step between 1024 and 1366 it takes the
+// 1366 and throws a third of the pixels away.
+const LADDER = [384, 640, 768, 1024, 1152, 1366, 1600, 1920, 2560];
 const MAX_WIDTH = 2560;
 
 // Encode settings. Quality first: at or above the grade's q88 floor, and
