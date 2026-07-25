@@ -322,7 +322,7 @@ const ScrollExpandMedia = ({
             alt=""
             fill
             priority
-            sizes="95vw"
+            sizes="100vw"
             className="hero-poster object-cover saturate-[1.06] sepia-[0.08]"
             style={{ objectPosition: "50% 32%" }}
           />
@@ -379,25 +379,32 @@ const ScrollExpandMedia = ({
           <div className="hero-stage-drop relative flex h-[100dvh] w-full flex-col items-center justify-center">
             {/* The gallery card — hidden while the opening is the full-bleed
                 poster, cross-dissolved in as it grows so it never reads as a
-                second picture floating over the first. */}
+                second picture floating over the first.
+
+                The width cap is the stage's own width, not a fraction of it.
+                The growth ramp overshoots the viewport at both breakpoints, so
+                the cap is what the expanded card actually measures, and at 95%
+                it left a gold strip down each side — with the foot dissolved,
+                the two hardest lines on the page. `100%` rather than `100vw`
+                so a classic scrollbar cannot push the card past the stage and
+                into horizontal overflow. */}
             <div
               className="hero-card hero-foot-fade hero-foot-halo absolute left-1/2 top-1/2 z-0 -translate-x-1/2 -translate-y-1/2"
               style={{
                 width: `${mediaWidth}px`,
                 height: `${mediaHeight}px`,
-                maxWidth: "95vw",
+                maxWidth: "100%",
                 maxHeight: "85vh",
                 opacity: cardOpacity,
                 boxShadow:
                   "0 0 50px color-mix(in srgb, var(--color-ink) 14%, transparent)",
               }}
             >
-              {/* Square corners, deliberately: the expanded card wears a gold
-                  hairline frame (the overlay below), and this frame is
-                  centered in the viewport, so on a short desktop window its
-                  top edge passes under the fixed header. A rounded frame's
-                  corner arcs re-emerge mid-curve below the chrome and read as
-                  cut; straight lines die under the bar cleanly. `isolate`
+              {/* Square corners, deliberately: expanded, this frame is as wide
+                  as the window, so on a short desktop window its top edge and
+                  both top corners pass under the fixed header. A rounded
+                  corner's arc re-emerges mid-curve below the chrome and reads
+                  as cut; straight lines die under the bar cleanly. `isolate`
                   keeps the grain's blend inside the frame. */}
               <div className="hero-frame hero-foot-arc relative isolate h-full w-full overflow-hidden ring-1 ring-hairline">
                 {restingState ? (
@@ -406,7 +413,7 @@ const ScrollExpandMedia = ({
                     alt=""
                     fill
                     priority
-                    sizes="95vw"
+                    sizes="100vw"
                     className="rounded-[inherit] object-cover saturate-[1.06] sepia-[0.08]"
                   />
                 ) : (
@@ -430,7 +437,7 @@ const ScrollExpandMedia = ({
                         alt=""
                         fill
                         priority={i === 0}
-                        sizes="95vw"
+                        sizes="100vw"
                         className="rounded-[inherit] object-cover saturate-[1.06] sepia-[0.08]"
                       />
                     </motion.div>
@@ -537,7 +544,7 @@ const ScrollExpandMedia = ({
               style={{
                 width: `${mediaWidth}px`,
                 height: `${mediaHeight}px`,
-                maxWidth: "95vw",
+                maxWidth: "100%",
                 maxHeight: "85vh",
               }}
             >
@@ -559,9 +566,9 @@ const ScrollExpandMedia = ({
                 className={cn(
                   // The band's corners inherit the clipping parent's radius
                   // rather than restating it, so the two can never disagree.
-                  // px-4 on mobile rather than px-6: the card is already only
-                  // 95vw wide there, and the 16px it gives back is what lets
-                  // the statement settle onto three even lines.
+                  // px-4 on mobile rather than px-6: the card is only a phone
+                  // wide there, and the 16px it gives back is what lets the
+                  // statement settle onto three even lines.
                   "hero-intro group pointer-events-auto absolute inset-x-0 bottom-0 flex flex-col items-center overflow-hidden rounded-[inherit] rounded-t-none px-4 py-5 opacity-0 md:px-6 duration-[400ms] ease-out-quart data-[expanded]:opacity-100 data-[expanded]:transition-opacity md:py-6",
                   mounted && !contentVisible && "pointer-events-none"
                 )}
@@ -578,17 +585,15 @@ const ScrollExpandMedia = ({
                   {children}
                 </div>
               </div>
-              {/* The hairline gold frame, drawn around the whole expanded
-                  card — photograph and tagline panel as one object — as an
-                  inset ring on the overlay's own topmost layer, painted after
-                  the band so nothing covers it. It fades in with the intro
-                  (and shares its `hero-intro` pre-hydration veil): the
-                  resting hero card stays frameless. */}
-              <span
-                aria-hidden="true"
-                data-expanded={!mounted || contentVisible ? "" : undefined}
-                className="hero-intro hero-foot-fade pointer-events-none absolute inset-0 rounded-[inherit] opacity-0 shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-amber)_55%,transparent)] duration-[400ms] ease-out-quart data-[expanded]:opacity-100 data-[expanded]:transition-opacity"
-              />
+              {/* The gold frame that used to ring this overlay is gone. It
+                  worked when the card stood inside gold: three sides drawn,
+                  the fourth dissolved at the foot. Full-bleed there are no
+                  side gutters for it to sit in — its verticals land on the
+                  first and last column of the window and its top edge passes
+                  under the chrome, so all that is left of a frame is two lines
+                  pinned to the screen edges, which read as a viewport artifact
+                  rather than an object. Nothing outlines the card now; the
+                  photograph's own edges do the work. */}
             </div>
           </div>
 

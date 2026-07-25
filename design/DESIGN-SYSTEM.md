@@ -180,24 +180,51 @@ trail's descending line, its nodes and the lamp's line and cone are the
 signature light source (see below), not decoration, and thinning them would
 break the continuity from the trail into the lamp.
 
-**The expanded hero card is framed — whole, square, and open at its foot.**
-The expanded hero
-card — photograph and tagline panel as one object — carries a single hairline
-gold frame: **1px `amber` at 0.55 alpha**, painted
-as an inset ring on the card overlay's own topmost layer (see Do) so nothing
-covers it. It runs the top and both sides; its **lower edge is dissolved
-away** with everything else at the card's base (see The card's foot below), so
-the two verticals die out as they descend rather than turning a corner into a
-line across the page. The frame fades in with the intro and shares its
-pre-hydration veil; the resting collapsed card stays frameless. The card's
-corners are
-**square** (`border-radius: 0`), deliberately: the card is centered in the
-viewport, so on a short desktop window its top edge passes under the fixed
-header — a rounded frame's corner arcs re-emerge mid-curve below the chrome
-and read as cut, where straight lines die under the bar cleanly. A crisp
-square corner beats a broken arc. The short rule above the tagline stays as
-an internal accent at the frame's own weight — 1px `amber` at 0.55 — not the
-1.25px accent-mark weight: a frame whispers where an accent mark points.
+**The expanded hero card is full-bleed, square, and unframed.** At full
+expansion the card — photograph and tagline panel as one object — measures the
+**whole viewport width**. It used to stop at 95vw, which left a 36px gold strip
+down each side at 1440 and 9.75px at 390; once the foot was dissolved those two
+verticals were the hardest lines on the page — a ruled edge surviving at the
+sides precisely because the base no longer had one. The growth ramp overshoots
+the viewport at both breakpoints, so the strip was never the expansion falling
+short: it was the cap, and the cap is now the stage's own width rather than a
+fraction of it.
+
+It carries **no gold frame**. The earlier build ringed the card with a 1px
+`amber` hairline at 0.55 alpha along the top and both sides, its lower edge
+dissolved away with everything else at the base. That frame worked while the
+card stood inside gold and had gutters to sit in. Full-bleed it has none: the
+two verticals land on the first and last column of the window and the top edge
+passes under the chrome, so what is left is not a frame but two lines pinned to
+the screen edges, reading as a viewport artifact rather than as an object. A
+frame that cannot enclose is not a quieter frame, it is a stray mark — so it
+was dropped whole rather than left as orphan verticals. The photograph's own
+edges carry the card now, three of them, the fourth being the dissolve.
+
+The corners stay **square** (`border-radius: 0`), and full-bleed the reason
+only sharpens: the card is centered in the viewport, so on a short desktop
+window its top edge and both top corners sit behind the fixed header. A rounded
+corner's arc re-emerges mid-curve below the chrome and reads as cut, where a
+straight line dies under the bar cleanly. The short rule above the tagline
+stays as an internal accent at **1px `amber` at 0.55** — not the 1.25px
+accent-mark weight: inside the picture a rule whispers where an accent mark
+points.
+
+**Widening costs the foot nothing, and this was measured rather than assumed.**
+Both of the foot's masks are scale-invariant across the change: the ramp is a
+fixed px length measured up from the base, and the arc is an ellipse whose
+horizontal radius is a *percentage* of the card, so a corner sits at the same
+fraction of that radius at 1368px as at 1440px. Measured on the built page at
+both widths, the alpha-50% row above the base is unmoved — centre **228 → 224px**
+desktop, **149 → 149px** mobile; mobile corners **110 → 113** and **110 → 112px**
+(the desktop corners had no reading before, since gold stood where they now
+fall). The edge still does not slide as the card grows: sampled at four
+expansion steps the centre holds 219/220/219/223px on desktop, a 4px spread, and
+143/142/142/152px on mobile, 10px — the same order of rounding the original
+measurement reported. Full-bleed, the card's top edge becomes the hero's hardest
+remaining line on mobile, where it was a card edge before; it is the
+photograph's own boundary rather than a rule, and on desktop it stays hidden
+under the chrome.
 
 **Quiet borders on the gold ground lean green.** A decorative circle or
 border framing a green mark takes `pine/30` rather than the neutral
@@ -343,7 +370,7 @@ Display: **Bricolage Grotesque** · Body: **Instrument Sans** — both loaded vi
 | Wordmark | `1.125rem` mobile · `1.25rem` desktop / 28px, −0.01em | Bricolage 600 | The header logotype only. A logotype is sized to its bar, not to the reading ramp, which is why it sits off the scale rather than on a step of it |
 
 **The hero statement is sized to its line count, not to a ramp.** It is one
-sentence inside a card, and the card is only 95vw wide on a phone — so the
+sentence inside a card, and the card is only a phone wide there — so the
 size that matters is the one that lands the sentence on even lines, not the
 one a `clamp()` interpolates to. At 17px it broke to four ragged lines
 (258/226/285/195px) and stopped reading as a sentence at all. 15px with
@@ -757,7 +784,7 @@ section. Nothing else may put a gradient or texture on a ground:
 | `.hero-photo-lift` | Soft-edged `gold-wash` rising from the card's base to nothing above the words — a **local** lightening, not a full-frame veil. The model for every lift on the site (`.hero-sky-lift`, the inner-page hero lift): strong where the words fall, gone by the edges, ending on the zero-alpha gold so the ramp never pulls through grey | Behind the home hero intro only, so dark ink reads low inside the photograph while the rest of the frame stays at full strength (4.5 floor; **5.9–7.3** measured on the composite, every slide) |
 | `.hero-sky-lift` | The poster opening's version: a top-anchored `gold-wash` fall, held across the headline band and easing into the sky by mid-frame | Behind the home collapsed headline, over the full-strength `home-hero.jpg` vista — carries the dark headline while the mountains and lake below stay at full strength (headline is large type, see the floors below; **5.6/6.0** measured) |
 | Inner-page hero lift | A **vertically graded** `gold-wash` pool: lighter across the large heading (3.0 floor), full behind the body-size lede (4.5 floor), masked to a central ellipse so the sides stay pure photograph. Two profiles, split by `md`, because the lede sits at a different height on the two viewports | Behind the centred type on the About/FAQ/Contact heroes only — the local lift that replaced the old full-frame scrim (measured: heading **3.7–3.9**, lede **4.6–4.75**) |
-| `.hero-foot-fade` | The card's foot: an eased bottom ramp taking the photograph, the intro's lift and the gold frame to nothing over `--hero-foot` (280px desktop / 176px mobile). `--foot-halo` inflates the mask box past the border box on the card, so the drop shadow's lower edge goes with it and the other three sides keep theirs | The expanded hero card, its intro lift and its frame ring — the elements the expansion sizes, never a parent |
+| `.hero-foot-fade` | The card's foot: an eased bottom ramp taking the photograph and the intro's lift to nothing over `--hero-foot` (280px desktop / 176px mobile). `--foot-halo` inflates the mask box past the border box on the card, so the drop shadow's lower edge goes with it and the other three sides keep theirs | The expanded hero card and its intro lift — the elements the expansion sizes, never a parent |
 | `.hero-foot-arc` | A second mask nested inside the ramp, an ellipse reaching `--hero-foot-arc` (340/230px) up from the base, so the picture retreats higher at the centre than at the corners and the foot is a curve rather than a line | The hero frame only |
 | `.hero-foot-pool` | The light the picture leaves on the ground: `amber-soft` cresting just above the card's base, gathered in the middle rather than run across the width, gone by the section's last row so the seam below is untouched | Anchored to the home hero's lower edge, behind the backdrop photograph |
 | `.photo-vignette` | Edges falling toward `pine-950` | Inside photographic frames and hero photos only |
@@ -836,16 +863,16 @@ lighten toward the 3.0 floor and let the vista read stronger — a change to
 weigh, not yet made.
 
 **The card's foot — the one join on this page that was a handover.** The
-expanded hero used to stop on a ruled line: photograph, hairline, gold frame
-and drop shadow all ending in the same row, with the gold floor starting
-underneath it. Everywhere else on the page two grounds meet on one value and
+expanded hero used to stop on a ruled line: photograph, hairline and drop
+shadow all ending in the same row (the gold frame of the day ended there too),
+with the gold floor starting underneath it. Everywhere else on the page two grounds meet on one value and
 the seam disappears; here a picture ended and a floor began, and the eye read
 it as one system finishing and another starting. The card's base is now
 **dissolved** instead, by three things working together:
 
-- **A ramp** on the elements the expansion sizes — the card, the intro's lift
-  and the gold frame — so the edge stays pinned to the card's own base through
-  the whole growth instead of sliding up through the picture. Measured on the
+- **A ramp** on the elements the expansion sizes — the card and the intro's
+  lift — so the edge stays pinned to the card's own base through the whole
+  growth instead of sliding up through the picture. Measured on the
   built page at successive expansion steps, the alpha-50% row holds at
   **216–218px** above the base while the card grows 573 → 765px, and at
   **141–142px** while it grows 486 → 600px on a phone: ±2px, which is
@@ -933,19 +960,24 @@ Rules, in order of precedence:
   rather than restating the value: these frames are sized in fractional
   pixels, so a hand-matched radius rasterizes its arc on a different subpixel
   boundary than the clip and the corner reads chipped.
-- Square a card's corners when a gold frame has to cross the fixed header. A
-  round corner interrupted by the chrome reads as a cut arc; a straight edge
-  passing under the bar reads as nothing at all. This is why the expanded hero
-  card is square — see the frame spec above.
+- Square a card's corners when its edge has to cross the fixed header. A round
+  corner interrupted by the chrome reads as a cut arc; a straight edge passing
+  under the bar reads as nothing at all. This is why the expanded hero card is
+  square — see the card spec above.
+- Drop an outline entirely when a card goes full-bleed, rather than keeping the
+  sides it can still draw. An outline earns its place by enclosing; with no
+  gutters left the verticals sit on the window's own first and last column and
+  read as an artifact of the viewport. Two thirds of a frame is not a subtler
+  frame — see the expanded hero card.
 
 **Don't**
 
-- Don't give a **rounded** gold outline to a card whose edge passes under the
-  fixed header. The expanded hero card is centered in the viewport, so on a
-  short desktop window its top edge and both top corners sit behind the
-  chrome. Its hairline gold frame works because the card is square: the two
-  vertical lines simply vanish under the bar. Rounded, the same frame's arcs
-  would re-emerge mid-curve below the chrome and read as broken.
+- Don't give a **rounded** outline to a card whose edge passes under the fixed
+  header. The expanded hero card is centered in the viewport, so on a short
+  desktop window its top edge and both top corners sit behind the chrome. Any
+  line it carries works only because the card is square: a straight edge simply
+  vanishes under the bar, where an arc would re-emerge mid-curve below the
+  chrome and read as broken.
 - Don't use pure black, pure white, or any gray — the neutrals are the pine
   and plaster families.
 - Don't use bright/tech greens, leaf icons, or gradients outside the

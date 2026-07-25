@@ -15,7 +15,7 @@ const offerIcons = ["globe", "graduation"] as const;
 
 // The first hero slide is the LCP; the backdrop reuses the same variant, so
 // this one preload covers both.
-const heroPreload = imagePreload(hero.slides[0], "95vw");
+const heroPreload = imagePreload(hero.slides[0], "100vw");
 
 export default function HomePage() {
   return (
