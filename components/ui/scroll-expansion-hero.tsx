@@ -3,6 +3,7 @@
 import {
   useEffect,
   useLayoutEffect,
+  useRef,
   useState,
   type CSSProperties,
   type ReactNode,
@@ -87,8 +88,26 @@ const ScrollExpandMedia = ({
     };
   }, []);
 
+  // A visitor who has already scrolled by the time hydration lands is reading
+  // somewhere below this hero, and the choreography has no screen left to play
+  // on. The inline script pins the page to 0 during parse, so any offset here
+  // is their own scrolling in the gap between first paint and hydration — on a
+  // slow connection, seconds of it. Arming the wheel/touch lock at that point
+  // consumes their swipes from a screen they cannot see, with no feedback at
+  // all, so the hero skips its capture and opens straight into the expanded
+  // state instead. The logo reset re-arms it, since that returns them here.
+  const skipCapture = useRef(false);
+
+  useIsomorphicLayoutEffect(() => {
+    if (window.scrollY <= 0) return;
+    skipCapture.current = true;
+    setScrollProgress(1);
+    setMediaFullyExpanded(true);
+    setShowContent(true);
+  }, []);
+
   useEffect(() => {
-    if (reducedMotion) return;
+    if (reducedMotion || skipCapture.current) return;
 
     const expandInstantly = () => {
       setScrollProgress(1);
@@ -191,6 +210,7 @@ const ScrollExpandMedia = ({
   // resting state keeps the hero expanded regardless, matching a fresh load.
   useEffect(() => {
     const reset = () => {
+      skipCapture.current = false;
       setScrollProgress(0);
       setMediaFullyExpanded(false);
       setShowContent(false);
