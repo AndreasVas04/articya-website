@@ -163,9 +163,13 @@ const ScrollExpandMedia = ({
     };
 
     window.addEventListener("wheel", handleWheel, { passive: false });
-    window.addEventListener("scroll", handleScroll);
+    // Safari does not default window `scroll`/`touchstart` to passive the way
+    // Chrome does, so on iOS every touch waits on these handlers before the
+    // scroll can start. Neither one calls preventDefault; the wheel and
+    // touchmove handlers below do, and stay non-passive.
+    window.addEventListener("scroll", handleScroll, { passive: true });
     window.addEventListener("keydown", handleKeyDown);
-    window.addEventListener("touchstart", handleTouchStart);
+    window.addEventListener("touchstart", handleTouchStart, { passive: true });
     window.addEventListener("touchmove", handleTouchMove, { passive: false });
     window.addEventListener("touchend", handleTouchEnd);
 
