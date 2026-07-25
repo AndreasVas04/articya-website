@@ -139,7 +139,13 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
               key={src}
               src={src}
               alt={alt}
-              sizes={index === 0 ? "100vw" : "(min-width: 768px) 33vw, 50vw"}
+              // The same `sizes` the pinned tiles below declare, not the ones
+              // this grid's own layout implies. The server renders this grid
+              // and the mounted component swaps to the pinned tiles, so a
+              // narrower value here picks a smaller variant that is replaced
+              // before it is ever displayed — one download of each photo
+              // instead of two.
+              sizes={index === 0 ? "100vw" : "(min-width: 768px) 55vw, 80vw"}
               className={cn(
                 "h-full w-full object-cover",
                 index === 0
