@@ -184,9 +184,40 @@ expansion the card — photograph and tagline panel as one object — measures t
 down each side at 1440 and 9.75px at 390; once the foot was dissolved those two
 verticals were the hardest lines on the page — a ruled edge surviving at the
 sides precisely because the base no longer had one. The growth ramp overshoots
-the viewport at both breakpoints, so the strip was never the expansion falling
-short: it was the cap, and the cap is now the stage's own width rather than a
-fraction of it.
+the stage, so the strip was never the expansion falling short: it was the cap,
+and the cap is now the stage's own width rather than a fraction of it.
+
+**The ramp ends on a fraction of the window, not on a number of pixels.** The
+desktop ramp used to run 300px → a flat 1550px. That is 1.0764 × the 1440
+window it was tuned on, so it cleared the edge there and fell short of it on
+anything wider: measured at 1698 the photograph stopped at 1550 with 74px of
+gold down each side, at 1920 with 185px, at 2560 with 505px — the same ruled
+verticals the full-bleed pass existed to remove, reappearing above ~1550px of
+window. The end value is now that same **1.0764 fraction of the stage**
+(`calc(300px + progress × (107.639% − 300px))`), so the ramp overshoots by the
+same margin at every width and `maxWidth: 100%` still does the stopping.
+
+Keeping the *fraction* rather than the pixel count is what preserves the pace.
+At 1440 the expression resolves to 300 + 1250 × progress — the ramp it
+replaces, to the pixel. Elsewhere the beat lands in the same place rather than
+at the same width: the card reaches the sides at progress **0.912** at 1440,
+0.915 at 1698, 0.917 at 1920 and 0.920 at 2560, so the moment the picture goes
+full-bleed sits within 0.8% of progress of where it always did. A ramp that
+ended exactly on the stage would have been 9% slower at 1440 and would have
+arrived only on the last frame of the scroll.
+
+Widening again costs the foot nothing, and again this was measured rather than
+assumed — the ramp is a fixed px length up from the base and the arc's radius
+is a percentage of the card, so neither reads the width. Measured at full
+expansion, alpha-50% row above the base (median of nine columns, slide pinned):
+**169 / 218 / 169** at 1440, **169 / 219 / 169** at 1698, 1920 and 2560 — one
+pixel of spread across a card that grew from 1440 to 2560.
+
+The **height** ramp is still absolute: 400px → 800px, capped at `85vh`. Below
+about a 941px-tall window the cap binds and the card is nearly full-height
+(765px at 1440×900); above it the ramp binds and the card is a band — 800px
+inside a 1440-tall window at 2560, leaving gold above it as well as under the
+foot. That is a separate constant from the width and has not been changed.
 
 It carries **no gold frame**. The earlier build ringed the card with a 1px
 `amber` hairline at 0.55 alpha along the top and both sides, its lower edge

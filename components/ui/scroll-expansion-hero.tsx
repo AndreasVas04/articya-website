@@ -237,7 +237,24 @@ const ScrollExpandMedia = ({
     return () => window.clearInterval(id);
   }, [reducedMotion, slides.length]);
 
-  const mediaWidth = 300 + progress * (isMobile ? 650 : 1250);
+  // The desktop ramp used to end on a flat 1550px (300 + 1250). That is
+  // 1.0764 × the 1440 window it was tuned on — past the edge there, short of
+  // it on anything wider, so above ~1550 the card stopped growing before it
+  // reached the sides and left a gold strip down each one. The end value is
+  // the same *fraction* of the stage now rather than the same number of
+  // pixels, so the ramp overshoots by the same margin at every width and
+  // `maxWidth: 100%` still does the stopping. Expressed as a calc() against
+  // the stage rather than a measured pixel number: no viewport state to read,
+  // nothing to re-render on resize, and it stays a percentage so a classic
+  // scrollbar cannot push the card into horizontal overflow.
+  //
+  // At 1440 the expression resolves to 300 + 1250 × progress — the ramp it
+  // replaces, to the pixel — so the pace there is not merely preserved but
+  // identical, and the card still reaches the sides at progress 0.912.
+  const desktopEnd = ((1550 / 1440) * 100).toFixed(3);
+  const mediaWidth = isMobile
+    ? `${300 + progress * 650}px`
+    : `calc(300px + ${progress} * (${desktopEnd}% - 300px))`;
   const mediaHeight = 400 + progress * (isMobile ? 200 : 400);
 
   // The card cross-dissolves out of the poster as it grows. The collapsed
@@ -388,16 +405,16 @@ const ScrollExpandMedia = ({
                 second picture floating over the first.
 
                 The width cap is the stage's own width, not a fraction of it.
-                The growth ramp overshoots the viewport at both breakpoints, so
-                the cap is what the expanded card actually measures, and at 95%
-                it left a gold strip down each side — with the foot dissolved,
-                the two hardest lines on the page. `100%` rather than `100vw`
-                so a classic scrollbar cannot push the card past the stage and
-                into horizontal overflow. */}
+                The growth ramp overshoots the stage at every width, so the cap
+                is what the expanded card actually measures, and at 95% it left
+                a gold strip down each side — with the foot dissolved, the two
+                hardest lines on the page. `100%` rather than `100vw` so a
+                classic scrollbar cannot push the card past the stage and into
+                horizontal overflow. */}
             <div
               className="hero-card hero-foot-fade hero-foot-halo absolute left-1/2 top-1/2 z-0 -translate-x-1/2 -translate-y-1/2"
               style={{
-                width: `${mediaWidth}px`,
+                width: mediaWidth,
                 height: `${mediaHeight}px`,
                 maxWidth: "100%",
                 maxHeight: "85vh",
@@ -548,7 +565,7 @@ const ScrollExpandMedia = ({
             <div
               className="pointer-events-none absolute left-1/2 top-1/2 z-10 isolate -translate-x-1/2 -translate-y-1/2 overflow-hidden"
               style={{
-                width: `${mediaWidth}px`,
+                width: mediaWidth,
                 height: `${mediaHeight}px`,
                 maxWidth: "100%",
                 maxHeight: "85vh",
