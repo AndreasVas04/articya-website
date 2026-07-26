@@ -469,6 +469,191 @@ body {
 .gold-floor {
   background-color: var(--color-gold-wash);
 }
+/* The ground under the "What we do" clearing — the hero's world carried on
+   below the seam instead of the picture ending and colour beginning. The
+   photograph travels at a fraction of the page's rate (see GroundParallax),
+   which is the one scroll-linked layer on this page; everything else in the
+   atmospheric set is painted once.
+   The mask belongs to the block, not to the plate moving inside it: it fades
+   the ground to nothing over the section's own first and last rows, so the
+   gold seam above is untouched, the fade-out completes in the empty gap over
+   the first offer panel, and the travelling photograph can never bring its
+   own edge into view. Eased rather than linear, for the reason
+   `.photo-edge-dissolve` is — a straight alpha ramp leaves a visible kink
+   where it meets the flat ground. */
+.ground-parallax {
+  /* The same length as the gold field's own edge ramp, so the ground arriving
+     and the anchor edge falling to the floor are one event rather than two
+     ramps of different lengths crossing each other. */
+  --ground-fade: 72px;
+  --ground-mask: linear-gradient(
+    to bottom,
+    transparent 0,
+    rgb(0 0 0 / 0.06) calc(var(--ground-fade) * 0.3),
+    rgb(0 0 0 / 0.32) calc(var(--ground-fade) * 0.55),
+    rgb(0 0 0 / 0.72) calc(var(--ground-fade) * 0.78),
+    #000 var(--ground-fade),
+    #000 calc(100% - var(--ground-fade)),
+    rgb(0 0 0 / 0.72) calc(100% - var(--ground-fade) * 0.78),
+    rgb(0 0 0 / 0.32) calc(100% - var(--ground-fade) * 0.55),
+    rgb(0 0 0 / 0.06) calc(100% - var(--ground-fade) * 0.3),
+    transparent 100%
+  );
+  -webkit-mask-image: var(--ground-mask);
+  mask-image: var(--ground-mask);
+}
+/* The plate that travels. Over-sized well past the block on every side so no
+   edge of it can reach the mask's held middle at any scroll position — the
+   vertical margin covers the travel several times over, and the horizontal
+   one covers the blur, which would otherwise sample transparency and fade
+   the picture's own left and right edges into gold.
+   Blurred and desaturated to the environment-photograph rule, and lifted
+   rather than darkened: this ground is gold, so a photograph sunk into it
+   has to give up its own contrast upward, not down. The `contrast()` below 1
+   is a black-point lift, and it is what the lead's legibility actually turned
+   on: at 20% opacity the picture's mid-tones barely move the gold, but its
+   deepest shadows still pulled the ground under 17px `ink-soft`, which starts
+   with only 5.62 on bare gold and has nothing to give. Raising the pool alone
+   bought +0.2 of ratio between 0.70 and the 0.78 ceiling; capping how dark
+   the photograph may go was the lever that worked. */
+.ground-plate {
+  --ground-oversize: 280px;
+  /* Wider than the blur's own soft edge: blur(4px) magnified 4x fades over
+     ~48px, and that fade must die outside the mask's frame or the picture
+     pales at the window's first and last columns. */
+  --ground-bleed: 96px;
+  top: calc(-1 * var(--ground-oversize));
+  bottom: calc(-1 * var(--ground-oversize));
+  left: calc(-1 * var(--ground-bleed));
+  right: calc(-1 * var(--ground-bleed));
+  opacity: 0.2;
+  will-change: transform;
+}
+/* The blur is rasterized at a quarter size and magnified back by a composited
+   scale, which is the whole reason this layer is affordable. A blur's cost is
+   the area it has to rasterize, and at 1440 this plate is ~1584x1942: measured
+   through the section at natural scroll speed, blur(16px) applied at full size
+   put 66 of 145 frames over 24ms with a 50ms p95, and blur(4px) still put 54
+   there — the radius barely matters, the area is everything. Blurring a
+   quarter-size box and scaling it 4x gives the identical 16px result off 1/16th
+   the pixels: 9 frames of 176, which is the page without this layer at all. */
+.ground-plate-blur {
+  left: 0;
+  top: 0;
+  width: 25%;
+  height: 25%;
+  transform: scale(4);
+  transform-origin: 0 0;
+  filter: blur(4px) saturate(0.45) contrast(0.72) brightness(1.14);
+}
+@media (min-width: 768px) {
+  .ground-parallax {
+    --ground-fade: 150px;
+  }
+  .ground-plate {
+    --ground-oversize: 560px;
+  }
+}
+/* The gold the words stand on — one soft-edged pool per block of type, not a
+   veil over the frame. It is anchored to the block it carries rather than to
+   the section, because the content column caps at 84rem while the viewport
+   does not: a pool placed at a fraction of the *viewport* sits under the
+   heading at 1440 and nine points of screen width off it at 2560. Given the
+   block's own box it tracks the type at every width by construction.
+
+   The falloff is separable — a fade across, multiplied by a fade down —
+   rather than one radial, and that is measured rather than stylistic. A
+   radial's alpha at the *corners* of a wide block of type is far below its
+   centre: over the 606px lead column an ellipse sized to the block delivered
+   0.62 at the middle and ~0.15 at the ends of the lines, which is where the
+   contrast actually failed. Sizing the ellipse until the corners held would
+   have taken it past 2000px across — the full-frame veil this is not allowed
+   to be. Two crossed fades hold the declared alpha over the whole block and
+   spend every bit of softness in the margin around it. The fade length *is*
+   the bleed, so the held region is exactly the block at every viewport, and
+   the pool reaches zero on its own edges — no cut can show.
+
+   The two masks multiply by nesting rather than by `mask-composite`, so a
+   browser without composite support cannot fall back to the horizontal fade
+   alone and draw a hard edge along the top and bottom.
+
+   Between and around the pools the ground stays photographic: on desktop the
+   globe's half of the grid, both side margins and the section's own edges are
+   never touched. On a phone the type block is the full width of the screen,
+   so the horizontal softness has nowhere to live and lands off-frame — there
+   the pool's locality is vertical, which is the axis that has room. */
+.ground-lift {
+  --lift-bleed-x: 96px;
+  --lift-fade: 72px;
+  --lift-bleed-top: var(--lift-fade);
+  position: absolute;
+  left: calc(-1 * var(--lift-bleed-x));
+  right: calc(-1 * var(--lift-bleed-x));
+  top: calc(-1 * var(--lift-bleed-top));
+  bottom: calc(-1 * var(--lift-fade));
+  --lift-mask-y: linear-gradient(
+    to bottom,
+    transparent 0,
+    rgb(0 0 0 / 0.1) calc(var(--lift-fade) * 0.3),
+    rgb(0 0 0 / 0.45) calc(var(--lift-fade) * 0.55),
+    rgb(0 0 0 / 0.82) calc(var(--lift-fade) * 0.8),
+    #000 var(--lift-fade),
+    #000 calc(100% - var(--lift-fade)),
+    rgb(0 0 0 / 0.82) calc(100% - var(--lift-fade) * 0.8),
+    rgb(0 0 0 / 0.45) calc(100% - var(--lift-fade) * 0.55),
+    rgb(0 0 0 / 0.1) calc(100% - var(--lift-fade) * 0.3),
+    transparent 100%
+  );
+  -webkit-mask-image: var(--lift-mask-y);
+  mask-image: var(--lift-mask-y);
+}
+/* Below `md` the heading sits on the section's own top row — that is the fold
+   decision, not a gap to close — and the section clips. A pool that bleeds
+   upward past that edge is cut there, and the cut lands exactly on the hero
+   seam: measured, it took that join from 3 to 18 while every other join on
+   the page holds 3 or under. Sitting flush instead and spending the fade
+   downward costs nothing, because it is spent over the same 72px the
+   photograph itself takes to arrive — the lift and the ground come up
+   together, and the seam keeps the single gold it shares with the hero. */
+@media (max-width: 767px) {
+  .ground-lift-flush-top {
+    --lift-bleed-top: 0px;
+    /* Shorter than the default, because flush the fade is spent *inside* the
+       block rather than above it, and the lead begins only 50px down. At 72px
+       its first line sat mid-ramp and measured 4.26–4.56 across runs — on the
+       floor, and moving. At 48px the pool is at full strength before the lead
+       starts and only the heading sits in the ramp, which is `ink` against a
+       3.0 floor with 7.4 measured: the one element here that can spare it. */
+    --lift-fade: 48px;
+  }
+}
+/* 0.62 was the start and it missed: at that strength the lead measured 4.28
+   on a phone against its 4.5 floor. Three 0.04 steps take it to 0.74, still
+   under the 0.78 ceiling, and the plate's black-point lift carries the rest —
+   between them the lead clears with margin instead of sitting on the line. */
+.ground-lift-pool {
+  --lift-fade-x: linear-gradient(
+    to right,
+    transparent 0,
+    rgb(0 0 0 / 0.1) calc(var(--lift-bleed-x) * 0.3),
+    rgb(0 0 0 / 0.45) calc(var(--lift-bleed-x) * 0.55),
+    rgb(0 0 0 / 0.82) calc(var(--lift-bleed-x) * 0.8),
+    #000 var(--lift-bleed-x),
+    #000 calc(100% - var(--lift-bleed-x)),
+    rgb(0 0 0 / 0.82) calc(100% - var(--lift-bleed-x) * 0.8),
+    rgb(0 0 0 / 0.45) calc(100% - var(--lift-bleed-x) * 0.55),
+    rgb(0 0 0 / 0.1) calc(100% - var(--lift-bleed-x) * 0.3),
+    transparent 100%
+  );
+  background-color: color-mix(in srgb, var(--color-gold-wash) 74%, transparent);
+  -webkit-mask-image: var(--lift-fade-x);
+  mask-image: var(--lift-fade-x);
+}
+@media (min-width: 768px) {
+  .ground-lift {
+    --lift-fade: 96px;
+  }
+}
 /* The offer panels are full-bleed, so their text is inset from the viewport
    edge rather than held in the 72rem content column: in the column a 576px
    block starts 400px in on a 1920 screen, which reads as floating toward the

@@ -5,6 +5,7 @@ import { StageScene } from "@/components/stage-entrance";
 import { LivingAtmosphere } from "@/components/living-atmosphere";
 import { OfferPanel } from "@/components/offer-panel";
 import { GainTrail } from "@/components/gain-trail";
+import { GroundLift, GroundParallax } from "@/components/ground-parallax";
 import { DottedGlobe } from "@/components/ui/dotted-globe";
 import { LampCta } from "@/components/ui/lamp";
 import { ButtonLink } from "@/components/ui/button";
@@ -111,70 +112,93 @@ export default function HomePage() {
               they were sitting inside of, so the section stops floating in the
               middle of a 1440 frame. Capped against the viewport so it never
               crowds the edges on a 1280 laptop. Mobile and md are untouched. */}
-          <StageScene
-            fireMargin="-30%"
-            className="relative mx-auto max-w-6xl px-4 xl:max-w-[min(84rem,92vw)]"
-          >
-            {/* Text left, the lit world right, the stats ledger reading
-                under it — with the countries column landing directly beneath
-                the globe, since the globe is that number made visible. */}
-            <div className="relative md:grid md:grid-cols-12 md:items-start md:gap-x-12 xl:gap-x-20">
-              <div className="stage-lift md:col-span-6 md:self-center">
-                <span
-                  aria-hidden="true"
-                  className="stage-rule block h-[1.25px] w-16 bg-amber"
-                />
-                <div className="stage-mask mt-2">
-                  <h2
-                    className="stage-mask-rise font-display text-[1.75rem] font-semibold leading-[1.1] tracking-[-0.01em] md:text-[clamp(2rem,4vw,3rem)]"
-                    style={{ transitionDelay: "80ms" }}
+          {/* The clearing stands on photographic ground, not on flat gold:
+              hero-2 travels behind this block at a fraction of the page's
+              rate, so the world the hero opened on carries on under the
+              heading instead of ending at the seam. Full-bleed wrapper —
+              the scene has to reach the section's own edges, and the stage
+              below it is held in the content column. */}
+          <div className="relative">
+            <GroundParallax src="/images/hero-2.jpg" />
+            <StageScene
+              fireMargin="-30%"
+              className="relative mx-auto max-w-6xl px-4 xl:max-w-[min(84rem,92vw)]"
+            >
+              {/* Text left, the lit world right, the stats ledger reading
+                  under it — with the countries column landing directly beneath
+                  the globe, since the globe is that number made visible. */}
+              <div className="relative md:grid md:grid-cols-12 md:items-start md:gap-x-12 xl:gap-x-20">
+                {/* The wrapper exists to give the pool a box: the lift is
+                    anchored to the type column, not to the section, so it
+                    tracks the column at every width — and it sits outside
+                    `.stage-lift` so the ground the words stand on is already
+                    there when they arrive, rather than riding in with them. */}
+                <div className="relative md:col-span-6 md:self-center">
+                  <GroundLift className="ground-lift-flush-top" />
+                  <div className="stage-lift relative">
+                    <span
+                      aria-hidden="true"
+                      className="stage-rule block h-[1.25px] w-16 bg-amber"
+                    />
+                    <div className="stage-mask mt-2">
+                      <h2
+                        className="stage-mask-rise font-display text-[1.75rem] font-semibold leading-[1.1] tracking-[-0.01em] md:text-[clamp(2rem,4vw,3rem)]"
+                        style={{ transitionDelay: "80ms" }}
+                      >
+                        {whatWeDo.title}
+                      </h2>
+                    </div>
+                    <div
+                      className="stage-rise"
+                      style={{ transitionDelay: "250ms" }}
+                    >
+                      <p className="mt-2 border-l border-hairline pl-5 text-[1.0625rem] leading-[1.5] text-ink-soft md:mt-8 md:text-xl md:leading-[1.55]">
+                        {whatWeDo.lead}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                {/* The globe rises with the wave, then its own rotation
+                    finishes the arrival: the sphere spins in and settles into
+                    the turn it never stops making, so the entrance belongs to
+                    the object. No glow behind it — the halo is the section's,
+                    not a flash of the entrance. */}
+                <div className="relative mt-2 md:col-span-6 md:mt-0 md:self-center">
+                  <div
+                    className="stage-globe relative isolate"
+                    style={{ transitionDelay: "200ms" }}
                   >
-                    {whatWeDo.title}
-                  </h2>
-                </div>
-                <div
-                  className="stage-rise"
-                  style={{ transitionDelay: "250ms" }}
-                >
-                  <p className="mt-2 border-l border-hairline pl-5 text-[1.0625rem] leading-[1.5] text-ink-soft md:mt-8 md:text-xl md:leading-[1.55]">
-                    {whatWeDo.lead}
-                  </p>
+                    <DottedGlobe className="mx-auto w-full max-w-[16rem] md:max-w-[24rem] xl:max-w-[30rem]" />
+                  </div>
                 </div>
               </div>
-              {/* The globe rises with the wave, then its own rotation
-                  finishes the arrival: the sphere spins in and settles into
-                  the turn it never stops making, so the entrance belongs to
-                  the object. No glow behind it — the halo is the section's,
-                  not a flash of the entrance. */}
-              <div className="relative mt-2 md:col-span-6 md:mt-0 md:self-center">
-                <div
-                  className="stage-globe relative isolate"
-                  style={{ transitionDelay: "200ms" }}
-                >
-                  <DottedGlobe className="mx-auto w-full max-w-[16rem] md:max-w-[24rem] xl:max-w-[30rem]" />
-                </div>
-              </div>
-            </div>
 
-            {/* The ledger carries no rules of its own beyond the desktop
-                column dividers: horizontal lines are the one mark this page
-                never draws, so the mobile rows structure themselves on the
-                numeral/label baseline alone and the grid fades straight
-                into the gold below. The rows are the wave's last beats, and
-                each counter still starts its 700ms count only when it
-                crosses into view — the ledger writes itself. */}
-            <div className="mt-2 grid md:mt-12 md:grid-cols-3 md:divide-x md:divide-hairline">
-              {whatWeDo.stats.map((stat, i) => (
-                <div
-                  key={stat.label}
-                  className="stage-rise"
-                  style={{ transitionDelay: `${550 + i * 130}ms` }}
-                >
-                  <StatCounter num={stat.num} label={stat.label} />
+              {/* The ledger carries no rules of its own beyond the desktop
+                  column dividers: horizontal lines are the one mark this page
+                  never draws, so the mobile rows structure themselves on the
+                  numeral/label baseline alone and the grid fades straight
+                  into the gold below. The rows are the wave's last beats, and
+                  each counter still starts its 700ms count only when it
+                  crosses into view — the ledger writes itself. */}
+              <div className="relative mt-2 md:mt-12">
+                {/* The ledger's own pool. Same technique, its own box: the
+                    numerals and labels sit a screen apart from the heading on
+                    a phone, so one pool cannot carry both. */}
+                <GroundLift />
+                <div className="relative grid md:grid-cols-3 md:divide-x md:divide-hairline">
+                  {whatWeDo.stats.map((stat, i) => (
+                    <div
+                      key={stat.label}
+                      className="stage-rise"
+                      style={{ transitionDelay: `${550 + i * 130}ms` }}
+                    >
+                      <StatCounter num={stat.num} label={stat.label} />
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </StageScene>
+              </div>
+            </StageScene>
+          </div>
 
           {/* The first panel opens on a photograph that dissolves in over its
               own top edge, so the join already reads as a fade rather than a

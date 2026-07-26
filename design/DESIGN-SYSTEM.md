@@ -818,6 +818,8 @@ section. Nothing else may put a gradient or texture on a ground:
 | `.hero-foot-pool` | The light the picture leaves on the ground: `amber-soft` cresting just above the card's base, gathered in the middle rather than run across the width, gone by the section's last row so the seam below is untouched | Anchored to the home hero's lower edge, behind the backdrop photograph |
 | `.photo-vignette` | Edges falling toward `pine-950` | Inside photographic frames and hero photos only |
 | `.film-grain` | Fine tiled SVG grain at 5% opacity, killing the flat digital-paint feel | Over dark grounds and photographic frames |
+| `.ground-parallax` / `.ground-plate` | The photographic ground under the "What we do" clearing: one of our own photographs, blurred and lifted, travelling at a fraction of the page's scroll rate behind the block. The mask belongs to the block, the plate moves inside it | Behind the "What we do" stage only — the one scroll-linked layer on the site (see The travelling ground) |
+| `.ground-lift` | The gold a block of type stands on once a photograph is under it: a soft-edged pool anchored to the block, its falloff a fade across multiplied by a fade down | Over the "What we do" type column and its stats ledger only |
 | `.gold-field` | Top and bottom edges at `gold-anchor`, falling to it at zero alpha toward the middle where the `gold-wash` floor takes over | Every home section, and every full-bleed offer panel — it is what makes the seams continuous |
 | `.gold-field-chrome-top` / `-bottom` | The same field with that one edge ending on `gold-chrome` instead, and — on the top variant — held flat for the header's height before the ramp starts | The hero (top) and the closing section (bottom) only: the two edges that meet a chrome bar rather than another section |
 | `.gold-field-open-top` | The same field with its top edge painting nothing at all | A section or panel whose top opens onto its own section's floor rather than onto another field edge — the first offer panel only |
@@ -980,9 +982,12 @@ appearing on a fixed lower edge.
 
 Rules, in order of precedence:
 
-- **Static only.** Every layer is painted once and never animated, never
-  scroll-linked, never repainted — atmosphere is free on the GPU and needs no
-  reduced-motion variant.
+- **Static only, with one named exception.** Every layer is painted once and
+  never animated, never scroll-linked, never repainted — atmosphere is free on
+  the GPU and needs no reduced-motion variant. The single exception is the
+  travelling ground below, which earns it by being the one place the page has
+  to express *depth* rather than light, and which does carry a reduced-motion
+  variant.
 - **Measured on the composite.** Layered grounds create pixel values between
   tokens, so text contrast is verified against the actual rendered composite
   (screenshot sampling behind each text zone), not against the flat token.
@@ -995,6 +1000,90 @@ Rules, in order of precedence:
   second source. Everything else is pine and plaster, and every layer stays
   too faint to read as glow, shape, or blob (whisper-level; if a screenshot
   shows a hard edge, it is too strong).
+
+## The travelling ground
+
+**"What we do" stands on photographic ground, not on flat gold.** The hero's
+card dissolves its picture into the gold at its foot; below the seam the
+section used to be colour and nothing else, so the eye read one world ending
+and a flat field beginning. `hero-2.jpg` — the tree-lined road from the same
+walk as the hero slides, the only photograph in the graded set that is
+landscape, has real depth and carries no readable faces — now sits behind the
+block and moves at a fraction of the page's rate. Depth is **0.30** on desktop
+and **0.18** on a phone, measured over the block's own traversal rather than
+the document's, and centred on it, so the plate's travel is symmetric.
+
+**Nothing about it captures the scroll.** There is no pin, no clamp, no
+delay, no progression gated on an animation. A passive listener coalesces into
+one `requestAnimationFrame`, and that frame writes a single transform read from
+`window.scrollY`. Layout is measured on resize, never per frame. Under
+`prefers-reduced-motion` the effect never arms: the plate renders untransformed,
+which is the mid-traversal frame, and the lift is unchanged.
+
+**The mask belongs to the block, the plate moves inside it.** That is what
+makes the layer's own edge unreachable: what fades is always the same two rows
+of the section, over the same **72px / 150px** the gold field's own edge ramp
+takes, so the ground arriving and the anchor edge falling are one event rather
+than two ramps crossing. The plate is over-sized 280px (mobile) / 560px
+(desktop) vertically and 96px horizontally — the horizontal figure set by the
+blur's own soft edge, not by the travel. Measured at thirteen viewports from
+320×480 to 2560×1440, twenty-seven scroll positions each: minimum plate
+overhang **96px**, never exposed. Both seams are untouched — hero → section and
+ground → first panel measure **3** and **2** at both viewports, identical with
+the layer present and absent.
+
+**Blur is priced by area, not by radius, and that decided the construction.**
+At 1440 this plate is ~1584×1942. Applied at full size, `blur(16px)` put **66
+of 145 frames over 24ms** with a 50ms p95 through the section; `blur(4px)` still
+put 54 there. Blurring a quarter-size box and scaling it back by 4 gives the
+identical 16px result off a sixteenth of the pixels: **10 of 180 frames**,
+against **9 of 178** for the same page with the layer removed. The globe, which
+shares this zone, is no longer the cost it once was — measured with and without
+its canvas, the difference through the section is inside the noise.
+
+**The lift's falloff is separable, and that is measured rather than
+stylistic.** A radial's alpha at the *corners* of a wide block of type is far
+below its centre: over the 606px lead column, an ellipse sized to the block
+delivered its full strength at the middle and about **0.15** at the ends of the
+lines — which is exactly where the contrast failed. Sizing the ellipse until
+the corners held would have taken it past 2000px across, which is the
+full-frame veil this may never be. A fade across multiplied by a fade down
+holds the declared alpha over the whole block and spends its softness in the
+margin. The two masks multiply by nesting rather than by `mask-composite`, so
+no browser can fall back to one axis and draw a hard edge on the other.
+
+The pool is anchored to the **block**, not the section: the content column caps
+at 84rem while the viewport does not, so a pool placed at a fraction of the
+viewport sits under the heading at 1440 and nine points of screen width off it
+at 2560. Below `md` the heading sits on the section's own top row and the
+section clips, so that pool sits flush and spends its fade downward — bleeding
+upward past that edge cut the fade exactly on the hero seam and took the join
+from 3 to **18**.
+
+**Strength was set by measurement, in the steps the brief allows.** The pool
+started at 0.62 and missed: the lead measured 4.28 against its 4.5 floor. It
+sits at **0.74** now, still under the 0.78 ceiling, and the plate carries a
+black-point lift (`contrast(0.72)`) because raising the pool alone bought only
++0.2 of ratio across that whole range — at 20% opacity the photograph's
+mid-tones barely move the gold, but its deepest shadows still pulled the ground
+under 17px `ink-soft`, which starts with only 5.62 on bare gold and has nothing
+to give.
+
+Measured at glyph cores on the rendered composite, worst case swept across the
+section's whole traversal at twenty scroll positions, both viewports:
+
+| Element | Token | Floor | Desktop | Mobile |
+|---|---|---|---|---|
+| "What we do" heading | `ink` | 3.0 | **7.46** | **7.55** |
+| Lead paragraph | `ink-soft` | 4.5 | **4.52** | **4.60** |
+| Stat numerals | `ink` | 3.0 | **7.40–7.47** | **7.45–7.47** |
+| Stat labels | `ink-soft` | 4.5 | **4.60–4.66** | **4.57–4.61** |
+
+The ground costs **no image bytes**: the plate resolves to the same variant the
+hero slideshow has already fetched for its third slide (`hero-2-1366.avif` at
+390, `hero-2-1536.avif` at 1440) — one request serves both. The whole layer
+adds **~1.1 KB gzipped**: +363 B of HTML, +464 B of CSS, ~+300 B of route JS,
+with First Load JS unchanged.
 
 ## Do / Don't
 
