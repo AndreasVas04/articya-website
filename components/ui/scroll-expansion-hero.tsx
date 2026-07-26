@@ -273,11 +273,15 @@ const ScrollExpandMedia = ({
   const titleOpacity = 1 - titleExit;
   const titleShift = -titleExit * (isMobile ? 30 : 40);
 
-  // The card's own legibility wash for the intro once it is open — held while
-  // the headline could overlap, then eased to a thin lift so the rest of the
-  // photograph stays at strength.
+  // The card's legibility wash while the poster headline is still crossing the
+  // growing frame. It used to bottom out at 0.15 and hold there — a 15% gold
+  // veil over the whole photograph for as long as the card was open, on top of
+  // the intro's own lift and the foot dissolve. The headline has finished its
+  // handoff by 0.35, so past that the wash has nothing left to carry and runs
+  // to zero instead: at full expansion the picture is the grade and nothing
+  // else, and the intro's block-anchored pool carries the dark ink on its own.
   const overlayOpacity =
-    progress < 0.35 ? 0.75 : Math.max(0.15, 0.75 - (progress - 0.35) * 1.0);
+    progress < 0.35 ? 0.75 : 0.75 * (1 - (progress - 0.35) / 0.65);
 
   const firstWord = title ? title.split(" ")[0] : "";
   const restOfTitle = title ? title.split(" ").slice(1).join(" ") : "";
@@ -387,7 +391,7 @@ const ScrollExpandMedia = ({
           <div aria-hidden="true" className="hero-sky-lift absolute inset-0" />
           <div
             aria-hidden="true"
-            className="hero-title-pool absolute left-1/2 top-[23%] h-[15rem] w-[38rem] max-w-[92vw] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold-wash/26 blur-[72px]"
+            className="hero-title-pool absolute left-1/2 top-[23%] h-[13rem] w-[28rem] max-w-[92vw] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold-wash/26 blur-[60px]"
           />
         </motion.div>
 
@@ -571,19 +575,6 @@ const ScrollExpandMedia = ({
                 maxHeight: "85vh",
               }}
             >
-              {/* The local lift. The statement now sits inside the photograph
-                  rather than on a gold band cut out beneath it, so the ground
-                  behind the words is the image. A soft-edged gold rise carries
-                  the dark ink over it — near-solid at the card's base, fading
-                  to nothing well above the text, so the rest of the frame
-                  stays at full photographic strength. This is the lamp CTA's
-                  technique, applied to a photograph: a local lightening, not a
-                  veil over the whole picture. It fades in with the intro. */}
-              <div
-                aria-hidden="true"
-                data-expanded={!mounted || contentVisible ? "" : undefined}
-                className="hero-intro hero-photo-lift hero-foot-fade pointer-events-none absolute inset-x-0 bottom-0 h-[56%] rounded-[inherit] rounded-t-none opacity-0 duration-[400ms] ease-out-quart data-[expanded]:opacity-100 data-[expanded]:transition-opacity"
-              />
               <div
                 data-expanded={!mounted || contentVisible ? "" : undefined}
                 className={cn(
@@ -596,16 +587,34 @@ const ScrollExpandMedia = ({
                   mounted && !contentVisible && "pointer-events-none"
                 )}
               >
-                {/* The pocket of warm light the statement rests in — a soft
-                    amber pool centered on the words, riding over the lift so
-                    the region reads as sun gathering low in the frame rather
-                    than as a panel edge. */}
-                <div
-                  aria-hidden="true"
-                  className="pointer-events-none absolute left-1/2 top-[42%] h-[85%] w-[62%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-amber-soft/16 blur-[100px]"
-                />
-                <div className="relative flex flex-col items-center">
-                  {children}
+                {/* The block the intro's ground is measured against. The
+                    statement's own track sets it, so the lift and the warm
+                    pocket below are anchored to the words at every viewport
+                    instead of to the card — which is what keeps the rest of the
+                    photograph at full strength. */}
+                <div className="relative flex w-full max-w-[30rem] flex-col items-center md:max-w-[46rem]">
+                  {/* The local lift. The statement sits inside the photograph
+                      rather than on a gold band cut out beneath it, so the
+                      ground behind the words is the image. A soft-edged gold
+                      pool carries the dark ink over it — held across this
+                      block, gone by 92px either side of it and 44px above, so
+                      the rest of the frame is the photograph and nothing else.
+                      A fade across nested inside a fade down, the two
+                      multiplying; see the class for why it is not a radial. */}
+                  <div aria-hidden="true" className="hero-photo-lift pointer-events-none">
+                    <div className="hero-photo-lift-pool absolute inset-0" />
+                  </div>
+                  {/* The pocket of warm light the statement rests in — a soft
+                      amber pool centered on the words, riding over the lift so
+                      the region reads as sun gathering low in the frame rather
+                      than as a panel edge. */}
+                  <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute left-1/2 top-1/2 h-[150%] w-[78%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-amber-soft/16 blur-[80px]"
+                  />
+                  <div className="relative flex w-full flex-col items-center">
+                    {children}
+                  </div>
                 </div>
               </div>
               {/* The gold frame that used to ring this overlay is gone. It

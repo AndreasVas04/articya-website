@@ -233,24 +233,106 @@ body {
   }
 }
 /* The home hero's local lift — the intro's ground once the card is open. The
-   statement sits inside the photograph now, low in the frame, so a soft-edged
-   gold rise carries the dark ink over it: near-solid `gold-wash` at the card's
-   base, fading to nothing well above the words so the rest of the picture
-   stays at full strength. Every stop is `gold-wash` at a falling alpha, ending
-   on the zero-alpha token rather than `transparent`, so the ramp never pulls
-   through grey. This is the lamp CTA's local lightening applied to a
-   photograph, not a veil over the whole frame — the offer panels' reading wash
-   is the same idea, and clears 4.5:1 the same way, measured on the composite
-   over every slide. */
+   statement sits inside the photograph, low in the frame, so a soft-edged gold
+   pool carries the dark ink over it.
+
+   It is anchored to the block of type, not to the card. A band across the
+   card's whole lower half was 6.1x the area of the words it carries at 1440
+   and 2.6x at 390, and every pixel of that surplus fell on the walkers in the
+   photograph's lower half — measured, it lifted the black point of the card's
+   lower-left tenfold and cost the picture 44% of its RMS contrast. Given the
+   block's own box the pool tracks the words at every viewport by construction,
+   and lands inside 1.25x their width and 1.5x their height.
+
+   The falloff is separable — a fade across multiplied by a fade down — for the
+   reason `.ground-lift`'s is: a radial sized to a wide block delivers its
+   strength at the middle and a fraction of it at the ends of the lines, which
+   is exactly where the contrast has to hold. The two masks multiply by nesting
+   rather than by `mask-composite`, so no browser can fall back to one axis and
+   draw a hard edge on the other. The fade length is the bleed, so the held
+   region is the block itself and the pool reaches zero on its own edges.
+
+   The bottom bleed is the band's own padding, which puts the pool's last row
+   on the card's base — under the foot dissolve, where the ground is gold
+   anyway. So the lift no longer carries a foot mask of its own: it has nothing
+   left to dissolve, and the card's dissolve is untouched.
+
+   The ramp lengths are declared apart from the box, and that is the difference
+   between a pool and a panel. Bleed alone would hold full strength over the
+   whole block and spend its softness only outside it, which lands a soft-edged
+   rectangle on the photograph. The block is a track, not an ink extent: the
+   statement's two rendered lines are 574px inside a 736px track, so the ramps
+   start inboard of the box and the held region is the words themselves — the
+   same total footprint, three times the softness. */
 .hero-photo-lift {
-  background: linear-gradient(
-    to top,
-    var(--color-gold-wash) 0%,
-    color-mix(in srgb, var(--color-gold-wash) 92%, transparent) 22%,
-    color-mix(in srgb, var(--color-gold-wash) 68%, transparent) 46%,
-    color-mix(in srgb, var(--color-gold-wash) 30%, transparent) 70%,
-    var(--color-gold-wash-0) 100%
+  /* Box: the block plus its bleed. 1.25x the block's width, 1.5x its height. */
+  --intro-lift-x: 92px;
+  --intro-lift-top: 44px;
+  --intro-lift-bottom: 24px;
+  /* Ramp: how much of that box is fade rather than held. */
+  --intro-fade-x: 150px;
+  --intro-fade-top: 56px;
+  --intro-fade-bottom: 46px;
+  position: absolute;
+  left: calc(-1 * var(--intro-lift-x));
+  right: calc(-1 * var(--intro-lift-x));
+  top: calc(-1 * var(--intro-lift-top));
+  bottom: calc(-1 * var(--intro-lift-bottom));
+  --intro-mask-y: linear-gradient(
+    to bottom,
+    transparent 0,
+    rgb(0 0 0 / 0.1) calc(var(--intro-fade-top) * 0.3),
+    rgb(0 0 0 / 0.45) calc(var(--intro-fade-top) * 0.55),
+    rgb(0 0 0 / 0.82) calc(var(--intro-fade-top) * 0.8),
+    #000 var(--intro-fade-top),
+    #000 calc(100% - var(--intro-fade-bottom)),
+    rgb(0 0 0 / 0.82) calc(100% - var(--intro-fade-bottom) * 0.8),
+    rgb(0 0 0 / 0.45) calc(100% - var(--intro-fade-bottom) * 0.55),
+    rgb(0 0 0 / 0.1) calc(100% - var(--intro-fade-bottom) * 0.3),
+    transparent 100%
   );
+  -webkit-mask-image: var(--intro-mask-y);
+  mask-image: var(--intro-mask-y);
+}
+.hero-photo-lift-pool {
+  --intro-mask-x: linear-gradient(
+    to right,
+    transparent 0,
+    rgb(0 0 0 / 0.1) calc(var(--intro-fade-x) * 0.3),
+    rgb(0 0 0 / 0.45) calc(var(--intro-fade-x) * 0.55),
+    rgb(0 0 0 / 0.82) calc(var(--intro-fade-x) * 0.8),
+    #000 var(--intro-fade-x),
+    #000 calc(100% - var(--intro-fade-x)),
+    rgb(0 0 0 / 0.82) calc(100% - var(--intro-fade-x) * 0.8),
+    rgb(0 0 0 / 0.45) calc(100% - var(--intro-fade-x) * 0.55),
+    rgb(0 0 0 / 0.1) calc(100% - var(--intro-fade-x) * 0.3),
+    transparent 100%
+  );
+  background-color: color-mix(in srgb, var(--color-gold-wash) 60%, transparent);
+  -webkit-mask-image: var(--intro-mask-x);
+  mask-image: var(--intro-mask-x);
+}
+@media (max-width: 767px) {
+  .hero-photo-lift {
+    /* The block is already the card's width less its padding, so the sideways
+       bleed only has the padding to spend; the locality that matters here is
+       vertical, as it is for `.ground-lift` on a phone. The statement runs to
+       325px of the 358px track there, so the sideways ramp is short by
+       necessity rather than by choice. */
+    --intro-lift-x: 44px;
+    --intro-lift-top: 48px;
+    --intro-lift-bottom: 20px;
+    --intro-fade-x: 53px;
+    --intro-fade-top: 56px;
+    --intro-fade-bottom: 48px;
+  }
+  /* A phone crops the same photograph tighter and lands the statement over
+     busier ground, so the same alpha reads 2.8 points of ratio lower there.
+     The pool holds its old strength on mobile rather than the desktop value,
+     which keeps the statement at the reading it already had. */
+  .hero-photo-lift-pool {
+    background-color: color-mix(in srgb, var(--color-gold-wash) 66%, transparent);
+  }
 }
 /* The poster opening's sky lift — the top gold fall that carries the collapsed
    headline. It is the same local-lightening idea as .hero-photo-lift, anchored
@@ -266,24 +348,60 @@ body {
    rendered composite: worst-case ink ≥ 4.5 across the headline band, both
    viewports (see the design system's hero-photo-lift note). */
 .hero-sky-lift {
+  /* Held across the headline band and released toward the frame's sides. The
+     fall used to run the full width, so it took the left ridge and the right
+     sky down with it to carry a headline that occupies a quarter of the
+     frame — measured in the poster's left sky, the picture kept 35% of the RMS
+     contrast and an eighth of the saturation it has with the layer off. The
+     hold is the headline's own width and the fade is an eighth of it either
+     side, which is the same 1.25x bound the intro's pool answers to. Still
+     anchored to the top edge, so it reads as light gathering in the sky rather
+     than a panel behind the words. */
+  --sky-hold: 23.5rem;
+  /* The ramp has to be long here in a way the intro's does not. That pool sits
+     on a dust road already near the gold; this one sits on a saturated blue
+     sky, and a 56% gold edge against that blue draws a line wherever it lands.
+     At 48px the narrowed fall read as a grey panel behind the headline —
+     exactly the panel the edge-anchored full-width version existed to avoid.
+     160px spends the same overlay over three times the distance, so the sides
+     read as haze thinning into the sky, and the frame's own left and right
+     stay the photograph. */
+  --sky-fade: 10rem;
   background: linear-gradient(
     to bottom,
     color-mix(in srgb, var(--color-gold-anchor) 56%, transparent) 0%,
-    color-mix(in srgb, var(--color-gold-anchor) 54%, transparent) 30%,
-    color-mix(in srgb, var(--color-gold-wash) 40%, transparent) 42%,
-    color-mix(in srgb, var(--color-gold-wash) 15%, transparent) 50%,
-    var(--color-gold-wash-0) 58%
+    color-mix(in srgb, var(--color-gold-anchor) 54%, transparent) 26%,
+    color-mix(in srgb, var(--color-gold-wash) 40%, transparent) 35%,
+    color-mix(in srgb, var(--color-gold-wash) 15%, transparent) 42%,
+    var(--color-gold-wash-0) 48%
   );
+  --sky-mask-x: linear-gradient(
+    to right,
+    transparent calc(50% - var(--sky-hold) / 2 - var(--sky-fade)),
+    rgb(0 0 0 / 0.1) calc(50% - var(--sky-hold) / 2 - var(--sky-fade) * 0.7),
+    rgb(0 0 0 / 0.45) calc(50% - var(--sky-hold) / 2 - var(--sky-fade) * 0.45),
+    rgb(0 0 0 / 0.82) calc(50% - var(--sky-hold) / 2 - var(--sky-fade) * 0.2),
+    #000 calc(50% - var(--sky-hold) / 2),
+    #000 calc(50% + var(--sky-hold) / 2),
+    rgb(0 0 0 / 0.82) calc(50% + var(--sky-hold) / 2 + var(--sky-fade) * 0.2),
+    rgb(0 0 0 / 0.45) calc(50% + var(--sky-hold) / 2 + var(--sky-fade) * 0.45),
+    rgb(0 0 0 / 0.1) calc(50% + var(--sky-hold) / 2 + var(--sky-fade) * 0.7),
+    transparent calc(50% + var(--sky-hold) / 2 + var(--sky-fade))
+  );
+  -webkit-mask-image: var(--sky-mask-x);
+  mask-image: var(--sky-mask-x);
 }
 @media (max-width: 767px) {
   .hero-sky-lift {
+    --sky-hold: 14.25rem;
+    --sky-fade: 6rem;
     background: linear-gradient(
       to bottom,
       color-mix(in srgb, var(--color-gold-anchor) 60%, transparent) 0%,
-      color-mix(in srgb, var(--color-gold-anchor) 58%, transparent) 33%,
-      color-mix(in srgb, var(--color-gold-wash) 42%, transparent) 45%,
-      color-mix(in srgb, var(--color-gold-wash) 15%, transparent) 53%,
-      var(--color-gold-wash-0) 61%
+      color-mix(in srgb, var(--color-gold-anchor) 58%, transparent) 26%,
+      color-mix(in srgb, var(--color-gold-wash) 42%, transparent) 33%,
+      color-mix(in srgb, var(--color-gold-wash) 15%, transparent) 38%,
+      var(--color-gold-wash-0) 43%
     );
   }
 }
@@ -583,8 +701,14 @@ body {
    so the horizontal softness has nowhere to live and lands off-frame — there
    the pool's locality is vertical, which is the axis that has room. */
 .ground-lift {
-  --lift-bleed-x: 96px;
-  --lift-fade: 72px;
+  /* The bleeds are the whole of the pool outside the block, so they are what
+     decides how much text-free ground it lightens. At 96px the ledger's pool
+     ran 1485x390 for a block of 1293x198 and reached almost a third of the way
+     up the section on either side of it; the held region is the block whatever
+     the bleed is, so shortening the ramps costs the type nothing and gives the
+     photograph back the margins. */
+  --lift-bleed-x: 44px;
+  --lift-fade: 44px;
   --lift-bleed-top: var(--lift-fade);
   position: absolute;
   left: calc(-1 * var(--lift-bleed-x));
@@ -651,7 +775,8 @@ body {
 }
 @media (min-width: 768px) {
   .ground-lift {
-    --lift-fade: 96px;
+    --lift-bleed-x: 72px;
+    --lift-fade: 44px;
   }
 }
 /* The offer panels are full-bleed, so their text is inset from the viewport

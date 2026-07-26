@@ -810,8 +810,8 @@ section. Nothing else may put a gradient or texture on a ground:
 | `.dusk-light` | Top-down wash of `pine-900` fading out — the sky a shade lighter than the ground it settles into | Top of dark sections |
 | `.dusk-ambient` | Centered radial pocket of `pine-900` | Behind content on long dark stretches |
 | `.lamp-falloff` | The seam lamp given direction: a warm whisper directly under the halo inside a wider `pine-800` light dome, shading the ground from lit to deep | Astride the home hero seam only — mirrored above it inside the hero, falling away below it, so the two grounds meet with no edge |
-| `.hero-photo-lift` | Soft-edged `gold-wash` rising from the card's base to nothing above the words — a **local** lightening, not a full-frame veil. The model for every lift on the site (`.hero-sky-lift`, the inner-page hero lift): strong where the words fall, gone by the edges, ending on the zero-alpha gold so the ramp never pulls through grey | Behind the home hero intro only, so dark ink reads low inside the photograph while the rest of the frame stays at full strength (4.5 floor; **5.9–7.3** measured on the composite, every slide) |
-| `.hero-sky-lift` | The poster opening's version: a top-anchored `gold-wash` fall, held across the headline band and easing into the sky by mid-frame | Behind the home collapsed headline, over the full-strength `home-hero.jpg` vista — carries the dark headline while the mountains and lake below stay at full strength (headline is large type, see the floors below; **5.6/6.0** measured) |
+| `.hero-photo-lift` / `-pool` | Soft-edged `gold-wash` pool **anchored to the block of type**, its falloff a fade across multiplied by a fade down — a **local** lightening, not a band across the frame. The model for every lift on the site (`.hero-sky-lift`, the inner-page hero lift): strong where the words fall, gone by the edges, ending on the zero-alpha gold so the ramp never pulls through grey | Behind the home hero intro only, so dark ink reads low inside the photograph while the rest of the frame stays at full strength (4.5 floor; **6.04/8.33** measured on the composite) |
+| `.hero-sky-lift` | The poster opening's version: a top-anchored `gold-wash` fall, **held across the headline band** and released to zero toward the frame's sides and into the sky by mid-frame | Behind the home collapsed headline, over the full-strength `home-hero.jpg` vista — carries the dark headline while the sky at the sides and the mountains and lake below stay at full strength (headline is large type, see the floors below; **6.0/6.2** measured) |
 | Inner-page hero lift | A **vertically graded** `gold-wash` pool: lighter across the large heading (3.0 floor), full behind the body-size lede (4.5 floor), masked to a central ellipse so the sides stay pure photograph. Two profiles, split by `md`, because the lede sits at a different height on the two viewports | Behind the centred type on the About/FAQ/Contact heroes only — the local lift that replaced the old full-frame scrim (measured: heading **3.7–3.9**, lede **4.6–4.75**) |
 | `.hero-foot-fade` | The card's foot: an eased bottom ramp taking the photograph and the intro's lift to nothing over `--hero-foot` (280px desktop / 176px mobile). `--foot-halo` inflates the mask box past the border box on the card, so the drop shadow's lower edge goes with it and the other three sides keep theirs | The expanded hero card and its intro lift — the elements the expansion sizes, never a parent |
 | `.hero-foot-arc` | A second mask nested inside the ramp, an ellipse reaching `--hero-foot-arc` (340/230px) up from the base, so the picture retreats higher at the centre than at the corners and the foot is a curve rather than a line | The hero frame only |
@@ -819,7 +819,7 @@ section. Nothing else may put a gradient or texture on a ground:
 | `.photo-vignette` | Edges falling toward `pine-950` | Inside photographic frames and hero photos only |
 | `.film-grain` | Fine tiled SVG grain at 5% opacity, killing the flat digital-paint feel | Over dark grounds and photographic frames |
 | `.ground-parallax` / `.ground-plate` | The photographic ground under the "What we do" clearing: one of our own photographs, blurred and lifted, travelling at a fraction of the page's scroll rate behind the block. The mask belongs to the block, the plate moves inside it | Behind the "What we do" stage only — the one scroll-linked layer on the site (see The travelling ground) |
-| `.ground-lift` | The gold a block of type stands on once a photograph is under it: a soft-edged pool anchored to the block, its falloff a fade across multiplied by a fade down | Over the "What we do" type column and its stats ledger only |
+| `.ground-lift` / `-pool` | The gold a block of type stands on once a photograph is under it: a soft-edged pool anchored to the block, its falloff a fade across multiplied by a fade down, its bleeds kept short so the ground beside the block stays photographic | Over the "What we do" type column and its stats ledger only |
 | `.gold-field` | Top and bottom edges at `gold-anchor`, falling to it at zero alpha toward the middle where the `gold-wash` floor takes over | Every home section, and every full-bleed offer panel — it is what makes the seams continuous |
 | `.gold-field-chrome-top` / `-bottom` | The same field with that one edge ending on `gold-chrome` instead, and — on the top variant — held flat for the header's height before the ramp starts | The hero (top) and the closing section (bottom) only: the two edges that meet a chrome bar rather than another section |
 | `.gold-field-open-top` | The same field with its top edge painting nothing at all | A section or panel whose top opens onto its own section's floor rather than onto another field edge — the first offer panel only |
@@ -883,8 +883,31 @@ while the vista below keeps the photograph at full strength. Edge-anchored
 from the top, it reads as morning light gathering in the sky, never a panel.
 A thinned title pool (`gold-wash`, ~26%, heavily blurred) concentrates a
 little more light on exactly where the words sit. Measured on the rendered
-composite, worst case at glyph cores: headline **5.6** (desktop) / **6.0**
+composite, worst case at glyph cores: headline **6.0** (desktop) / **6.2**
 (mobile), both clear.
+
+**The fall is held across the headline, not across the width.** It used to run
+the full frame, so a headline occupying a quarter of the picture took the whole
+sky down with it: measured in the poster's left ridge, well clear of the words,
+the picture kept **35%** of the RMS contrast and an eighth of the saturation it
+has with the layer off (0.037 against 0.105 at 1440; 0.017 against 0.078 at
+390). A fade across now holds it over the headline's own width — 23.5rem
+desktop, 14.25rem mobile — and releases it to zero either side, so the frame's
+left and right sky are the photograph.
+
+The ramp either side is **160px**, and that length is the whole of what keeps
+this a lift. The intro's pool sits on a dust road already near the gold and
+can afford a short ramp; this one sits on saturated blue, where a 56% gold edge
+draws a line wherever it lands. Tried at 48px — the bound the intro's pool
+answers to — the narrowed fall read as a **grey rectangle** behind the words,
+which is the panel the edge-anchored full-width version existed to avoid.
+Spending the same overlay over three times the distance makes the sides read
+as haze thinning into the sky. The cost is the geometric bound: the layer's
+measured footprint is **1.83×** the headline block's width at 1440 and 1.72× at
+390, against the 1.25× every other lift on the page holds. On a phone that
+bound is not reachable at all — a 227px headline in a 390px frame leaves 82px
+of margin, and any ramp soft enough not to draw an edge reaches the frame's
+sides first. Height lands inside it: **1.49×** at 1440.
 
 The headline hands off to the expanded state by **fading and settling up on
 the scroll clock**, not by splitting apart — the old 180vw slide whipped the
@@ -960,18 +983,62 @@ gold to act on — measured **zero differing pixels** in the collapsed opening.
 opens, the lede and the Contact Us button sit **low in the frame over the
 photograph itself**, not on a gold band beneath it — the old band read as a
 card stuck under a picture. A local `.hero-photo-lift` carries the dark ink:
-near-solid `gold-wash` at the card's base, fading to nothing above the words.
-It is the same local-lightening technique the lamp CTA uses, applied to a
-photograph rather than the dark ground — a **lift, not a veil**, so the rest
-of the frame stays at full photographic strength (the residual expansion wash
-was eased back to match). Ink text throughout, on every slide. The anchor is
-low because all three slides keep their subject in the upper frame, so the
-lift never has to touch it. Measured on the rendered composite, worst case
-over the whole text box, every slide, both viewports: **5.9–7.3** — clear of
-the **4.5** floor, checked on each of the three slideshow frames. Measured
-again once the foot was dissolved, at the statement's glyph cores over the
-rendered composite: **7.79** (desktop) / **6.42** (mobile); the button's label
-on its own `amber-fill` is unchanged at **4.95**.
+a soft-edged `gold-wash` pool anchored to the block of type. It is the same
+local-lightening technique the lamp CTA uses, applied to a photograph rather
+than the dark ground — a **lift, not a veil**, so the rest of the frame stays
+at full photographic strength. Ink text throughout, on every slide.
+
+**The lift is anchored to the block, not to the card, and that is the
+difference between a photograph and a backdrop.** It used to be a band across
+the card's whole lower half — `inset-x-0 bottom-0 h-[56%]`, 1440×428 at 1440
+and 390×336 at 390, against a text block of 736×137 and 358×144. Every pixel of
+that surplus fell on the walkers in the lower half of the picture, and it did
+not fall alone: the expansion wash held a **0.15** `gold-wash` veil over the
+entire frame for as long as the card was open. Measured in the card's
+lower-left, clear of the foot dissolve and a long way from any text:
+
+| Stage, hero-1 at 1440 | RMS contrast | mean luminance | black point |
+|---|---|---|---|
+| Ungraded original | 1.311 | 0.118 | 0.0033 |
+| Graded master (resinHour) | 1.151 | 0.170 | 0.0032 |
+| Rendered, every overlay off | 1.054 | 0.169 | 0.0073 |
+| Rendered as it shipped | **0.592** | 0.279 | **0.0764** |
+
+The grade and the encoder together cost 20% of the ceiling and are not in
+question. The overlays cost the remaining **44%**, and they lifted the black
+point **tenfold** — which is exactly what "the figures have gone" means: not a
+softer picture but a shadow range flattened onto the gold.
+
+So the wash now runs to **zero** by full expansion instead of bottoming out at
+0.15 — the headline has finished its handoff by progress 0.35 and there is
+nothing left for it to carry — and the pool is given the block's own box. The
+statement's own track sets that box, so it tracks the words at every viewport
+by construction and lands inside **1.25×** their width and **1.5×** their
+height at both viewports. Its falloff is a fade across multiplied by a fade
+down, nested rather than composited, for the reason `.ground-lift`'s is.
+
+**The ramp lengths are declared apart from the box, and that is what keeps it a
+pool rather than a panel.** Bleed alone holds full strength over the whole block
+and spends its softness only outside it, which lands a soft-edged rectangle on
+the picture. The block is a *track*, not an ink extent — the statement's two
+rendered lines run 574px inside a 736px track — so the ramps start inboard of
+the box and the held region is the words themselves: the same total footprint,
+three times the softness.
+
+Measured after, same region and same crop: RMS **1.082** (from 0.592, **+83%**)
+at 1440 and **0.947** (from 0.623, **+52%**) at 390 — **82.5%** and **88.1%** of
+the ungraded ceiling, against 45.1% and 57.9% before, and level with the
+overlays-off reading, which is to say the photograph there now carries no
+overlay at all. The black point returns to **0.0055** / 0.0024. Across the
+lower-left quadrant *including* the untouched foot dissolve: 0.373 → 0.588 and
+0.415 → 0.583.
+
+The text is not paid for by any of it. At the statement's glyph cores on the
+rendered composite: **8.33** (desktop, from 7.52) / **6.04** (mobile, from
+5.93); the button's label on its own `amber-fill` is unchanged at **4.89**. The
+pool holds 60% on desktop and 66% on a phone — a phone crops the same
+photograph tighter and lands the statement over busier ground, where the
+desktop alpha reads 2.8 points of ratio lower.
 
 The three intro elements rise **56px** into place — the rule at 0ms, the
 statement at 100 and the button at 300, each over 700ms. They used to travel
@@ -1052,6 +1119,20 @@ holds the declared alpha over the whole block and spends its softness in the
 margin. The two masks multiply by nesting rather than by `mask-composite`, so
 no browser can fall back to one axis and draw a hard edge on the other.
 
+**The margin is where the softness lives, so its length is what decides how
+much text-free ground the pool lightens.** At 96px each way the ledger's pool
+ran 1485×390 for a block of 1293×198 and reached a third of the way up the
+section either side of it. The held region is the block whatever the bleed is —
+the fade length *is* the bleed — so shortening the ramps costs the type nothing
+and gives the photograph back the margins: **72px** sideways and **44px**
+vertically on desktop, 44px both ways on a phone (the flush-top variant keeps
+its 48px, which is tuned to the lead's own start). The pools then measure
+750×277 for the 606×189 type column and 1437×286 for the ledger's 1293×198, both
+inside 1.25× wide and 1.5× tall. Measured across the section's whole traversal,
+twenty scroll positions, resting frames only, before and against after: heading
+**9.25/9.32**, lead **5.08/5.16**, numerals **9.15/9.24**, labels **5.11/5.12** —
+identical to the digit on both viewports, which is the point.
+
 The pool is anchored to the **block**, not the section: the content column caps
 at 84rem while the viewport does not, so a pool placed at a fraction of the
 viewport sits under the heading at 1440 and nine points of screen width off it
@@ -1068,6 +1149,18 @@ black-point lift (`contrast(0.72)`) because raising the pool alone bought only
 mid-tones barely move the gold, but its deepest shadows still pulled the ground
 under 17px `ink-soft`, which starts with only 5.62 on bare gold and has nothing
 to give.
+
+**This plate's strength is capped by what it is, not by the pools over it.**
+Measured in the section's right third with the globe and every text box carved
+out — 150k pixels of pure ground at 1440 — the layer renders at **7%** of what
+the ungraded `hero-2` measures through nothing (RMS 0.144 against 2.070), and
+turning the pools off entirely moves it to 0.149. The gap is the
+environment-photograph rule itself: 20% opacity, 16px of blur, `saturate(0.45)`
+and the black-point lift, which are what let a photograph sit under body copy on
+gold at all. So the travelling ground is the one photographic surface on the
+page that cannot be brought toward full strength — the ceiling is the rule, and
+the rule is what the lead's 4.5 rests on. What the pools *can* give back is the
+margin around the type, and they now do.
 
 Measured at glyph cores on the rendered composite, worst case swept across the
 section's whole traversal at twenty scroll positions, both viewports:
