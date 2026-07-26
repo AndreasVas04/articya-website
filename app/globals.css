@@ -287,35 +287,6 @@ body {
     );
   }
 }
-/* Fades the hero's backdrop photograph in below the header for the same
-   reason: it too starts at the section's top, hidden behind the bar, and
-   would otherwise appear all at once along the bar's lower edge.
-
-   Almost all of the fade sits behind the bar, which is what the hold length
-   is for — it matches `--gold-hold`, so the mask has climbed to roughly a
-   third by the time the photograph clears the chrome and the rest of the
-   rise happens in the open. The earlier version ran the whole fade in below
-   the bar over 176px, which cost the hero its first impression: the top of
-   the screen read as flat gold and the photograph only arrived a third of
-   the way down. Holding a third of it at the bar's edge keeps the chrome
-   seam inside the same channel budget as the gold ramp while the glass reads
-   as glass from the first row of the hero. */
-.hero-backdrop-fade {
-  --backdrop-hold: 64px;
-  --backdrop-mask: linear-gradient(
-    to bottom,
-    transparent 0px,
-    rgb(0 0 0 / 0.32) var(--backdrop-hold),
-    #000 calc(var(--backdrop-hold) + 170px)
-  );
-  -webkit-mask-image: var(--backdrop-mask);
-  mask-image: var(--backdrop-mask);
-}
-@media (min-width: 768px) {
-  .hero-backdrop-fade {
-    --backdrop-hold: 80px;
-  }
-}
 /* On phones the expanded hero card rests lower in its screen. The card is
    centered in 100dvh and the fold decision keeps the next section below it,
    which fixes a geometric floor of gold under the expanded card that padding

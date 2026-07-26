@@ -90,14 +90,12 @@ The top edge additionally **holds** its gold flat for the header's height
 (`--gold-hold`, 64px mobile / 80px desktop) before the ramp begins. The header
 is fixed, so it covers the first 80px of that section: without the hold the
 ramp has already fallen most of the way to the floor by the time it emerges,
-and the first visible row sits a step below the bar. The hero's backdrop
-photograph carries `.hero-backdrop-fade` for the same reason — it too starts
-at the section's top, hidden behind the bar, and would otherwise appear all at
-once along the bar's lower edge. Measured at the chrome joins on the built
-page: footer seam 2 (desktop) / 1 (mobile) maximum channel jump, header seam 6
-/ 7 at rest. On desktop the expanded hero's
-photograph passes under the header by design — that edge is a photograph, not
-a gold seam (see Don't).
+and the first visible row sits a step below the bar. Measured at the chrome
+joins on the built page: footer seam 2 (desktop) / 1 (mobile) maximum channel
+jump. The **header** join is not a gold seam at all — the hero's backdrop
+photograph runs to the section's top row, so the bar's hairline lands on the
+picture (see the poster's top edge below). On desktop the expanded hero's
+photograph passes under the header by design, for the same reason (see Don't).
 
 A section edge that opens onto its **own section's floor**, rather than onto
 another field edge, paints nothing: `.gold-field-open-top`. The anchor exists
@@ -793,7 +791,6 @@ section. Nothing else may put a gradient or texture on a ground:
 | `.gold-field-chrome-top` / `-bottom` | The same field with that one edge ending on `gold-chrome` instead, and — on the top variant — held flat for the header's height before the ramp starts | The hero (top) and the closing section (bottom) only: the two edges that meet a chrome bar rather than another section |
 | `.gold-field-open-top` | The same field with its top edge painting nothing at all | A section or panel whose top opens onto its own section's floor rather than onto another field edge — the first offer panel only |
 | Hero title pool | Soft `gold-wash` ellipse at ~26%, heavily blurred, inside the poster's lift layer | Behind the home collapsed headline only, concentrating a little more light where the words sit (`.hero-glass-veil` and the old 25% pool are retired) |
-| `.hero-backdrop-fade` | Top-down mask over a hero backdrop layer, held at 32% at the header's own height and full 170px later | The home hero's backdrop photograph, so it does not appear all at once along the fixed header's lower edge — while still reading as a photograph from the hero's first visible row |
 | `.plaster-light` | Soft pool of `plaster-bright` | Behind the About scenes and the finale mosaic |
 | `.print-shadow` | Soft `pine-950` drop shadow | Under framed prints on plaster; the raised state of interactive cards (open accordion, hovered contact card) |
 
@@ -815,6 +812,30 @@ headline.** The collapsed opening is a full-strength graded photograph —
 slides — read as the *place* the page opens on, not a texture. It is the
 first slide too, so the poster cross-dissolves into the gallery as the card
 grows rather than being swapped for it.
+
+**The poster meets the chrome, and carries no top fade.** It used to be masked
+in below the bar — held at 32% at the header's own height and full 170px later,
+on the reasoning that the picture would otherwise arrive all at once along the
+bar's lower edge. It cannot: the layer starts at the section's top, which the
+fixed header covers, so every row the ramp spends softening is a row nobody
+sees except the ones just below the bar, where it reads as the photograph being
+washed out against the chrome. That is what left a gold strip under the nav —
+measured at the bar's lower edge, `rgb(217,208,183)` at 1440 and
+`rgb(215,207,182)` at 390, still climbing 170px later. Unfaded, the first row
+below the bar is the picture itself: `rgb(179,180,168)` / `rgb(174,178,167)`,
+within 3 channels of the same column 170px down, so the band under the chrome
+is one continuous photograph rather than a fade with a floor. The header join
+is therefore a picture edge, not a gold seam, exactly as on the inner pages —
+the amber hairline lands on the photograph and marks the threshold.
+
+The **expanded** card meets the bar the same way at desktop widths (its top
+edge sits above the header's lower edge at 1440×900 and 1232×820). On a phone
+it does not, and that is the mobile composition rather than a gap to close: the
+card is centred in its own screen and dropped by `--hero-card-drop` to spend
+the gold the fold decision strands beneath it, which leaves ~129px of
+`gold-chrome` between the bar and the card's top edge at 390×844. Closing it
+means moving the card, which is the growth ramp's geometry and the fold
+decision behind it, not the poster's fade.
 
 Dark ink cannot sit over the centre of this photograph, and this was measured
 before it was built: the frame's middle is the dark ridge and pine, and even

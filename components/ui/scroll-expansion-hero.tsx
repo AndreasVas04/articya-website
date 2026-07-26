@@ -303,7 +303,7 @@ const ScrollExpandMedia = ({
           className="hero-foot-pool pointer-events-none absolute inset-x-0 bottom-0 z-0"
         />
         <motion.div
-          className="hero-backdrop-fade absolute inset-0 z-0"
+          className="absolute inset-0 z-0"
           initial={false}
           animate={{ opacity: 1 - progress }}
           transition={{ duration: 0.2, ease: EASE_IN_OUT_CUBIC }}
@@ -316,7 +316,13 @@ const ScrollExpandMedia = ({
               variant URL and one download serves both. The top gold fall that
               carries the headline lives in its own layer below, so the
               photograph here is never veiled — only the sky band the words
-              overhang is lifted, the rest stays at strength. */}
+              overhang is lifted, the rest stays at strength.
+
+              It carries no top fade. The layer starts at the section's top,
+              which the fixed header covers, so a ramp there only spends its
+              first visible rows washing the picture out against the bar —
+              which is what left a gold strip under the chrome. Unfaded, the
+              photograph meets the bar on its own first row. */}
           <ResponsiveImage
             src={bgImageSrc}
             alt=""
@@ -328,8 +334,8 @@ const ScrollExpandMedia = ({
           />
           {/* The resin embers — the atmosphere gaining life. They ride inside
               this backdrop layer on purpose: over the photograph, behind the
-              card and headline, masked under the header with the photograph,
-              and faded out with the whole layer as the card expands — so the
+              card and headline, running under the header with it, and faded
+              out with the whole layer as the card expands — so the
               moment needs no scroll logic of its own. `paused` only stops the
               loop once the layer is invisible. They hold still in the frame (no
               pointer parallax), so the atmosphere's gentle lean drifts past
