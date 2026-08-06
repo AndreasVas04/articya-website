@@ -1,13 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import {
   cubicBezier,
   motion,
   useReducedMotion,
   useScroll,
   useTransform,
-  type MotionValue,
 } from "framer-motion";
 import { Globe, GraduationCap } from "lucide-react";
 import { ResponsiveImage } from "@/components/responsive-image";
@@ -26,6 +25,18 @@ const easeInOutCubic = cubicBezier(0.65, 0, 0.35, 1);
 const stageWindow = (value: number, from: number, to: number) =>
   easeInOutCubic(Math.min(Math.max((value - from) / (to - from), 0), 1));
 
+// Text plays on the clock, never on the scrollbar. Scrubbed by pin progress
+// a real flick collapses the whole entrance into a couple of frames and the
+// words are gone before they can be read; on a fixed duration a visitor who
+// blasts past still finds them settled where they belong. The travel is the
+// individual `translate`/`scale` properties, never `transform`, so it
+// composes with the inline transforms the pinned layers write alongside it.
+const ENTER_EASE = "cubic-bezier(0.16, 1, 0.3, 1)";
+const LIFT: CSSProperties = { opacity: 0, translate: "0 40px" };
+const RISE: CSSProperties = { translate: "0 40px" };
+const FADE: CSSProperties = { opacity: 0 };
+const DRAW: CSSProperties = { scale: "0 1" };
+
 interface OfferPanelProps {
   image: string;
   title: string;
@@ -35,34 +46,13 @@ interface OfferPanelProps {
   openTop?: boolean;
 }
 
-// One group of the panel paragraph, fading in over its slice of the pinned
-// scroll. Opacity only — inline spans can't translate without breaking text
-// flow, and keeping the layout fixed means the paragraph never reflows while
-// it is being read.
-function SentenceGroup({
-  progress,
-  start,
-  end,
-  active,
-  children,
-}: {
-  progress: MotionValue<number>;
-  start: number;
-  end: number;
-  active: boolean;
-  children: React.ReactNode;
-}) {
-  const opacity = useTransform(() => stageWindow(progress.get(), start, end));
-  return <motion.span style={active ? { opacity } : undefined}>{children}</motion.span>;
-}
-
 // A full-bleed photographic panel staged as a pinned scroll beat. The outer
 // section is taller than the viewport and the frame sticks while the user
-// scrolls through it: the photo owns the entry under an open wash, then the
-// cream scrim builds as the heading rises and an amber bar draws itself, and
-// the paragraph completes sentence by sentence at reading pace before the
-// panel releases. On mobile the pin is shorter and the paragraph arrives in
-// two halves anchored to the bottom wash. Before mount and under reduced
+// scrolls through it: the photo drifts, its scale settles and the cream
+// scrim builds, all of it read off the pin. The words are the exception —
+// heading, bar and paragraph fire once on the first in-view crossing and
+// play on the clock. On mobile the pin is shorter and the paragraph arrives
+// in two halves anchored to the bottom wash. Before mount and under reduced
 // motion the panel renders unpinned with everything visible, so the exported
 // HTML is the resting state.
 export function OfferPanel({
@@ -74,18 +64,30 @@ export function OfferPanel({
   openTop = false,
 }: OfferPanelProps) {
   const ref = useRef<HTMLElement | null>(null);
+  const textRef = useRef<HTMLDivElement | null>(null);
   const reducedMotion = useReducedMotion();
   const [mounted, setMounted] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const [entered, setEntered] = useState(false);
 
   useEffect(() => setMounted(true), []);
 
+  // Fires once, the first time a quarter of the text block has risen clear of
+  // the bottom 15% of the viewport.
   useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768);
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
-  }, []);
+    if (entered) return;
+    const el = textRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        observer.disconnect();
+        setEntered(true);
+      },
+      { threshold: 0.25, rootMargin: "0px 0px -15% 0px" }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [entered]);
 
   // Two progress scales: `travel` spans the whole traversal for the slow
   // photo drift; `stage` spans only the pinned stretch and drives the text
@@ -112,27 +114,31 @@ export function OfferPanel({
   const iconY = useTransform(
     () => 24 * (1 - stageWindow(stage.get(), 0.07, 0.17))
   );
-  const headingOpacity = useTransform(() =>
-    stageWindow(stage.get(), 0.1, 0.22)
-  );
-  const headingY = useTransform(
-    () => 36 * (1 - stageWindow(stage.get(), 0.1, 0.22))
-  );
-  const barScaleX = useTransform(() => stageWindow(stage.get(), 0.18, 0.3));
 
   const Icon = icons[icon];
   const active = mounted && !reducedMotion;
 
-  // Desktop reads sentence by sentence; on mobile five separate drips would
-  // outlast the shorter pin, so the paragraph lands in two halves.
-  const sentences = text.split(/(?<=\.) /);
-  const half = Math.ceil(sentences.length / 2);
-  const groups = isMobile
-    ? [sentences.slice(0, half).join(" "), sentences.slice(half).join(" ")].filter(Boolean)
-    : sentences;
-  // Groups overlap by half a window and always finish at 84% of the pin, so
-  // every panel holds its completed text for the same beat before releasing.
-  const seg = 0.54 / (groups.length + 0.5);
+  // The hidden half of a text entrance exists only between mount and the
+  // trigger, so the exported HTML carries the words in place; from the
+  // trigger they run to their end states on a fixed duration, staggered in
+  // reading order. Reduced motion keeps the fade and drops the travel.
+  const enter = (slot: number, hidden: CSSProperties) => {
+    if (!mounted) return undefined;
+    if (entered)
+      return {
+        transitionProperty: reducedMotion ? "opacity" : "opacity, translate, scale",
+        transitionDuration: reducedMotion ? "0.3s" : "1.4s",
+        transitionTimingFunction: ENTER_EASE,
+        transitionDelay: `${slot * 90}ms`,
+      };
+    if (reducedMotion) return "opacity" in hidden ? FADE : undefined;
+    return hidden;
+  };
+
+  // The paragraph lights up sentence by sentence. Splitting it by viewport
+  // was a pacing fix for the old scroll scrub, where five drips outlasted
+  // the shorter mobile pin; on a 90ms stagger both viewports carry all five.
+  const groups = text.split(/(?<=\.) /);
 
   return (
     <section
@@ -199,7 +205,7 @@ export function OfferPanel({
             active ? "h-full" : "min-h-[92svh] pt-[46svh] md:py-32"
           )}
         >
-          <div className={cn("max-w-xl", flip && "md:ml-auto")}>
+          <div ref={textRef} className={cn("max-w-xl", flip && "md:ml-auto")}>
             <motion.span
               aria-hidden="true"
               className="flex size-12 items-center justify-center rounded-full border border-pine/30 bg-gold-wash/70 text-pine backdrop-blur-sm"
@@ -207,29 +213,30 @@ export function OfferPanel({
             >
               <Icon className="size-6" strokeWidth={1.5} />
             </motion.span>
-            <motion.h3
+            <h3
               className="mt-6 font-display text-[clamp(2rem,4vw,3rem)] font-semibold leading-[1.1] tracking-[-0.01em] text-ink"
-              style={active ? { opacity: headingOpacity, y: headingY } : undefined}
+              style={enter(0, LIFT)}
             >
               {title}
-            </motion.h3>
-            <motion.span
+            </h3>
+            <span
               aria-hidden="true"
               className="mt-4 block h-[1.25px] w-16 origin-left bg-amber"
-              style={active ? { scaleX: barScaleX } : undefined}
+              style={enter(1, DRAW)}
             />
-            <p className="mt-5 leading-[1.7] text-ink md:text-xl md:leading-[1.55]">
+            {/* The paragraph lifts as one block and its sentences light up
+                inside it: a transform on a non-replaced inline box does
+                nothing, and making the spans inline-block to earn one would
+                stop them wrapping across lines. */}
+            <p
+              className="mt-5 leading-[1.7] text-ink md:text-xl md:leading-[1.55]"
+              style={enter(2, RISE)}
+            >
               {groups.map((group, i) => (
-                <SentenceGroup
-                  key={`${groups.length}-${i}`}
-                  progress={stage}
-                  start={0.3 + i * seg}
-                  end={0.3 + i * seg + seg * 1.5}
-                  active={active}
-                >
+                <span key={i} style={enter(2 + i, FADE)}>
                   {group}
                   {i < groups.length - 1 ? " " : ""}
-                </SentenceGroup>
+                </span>
               ))}
             </p>
           </div>

@@ -1,13 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import {
   cubicBezier,
   motion,
   useReducedMotion,
   useScroll,
   useTransform,
-  type MotionValue,
 } from "framer-motion";
 import { ResponsiveImage } from "@/components/responsive-image";
 import { cn } from "@/lib/utils";
@@ -20,6 +19,17 @@ const easeInOutCubic = cubicBezier(0.65, 0, 0.35, 1);
 // visibility instead of pin progress inside a sticky frame.
 const stageWindow = (value: number, from: number, to: number) =>
   easeInOutCubic(Math.min(Math.max((value - from) / (to - from), 0), 1));
+
+// Text plays on the clock, never on the scrollbar. Scrubbed by pin progress
+// a real flick collapses the whole entrance into a couple of frames and the
+// words are gone before they can be read; on a fixed duration a visitor who
+// blasts past still finds them settled where they belong. The travel is the
+// individual `translate`/`scale` properties, never `transform`, so it
+// composes with the inline transforms the pinned layers write alongside it.
+const ENTER_EASE = "cubic-bezier(0.16, 1, 0.3, 1)";
+const RISE: CSSProperties = { translate: "0 40px" };
+const FADE: CSSProperties = { opacity: 0 };
+const DRAW: CSSProperties = { scale: "0 1" };
 
 interface SceneImage {
   src: string;
@@ -34,33 +44,14 @@ interface StorySceneProps {
   muted?: boolean;
 }
 
-// One group of the scene paragraph, fading in over its slice of the pin.
-// Opacity only, so the paragraph never reflows while it is being read.
-function TextGroup({
-  progress,
-  start,
-  end,
-  active,
-  children,
-}: {
-  progress: MotionValue<number>;
-  start: number;
-  end: number;
-  active: boolean;
-  children: React.ReactNode;
-}) {
-  const opacity = useTransform(() => stageWindow(progress.get(), start, end));
-  return <motion.span style={active ? { opacity } : undefined}>{children}</motion.span>;
-}
-
 // One scene of the About story: a daylight sibling of the home offer panel.
 // The section pins while the photograph rises into its bright mat and
-// settles, an amber bar draws itself, and the paragraph completes group by
-// group at reading pace before the scene releases. Scenes alternate between
-// the two golds — chrome and anchor bands — and the photo is a framed
-// print, never a full-bleed dark panel. Before mount and under reduced
-// motion the scene renders unpinned with everything visible, so the
-// exported HTML is the resting state.
+// settles, all of it read off the scroll. The words are the exception — the
+// amber bar and the paragraph fire once on the first in-view crossing and
+// play on the clock. Scenes alternate between the two golds — chrome and
+// anchor bands — and the photo is a framed print, never a full-bleed dark
+// panel. Before mount and under reduced motion the scene renders unpinned
+// with everything visible, so the exported HTML is the resting state.
 export function StoryScene({
   groups,
   image,
@@ -68,22 +59,38 @@ export function StoryScene({
   muted = false,
 }: StorySceneProps) {
   const ref = useRef<HTMLElement | null>(null);
+  const textRef = useRef<HTMLDivElement | null>(null);
   const reducedMotion = useReducedMotion();
   const [mounted, setMounted] = useState(false);
+  const [entered, setEntered] = useState(false);
 
   useEffect(() => setMounted(true), []);
 
+  // Fires once, the first time a quarter of the text block has risen clear of
+  // the bottom 15% of the viewport.
+  useEffect(() => {
+    if (entered) return;
+    const el = textRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        observer.disconnect();
+        setEntered(true);
+      },
+      { threshold: 0.25, rootMargin: "0px 0px -15% 0px" }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [entered]);
+
   // `travel` spans the whole traversal and drives the photo's arrival, so
   // the print is already rising into view while the previous scene releases
-  // — the frame is never empty between scenes. `stage` spans only the
-  // pinned stretch and drives the reading choreography.
+  // — the frame is never empty between scenes. It is the scene's only
+  // scroll-linked channel; the words run on their own clock.
   const { scrollYProgress: travel } = useScroll({
     target: ref,
     offset: ["start end", "end start"],
-  });
-  const { scrollYProgress: stage } = useScroll({
-    target: ref,
-    offset: ["start start", "end end"],
   });
 
   const photoOpacity = useTransform(() =>
@@ -96,13 +103,25 @@ export function StoryScene({
     () => 1.08 - 0.08 * stageWindow(travel.get(), 0.05, 0.45)
   );
   const imageDrift = useTransform(() => `${-4 + 8 * travel.get()}%`);
-  const barScaleX = useTransform(() => stageWindow(stage.get(), 0.08, 0.18));
 
   const active = mounted && !reducedMotion;
 
-  // Groups overlap by half a window and finish at 80% of the pin, so every
-  // scene holds its completed text for the same beat before releasing.
-  const seg = 0.58 / (groups.length + 0.5);
+  // The hidden half of a text entrance exists only between mount and the
+  // trigger, so the exported HTML carries the words in place; from the
+  // trigger they run to their end states on a fixed duration, staggered in
+  // reading order. Reduced motion keeps the fade and drops the travel.
+  const enter = (slot: number, hidden: CSSProperties) => {
+    if (!mounted) return undefined;
+    if (entered)
+      return {
+        transitionProperty: reducedMotion ? "opacity" : "opacity, translate, scale",
+        transitionDuration: reducedMotion ? "0.3s" : "1.4s",
+        transitionTimingFunction: ENTER_EASE,
+        transitionDelay: `${slot * 90}ms`,
+      };
+    if (reducedMotion) return "opacity" in hidden ? FADE : undefined;
+    return hidden;
+  };
 
   return (
     <section
@@ -158,6 +177,7 @@ export function StoryScene({
           </motion.div>
 
           <div
+            ref={textRef}
             className={cn(
               image.wide ? "md:col-span-5" : "md:col-span-6",
               flip
@@ -167,23 +187,24 @@ export function StoryScene({
                   : "md:col-start-7"
             )}
           >
-            <motion.span
+            <span
               aria-hidden="true"
               className="block h-[1.25px] w-16 origin-left bg-amber"
-              style={active ? { scaleX: barScaleX } : undefined}
+              style={enter(0, DRAW)}
             />
-            <p className="mt-6 leading-[1.7] text-ink md:mt-8 md:text-xl md:leading-[1.55]">
+            {/* The paragraph lifts as one block and its groups light up
+                inside it: a transform on a non-replaced inline box does
+                nothing, and making the spans inline-block to earn one would
+                stop them wrapping across lines. */}
+            <p
+              className="mt-6 leading-[1.7] text-ink md:mt-8 md:text-xl md:leading-[1.55]"
+              style={enter(1, RISE)}
+            >
               {groups.map((group, i) => (
-                <TextGroup
-                  key={i}
-                  progress={stage}
-                  start={0.22 + i * seg}
-                  end={0.22 + i * seg + seg * 1.5}
-                  active={active}
-                >
+                <span key={i} style={enter(1 + i, FADE)}>
                   {group}
                   {i < groups.length - 1 ? " " : ""}
-                </TextGroup>
+                </span>
               ))}
             </p>
           </div>

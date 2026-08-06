@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import {
   cubicBezier,
   motion,
@@ -15,6 +15,17 @@ const easeInOutCubic = cubicBezier(0.65, 0, 0.35, 1);
 
 const stageWindow = (value: number, from: number, to: number) =>
   easeInOutCubic(Math.min(Math.max((value - from) / (to - from), 0), 1));
+
+// The words play on the clock, never on the scrollbar. Scrubbed by scroll a
+// real flick collapses the whole entrance into a couple of frames and the
+// closing line is gone before it can be read; on a fixed duration a visitor
+// who blasts past still finds it settled. The mosaic stays scroll-linked —
+// the tiles are the composition itself, not text — and so does the handoff
+// that takes the words back out as the ring closes over them.
+const ENTER_EASE = "cubic-bezier(0.16, 1, 0.3, 1)";
+const RISE: CSSProperties = { translate: "0 40px" };
+const FADE: CSSProperties = { opacity: 0 };
+const DRAW: CSSProperties = { scale: "0 1" };
 
 interface GalleryImage {
   src: string;
@@ -86,9 +97,11 @@ const GATHER_COMPACT: [number, number][] = [
 // the resting state.
 export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
   const container = useRef<HTMLElement | null>(null);
+  const textRef = useRef<HTMLDivElement | null>(null);
   const reducedMotion = useReducedMotion();
   const [mounted, setMounted] = useState(false);
   const [compact, setCompact] = useState(false);
+  const [entered, setEntered] = useState(false);
 
   // One travel-based timeline (section top at viewport bottom → section
   // bottom at viewport top), so the words are already arriving while the
@@ -100,11 +113,11 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
     offset: ["start end", "end start"],
   });
 
-  // Text: three groups complete shortly after the pin engages while the
-  // outer tiles gather, hold among them, then hand the frame over as the
-  // ring closes. On compact screens the words dissolve completely before
-  // the ring starts moving, so the closing tiles never cross live text.
-  const seg = 0.18 / (groups.length + 0.5);
+  // Text: the groups complete on their own clock shortly after the words
+  // arrive, hold among the gathering tiles, then hand the frame over as the
+  // ring closes. That handoff stays scroll-linked — it is the mosaic's beat,
+  // not the words' — and on compact screens the words dissolve completely
+  // before the ring starts moving, so the closing tiles never cross live text.
   const [fadeFrom, fadeTo] = compact ? [0.4, 0.46] : [0.42, 0.5];
   const textOut = useTransform(
     () => 1 - stageWindow(stage.get(), fadeFrom, fadeTo)
@@ -122,14 +135,58 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
     return () => query.removeEventListener("change", update);
   }, []);
 
+  // Fires once, the first time a quarter of the text block has risen clear of
+  // the bottom 15% of the viewport. The block is only in the tree once the
+  // component has mounted, and a viewport change re-keys the sticky frame
+  // out from under it, so both are cues to look for the element again.
+  useEffect(() => {
+    if (entered) return;
+    const el = textRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        observer.disconnect();
+        setEntered(true);
+      },
+      { threshold: 0.25, rootMargin: "0px 0px -15% 0px" }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [entered, mounted, compact]);
+
+  // The hidden half of a text entrance exists only between mount and the
+  // trigger, so the exported HTML carries the words in place; from the
+  // trigger they run to their end states on a fixed duration, staggered in
+  // reading order. Reduced motion keeps the fade and drops the travel.
+  const enter = (slot: number, hidden: CSSProperties) => {
+    if (!mounted) return undefined;
+    if (entered)
+      return {
+        transitionProperty: reducedMotion ? "opacity" : "opacity, translate, scale",
+        transitionDuration: reducedMotion ? "0.3s" : "1.4s",
+        transitionTimingFunction: ENTER_EASE,
+        transitionDelay: `${slot * 90}ms`,
+      };
+    if (reducedMotion) return "opacity" in hidden ? FADE : undefined;
+    return hidden;
+  };
+
   // Resting state: the paragraph in full, then the same photos as a plain
   // grid. No pinning, no scroll-linked transforms.
   if (!mounted || reducedMotion) {
     return (
       <section ref={container} className="bg-gold-anchor pt-16 md:pt-24">
-        <div className="mx-auto max-w-6xl px-4 pb-16 md:pb-24">
-          <span aria-hidden="true" className="block h-[1.25px] w-16 bg-amber" />
-          <p className="mt-6 max-w-3xl leading-[1.7] text-ink md:mt-8 md:text-xl md:leading-[1.55]">
+        <div ref={textRef} className="mx-auto max-w-6xl px-4 pb-16 md:pb-24">
+          <span
+            aria-hidden="true"
+            className="block h-[1.25px] w-16 origin-left bg-amber"
+            style={enter(0, DRAW)}
+          />
+          <p
+            className="mt-6 max-w-3xl leading-[1.7] text-ink md:mt-8 md:text-xl md:leading-[1.55]"
+            style={enter(1, FADE)}
+          >
             {groups.join(" ")}
           </p>
         </div>
@@ -175,14 +232,25 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
           className="absolute inset-0 z-10 flex items-center justify-center px-4"
           style={{ opacity: textOut, y: textDrift }}
         >
-          <div className="max-w-2xl text-center">
-            <TextBar stage={stage} />
-            <p className="mt-8 text-xl leading-[1.55] text-ink">
+          <div ref={textRef} className="max-w-2xl text-center">
+            <span
+              aria-hidden="true"
+              className="mx-auto block h-[1.25px] w-16 bg-amber"
+              style={enter(0, DRAW)}
+            />
+            {/* The paragraph lifts as one block and its groups light up
+                inside it: a transform on a non-replaced inline box does
+                nothing, and making the spans inline-block to earn one would
+                stop them wrapping across lines. */}
+            <p
+              className="mt-8 text-xl leading-[1.55] text-ink"
+              style={enter(1, RISE)}
+            >
               {groups.map((group, i) => (
-                <FinaleGroup key={i} stage={stage} start={0.13 + i * seg} end={0.13 + i * seg + seg * 1.5}>
+                <span key={i} style={enter(1 + i, FADE)}>
                   {group}
                   {i < groups.length - 1 ? " " : ""}
-                </FinaleGroup>
+                </span>
               ))}
             </p>
           </div>
@@ -201,32 +269,6 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
       </div>
     </section>
   );
-}
-
-function TextBar({ stage }: { stage: ReturnType<typeof useScroll>["scrollYProgress"] }) {
-  const scaleX = useTransform(() => stageWindow(stage.get(), 0.08, 0.14));
-  return (
-    <motion.span
-      aria-hidden="true"
-      className="mx-auto block h-[1.25px] w-16 bg-amber"
-      style={{ scaleX }}
-    />
-  );
-}
-
-function FinaleGroup({
-  stage,
-  start,
-  end,
-  children,
-}: {
-  stage: ReturnType<typeof useScroll>["scrollYProgress"];
-  start: number;
-  end: number;
-  children: React.ReactNode;
-}) {
-  const opacity = useTransform(() => stageWindow(stage.get(), start, end));
-  return <motion.span style={{ opacity }}>{children}</motion.span>;
 }
 
 function FinaleTile({
