@@ -10,6 +10,7 @@ import {
 } from "framer-motion";
 import { Globe, GraduationCap } from "lucide-react";
 import { ResponsiveImage } from "@/components/responsive-image";
+import { GroundLift } from "@/components/ground-parallax";
 import { cn } from "@/lib/utils";
 
 // Icons live here because component references can't cross the
@@ -43,7 +44,6 @@ interface OfferPanelProps {
   text: string;
   icon: keyof typeof icons;
   flip?: boolean;
-  openTop?: boolean;
 }
 
 // A full-bleed photographic panel staged as a pinned scroll beat. The outer
@@ -61,7 +61,6 @@ export function OfferPanel({
   text,
   icon,
   flip = false,
-  openTop = false,
 }: OfferPanelProps) {
   const ref = useRef<HTMLElement | null>(null);
   const textRef = useRef<HTMLDivElement | null>(null);
@@ -105,11 +104,6 @@ export function OfferPanel({
   const photoScale = useTransform(
     () => 1.05 - 0.05 * stageWindow(stage.get(), 0.05, 0.35)
   );
-  // Floor is high enough that the cream reading field is already carrying the
-  // heading when it rises at 0.1 — the wash builds, it never starts from open.
-  const washOpacity = useTransform(
-    () => 0.6 + 0.4 * stageWindow(stage.get(), 0.04, 0.18)
-  );
   const iconOpacity = useTransform(() => stageWindow(stage.get(), 0.07, 0.17));
   const iconY = useTransform(
     () => 24 * (1 - stageWindow(stage.get(), 0.07, 0.17))
@@ -145,24 +139,25 @@ export function OfferPanel({
       ref={ref}
       className={cn("relative", active && "h-[190svh] md:h-[240svh]")}
     >
+      {/* The signed join with the zone above. It rides the outer section,
+          which stays in flow, not the frame, which pins — a seam drawn inside
+          the sticky frame would hold at the top of the screen for the whole
+          pin instead of scrolling past once. */}
+      <span aria-hidden="true" className="zone-seam" />
       <div
         className={cn(
-          "gold-field relative overflow-hidden",
-          // The first panel opens onto the floor of the section above it,
-          // not onto another field edge, so its top edge paints nothing.
-          openTop && "gold-field-open-top",
+          "relative overflow-hidden",
           active ? "sticky top-0 h-svh" : "min-h-[92svh]"
         )}
       >
-        {/* The photographic stack — photo, veil, reading wash and grain — is
-            masked as one so the whole panel dissolves into the page ground at
-            its top and bottom edges and carries no border of its own. The
-            wash fades out with the photo it exists to subdue, so the reading
-            field never thins out ahead of the picture behind it. */}
-        <div
-          aria-hidden="true"
-          className="photo-edge-dissolve absolute inset-0"
-        >
+        {/* The panel is a photographic zone, edge to edge. It used to dissolve
+            its picture away at the top and bottom and carry a gold field
+            underneath, on the reasoning that the page ground was gold and the
+            panel had to arrive out of it. The page ground is a photograph now,
+            and a dissolve between two zones has to pass through whatever is
+            beneath them — which is the flat gold this pass exists to remove.
+            So the picture runs to both edges and the join is signed instead. */}
+        <div aria-hidden="true" className="absolute inset-0">
           <motion.div
             className="absolute inset-x-0 -inset-y-[8%]"
             style={active ? { y: photoY, scale: photoScale } : undefined}
@@ -175,22 +170,6 @@ export function OfferPanel({
               className="object-cover brightness-[1.06] saturate-[1.08]"
             />
           </motion.div>
-
-          {/* A light veil lifts the photo into the warm ground, then the
-              reading wash builds from the text side so the words land on
-              cream rather than on the picture. */}
-          <div className="absolute inset-0 bg-gold-wash/12" />
-          <motion.div
-            className="absolute inset-0 bg-gradient-to-t from-gold-wash from-18% via-gold-wash/82 via-50% to-transparent md:hidden"
-            style={active ? { opacity: washOpacity } : undefined}
-          />
-          <motion.div
-            className={cn(
-              "absolute inset-0 hidden from-gold-wash from-24% via-gold-wash/78 via-52% to-transparent md:block",
-              flip ? "bg-gradient-to-l" : "bg-gradient-to-r"
-            )}
-            style={active ? { opacity: washOpacity } : undefined}
-          />
           <div className="film-grain pointer-events-none absolute inset-0" />
         </div>
 
@@ -205,7 +184,19 @@ export function OfferPanel({
             active ? "h-full" : "min-h-[92svh] pt-[46svh] md:py-32"
           )}
         >
-          <div ref={textRef} className={cn("max-w-xl", flip && "md:ml-auto")}>
+          <div
+            ref={textRef}
+            className={cn("relative max-w-xl", flip && "md:ml-auto")}
+          >
+            {/* The reading pool, anchored to this block and capped at 0.55 —
+                the same primitive the clearing's type stands on. It replaces a
+                pair of full-frame gradients that reached full `gold-wash` from
+                the text side and were still at 78–82% halfway across the
+                picture: measured, that was most of a viewport of flat cream
+                laid over a photograph, and it is why the panels read as
+                colour with a picture behind them rather than as pictures. */}
+            <GroundLift />
+            <div className="relative">
             <motion.span
               aria-hidden="true"
               className="flex size-12 items-center justify-center rounded-full border border-pine/30 bg-gold-wash/70 text-pine backdrop-blur-sm"
@@ -239,6 +230,7 @@ export function OfferPanel({
                 </span>
               ))}
             </p>
+            </div>
           </div>
         </div>
       </div>

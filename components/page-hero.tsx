@@ -1,6 +1,7 @@
 import { Reveal } from "@/components/reveal";
 import { ResponsiveImage } from "@/components/responsive-image";
 import { imagePreload } from "@/lib/images";
+import { framingVars, type Framing } from "@/lib/utils";
 
 interface PageHeroProps {
   image: string;
@@ -29,15 +30,39 @@ const HERO_SIZES = "100vw";
 //
 // Values are the lowest that clear those floors at glyph cores on the rendered
 // composite, both viewports — the remaining margin spent on the picture. The
-// three photographs converge (each has near-black detail — hair, dark wood,
-// corkboard shadow — under the centred type, and the worst glyph pixel
-// governs), so the per-page differences are small; Contact's bright wall still
-// takes nearly the most, because object-center crops onto the dark-haired
-// group. See the report for the measured numbers.
+// ceiling is now 0.55 everywhere on the site, and that ceiling is what chose
+// these photographs. The old office interiors carried near-black detail —
+// hair, dark wood, corkboard shadow — directly under the centred type, and the
+// worst glyph pixel governs: at 0.55 over a black pixel the composite reaches
+// 3.15:1, which carries a display heading and cannot carry a 20px lede at any
+// setting. The three heroes are portrait frames with an open sky band instead,
+// positioned so the type falls on it. See the report for the measured numbers.
+// Both bands sit on the ceiling. The graded profile was written when the lift
+// could go to 0.68 and the heading's job was to spend *less* than the lede —
+// the heading answers to 3.0, the lede to 4.5, and the picture reads strongest
+// under the largest element. With the ceiling at 0.55 that headroom is gone:
+// the heading band at 0.40 measured 2.2-3.0 over the incident band these frames
+// are now framed on, under its own floor. There is nothing left to spend, so
+// both bands take the cap and the grade survives only in the profile's shape.
 const LIFT: Record<string, { heading: number; lede: number }> = {
-  "About.jpg": { heading: 0.6, lede: 0.68 },
-  "FAQ.jpg": { heading: 0.6, lede: 0.68 },
-  "Contact.jpg": { heading: 0.6, lede: 0.67 },
+  "IMG_4735.jpg": { heading: 0.55, lede: 0.55 },
+  "IMG_4739.jpg": { heading: 0.55, lede: 0.55 },
+  "IMG_4619.jpg": { heading: 0.55, lede: 0.55 },
+};
+
+// Where the frame sits behind the type. Portrait frames in a landscape-ish
+// hero, so `object-cover` keeps the full width and this chooses the band.
+//
+// It does not choose the sky, and that is deliberate. Sky wins a contrast sweep
+// outright — it is the brightest, calmest ground in every frame — and a hero
+// framed on it measured 8:1 and read as a blue gradient with a photograph's
+// provenance, which is the flat zone this whole pass exists to remove. These
+// values sit on the incident band instead: the valley, the village, the street.
+// The cost is real and is in the report; the trade is the brief's own priority.
+const FRAMING: Record<string, Framing> = {
+  "IMG_4735.jpg": { y: 20, ySm: 20 },
+  "IMG_4739.jpg": { y: 80, ySm: 72 },
+  "IMG_4619.jpg": { y: 72, ySm: 62 },
 };
 
 // The lift, in two parts. A vertical `gold-wash` profile carries the grade —
@@ -68,9 +93,10 @@ export function PageHero({ image, heading, text }: PageHeroProps) {
   // cannot see it inside the component) and never lazy-loaded.
   const preload = imagePreload(image, HERO_SIZES);
   const file = image.split("/").pop() ?? "";
-  const lift = LIFT[file] ?? { heading: 0.6, lede: 0.68 };
+  const lift = LIFT[file] ?? { heading: 0.55, lede: 0.55 };
+  const framing = FRAMING[file];
   return (
-    <section className="relative overflow-hidden bg-gold-wash">
+    <section className="relative overflow-hidden">
       {preload && (
         <link
           rel="preload"
@@ -94,7 +120,8 @@ export function PageHero({ image, heading, text }: PageHeroProps) {
           fill
           priority
           sizes={HERO_SIZES}
-          className="object-cover object-center"
+          className="photo-frame object-cover"
+          style={framingVars(framing)}
         />
       </div>
       {/* Whisper grain — the same photographic surface the offer panels and

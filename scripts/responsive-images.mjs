@@ -27,6 +27,35 @@ const SRC = path.join(ROOT, "public/images/_originals");
 const OUT = path.join(ROOT, "public/images/variants");
 const MANIFEST = path.join(OUT, "manifest.json");
 
+// The Portugal set: seven portrait frames that carry the site's photographic
+// grounds. They run through the ladder and the encoder like everything else
+// but skip the grade — they are a separate body of work and are graded in
+// their own pass, not folded into the resin-hour look for this one.
+//
+// Two of them ship cropped, and the crop is baked here rather than left to
+// `object-position`: it is a content rule, not a composition preference. A
+// CSS crop still ships the pixels, and any later change of position, of the
+// element's aspect ratio, or of the `sizes` the browser picks would bring the
+// excluded material back into frame. Cutting it out of the variants means it
+// does not exist downstream. Fractions are of the display-oriented frame.
+const UNGRADED = [
+  { file: "IMG_4582.jpg" },
+  { file: "IMG_4585.jpg" },
+  // The left of the frame carries figures in swimwear that must not appear.
+  // The brief specifies the right 70%; measured on the frame, that is not
+  // enough — the cut at 30% clears the foreground figure but leaves a second,
+  // bare-torso one further up the path, spanning 34.8%-37.9% and plainly
+  // visible at render scale. The exclusion is the rule and the fraction is the
+  // means, so the cut moves to 39%.
+  { file: "IMG_4599.jpg", crop: { x: 0.39, w: 0.61 } },
+  // The lower third carries fencing and roof tiles.
+  { file: "IMG_4619.jpg", crop: { h: 0.6 } },
+  { file: "IMG_4721.jpg" },
+  { file: "IMG_4735.jpg" },
+  { file: "IMG_4739.jpg" },
+];
+const UNGRADED_SRC = path.join(SRC, "pt");
+
 // Width ladder in device pixels. Each image emits the rungs at or below the
 // largest size it is ever displayed (never upscaled); the cap keeps a 6000px
 // source from ever emitting more than a full-bleed hero can use.
@@ -83,7 +112,43 @@ function signature() {
     const st = fs.statSync(path.join(SRC, file));
     parts.push(`${file}:${st.size}:${st.mtimeMs}`);
   }
+  for (const { file, crop } of UNGRADED) {
+    const st = fs.statSync(path.join(UNGRADED_SRC, file));
+    parts.push(`pt/${file}:${st.size}:${st.mtimeMs}:${JSON.stringify(crop ?? null)}`);
+  }
   return parts.join("|");
+}
+
+// Emit one image's ladder from a display-oriented raw buffer. Shared by the
+// graded and ungraded paths so both get the same widths, formats and manifest
+// entry — the only difference upstream is whether the grade ran.
+async function emitLadder(data, dispW, dispH, base, key, images, counters) {
+  const widths = LADDER.filter((w) => w <= Math.min(dispW, MAX_WIDTH));
+  if (widths.length === 0 || widths[widths.length - 1] < Math.min(dispW, MAX_WIDTH)) {
+    // Always offer the exact display cap so the largest screens are covered.
+    widths.push(Math.min(dispW, MAX_WIDTH));
+  }
+
+  for (const w of widths) {
+    for (const fmt of FORMATS) {
+      const pipe = sharp(data, {
+        raw: { width: dispW, height: dispH, channels: 3 },
+      }).resize({ width: w, withoutEnlargement: true });
+      const buf = await fmt.encode(pipe).toBuffer();
+      fs.writeFileSync(path.join(OUT, `${base}-${w}.${fmt.ext}`), buf);
+      counters.count++;
+      counters.bytes += buf.length;
+    }
+  }
+
+  images[key] = {
+    base,
+    width: dispW,
+    height: dispH,
+    widths,
+    formats: FORMATS.map((f) => f.ext),
+  };
+  console.log(`  ${key.padEnd(30)} ${dispW}x${dispH}  ${widths.length} widths`);
 }
 
 async function run() {
@@ -102,8 +167,7 @@ async function run() {
   fs.mkdirSync(OUT, { recursive: true });
 
   const images = {};
-  let count = 0;
-  let bytes = 0;
+  const counters = { count: 0, bytes: 0 };
 
   for (const file of gradedFiles) {
     const base = path.basename(file, path.extname(file));
@@ -115,35 +179,37 @@ async function run() {
       sharp(out8, { raw: { width, height, channels: 3 } }),
       orientation
     ).raw().toBuffer({ resolveWithObject: true });
-    const dispW = oriented.info.width;
-    const dispH = oriented.info.height;
 
-    const widths = LADDER.filter((w) => w <= Math.min(dispW, MAX_WIDTH));
-    if (widths.length === 0 || widths[widths.length - 1] < Math.min(dispW, MAX_WIDTH)) {
-      // Always offer the exact display cap so the largest screens are covered.
-      widths.push(Math.min(dispW, MAX_WIDTH));
+    await emitLadder(
+      oriented.data, oriented.info.width, oriented.info.height,
+      base, `/images/${file}`, images, counters
+    );
+  }
+
+  // The ungraded set. Same ladder, same encoder, no grade: sharp's own
+  // `rotate()` reads the EXIF flag and bakes it, then the content crop is
+  // taken off the oriented frame before anything is resized.
+  for (const { file, crop } of UNGRADED) {
+    const base = path.basename(file, path.extname(file));
+    let pipe = sharp(path.join(UNGRADED_SRC, file)).rotate();
+    if (crop) {
+      // `metadata()` reports the stored frame, so the crop fractions are
+      // resolved against the *display* frame the rotate() above produces —
+      // these are all orientation 6, where the two axes swap.
+      const meta = await sharp(path.join(UNGRADED_SRC, file)).metadata();
+      const { w: dw, h: dh } = displayDims(meta.width, meta.height, meta.orientation ?? 1);
+      pipe = pipe.extract({
+        left: Math.round(dw * (crop.x ?? 0)),
+        top: Math.round(dh * (crop.y ?? 0)),
+        width: Math.round(dw * (crop.w ?? 1)),
+        height: Math.round(dh * (crop.h ?? 1)),
+      });
     }
-
-    for (const w of widths) {
-      for (const fmt of FORMATS) {
-        const pipe = sharp(oriented.data, {
-          raw: { width: dispW, height: dispH, channels: 3 },
-        }).resize({ width: w, withoutEnlargement: true });
-        const buf = await fmt.encode(pipe).toBuffer();
-        fs.writeFileSync(path.join(OUT, `${base}-${w}.${fmt.ext}`), buf);
-        count++;
-        bytes += buf.length;
-      }
-    }
-
-    images[`/images/${file}`] = {
-      base,
-      width: dispW,
-      height: dispH,
-      widths,
-      formats: FORMATS.map((f) => f.ext),
-    };
-    console.log(`  ${file.padEnd(20)} ${dispW}x${dispH}  ${widths.length} widths`);
+    const raw = await pipe.toColourspace("srgb").raw().toBuffer({ resolveWithObject: true });
+    await emitLadder(
+      raw.data, raw.info.width, raw.info.height,
+      base, `/images/pt/${file}`, images, counters
+    );
   }
 
   const manifest = {
@@ -154,7 +220,9 @@ async function run() {
   };
   fs.writeFileSync(MANIFEST, JSON.stringify(manifest, null, 2));
   console.log(
-    `responsive-images: ${count} files, ${(bytes / 1e6).toFixed(1)}MB across ${gradedFiles.length} images.`
+    `responsive-images: ${counters.count} files, ${(counters.bytes / 1e6).toFixed(1)}MB across ${
+      gradedFiles.length + UNGRADED.length
+    } images.`
   );
 }
 

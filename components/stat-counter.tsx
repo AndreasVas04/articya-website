@@ -60,7 +60,10 @@ export function StatCounter({ num, label }: StatCounterProps) {
       <div className="font-display text-[2.75rem] font-semibold leading-none text-ink md:text-[clamp(3.25rem,8vw,6.5rem)]">
         {display}
       </div>
-      <div className="text-[0.8125rem] font-semibold uppercase leading-[1.4] tracking-[0.08em] text-ink-soft md:mt-3">
+      {/* `ink`, not `ink-soft`. The ledger stands on a photograph now, and
+          under the 0.55 ceiling `ink-soft` only reaches 4.5 over open sky —
+          the label sits wherever the crop puts it. */}
+      <div className="text-[0.8125rem] font-semibold uppercase leading-[1.4] tracking-[0.08em] text-ink md:mt-3">
         {label}
       </div>
     </div>

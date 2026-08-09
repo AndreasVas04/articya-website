@@ -5,7 +5,7 @@ export const meta = {
 };
 
 export const hero = {
-  image: "/images/About.jpg",
+  image: "/images/pt/IMG_4735.jpg",
   heading: "About ArtiCYa",
   text: "A Cyprus-based organization committed to non-formal education, creativity, and social inclusion through Erasmus+ programmes.",
 };

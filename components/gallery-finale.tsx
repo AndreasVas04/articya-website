@@ -9,6 +9,7 @@ import {
   useTransform,
 } from "framer-motion";
 import { ResponsiveImage } from "@/components/responsive-image";
+import { GroundLift, PhotoGround } from "@/components/ground-parallax";
 import { cn } from "@/lib/utils";
 
 const easeInOutCubic = cubicBezier(0.65, 0, 0.35, 1);
@@ -56,6 +57,13 @@ const TILES = [
 ];
 
 const TARGET_SCALES = [4, 5, 6, 5, 6, 8, 9];
+
+// Cattle under oaks: the one frame in the set that is texture rather than a
+// subject, which is exactly what a ground carrying a gathering mosaic should
+// be. Positioned on the clearing at its centre, the open light the closing
+// paragraph stands in.
+const GROUND = "/images/pt/IMG_4721.jpg";
+const GROUND_FRAMING = { y: 42, ySm: 42 };
 
 // While the words are on screen each outer tile holds this offset from its
 // mosaic slot (x in vw, y in vh) — gathered loosely around the paragraph,
@@ -176,15 +184,18 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
   // grid. No pinning, no scroll-linked transforms.
   if (!mounted || reducedMotion) {
     return (
-      <section ref={container} className="bg-gold-anchor pt-16 md:pt-24">
-        <div ref={textRef} className="mx-auto max-w-6xl px-4 pb-16 md:pb-24">
+      <section ref={container} className="relative pt-16 md:pt-24">
+        <PhotoGround src={GROUND} framing={GROUND_FRAMING} />
+        <span aria-hidden="true" className="zone-seam" />
+        <div ref={textRef} className="relative mx-auto max-w-6xl px-4 pb-16 md:pb-24">
+          <GroundLift />
           <span
             aria-hidden="true"
-            className="block h-[1.25px] w-16 origin-left bg-amber"
+            className="relative block h-[1.25px] w-16 origin-left bg-amber"
             style={enter(0, DRAW)}
           />
           <p
-            className="mt-6 max-w-3xl leading-[1.7] text-ink md:mt-8 md:text-xl md:leading-[1.55]"
+            className="relative mt-6 max-w-3xl leading-[1.7] text-ink md:mt-8 md:text-xl md:leading-[1.55]"
             style={enter(1, FADE)}
           >
             {groups.join(" ")}
@@ -219,23 +230,27 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
   return (
     <section
       ref={container}
-      className="relative h-[300vh] bg-gold-anchor md:h-[440vh]"
+      className="relative h-[300vh] md:h-[440vh]"
     >
+      <span aria-hidden="true" className="zone-seam" />
       <div
         key={compact ? "compact" : "wide"}
         className="sticky top-0 h-svh overflow-hidden"
       >
-        {/* The same pool of late sun the scenes sit in, under the gathering
-            mosaic. */}
-        <div aria-hidden="true" className="gold-pool absolute inset-0" />
+        {/* The ground the mosaic gathers over. Texture, not a subject: this
+            frame carries no heading and never will — the closing paragraph is
+            the only type that crosses it, and the ring of tiles takes the frame
+            from it within a screen. */}
+        <PhotoGround src={GROUND} framing={GROUND_FRAMING} />
         <motion.div
           className="absolute inset-0 z-10 flex items-center justify-center px-4"
           style={{ opacity: textOut, y: textDrift }}
         >
-          <div ref={textRef} className="max-w-2xl text-center">
+          <div ref={textRef} className="relative max-w-2xl text-center">
+            <GroundLift />
             <span
               aria-hidden="true"
-              className="mx-auto block h-[1.25px] w-16 bg-amber"
+              className="relative mx-auto block h-[1.25px] w-16 bg-amber"
               style={enter(0, DRAW)}
             />
             {/* The paragraph lifts as one block and its groups light up
@@ -243,7 +258,7 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
                 nothing, and making the spans inline-block to earn one would
                 stop them wrapping across lines. */}
             <p
-              className="mt-8 text-xl leading-[1.55] text-ink"
+              className="relative mt-8 text-xl leading-[1.55] text-ink"
               style={enter(1, RISE)}
             >
               {groups.map((group, i) => (
