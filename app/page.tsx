@@ -5,7 +5,8 @@ import { StageScene } from "@/components/stage-entrance";
 import { LivingAtmosphere } from "@/components/living-atmosphere";
 import { OfferPanel } from "@/components/offer-panel";
 import { GainTrail } from "@/components/gain-trail";
-import { GroundLift, GroundParallax } from "@/components/ground-parallax";
+import { GroundLift } from "@/components/ground-lift";
+import { PhotoStage, type StagePlate } from "@/components/photo-stage";
 import { DottedGlobe } from "@/components/ui/dotted-globe";
 import { LampCta } from "@/components/ui/lamp";
 import { ButtonLink } from "@/components/ui/button";
@@ -13,6 +14,22 @@ import { imagePreload } from "@/lib/images";
 import { hero, whatWeDo, gain } from "@/content/home";
 
 const offerIcons = ["globe", "graduation"] as const;
+
+// The three photographs the page stands on, and the only grounds below the
+// hero. Two of them are hero slides the browser has already fetched, so the
+// stage costs one image for the whole page — the offer panels' own two are
+// gone. Each carries its own darkening strength: `hero-1` opens on a bright
+// sky and needs more of it than the road under the pines to hold the ceiling
+// a composite behind text answers to.
+const plates: StagePlate[] = [
+  // The clearing: the tree-lined road, the hero's own world carried on below
+  // the seam.
+  { src: "/images/hero-2.jpg", position: "50% 42%", shade: 0.5 },
+  // The panels: the rope, close and quiet, all but out at 0.18.
+  { src: "/images/home-youth.jpg", position: "50% 45%", shade: 0.52 },
+  // The walk out, and the page closing on the vista it opened on.
+  { src: "/images/hero-1.jpg", position: "50% 62%", shade: 0.64 },
+];
 
 // The first hero slide is the LCP; the backdrop reuses the same variant, so
 // this one preload covers both.
@@ -53,6 +70,13 @@ export default function HomePage() {
           phases of the same tiling on either side of that line. */}
       <div className="relative">
         <LivingAtmosphere />
+        {/* One fixed photographic ground for the whole page below the hero.
+            No section under it paints anything, so there is no edge anywhere
+            for a seam to fall on: what changes down the page is which
+            photograph is showing, and it changes by crossfade. It sits here,
+            before every section in the markup, so paint order alone keeps it
+            behind the content and the hero's own stacking is untouched. */}
+        <PhotoStage plates={plates} />
 
         <ScrollExpandMedia
           slides={hero.slides}
@@ -86,7 +110,7 @@ export default function HomePage() {
 
         {/* overflow-clip (not hidden) so the offer panels' sticky frames can
             pin against the viewport. */}
-        <section className="gold-field relative overflow-clip text-ink">
+        <section className="relative overflow-clip text-ink">
           {/* No top padding on either viewport. Mobile spends the lever on
               the fold decision — the accent rule sits on the section's own
               top edge, exactly at the fold. Desktop used to keep pt-24, but
@@ -112,14 +136,12 @@ export default function HomePage() {
               they were sitting inside of, so the section stops floating in the
               middle of a 1440 frame. Capped against the viewport so it never
               crowds the edges on a 1280 laptop. Mobile and md are untouched. */}
-          {/* The clearing stands on photographic ground, not on flat gold:
-              hero-2 travels behind this block at a fraction of the page's
-              rate, so the world the hero opened on carries on under the
-              heading instead of ending at the seam. Full-bleed wrapper —
-              the scene has to reach the section's own edges, and the stage
-              below it is held in the content column. */}
+          {/* The clearing stands on the page's stage: hero-2 is the plate
+              behind it, so the world the hero opened on carries on under the
+              heading instead of ending at a seam. The type's own pools are
+              what make it readable — the ground beside them stays
+              photographic. */}
           <div className="relative">
-            <GroundParallax src="/images/hero-2.jpg" />
             <StageScene
               fireMargin="-30%"
               className="relative mx-auto max-w-6xl px-4 xl:max-w-[min(84rem,92vw)]"
@@ -127,7 +149,11 @@ export default function HomePage() {
               {/* Text left, the lit world right, the stats ledger reading
                   under it — with the countries column landing directly beneath
                   the globe, since the globe is that number made visible. */}
-              <div className="relative md:grid md:grid-cols-12 md:items-start md:gap-x-12 xl:gap-x-20">
+              <div
+                data-stage-plate="0"
+                data-stage-strength="0.9"
+                className="relative md:grid md:grid-cols-12 md:items-start md:gap-x-12 xl:gap-x-20"
+              >
                 {/* The wrapper exists to give the pool a box: the lift is
                     anchored to the type column, not to the section, so it
                     tracks the column at every width — and it sits outside
@@ -180,7 +206,11 @@ export default function HomePage() {
                   into the gold below. The rows are the wave's last beats, and
                   each counter still starts its 700ms count only when it
                   crosses into view — the ledger writes itself. */}
-              <div className="relative mt-2 md:mt-12">
+              <div
+                data-stage-plate="0"
+                data-stage-strength="0.9"
+                className="relative mt-2 md:mt-12"
+              >
                 {/* The ledger's own pool. Same technique, its own box: the
                     numerals and labels sit a screen apart from the heading on
                     a phone, so one pool cannot carry both. */}
@@ -200,36 +230,39 @@ export default function HomePage() {
             </StageScene>
           </div>
 
-          {/* The first panel opens on a photograph that dissolves in over its
-              own top edge, so the join already reads as a fade rather than a
-              cut. On mobile the full `mt-16` on top of that dissolve left the
-              stats hanging over ~120px of bare gold. */}
+          {/* The panels open onto the same ground the stats close on — the
+              stage simply goes quiet under them — so this margin is a beat of
+              breathing, not a gap between two surfaces. */}
           <div className="mt-10 md:mt-24">
             {whatWeDo.cards.map((card, i) => (
               <OfferPanel
                 key={card.title}
-                image={card.image}
+                pane={plates[1].src}
                 title={card.title}
                 text={card.text}
                 icon={offerIcons[i] ?? "globe"}
                 flip={i % 2 === 1}
-                openTop={i === 0}
               />
             ))}
           </div>
         </section>
 
-        {/* The trail sits on the same warm ground as the sections above it,
-            so the walk down the four gains never leaves the clearing. It
-            carries no bottom padding: the lamp's descent owns the gap below,
-            so the trail's line runs straight on into the thread rather than
-            stopping short of a section edge. */}
+        {/* The trail walks out of the clearing: the stage crossfades here to
+            the reservoir vista at half strength — the picture the page opened
+            on — and holds it under the four gains. The section carries no
+            bottom padding: the lamp's descent owns the gap below, so the
+            trail's line runs straight on into the thread rather than stopping
+            short of a section edge. */}
         {/* No top padding on mobile, like "What we do": the panel above closes
             on its own `pb-10`, so the section's own padding stacked a second
             beat on top of a gap the panel had already opened — 113px from the
             last line of the panel to this heading. The accent rule sits on the
             section's top edge instead and the join reads as one beat. */}
-        <section className="gold-field relative px-4 text-ink md:pt-32">
+        <section
+          data-stage-plate="2"
+          data-stage-strength="0.55"
+          className="relative px-4 text-ink md:pt-32"
+        >
           <div className="relative mx-auto max-w-6xl">
             <Reveal className="text-center">
               <span
@@ -250,12 +283,17 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* The closing beat, on the same cream as everything above it: the
+        {/* The closing beat, on the same plate the trail walked in on and now
+            at nearly full strength — the world comes up to meet the lamp: the
             trail's thread walks down into the lamp and the light opens on
             the ground it has been lighting all page. The headline is the one
             place the accent carries text, so it takes the text-safe amber
             and leaves the bright one to the glow around it. */}
-        <section className="gold-field gold-field-chrome-bottom relative overflow-hidden text-ink">
+        <section
+          data-stage-plate="2"
+          data-stage-strength="0.95"
+          className="relative overflow-hidden text-ink"
+        >
           <LampCta>
             {/* ink, not ink-soft: this line sits deepest in the pool, where
                 the warm wash measures 4.14 against ink-soft — under AA. */}

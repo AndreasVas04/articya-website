@@ -300,19 +300,18 @@ const ScrollExpandMedia = ({
   // bottom down into the first section's.
   return (
     <div className="overflow-hidden">
-      {/* The bottom edge opens onto nothing below md. There the next section
-          is pulled up over the gold this hero leaves under its centered card,
-          so the two field edges that used to meet at this boundary no longer
-          meet — and an anchor edge with no second edge to meet lands a step
-          deeper than the ground beside it and draws a line across the page,
-          exactly as the first offer panel's top edge would. Painting nothing
-          lets the atmosphere's floor run straight through the join. Desktop
-          keeps the anchor: there the two edges still land on each other. */}
+      {/* The bottom edge paints nothing at either viewport. Nothing below this
+          hero carries a ground of its own any more — the page's photographic
+          stage runs behind all of it — so there is no second edge for the
+          anchor to meet, and an opaque ramp ending on the hero's last row is a
+          ruled line straight across the page. Open, the stage runs up under
+          the card's own dissolving foot and the two pictures hand over. The
+          top edge keeps the chrome variant: that one still meets a bar. */}
       {/* --hero-drop-progress feeds the mobile stage drop from the same
           value that sizes the card, so the drop arrives with the growth
           rather than sitting under the collapsed card. */}
       <section
-        className="gold-field gold-field-chrome-top hero-drop-scope relative flex min-h-[100dvh] flex-col items-center justify-start overflow-hidden"
+        className="gold-field gold-field-chrome-top gold-field-open-bottom hero-drop-scope relative flex min-h-[100dvh] flex-col items-center justify-start overflow-hidden"
         style={{ "--hero-drop-progress": progress } as CSSProperties}
       >
         {/* The pool the card's foot dissolves into — first in the section, so
@@ -490,14 +489,6 @@ const ScrollExpandMedia = ({
                 <div
                   aria-hidden="true"
                   className="film-grain pointer-events-none absolute inset-0 rounded-[inherit] mix-blend-multiply"
-                />
-                {/* The first-load glare: one pass of light across the glass
-                    while the title settles. Resting opacity is 0 and the
-                    sweep's keyframes end at 0, so no static frame after the
-                    entrance carries it. */}
-                <span
-                  aria-hidden="true"
-                  className="hero-sheen pointer-events-none absolute inset-0"
                 />
               </div>
             </div>

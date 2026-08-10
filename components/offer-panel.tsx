@@ -38,30 +38,29 @@ const FADE: CSSProperties = { opacity: 0 };
 const DRAW: CSSProperties = { scale: "0 1" };
 
 interface OfferPanelProps {
-  image: string;
+  /** The stage plate this panel stands on — the pane behind its words is that
+   *  same photograph out of focus, never a colour laid over it. */
+  pane: string;
   title: string;
   text: string;
   icon: keyof typeof icons;
   flip?: boolean;
-  openTop?: boolean;
 }
 
-// A full-bleed photographic panel staged as a pinned scroll beat. The outer
-// section is taller than the viewport and the frame sticks while the user
-// scrolls through it: the photo drifts, its scale settles and the cream
-// scrim builds, all of it read off the pin. The words are the exception —
-// heading, bar and paragraph fire once on the first in-view crossing and
-// play on the clock. On mobile the pin is shorter and the paragraph arrives
-// in two halves anchored to the bottom wash. Before mount and under reduced
-// motion the panel renders unpinned with everything visible, so the exported
-// HTML is the resting state.
+// A full-bleed panel staged as a pinned scroll beat. It carries no ground of
+// its own: the page's photographic stage runs behind it and drops to a quiet
+// 0.18 through the pin, so the panel reads as the world going still while the
+// words are spoken rather than as a band with edges. The frame sticks while
+// the reader scrolls through it; the words fire once on the first in-view
+// crossing and play on the clock. Before mount and under reduced motion the
+// panel renders unpinned with everything visible, so the exported HTML is the
+// resting state.
 export function OfferPanel({
-  image,
+  pane,
   title,
   text,
   icon,
   flip = false,
-  openTop = false,
 }: OfferPanelProps) {
   const ref = useRef<HTMLElement | null>(null);
   const textRef = useRef<HTMLDivElement | null>(null);
@@ -89,27 +88,14 @@ export function OfferPanel({
     return () => observer.disconnect();
   }, [entered]);
 
-  // Two progress scales: `travel` spans the whole traversal for the slow
-  // photo drift; `stage` spans only the pinned stretch and drives the text
-  // choreography.
-  const { scrollYProgress: travel } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"],
-  });
+  // Pin progress: the panel's own sticky stretch, which the icon reads off.
+  // The photo drift that used to need a second, whole-traversal scale is gone
+  // with the panel's photograph — the stage carries the picture now.
   const { scrollYProgress: stage } = useScroll({
     target: ref,
     offset: ["start start", "end end"],
   });
 
-  const photoY = useTransform(() => `${-6 + 12 * travel.get()}%`);
-  const photoScale = useTransform(
-    () => 1.05 - 0.05 * stageWindow(stage.get(), 0.05, 0.35)
-  );
-  // Floor is high enough that the cream reading field is already carrying the
-  // heading when it rises at 0.1 — the wash builds, it never starts from open.
-  const washOpacity = useTransform(
-    () => 0.6 + 0.4 * stageWindow(stage.get(), 0.04, 0.18)
-  );
   const iconOpacity = useTransform(() => stageWindow(stage.get(), 0.07, 0.17));
   const iconY = useTransform(
     () => 24 * (1 - stageWindow(stage.get(), 0.07, 0.17))
@@ -143,57 +129,16 @@ export function OfferPanel({
   return (
     <section
       ref={ref}
+      data-stage-plate="1"
+      data-stage-strength="0.18"
       className={cn("relative", active && "h-[190svh] md:h-[240svh]")}
     >
       <div
         className={cn(
-          "gold-field relative overflow-hidden",
-          // The first panel opens onto the floor of the section above it,
-          // not onto another field edge, so its top edge paints nothing.
-          openTop && "gold-field-open-top",
+          "relative",
           active ? "sticky top-0 h-svh" : "min-h-[92svh]"
         )}
       >
-        {/* The photographic stack — photo, veil, reading wash and grain — is
-            masked as one so the whole panel dissolves into the page ground at
-            its top and bottom edges and carries no border of its own. The
-            wash fades out with the photo it exists to subdue, so the reading
-            field never thins out ahead of the picture behind it. */}
-        <div
-          aria-hidden="true"
-          className="photo-edge-dissolve absolute inset-0"
-        >
-          <motion.div
-            className="absolute inset-x-0 -inset-y-[8%]"
-            style={active ? { y: photoY, scale: photoScale } : undefined}
-          >
-            <ResponsiveImage
-              src={image}
-              alt=""
-              fill
-              sizes="100vw"
-              className="object-cover brightness-[1.06] saturate-[1.08]"
-            />
-          </motion.div>
-
-          {/* A light veil lifts the photo into the warm ground, then the
-              reading wash builds from the text side so the words land on
-              cream rather than on the picture. */}
-          <div className="absolute inset-0 bg-gold-wash/12" />
-          <motion.div
-            className="absolute inset-0 bg-gradient-to-t from-gold-wash from-18% via-gold-wash/82 via-50% to-transparent md:hidden"
-            style={active ? { opacity: washOpacity } : undefined}
-          />
-          <motion.div
-            className={cn(
-              "absolute inset-0 hidden from-gold-wash from-24% via-gold-wash/78 via-52% to-transparent md:block",
-              flip ? "bg-gradient-to-l" : "bg-gradient-to-r"
-            )}
-            style={active ? { opacity: washOpacity } : undefined}
-          />
-          <div className="film-grain pointer-events-none absolute inset-0" />
-        </div>
-
         {/* These panels are full-bleed, so their text tracks the viewport
             edge rather than the 72rem content column: inside the column a
             576px block starts 400px in on a 1920 screen and reads as
@@ -205,40 +150,61 @@ export function OfferPanel({
             active ? "h-full" : "min-h-[92svh] pt-[46svh] md:py-32"
           )}
         >
-          <div ref={textRef} className={cn("max-w-xl", flip && "md:ml-auto")}>
-            <motion.span
+          <div
+            ref={textRef}
+            className={cn("relative max-w-xl", flip && "md:ml-auto")}
+          >
+            {/* The ground the words read against: the stage's own plate,
+                defocused and confined to the block. The reading wash this
+                replaces was a cream ramp built across the whole panel, which
+                is a flat colour laid over a photograph — the one thing that
+                puts an edge back on a page built to have none. */}
+            <div
               aria-hidden="true"
-              className="flex size-12 items-center justify-center rounded-full border border-pine/30 bg-gold-wash/70 text-pine backdrop-blur-sm"
-              style={active ? { opacity: iconOpacity, y: iconY } : undefined}
+              className="ground-lift panel-pane pointer-events-none"
             >
-              <Icon className="size-6" strokeWidth={1.5} />
-            </motion.span>
-            <h3
-              className="mt-6 font-display text-[clamp(2rem,4vw,3rem)] font-semibold leading-[1.1] tracking-[-0.01em] text-ink"
-              style={enter(0, LIFT)}
-            >
-              {title}
-            </h3>
-            <span
-              aria-hidden="true"
-              className="mt-4 block h-[1.25px] w-16 origin-left bg-amber"
-              style={enter(1, DRAW)}
-            />
-            {/* The paragraph lifts as one block and its sentences light up
-                inside it: a transform on a non-replaced inline box does
-                nothing, and making the spans inline-block to earn one would
-                stop them wrapping across lines. */}
-            <p
-              className="mt-5 leading-[1.7] text-ink md:text-xl md:leading-[1.55]"
-              style={enter(2, RISE)}
-            >
-              {groups.map((group, i) => (
-                <span key={i} style={enter(2 + i, FADE)}>
-                  {group}
-                  {i < groups.length - 1 ? " " : ""}
-                </span>
-              ))}
-            </p>
+              <div className="panel-pane-plate absolute inset-0">
+                <div className="panel-pane-blur absolute">
+                  <ResponsiveImage src={pane} alt="" fill sizes="100vw" />
+                </div>
+              </div>
+            </div>
+
+            <div className="relative">
+              <motion.span
+                aria-hidden="true"
+                className="flex size-12 items-center justify-center rounded-full border border-pine/30 bg-gold-wash/70 text-pine backdrop-blur-sm"
+                style={active ? { opacity: iconOpacity, y: iconY } : undefined}
+              >
+                <Icon className="size-6" strokeWidth={1.5} />
+              </motion.span>
+              <h3
+                className="mt-6 font-display text-[clamp(2rem,4vw,3rem)] font-semibold leading-[1.1] tracking-[-0.01em] text-ink"
+                style={enter(0, LIFT)}
+              >
+                {title}
+              </h3>
+              <span
+                aria-hidden="true"
+                className="mt-4 block h-[1.25px] w-16 origin-left bg-amber"
+                style={enter(1, DRAW)}
+              />
+              {/* The paragraph lifts as one block and its sentences light up
+                  inside it: a transform on a non-replaced inline box does
+                  nothing, and making the spans inline-block to earn one would
+                  stop them wrapping across lines. */}
+              <p
+                className="mt-5 leading-[1.7] text-ink md:text-xl md:leading-[1.55]"
+                style={enter(2, RISE)}
+              >
+                {groups.map((group, i) => (
+                  <span key={i} style={enter(2 + i, FADE)}>
+                    {group}
+                    {i < groups.length - 1 ? " " : ""}
+                  </span>
+                ))}
+              </p>
+            </div>
           </div>
         </div>
       </div>

@@ -75,14 +75,14 @@ gradients — the only gradients are atmosphere (see Atmospheric grounds).
 > Measured on the rendered composite at glyph cores, worst case swept across
 > each page's whole traversal, both viewports: large text **3.12–4.51** against
 > a 3.0 floor; body text **4.64–4.88** against 4.5 — with one exception, the
-> offer panels' prose, which dips to **3.06** (desktop) / **3.69** (mobile)
-> during the ~18% of the pin where the reading wash is still at its 0.6 floor.
-> That dip is not the swap's: measured on the pre-swap build at the same
-> frames it was **3.41** / **3.94**, already under AA. Settled — the wash
-> fully built, which is the state the panels hold for the rest of the pin —
-> the same prose measures **7.39–7.68** (desktop) and **9.57–9.67** (mobile),
-> against 6.87–7.70 and 7.88–7.89 before. Raising the wash's floor from 0.6
-> would close it; that floor is an opacity ramp and was left alone.
+> offer panels' prose, which dipped to **3.06** (desktop) / **3.69** (mobile)
+> during the ~18% of the pin where the reading wash was still at its 0.6 floor.
+> That dip was not the swap's: measured on the pre-swap build at the same
+> frames it was **3.41** / **3.94**, already under AA. It is now closed — the
+> wash is gone with the rest of the panels' grounds, and the prose measures
+> **8.50–8.75** / **9.55–9.69** across the whole pin (see **The stage**). The
+> home figures in this passage predate the stage; the page's own worst
+> readings are the ones tabulated there.
 
 | Token | Hex | Role |
 |---|---|---|
@@ -99,6 +99,19 @@ gradients — the only gradients are atmosphere (see Atmospheric grounds).
 | `amber-soft` | `#E2AB52` | Glows and highlights only, never text |
 | `pine` | `#285C3C` | Small structural marks only — globe dots, small icons |
 | `hairline` | `rgba(42,51,41,.14)` | Rules, dividers, quiet borders |
+
+> **SUPERSEDED BELOW THE HOME HERO — the sections lost their grounds.** The
+> home page below the hero now stands on one fixed photographic stage (see
+> **The stage**) and no section under it paints a background at all. There are
+> therefore no section edges on that stretch, and the whole apparatus of shared
+> edges described in this passage — `.gold-field` on every section, the anchor
+> both sides of a seam, `.gold-field-chrome-bottom`, `.gold-field-open-top` on
+> the first panel — no longer applies there. What survives, and is still exactly
+> as described: the classes themselves, which the **hero** and the **inner
+> pages** still carry, and the reasoning, which the stage's own top and bottom
+> darkening now discharges for every row of the page at once instead of for two
+> named boundaries. The hero additionally takes `.gold-field-open-bottom`: below
+> it there is no second edge left to meet.
 
 **Gold on every section, no cream gaps.** The home page is one continuous
 gold field from the header to the footer. `gold-wash` is the floor — the
@@ -132,18 +145,13 @@ picture (see the poster's top edge below). On desktop the expanded hero's
 photograph passes under the header by design, for the same reason (see Don't).
 
 A section edge that opens onto its **own section's floor**, rather than onto
-another field edge, paints nothing: `.gold-field-open-top`. The anchor exists
+another field edge, paints nothing: `.gold-field-open-top`, and downward
+`.gold-field-open-bottom`. The anchor exists
 so that two edges can meet on one value, and where there is no second edge it
 has nothing to meet — it lands a step deeper than the ground beside it and
-draws a full-width line across the page, and being opaque it also covers the
-living atmosphere the row above it shows. The one place this happens is the
-first offer panel, which starts partway down the "What we do" section with the
-floor above it; its top edge is therefore open, the real ground runs straight
-through the join, and the panel's `photo-edge-dissolve` carries the
-photograph across on its own. Measured at that join on the built page: 1
-(desktop) / 2 (mobile) maximum channel jump, against 8 / 9 when the edge
-painted the anchor. Every internal seam on the page now measures 3 or under at
-both viewports.
+draws a full-width line across the page, and being opaque it also covers
+whatever the row above it shows. On the built page the one edge still doing
+this is the **hero's bottom**, which opens onto the stage.
 
 Because the seam does the joining, **no section carries a rule at its edge**.
 A hairline between two sections would draw exactly the line the shared gold
@@ -537,10 +545,10 @@ fix a table.
   constraint travels with the type precisely because the type here is fluid.
 - **The full-bleed offer panels are the one exception to the content column.**
   Their text alternates sides on `md`+ — Youth Exchanges left, Training
-  Courses right — and each block sits over a reading fade anchored to **its**
-  side, so legibility comes from the gradient rather than from a scrim: the
-  wash direction always follows the text (`bg-gradient-to-r` under a left
-  block, `bg-gradient-to-l` under a right one). Held inside the 72rem column,
+  Courses right — and each block stands on a defocused copy of the stage's own
+  plate, confined to the block (see **The stage**; the cream reading fade that
+  used to run across the panel from the text's side is retired with the
+  panels' own photographs). Held inside the 72rem column,
   a 576px block starts 400px in on a 1920 screen and reads as floating toward
   the middle instead of anchored to its edge. So these panels inset from the
   **viewport** instead, on a gutter that grows with the screen
@@ -550,10 +558,9 @@ fix a table.
   ultrawide never drifts the block back inward. The inner side stays open:
   774px of gap at 1440, 1204px at 1920. Mobile keeps the stacked layout
   anchored to the bottom wash — a narrow screen cannot afford side placement.
-  Moving the text outboard puts it *deeper* into the opaque end of its own
-  fade, so contrast improves rather than degrades: worst case over the faded
-  photograph, swept across each panel's pinned range, **7.26** (`ink`, at
-  1440 on Training Courses) against a 4.5 floor.
+  Moving the text outboard keeps it over the middle of its own pane rather
+  than at the end of a fade: worst case swept across each panel's pinned
+  range, **8.50** (`ink`, prose) against a 4.5 floor.
 - Section rhythm: `py-24` desktop / `py-16` mobile. Adjacent plaster sections
   alternate `plaster` / `plaster-muted` so light stretches read green, never
   neutral cream.
@@ -566,7 +573,9 @@ fix a table.
   **no top padding at all**, the offer panels close at `pb-10` and the lamp at
   `pb-20`. Desktop keeps the full rhythm — the wider frame earns it. The
   gold-field ramp is `72px` on mobile against `150px` on desktop for the same
-  reason: the fade has to complete inside the shorter section.
+  reason: the fade has to complete inside the shorter section. (That ramp is
+  now the hero's and the inner pages' — the home sections below the hero carry
+  no field at all.)
 
   **A join is one beat, and the beat is measured where the reader is.** A
   section's own top padding is not the whole gap: the panel above already
@@ -622,12 +631,14 @@ fix a table.
   that join after the revert: worst row-delta **2.37**, and its worst row sits
   36px off the boundary — gradient stepping, not an edge.
 - **Ground is decided per page, not per section.**
-  - **Home** is one continuous gold world from the header to the footer — the
-    `gold-wash` floor everywhere, `gold-anchor` at every section edge and
-    `gold-chrome` in the two bars. No section may interrupt it and none may read as neutral
-    cream. Depth inside the gold comes from the living atmosphere's amber
-    pools, full-bleed photography and the resin light, never from switching
-    ground.
+  - **Home** is one continuous world from the header to the footer, and below
+    the hero that world is **a photograph**: the stage carries the ground and
+    no section carries any (see **The stage**). Above it the hero keeps its own
+    field, `gold-chrome` holds the two bars, and the living atmosphere's amber
+    pools are what warms the floor wherever the stage is quiet. No section may
+    interrupt the run and none may read as neutral. Depth comes from the
+    plates, the pools and the resin light — never from switching ground under a
+    section.
   - **Inner pages** (about, faq, contact) are text-heavy and keep `plaster`
     as the default background below their heroes; no dark section may appear
     there outside the hero. The hero is the **photograph full-bleed with the
@@ -689,9 +700,11 @@ transitions run to their end states regardless of where the viewport went.
 up from 45% over 1200ms while the photo frame settles in on the one long
 master curve (1100ms, opacity 0 → 1, scale 1.08 → 1, its shadow container
 fading with it so no orphaned shadow ever floats alone); the headline's two
-lines rise out of clipped masks, staggered 120/300ms; one glare sweeps the
-glass (750–1850ms, resting opacity 0 at both ends); the amber strike draws
-from its center at 850ms and the hint pill lands last at 1000ms. The
+lines rise out of clipped masks, staggered 120/300ms; the amber strike draws
+from its center at 850ms and the hint pill lands last at 1000ms. There is no
+glare: `.hero-sheen` swept a 70% `plaster-bright` band across the card, which
+on the dark ground read as plaster brightness on a photograph and as the
+plainest cheap-motion tell the page had. It is deleted. The
 choreography is pure CSS keyed off a `hero-load` class the page's inline
 script sets before the hero parses — it runs from the very first frame, a
 no-JS visitor renders the resting state (the class never lands), and the
@@ -852,11 +865,13 @@ section. Nothing else may put a gradient or texture on a ground:
 | `.hero-foot-pool` | The light the picture leaves on the ground: `amber-soft` cresting just above the card's base, gathered in the middle rather than run across the width, gone by the section's last row so the seam below is untouched | Anchored to the home hero's lower edge, behind the backdrop photograph |
 | `.photo-vignette` | Edges falling toward `pine-950` | Inside photographic frames and hero photos only |
 | `.film-grain` | Fine tiled SVG grain at 5% opacity, killing the flat digital-paint feel | Over dark grounds and photographic frames |
-| `.ground-parallax` / `.ground-plate` | The photographic ground under the "What we do" clearing: one of our own photographs, blurred and lifted, travelling at a fraction of the page's scroll rate behind the block. The mask belongs to the block, the plate moves inside it | Behind the "What we do" stage only — the one scroll-linked layer on the site (see The travelling ground) |
-| `.ground-lift` / `-pool` | The gold a block of type stands on once a photograph is under it: a soft-edged pool anchored to the block, its falloff a fade across multiplied by a fade down, its bleeds kept short so the ground beside the block stays photographic | Over the "What we do" type column and its stats ledger only |
-| `.gold-field` | Top and bottom edges at `gold-anchor`, falling to it at zero alpha toward the middle where the `gold-wash` floor takes over | Every home section, and every full-bleed offer panel — it is what makes the seams continuous |
-| `.gold-field-chrome-top` / `-bottom` | The same field with that one edge ending on `gold-chrome` instead, and — on the top variant — held flat for the header's height before the ramp starts | The hero (top) and the closing section (bottom) only: the two edges that meet a chrome bar rather than another section |
-| `.gold-field-open-top` | The same field with its top edge painting nothing at all | A section or panel whose top opens onto its own section's floor rather than onto another field edge — the first offer panel only |
+| `.photo-stage` / `.stage-plate` / `.stage-plate-frame` | The page's ground below the hero: one fixed full-viewport layer holding three photographic plates that crossfade on the scrollbar, each settling from 1.07 to 1.00 as it arrives | The home page only — the one scroll-linked layer on the site (see The stage) |
+| `.stage-plate-shade` | A plate's own darkening, and the whole of it: flat `gold-anchor` held for the height of each chrome bar at the top and bottom of the window, a per-plate floor between them. Rides inside the plate, so it fades with it | Inside every stage plate — there is no scrim, veil or wash anywhere else on the home page |
+| `.panel-pane` / `.panel-pane-plate` / `.panel-pane-blur` | The offer panels' reading ground: the stage's own plate out of focus (blur 28px, brightness 0.40, saturate 0.8), confined to the text block by a lift's two crossed fades, its ramps starting well inboard so it reads as haze rather than as a soft-edged rectangle | Behind the offer panels' type only |
+| `.ground-lift` / `-pool` | The gold a block of type stands on once a photograph is under it: a soft-edged pool anchored to the block, its falloff a fade across multiplied by a fade down, its bleeds kept short so the ground beside the block stays photographic. `--lift-ramp-x` / `--lift-ramp-y` set the ramp lengths apart from the bleeds, so a pool can spend more softness than its box reaches | Over the "What we do" type column and its stats ledger; the box and the fades are also what `.panel-pane` is built on |
+| `.gold-field` | Top and bottom edges at `gold-anchor`, falling to it at zero alpha toward the middle where the `gold-wash` floor takes over | The home **hero** and the inner pages. No home section below the hero carries a ground of any kind — the stage is the ground there |
+| `.gold-field-chrome-top` / `-bottom` | The same field with that one edge ending on `gold-chrome` instead, and — on the top variant — held flat for the header's height before the ramp starts | The home hero's top, and the inner pages' closing sections. The home closing section no longer needs it: the stage's own bottom darkening lands the footer join on `gold-anchor` at every scroll position |
+| `.gold-field-open-top` / `-open-bottom` | The same field with that edge painting nothing at all | An edge with no second edge to meet. On the built page: the home hero's bottom, which opens onto the stage |
 | Hero title pool | Soft `gold-wash` ellipse at ~26%, heavily blurred, inside the poster's lift layer | Behind the home collapsed headline only, concentrating a little more light where the words sit (`.hero-glass-veil` and the old 25% pool are retired) |
 | `.plaster-light` | Soft pool of `plaster-bright` | Behind the About scenes and the finale mosaic |
 | `.print-shadow` | Soft `pine-950` drop shadow | Under framed prints on plaster; the raised state of interactive cards (open accordion, hovered contact card) |
@@ -1086,9 +1101,9 @@ Rules, in order of precedence:
 - **Static only, with one named exception.** Every layer is painted once and
   never animated, never scroll-linked, never repainted — atmosphere is free on
   the GPU and needs no reduced-motion variant. The single exception is the
-  travelling ground below, which earns it by being the one place the page has
-  to express *depth* rather than light, and which does carry a reduced-motion
-  variant.
+  photographic **stage** below, which earns it by being the page's ground
+  rather than a layer on one, and which does carry a reduced-motion variant
+  (the crossfade stays, the arrival scale goes).
 - **Measured on the composite.** Layered grounds create pixel values between
   tokens, so text contrast is verified against the actual rendered composite
   (screenshot sampling behind each text zone), not against the flat token.
@@ -1101,116 +1116,128 @@ Rules, in order of precedence:
   second source. Everything else is pine and plaster, and every layer stays
   too faint to read as glow, shape, or blob (whisper-level; if a screenshot
   shows a hard edge, it is too strong).
+## The stage
 
-## The travelling ground
+**The home page has one ground below the hero, and it is a photograph.** Every
+section under the hero used to paint its own: the gold field's edges, a
+travelling plate behind "What we do", a full-bleed photograph inside each offer
+panel with a cream reading wash built over it. Each of those is a surface with
+a boundary, and a boundary between two surfaces is a line — the shared
+`gold-anchor` edge existed to make those lines meet on one value, which is
+managing seams rather than not having them.
 
-**"What we do" stands on photographic ground, not on flat gold.** The hero's
-card dissolves its picture into the gold at its foot; below the seam the
-section used to be colour and nothing else, so the eye read one world ending
-and a flat field beginning. `hero-2.jpg` — the tree-lined road from the same
-walk as the hero slides, the only photograph in the graded set that is
-landscape, has real depth and carries no readable faces — now sits behind the
-block and moves at a fraction of the page's rate. Depth is **0.30** on desktop
-and **0.18** on a phone, measured over the block's own traversal rather than
-the document's, and centred on it, so the plate's travel is symmetric.
+There are no section grounds now. One **fixed, full-viewport layer** sits
+behind all home content, below every section and above the body's floor, and it
+holds **three photographic plates** that crossfade as the reader scrolls. A
+section does not begin or end as far as the ground is concerned; what changes
+down the page is which photograph is showing, and a crossfade has no edge. This
+is what removed every horizontal seam rather than softening it.
 
-**Nothing about it captures the scroll.** There is no pin, no clamp, no
-delay, no progression gated on an animation. A passive listener coalesces into
-one `requestAnimationFrame`, and that frame writes a single transform read from
-`window.scrollY`. Layout is measured on resize, never per frame. Under
-`prefers-reduced-motion` the effect never arms: the plate renders untransformed,
-which is the mid-traversal frame, and the lift is unchanged.
+**The plates, and what stands on them.** Strength is declared in the markup, on
+the block it belongs to (`data-stage-plate`, `data-stage-strength`), so the page
+decides what stands on what and the layer only measures and blends:
 
-**The mask belongs to the block, the plate moves inside it.** That is what
-makes the layer's own edge unreachable: what fades is always the same two rows
-of the section, over the same **72px / 150px** the gold field's own edge ramp
-takes, so the ground arriving and the anchor edge falling are one event rather
-than two ramps crossing. The plate is over-sized 280px (mobile) / 560px
-(desktop) vertically and 96px horizontally — the horizontal figure set by the
-blur's own soft edge, not by the travel. Measured at thirteen viewports from
-320×480 to 2560×1440, twenty-seven scroll positions each: minimum plate
-overhang **96px**, never exposed. Both seams are untouched — hero → section and
-ground → first panel measure **3** and **2** at both viewports, identical with
-the layer present and absent.
+| Zone | Plate | Strength |
+|---|---|---|
+| "What we do" | `hero-2.jpg` — the tree-lined road | 0.90 |
+| Stats ledger | `hero-2.jpg` | 0.90 |
+| Offer panel 1 | `home-youth.jpg` — the rope, close | 0.18 |
+| Offer panel 2 | `home-youth.jpg` | 0.18 |
+| "What you gain" | `hero-1.jpg` — the walk out to the reservoir | 0.55 |
+| Closing | `hero-1.jpg` | 0.95 |
 
-**Blur is priced by area, not by radius, and that decided the construction.**
-At 1440 this plate is ~1584×1942. Applied at full size, `blur(16px)` put **66
-of 145 frames over 24ms** with a 50ms p95 through the section; `blur(4px)` still
-put 54 there. Blurring a quarter-size box and scaling it back by 4 gives the
-identical 16px result off a sixteenth of the pixels: **10 of 180 frames**,
-against **9 of 178** for the same page with the layer removed. The globe, which
-shares this zone, is no longer the cost it once was — measured with and without
-its canvas, the difference through the section is inside the noise.
+The two 0.18 entries are the model's other half: **the ground is allowed to go
+quiet**. Through the panels the stage falls to a whisper and the dark floor
+carries the passage on its own, which is a beat the page could not play at all
+while every section owned a surface. And the two plates that repeat across
+adjacent zones give a **plateau**, not a spike — the value holds flat for the
+whole of both panels and for the whole clearing, so the ground is still while
+the words are being read and only turns between them.
 
-**The lift's falloff is separable, and that is measured rather than
-stylistic.** A radial's alpha at the *corners* of a wide block of type is far
-below its centre: over the 606px lead column, an ellipse sized to the block
-delivered its full strength at the middle and about **0.15** at the ends of the
-lines — which is exactly where the contrast failed. Sizing the ellipse until
-the corners held would have taken it past 2000px across, which is the
-full-frame veil this may never be. A fade across multiplied by a fade down
-holds the declared alpha over the whole block and spends its softness in the
-margin. The two masks multiply by nesting rather than by `mask-composite`, so
-no browser can fall back to one axis and draw a hard edge on the other.
+The page costs **one new photograph** for all of this: `hero-1` and `hero-2` are
+hero slides the browser has already fetched, and the panels' own two pictures
+(`home-youth`, `FAQ`) are gone, one of them replaced by the plate.
 
-**The margin is where the softness lives, so its length is what decides how
-much text-free ground the pool lightens.** At 96px each way the ledger's pool
-ran 1485×390 for a block of 1293×198 and reached a third of the way up the
-section either side of it. The held region is the block whatever the bleed is —
-the fade length *is* the bleed — so shortening the ramps costs the type nothing
-and gives the photograph back the margins: **72px** sideways and **44px**
-vertically on desktop, 44px both ways on a phone (the flush-top variant keeps
-its 48px, which is tuned to the lead's own start). The pools then measure
-750×277 for the 606×189 type column and 1437×286 for the ledger's 1293×198, both
-inside 1.25× wide and 1.5× tall. Measured across the section's whole traversal,
-twenty scroll positions, resting frames only, before and against after: heading
-**9.25/9.32**, lead **5.08/5.16**, numerals **9.15/9.24**, labels **5.11/5.12** —
-identical to the digit on both viewports, which is the point.
+**Opacity is read off the scrollbar, and it is the one thing on this page
+allowed to be.** Every text entrance is forbidden to scrub — at a real flick
+speed a scrubbed choreography elapses inside 200ms of finger travel and reads as
+nothing. That rule is about text. This is background: the reader is meant to
+feel the ground turning under them at exactly their own rate, and a clock here
+would put the wrong photograph behind the words whenever the scroll speed and
+the clock disagreed. Each plate also **settles from 1.07 to 1.00** as it
+arrives, and holds at 1.00 once it has — the scale plays on the plate's own
+first ramp, not on every crossing, so a plate never swells again on the way
+out.
 
-The pool is anchored to the **block**, not the section: the content column caps
-at 84rem while the viewport does not, so a pool placed at a fraction of the
-viewport sits under the heading at 1440 and nine points of screen width off it
-at 2560. Below `md` the heading sits on the section's own top row and the
-section clips, so that pool sits flush and spends its fade downward — bleeding
-upward past that edge cut the fade exactly on the hero seam and took the join
-from 3 to **18**.
+Nothing about it captures the scroll: a passive listener coalesces into one
+`requestAnimationFrame`, and that frame writes three opacities and three
+scales. Layout is read on mount and from a `ResizeObserver` on the document —
+the pinned panels take their full height only after they mount — never per
+frame. Under `prefers-reduced-motion` the **crossfade stays** and the arrival
+scale does not: a fade carries no travel to be sensitive to, and freezing the
+ground on one plate would put the wrong photograph under two thirds of the
+page. Without JavaScript every plate rests at zero and the dark floor carries
+the whole page, which is a state the model already sanctions.
 
-**Strength was set by measurement, in the steps the brief allows.** The pool
-started at 0.62 and missed: the lead measured 4.28 against its 4.5 floor. It
-sits at **0.74** now, still under the 0.78 ceiling, and the plate carries a
-black-point lift (`contrast(0.72)`) because raising the pool alone bought only
-+0.2 of ratio across that whole range — at 20% opacity the photograph's
-mid-tones barely move the gold, but its deepest shadows still pulled the ground
-under 17px `ink-soft`, which starts with only 5.62 on bare gold and has nothing
-to give.
+**Each plate carries its own darkening, and that is the whole of it.** There is
+no scrim, veil or wash anywhere else on the home page. The shade holds flat
+`gold-anchor` for exactly the height of a chrome bar at the top and bottom of
+the **window** — not of a section — so the header's lower edge and the footer's
+upper edge meet the ground on one value at every scroll position and on every
+plate. Two named boundaries used to need `gold-field-chrome-top`/`-bottom` for
+this; anchored to the window it is true of every row of the page at once.
+Measured on the built page at nine scroll positions, both viewports: **footer
+join 4** maximum channel jump, against the 1–2 the old gold seam measured. The
+**header** join is a picture edge rather than a gold seam, exactly as it always
+was over the hero and on the inner pages: the bar's amber hairline lands on the
+photograph, and the hold is what keeps the darkest case at 4.
 
-**This plate's strength is capped by what it is, not by the pools over it.**
-Measured in the section's right third with the globe and every text box carved
-out — 150k pixels of pure ground at 1440 — the layer renders at **7%** of what
-the ungraded `hero-2` measures through nothing (RMS 0.144 against 2.070), and
-turning the pools off entirely moves it to 0.149. The gap is the
-environment-photograph rule itself: 20% opacity, 16px of blur, `saturate(0.45)`
-and the black-point lift, which are what let a photograph sit under body copy on
-gold at all. So the travelling ground is the one photographic surface on the
-page that cannot be brought toward full strength — the ceiling is the rule, and
-the rule is what the lead's 4.5 rests on. What the pools *can* give back is the
-margin around the type, and they now do.
+Between the two ramps the shade holds a **floor, and the floor is per plate**
+(`--plate-shade`: 0.50, 0.52, 0.64). A photograph behind text answers to the
+working ceiling — no composite behind text may exceed `pine-800` lightness —
+and a dark picture reaches that ceiling with less darkening than a bright one.
+`hero-1` opens on a bright sky and needs 0.64 where the road under the pines
+needs 0.50; spending more than a picture needs only throws the picture away.
 
-Measured at glyph cores on the rendered composite, worst case swept across the
-section's whole traversal at twenty scroll positions, both viewports:
+**The offer panels' reading wash is gone, and what replaced it is not a
+colour.** The wash was a cream ramp built across the whole panel from the text's
+own side — a flat colour laid over a photograph, which is exactly the thing that
+puts an edge back on a page built to have none, and it was also the page's worst
+measured text: `3.06` desktop / `3.69` mobile through the first fifth of each
+pin, where the ramp was still at its 0.6 floor. In its place the words stand on
+a **defocused copy of the plate behind them** — blur 28px, brightness 0.40,
+saturate 0.8 — confined to the text block by a lift's two crossed fades. The
+blur is rasterized at a quarter size and magnified by a composited scale, the
+same construction the travelling plate used, because a blur is priced by the
+area it rasterizes and not by its radius.
 
-| Element | Token | Floor | Desktop | Mobile |
-|---|---|---|---|---|
-| "What we do" heading | `ink` | 3.0 | **7.46** | **7.55** |
-| Lead paragraph | `ink-soft` | 4.5 | **4.52** | **4.60** |
-| Stat numerals | `ink` | 3.0 | **7.40–7.47** | **7.45–7.47** |
-| Stat labels | `ink-soft` | 4.5 | **4.60–4.66** | **4.57–4.61** |
+Its ramps start well **inboard** of its box (`--lift-ramp-x` 232px against a
+96px bleed on desktop), and that is the difference between haze and a panel.
+Held at full strength over its whole box the pane read as a soft-edged
+rectangle sitting on the picture — the same failure the hero's sky lift found at
+48px and answered with 160. Same footprint, several times the softness.
+Measured after: the panels' prose comes out at **8.50–8.75** (desktop) and
+**9.55–9.69** (mobile) against a 4.5 floor, and their titles at **5.12–7.35** /
+**6.02–8.44** against 3.0.
 
-The ground costs **no image bytes**: the plate resolves to the same variant the
-hero slideshow has already fetched for its third slide (`hero-2-1366.avif` at
-390, `hero-2-1536.avif` at 1440) — one request serves both. The whole layer
-adds **~1.1 KB gzipped**: +363 B of HTML, +464 B of CSS, ~+300 B of route JS,
-with First Load JS unchanged.
+**Measured across the whole page, glyph cores on the rendered composite, worst
+case swept across every element's own traversal, both viewports.** The floor is
+4.5 for body-size text and 3.0 for large:
+
+| | Desktop | Mobile |
+|---|---|---|
+| Worst body-size text on the page | **7.18** ("What we do" lead) | **7.20** |
+| Worst large text on the page | **5.12** (Youth Exchanges title) | **6.02** |
+| Closing headline, `resin-deep` | 6.62 | 6.34 |
+| Closing lede | 9.24 | 9.91 |
+| "What you gain" heading and trail | 8.64–10.54 | 6.75–7.96 |
+| Stat numerals / labels | 10.97–11.16 / 7.07–7.21 | 11.10–11.15 / 7.08–7.19 |
+
+Nothing on the page is inside a point of its floor, which was not true before:
+the panels' prose used to spend part of every pin under AA.
+
+**Document height is unchanged to the pixel** — 7743 at 1440×900 and 5887 at
+390×844, before and after. Nothing here is in flow.
 
 ## Do / Don't
 
