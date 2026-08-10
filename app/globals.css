@@ -26,9 +26,8 @@
   --color-amber: #c88a3a;
   --color-amber-soft: #e2ab52;
   /* Lifted out of the near-black green it was on the light ground: at #285c3c
-     the icon strokes and the globe's land dots measured 2.2 on the floor,
-     under the 3.0 a graphical mark answers to. Same green, raised until it
-     reads (6.58 on the floor). */
+     the icon strokes measured 2.2 on the floor, under the 3.0 a graphical
+     mark answers to. Same green, raised until it reads (6.58 on the floor). */
   --color-pine: #7fa98a;
   /* The same 14% rule inverted: a hairline is the ground's own text colour
      laid on thin, so on a dark ground it is cream rather than ink. */
@@ -37,24 +36,20 @@
   /* The page's three grounds. `gold-wash` is the visible floor — every
      section shows it, so no stretch of the page reads as untreated. The
      others are the same pine a shade either side of it: `gold-anchor` is the
-     deepest, what every section fades to at its top and bottom edges (so
-     section meets section, nav and footer in one unbroken band) and what a
-     photograph dissolves into; `gold-chrome` is the header and footer only,
-     a hair off the floor so the two flat bars sit quietly against the
-     sections. `bark` is the chrome's resting nav label (9.55 on the chrome).
-     The amber fills are the accent lightened just far enough that the
-     button's own label clears AA on them. */
+     deepest, what every section fades to at its top and bottom edges and what
+     a photograph is darkened toward; `gold-card` is the floor lifted a
+     half-step for containers. The amber fills are the accent lightened just
+     far enough that the button's own label clears AA on them. */
   --color-bark: #c9bb9e;
   --color-gold-wash: #141c16;
   --color-gold-anchor: #0e1510;
   --color-gold-chrome: #101811;
-  /* The three ground colours at zero alpha. Fades name these explicitly
-     rather than ending on `transparent`, which is a colorless black and can
-     pull a gradient through grey. */
+  /* The ground colours at zero alpha. Fades name these explicitly rather than
+     ending on `transparent`, which is a colorless black and can pull a
+     gradient through grey. */
   --color-gold-anchor-0: rgb(14 21 16 / 0);
   --color-gold-chrome-0: rgb(16 24 17 / 0);
   --color-gold-wash-0: rgb(20 28 22 / 0);
-  --color-amber-soft-0: rgb(226 171 82 / 0);
   --color-amber-fill: #ce9440;
   --color-amber-lit: #d8a254;
   --color-amber-edge: #b87a28;
@@ -95,35 +90,77 @@ body {
   box-shadow: 0 0 0 2px var(--color-pine-950);
 }
 
-/* Atmospheric grounds — static depth layers, painted once and never
-   animated; roles and limits in DESIGN-SYSTEM.md. The gradients mix the
-   existing pine/plaster tokens, so every text pair stays between two
-   measured grounds that both pass; the lamp falloff and film grain are
-   capped so no composite behind text exceeds pine-800 lightness. */
-.dusk-ambient {
-  background: radial-gradient(
-    ellipse 75% 55% at 50% 40%,
-    color-mix(in srgb, var(--color-pine-900) 55%, transparent),
-    transparent 70%
+/* The one thing allowed between a photograph and the words on it: a
+   full-width, top-to-bottom darkening built into the photo plate itself.
+   It has no horizontal extent of its own, so it can never read as a panel,
+   a pool or a soft-edged rectangle behind a block of type — the whole
+   apparatus of local lifts it replaces did exactly that. Every use tunes the
+   three strengths and the two mid stops; nothing else about it varies.
+
+   `gold-anchor` rather than black: the page's own deepest ground, so a
+   darkened picture and the ground beside it are the same colour family. */
+.plate-shade {
+  --shade-top: 84%;
+  --shade-mid: 48%;
+  --shade-bottom: 72%;
+  --shade-mid-from: 42%;
+  --shade-mid-to: 64%;
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--color-gold-anchor) var(--shade-top), transparent) 0%,
+    color-mix(in srgb, var(--color-gold-anchor) var(--shade-mid), transparent)
+      var(--shade-mid-from),
+    color-mix(in srgb, var(--color-gold-anchor) var(--shade-mid), transparent)
+      var(--shade-mid-to),
+    color-mix(in srgb, var(--color-gold-anchor) var(--shade-bottom), transparent) 100%
   );
 }
-.photo-vignette {
-  background: radial-gradient(
-    ellipse 120% 100% at 50% 45%,
-    transparent 55%,
-    color-mix(in srgb, var(--color-pine-950) 45%, transparent)
+
+/* The chrome carries no bar, so what keeps a cream nav label off the picture —
+   and off the page's own text scrolling up past it — is a darkening rather than
+   a surface. One full-width top-to-bottom ramp pinned to the top of the window,
+   falling to nothing well below the bar: no edge, no box, nothing local to the
+   labels, and no row anywhere in it where the value steps.
+   It is the same construction the stage plates carry at their own top edge,
+   moved to the window for two reasons a plate cannot answer: a gradient inside
+   a photograph scrolls away from a fixed bar, and below the inner pages' heroes
+   there is no photograph to put one in at all. It grows while the mobile menu
+   is open, so the ramp still ends below the last item rather than under it. */
+.chrome-shade {
+  --chrome-shade-h: 150px;
+  height: var(--chrome-shade-h);
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--color-gold-anchor) 90%, transparent) 0%,
+    color-mix(in srgb, var(--color-gold-anchor) 85%, transparent) 38%,
+    color-mix(in srgb, var(--color-gold-anchor) 46%, transparent) 66%,
+    color-mix(in srgb, var(--color-gold-anchor) 15%, transparent) 86%,
+    var(--color-gold-anchor-0) 100%
+  );
+  transition: height 200ms var(--ease-out-quart);
+}
+@media (min-width: 768px) {
+  .chrome-shade {
+    --chrome-shade-h: 180px;
+  }
+}
+/* Open, the ramp has four labels to carry instead of one row of them, so it
+   both grows and holds its strength further down before falling away — the
+   last item sits at about 64% of this height. Measured over the brightest
+   ground each page can put behind an open menu, the weakest label (the active
+   one, in amber) goes from 4.27 to 6.28. */
+.chrome-shade-open {
+  --chrome-shade-h: 360px;
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--color-gold-anchor) 90%, transparent) 0%,
+    color-mix(in srgb, var(--color-gold-anchor) 86%, transparent) 64%,
+    color-mix(in srgb, var(--color-gold-anchor) 46%, transparent) 80%,
+    color-mix(in srgb, var(--color-gold-anchor) 15%, transparent) 92%,
+    var(--color-gold-anchor-0) 100%
   );
 }
-/* The same edge fall for a frame standing on the warm ground: the corners
-   lift toward cream instead of sinking toward pine, so the hero card reads
-   as part of the light rather than a window cut into it. */
-.photo-vignette-warm {
-  background: radial-gradient(
-    ellipse 120% 100% at 50% 45%,
-    transparent 55%,
-    color-mix(in srgb, var(--color-gold-wash) 55%, transparent)
-  );
-}
+
 /* Inner-page hero photograph — a slow scale-from-in on load, so the frame
    arrives by settling rather than snapping on. The parent clips the overscan,
    so the picture eases from 6% in to flush; opacity is untouched, so the LCP
@@ -155,45 +192,12 @@ body {
     animation: none;
   }
 }
-/* Dissolves a full-bleed photographic frame into the ground at its top and
-   bottom edges. It masks rather than painting cream over the photo: the
-   ground here is the living atmosphere, so a flat repaint lands a shade
-   lighter and cooler than the glow it covers and draws exactly the seam it
-   was meant to hide. Masking resolves to the real ground instead, so the two
-   can never differ. The ramp is eased, not linear — a linear alpha fade
-   leaves a visible kink where it meets the flat ground. */
-.photo-edge-dissolve {
-  --edge: 18%;
-  --edge-mask: linear-gradient(
-    to bottom,
-    transparent 0%,
-    rgb(0 0 0 / 0.04) calc(var(--edge) * 0.125),
-    rgb(0 0 0 / 0.16) calc(var(--edge) * 0.25),
-    rgb(0 0 0 / 0.5) calc(var(--edge) * 0.5),
-    rgb(0 0 0 / 0.84) calc(var(--edge) * 0.75),
-    rgb(0 0 0 / 0.96) calc(var(--edge) * 0.875),
-    #000 var(--edge),
-    #000 calc(100% - var(--edge)),
-    rgb(0 0 0 / 0.96) calc(100% - var(--edge) * 0.875),
-    rgb(0 0 0 / 0.84) calc(100% - var(--edge) * 0.75),
-    rgb(0 0 0 / 0.5) calc(100% - var(--edge) * 0.5),
-    rgb(0 0 0 / 0.16) calc(100% - var(--edge) * 0.25),
-    rgb(0 0 0 / 0.04) calc(100% - var(--edge) * 0.125),
-    transparent 100%
-  );
-  -webkit-mask-image: var(--edge-mask);
-  mask-image: var(--edge-mask);
-}
-/* The gold every home section stands in. Its top and bottom edges are the
-   chrome's own `gold-anchor`, falling to that gold at zero alpha toward the
-   middle, where the page's `gold-wash` floor carries the color instead — so
-   the section is gold end to end and the living atmosphere still drifts
-   through its center. Sitting under every child puts the edges exactly where
-   a panel's `photo-edge-dissolve` has masked its photograph away, so the gold
-   reads as the ground the panel dissolves into, never as a tint over the
-   picture. Two of these meeting — section to section, or the first and last
-   to the header and footer — make one continuous band across the seam, which
-   is why no section carries a rule at its edge. */
+
+/* The gold a section stands in. Its top and bottom edges are `gold-anchor`,
+   falling to that gold at zero alpha toward the middle, where the page's
+   `gold-wash` floor carries the colour instead — so the section is gold end to
+   end. Two of these meeting make one continuous band across the seam, which is
+   why no section carries a rule at its edge. */
 .gold-field {
   --gold-edge: 72px;
   --gold-hold: 0px;
@@ -215,20 +219,10 @@ body {
     --gold-edge: 150px;
   }
 }
-/* The two edges that meet the chrome rather than another section end on the
-   chrome's own lighter gold instead of the anchor. Section to section, both
-   sides arrive at the anchor and the seam is invisible; against the header
-   and footer the anchor would land a step darker than the bar and draw a line
-   straight across the page. Ending these two edges on `gold-chrome` puts the
-   whole tone change inside the field's own 150px ramp, where it reads as the
-   ground warming rather than as an edge. Only these two edges change — every
-   internal seam keeps the anchor. */
-/* The top edge additionally holds its gold flat for the header's height
-   before the ramp starts. The header is fixed, so it covers the first 80px
-   of this section: without the hold the ramp has already fallen most of the
-   way to the floor by the time it emerges, and the first visible row sits a
-   step below the bar. Holding puts the ramp's start at the header's lower
-   edge, where the eye actually picks it up. */
+/* The top edge holds its gold flat for the header's height before the ramp
+   starts. The header is fixed, so it covers the first 80px of this section:
+   without the hold the ramp has already fallen most of the way to the floor by
+   the time it emerges, and the first visible row sits a step below it. */
 .gold-field-chrome-top {
   --gold-top: var(--color-gold-chrome);
   --gold-top-0: var(--color-gold-chrome-0);
@@ -239,372 +233,31 @@ body {
     --gold-hold: 80px;
   }
 }
-/* The home hero's local lift — the intro's ground once the card is open. The
-   statement sits inside the photograph, low in the frame, so a soft-edged gold
-   pool carries the dark ink over it.
-
-   It is anchored to the block of type, not to the card. A band across the
-   card's whole lower half was 6.1x the area of the words it carries at 1440
-   and 2.6x at 390, and every pixel of that surplus fell on the walkers in the
-   photograph's lower half — measured, it lifted the black point of the card's
-   lower-left tenfold and cost the picture 44% of its RMS contrast. Given the
-   block's own box the pool tracks the words at every viewport by construction,
-   and lands inside 1.25x their width and 1.5x their height.
-
-   The falloff is separable — a fade across multiplied by a fade down — for the
-   reason `.ground-lift`'s is: a radial sized to a wide block delivers its
-   strength at the middle and a fraction of it at the ends of the lines, which
-   is exactly where the contrast has to hold. The two masks multiply by nesting
-   rather than by `mask-composite`, so no browser can fall back to one axis and
-   draw a hard edge on the other. The fade length is the bleed, so the held
-   region is the block itself and the pool reaches zero on its own edges.
-
-   The bottom bleed is the band's own padding, which puts the pool's last row
-   on the card's base — under the foot dissolve, where the ground is gold
-   anyway. So the lift no longer carries a foot mask of its own: it has nothing
-   left to dissolve, and the card's dissolve is untouched.
-
-   The ramp lengths are declared apart from the box, and that is the difference
-   between a pool and a panel. Bleed alone would hold full strength over the
-   whole block and spend its softness only outside it, which lands a soft-edged
-   rectangle on the photograph. The block is a track, not an ink extent: the
-   statement's two rendered lines are 574px inside a 736px track, so the ramps
-   start inboard of the box and the held region is the words themselves — the
-   same total footprint, three times the softness. */
-.hero-photo-lift {
-  /* Box: the block plus its bleed. 1.25x the block's width, 1.5x its height. */
-  --intro-lift-x: 92px;
-  --intro-lift-top: 44px;
-  --intro-lift-bottom: 24px;
-  /* Ramp: how much of that box is fade rather than held. */
-  --intro-fade-x: 150px;
-  --intro-fade-top: 56px;
-  --intro-fade-bottom: 46px;
-  position: absolute;
-  left: calc(-1 * var(--intro-lift-x));
-  right: calc(-1 * var(--intro-lift-x));
-  top: calc(-1 * var(--intro-lift-top));
-  bottom: calc(-1 * var(--intro-lift-bottom));
-  --intro-mask-y: linear-gradient(
-    to bottom,
-    transparent 0,
-    rgb(0 0 0 / 0.1) calc(var(--intro-fade-top) * 0.3),
-    rgb(0 0 0 / 0.45) calc(var(--intro-fade-top) * 0.55),
-    rgb(0 0 0 / 0.82) calc(var(--intro-fade-top) * 0.8),
-    #000 var(--intro-fade-top),
-    #000 calc(100% - var(--intro-fade-bottom)),
-    rgb(0 0 0 / 0.82) calc(100% - var(--intro-fade-bottom) * 0.8),
-    rgb(0 0 0 / 0.45) calc(100% - var(--intro-fade-bottom) * 0.55),
-    rgb(0 0 0 / 0.1) calc(100% - var(--intro-fade-bottom) * 0.3),
-    transparent 100%
-  );
-  -webkit-mask-image: var(--intro-mask-y);
-  mask-image: var(--intro-mask-y);
-}
-.hero-photo-lift-pool {
-  --intro-mask-x: linear-gradient(
-    to right,
-    transparent 0,
-    rgb(0 0 0 / 0.1) calc(var(--intro-fade-x) * 0.3),
-    rgb(0 0 0 / 0.45) calc(var(--intro-fade-x) * 0.55),
-    rgb(0 0 0 / 0.82) calc(var(--intro-fade-x) * 0.8),
-    #000 var(--intro-fade-x),
-    #000 calc(100% - var(--intro-fade-x)),
-    rgb(0 0 0 / 0.82) calc(100% - var(--intro-fade-x) * 0.8),
-    rgb(0 0 0 / 0.45) calc(100% - var(--intro-fade-x) * 0.55),
-    rgb(0 0 0 / 0.1) calc(100% - var(--intro-fade-x) * 0.3),
-    transparent 100%
-  );
-  background-color: color-mix(in srgb, var(--color-gold-wash) 60%, transparent);
-  -webkit-mask-image: var(--intro-mask-x);
-  mask-image: var(--intro-mask-x);
-}
-@media (max-width: 767px) {
-  .hero-photo-lift {
-    /* The block is already the card's width less its padding, so the sideways
-       bleed only has the padding to spend; the locality that matters here is
-       vertical, as it is for `.ground-lift` on a phone. The statement runs to
-       325px of the 358px track there, so the sideways ramp is short by
-       necessity rather than by choice. */
-    --intro-lift-x: 44px;
-    --intro-lift-top: 48px;
-    --intro-lift-bottom: 20px;
-    --intro-fade-x: 53px;
-    --intro-fade-top: 56px;
-    --intro-fade-bottom: 48px;
-  }
-  /* A phone crops the same photograph tighter and lands the statement over
-     busier ground, so the same alpha reads 2.8 points of ratio lower there.
-     The pool holds its old strength on mobile rather than the desktop value,
-     which keeps the statement at the reading it already had. */
-  .hero-photo-lift-pool {
-    background-color: color-mix(in srgb, var(--color-gold-wash) 66%, transparent);
-  }
-}
-/* The poster opening's sky lift — the top gold fall that carries the collapsed
-   headline. It is the same local-lightening idea as .hero-photo-lift, anchored
-   to the top edge instead of the base: held near-strength across the headline
-   band, then eased into the sky by mid-frame, ending on the zero-alpha gold so
-   the ramp never pulls through grey. Only the sky band the words overhang is
-   lifted; the mountains, lake and foreground below stay at full photographic
-   strength. Anchored to the edge, it reads as morning light gathering in the
-   sky, never a panel. The anchor→wash shift keeps the warm end at the top where
-   the header's gold is, so hero and chrome share one family. The mobile fall is
-   a shade stronger and reaches a touch lower — the phone shows the whole
-   portrait vista, so the words sit over a marginally deeper sky. Measured on the
-   rendered composite: worst-case ink ≥ 4.5 across the headline band, both
-   viewports (see the design system's hero-photo-lift note). */
-.hero-sky-lift {
-  /* Held across the headline band and released toward the frame's sides. The
-     fall used to run the full width, so it took the left ridge and the right
-     sky down with it to carry a headline that occupies a quarter of the
-     frame — measured in the poster's left sky, the picture kept 35% of the RMS
-     contrast and an eighth of the saturation it has with the layer off. The
-     hold is the headline's own width and the fade is an eighth of it either
-     side, which is the same 1.25x bound the intro's pool answers to. Still
-     anchored to the top edge, so it reads as light gathering in the sky rather
-     than a panel behind the words. */
-  --sky-hold: 23.5rem;
-  /* The ramp has to be long here in a way the intro's does not. That pool sits
-     on a dust road already near the gold; this one sits on a saturated blue
-     sky, and a 56% gold edge against that blue draws a line wherever it lands.
-     At 48px the narrowed fall read as a grey panel behind the headline —
-     exactly the panel the edge-anchored full-width version existed to avoid.
-     160px spends the same overlay over three times the distance, so the sides
-     read as haze thinning into the sky, and the frame's own left and right
-     stay the photograph. */
-  --sky-fade: 10rem;
-  background: linear-gradient(
-    to bottom,
-    color-mix(in srgb, var(--color-gold-anchor) 56%, transparent) 0%,
-    color-mix(in srgb, var(--color-gold-anchor) 54%, transparent) 26%,
-    color-mix(in srgb, var(--color-gold-wash) 40%, transparent) 35%,
-    color-mix(in srgb, var(--color-gold-wash) 15%, transparent) 42%,
-    var(--color-gold-wash-0) 48%
-  );
-  --sky-mask-x: linear-gradient(
-    to right,
-    transparent calc(50% - var(--sky-hold) / 2 - var(--sky-fade)),
-    rgb(0 0 0 / 0.1) calc(50% - var(--sky-hold) / 2 - var(--sky-fade) * 0.7),
-    rgb(0 0 0 / 0.45) calc(50% - var(--sky-hold) / 2 - var(--sky-fade) * 0.45),
-    rgb(0 0 0 / 0.82) calc(50% - var(--sky-hold) / 2 - var(--sky-fade) * 0.2),
-    #000 calc(50% - var(--sky-hold) / 2),
-    #000 calc(50% + var(--sky-hold) / 2),
-    rgb(0 0 0 / 0.82) calc(50% + var(--sky-hold) / 2 + var(--sky-fade) * 0.2),
-    rgb(0 0 0 / 0.45) calc(50% + var(--sky-hold) / 2 + var(--sky-fade) * 0.45),
-    rgb(0 0 0 / 0.1) calc(50% + var(--sky-hold) / 2 + var(--sky-fade) * 0.7),
-    transparent calc(50% + var(--sky-hold) / 2 + var(--sky-fade))
-  );
-  -webkit-mask-image: var(--sky-mask-x);
-  mask-image: var(--sky-mask-x);
-}
-@media (max-width: 767px) {
-  .hero-sky-lift {
-    --sky-hold: 14.25rem;
-    --sky-fade: 6rem;
-    background: linear-gradient(
-      to bottom,
-      color-mix(in srgb, var(--color-gold-anchor) 60%, transparent) 0%,
-      color-mix(in srgb, var(--color-gold-anchor) 58%, transparent) 26%,
-      color-mix(in srgb, var(--color-gold-wash) 42%, transparent) 33%,
-      color-mix(in srgb, var(--color-gold-wash) 15%, transparent) 38%,
-      var(--color-gold-wash-0) 43%
-    );
-  }
-}
-/* On phones the expanded hero card rests lower in its screen. The card is
-   centered in 100dvh and the fold decision keeps the next section below it,
-   which fixes a geometric floor of gold under the expanded card that padding
-   can no longer touch. Dropping the card spends that gold directly — but only
-   once the card has grown into it: the drop is scaled by the hero's own
-   expansion progress (`--hero-drop-progress`, written by the hero from the
-   same value that sizes the card), so the collapsed card opens centered where
-   the composition wants it and the offset eases in with the growth, on the
-   one clock the hero already keeps. 50dvh − 350px is the room under the
-   expanded card (half its 600px height plus 50px kept clear of the fold), so
-   a short phone where the card already fills its screen gets no drop at all
-   rather than a clipped card. Desktop resolves to zero and is untouched. */
-.hero-drop-scope {
-  --hero-card-drop: 0px;
-  --hero-drop-progress: 0;
-  /* The depth of the card's foot: how far up from its base the photograph,
-     its hairline and its gold frame have finished dissolving. `--hero-foot`
-     is the depth at the card's outer corners; `--hero-foot-arc` is the reach
-     of the second, elliptical mask that takes the centre higher still. */
-  --hero-foot: 280px;
-  --hero-foot-arc: 340px;
-}
-@media (max-width: 767px) {
-  .hero-drop-scope {
-    --hero-card-drop: clamp(0px, 50dvh - 350px, 96px);
-    --hero-foot: 176px;
-    --hero-foot-arc: 230px;
-  }
-}
-.hero-stage-drop {
-  transform: translateY(calc(var(--hero-card-drop) * var(--hero-drop-progress)));
-}
-/* The card's foot. The expanded hero used to stop on a ruled line: photograph,
-   hairline, gold frame and drop shadow all ending in the same row with the
-   gold floor starting underneath it, which is the one join on this page that
-   read as a handover rather than as ground. These masks take that row away
-   instead of painting over it — the same reason `.photo-edge-dissolve` masks:
-   the ground here is the living atmosphere under the field's own ramp, so a
-   flat repaint would land a shade off whatever is really behind and draw back
-   the seam it was meant to erase. Masking resolves to the real ground, which
-   can never differ from itself.
-
-   The ramp rides the elements the expansion sizes — the card, the intro's lift
-   and the gold frame — so the edge stays pinned to the card's own base through
-   the whole growth instead of sliding up through the picture.
-
-   `--foot-halo` inflates the mask box past the border box so the card's soft
-   shadow falls inside it: the mask then takes the shadow's lower edge away
-   with the photograph, and leaves the other three sides at full strength. */
-.hero-foot-fade {
-  --foot-halo: 0px;
-  --foot-mask: linear-gradient(
-    to top,
-    transparent 0px,
-    transparent var(--foot-halo),
-    rgb(0 0 0 / 0.03) calc(var(--foot-halo) + var(--hero-foot) * 0.14),
-    rgb(0 0 0 / 0.13) calc(var(--foot-halo) + var(--hero-foot) * 0.3),
-    rgb(0 0 0 / 0.36) calc(var(--foot-halo) + var(--hero-foot) * 0.5),
-    rgb(0 0 0 / 0.66) calc(var(--foot-halo) + var(--hero-foot) * 0.68),
-    rgb(0 0 0 / 0.9) calc(var(--foot-halo) + var(--hero-foot) * 0.85),
-    #000 calc(var(--foot-halo) + var(--hero-foot))
-  );
-  -webkit-mask-image: var(--foot-mask);
-  mask-image: var(--foot-mask);
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  -webkit-mask-position: center;
-  mask-position: center;
-  -webkit-mask-size: calc(100% + var(--foot-halo) * 2)
-    calc(100% + var(--foot-halo) * 2);
-  mask-size: calc(100% + var(--foot-halo) * 2) calc(100% + var(--foot-halo) * 2);
-}
-.hero-foot-halo {
-  --foot-halo: 80px;
-}
-/* The foot is not a ruled edge either. A second mask on the frame inside the
-   ramp lifts the picture higher at the centre than at the corners, so what is
-   left reads as a shallow arc with the gold gathering up into the middle,
-   exactly where the words sit. Nesting the two masks multiplies them, which is
-   the result `mask-composite: intersect` would give without depending on it.
-   The mask box is inflated by 4px so the frame's 1px hairline ring, which
-   sits outside the border box, is not clipped away on the other three sides. */
-.hero-foot-arc {
-  --arc-mask: radial-gradient(
-    ellipse 62% var(--hero-foot-arc) at 50% 100%,
-    transparent 0%,
-    rgb(0 0 0 / 0.08) 20%,
-    rgb(0 0 0 / 0.3) 42%,
-    rgb(0 0 0 / 0.62) 64%,
-    rgb(0 0 0 / 0.88) 84%,
-    #000 100%
-  );
-  -webkit-mask-image: var(--arc-mask);
-  mask-image: var(--arc-mask);
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  -webkit-mask-position: center;
-  mask-position: center;
-  -webkit-mask-size: calc(100% + 4px) calc(100% + 4px);
-  mask-size: calc(100% + 4px) calc(100% + 4px);
-}
-/* The light the picture leaves on the ground. A wide amber pool anchored to
-   the hero's own lower edge, so it gathers through the band where the card is
-   dissolving and has relaxed back into the field by the section's last row —
-   the seam below it still meets `What we do` on one `gold-anchor`. It reads as
-   a tonal event rather than a line because it is elliptical and blurred: there
-   is no row anywhere in it where the value steps. It sits behind the backdrop
-   photograph, so the collapsed poster covers it entirely and it is uncovered
-   by the same fade that hands the poster over to the card. */
-.hero-foot-pool {
-  --pool: 34%;
-  height: 240px;
-  /* Vertical profile: nothing at the section's last row, crest a little above
-     the card's base where the dissolve is thinnest and the pool is actually
-     visible, then away again over the rest of the band. Rising to the crest
-     from zero across the ~50-140px the card's base sits above the section's
-     edge is what keeps the seam below intact — the whole climb is a gradient,
-     so no row in it steps. */
-  background: linear-gradient(
-    to top,
-    var(--color-amber-soft-0) 0%,
-    color-mix(in srgb, var(--color-amber-soft) calc(var(--pool) * 0.62), transparent) 14%,
-    color-mix(in srgb, var(--color-amber-soft) var(--pool), transparent) 30%,
-    color-mix(in srgb, var(--color-amber-soft) calc(var(--pool) * 0.72), transparent) 52%,
-    color-mix(in srgb, var(--color-amber-soft) calc(var(--pool) * 0.3), transparent) 74%,
-    var(--color-amber-soft-0) 100%
-  );
-  /* And it gathers in the middle rather than running the full width, so it
-     reads as light pooling under the picture instead of a band across it. */
-  --pool-mask: linear-gradient(
-    to right,
-    transparent 0%,
-    rgb(0 0 0 / 0.18) 12%,
-    rgb(0 0 0 / 0.62) 28%,
-    #000 46%,
-    #000 54%,
-    rgb(0 0 0 / 0.62) 72%,
-    rgb(0 0 0 / 0.18) 88%,
-    transparent 100%
-  );
-  -webkit-mask-image: var(--pool-mask);
-  mask-image: var(--pool-mask);
-  filter: blur(20px);
-}
-@media (min-width: 768px) {
-  .hero-foot-pool {
-    height: 320px;
-  }
-}
-/* A phone shows ~50px of gold between the card's base and the section's edge
-   against ~70 on a laptop, so the crest sits in a shorter visible band and has
-   to be carried a step further to read as the same event. */
-@media (max-width: 767px) {
-  .hero-foot-pool {
-    --pool: 42%;
-  }
-}
 .gold-field-chrome-bottom {
   --gold-bottom: var(--color-gold-chrome);
   --gold-bottom-0: var(--color-gold-chrome-0);
 }
 /* An edge that opens onto its own section's floor rather than onto another
-   field edge paints nothing at all. The anchor exists so two edges can meet
-   on one value; where there is no second edge — the first offer panel starts
-   partway down the "What we do" section, with the floor above it — the
-   anchor has nothing to meet and lands a step deeper than the ground beside
-   it, drawing a full-width line across the page at the panel's top. Worse,
-   it is opaque, so it also covers the living atmosphere the row above it
-   shows. Painting nothing lets the real ground run straight through the
-   join, and the panel's `photo-edge-dissolve` carries the photograph across
-   it on its own. */
+   field edge paints nothing at all. The anchor exists so two edges can meet on
+   one value; where there is no second edge it lands a step deeper than the
+   ground beside it and draws a full-width line across the page. */
 .gold-field-open-top {
   --gold-top: transparent;
   --gold-top-0: transparent;
 }
-/* The same, downward, and for the same reason: below the hero the page has no
-   section grounds left for an edge to meet — the photographic stage runs
-   behind everything, unbroken. An anchor edge there is opaque, so it covers
-   the picture for the length of its ramp and then stops dead on the hero's
-   last row, which is a ruled line across the page at exactly the join the
-   stage exists to erase. Painting nothing lets the stage run straight up under
-   the card's own dissolving foot, and one photograph hands over to another. */
+/* The same, downward: below the hero the page has no section grounds left for
+   an edge to meet — the photographic stage runs behind all of it, unbroken. */
 .gold-field-open-bottom {
   --gold-bottom: transparent;
   --gold-bottom-0: transparent;
 }
-/* The floor under a gold field on the inner pages. On home the floor is the
-   living atmosphere behind every section; the inner pages paint it
-   themselves. Declared after .gold-field because the field's background
-   shorthand resets background-color — a utility would lose the same fight. */
+/* The floor under a gold field on the inner pages. Declared after .gold-field
+   because the field's background shorthand resets background-color — a utility
+   would lose the same fight. */
 .gold-floor {
   background-color: var(--color-gold-wash);
 }
+
 /* The photographic stage — one fixed layer behind the whole page below the
    hero, holding every plate. Sections paint no ground of their own, so there
    is no edge for a seam to land on: what changes down the page is which
@@ -613,11 +266,6 @@ body {
    first positioned element in the page wrapper, so nothing needs a z-index to
    stay in front of it and the hero's stacking is untouched. */
 .photo-stage {
-  /* Pins the layer to the bottom of the positioned stack rather than letting
-     it float on DOM order alone. Everything that must stay in front of it is
-     positioned too: the sections are `relative`, the header is `z-50`, and the
-     footer carries a `relative` for exactly this reason — a fixed layer paints
-     after every static block on the page, however opaque that block is. */
   z-index: 0;
 }
 /* The image inside a plate. Only the picture is scaled on arrival; the plate's
@@ -627,24 +275,16 @@ body {
   overflow: hidden;
   will-change: transform;
 }
-/* A plate's own darkening, and the whole of it — there is no scrim, veil or
-   wash anywhere else on this page.
-
-   The top and bottom hold flat gold for exactly the height of the two chrome
-   bars, so the header's lower edge and the footer's upper edge always meet the
-   ground on one value, at every scroll position and on every plate. That is
-   what the old `gold-field-chrome-top`/`-bottom` edges did for two section
-   boundaries; anchored to the window instead of to a section, it does it for
-   every row of the page at once and costs no edges of its own.
-
-   Between the ramps the shade holds a floor, and the floor is per plate
-   (`--plate-shade`): a photograph is capped by the ceiling the composite
-   behind text answers to, and a dark picture reaches that ceiling with less
-   darkening than a bright one. Spending more than a picture needs only throws
-   away the picture. */
+/* A plate's own darkening, and the whole of it. The top and bottom hold flat
+   gold for the height of the chrome, so the nav and the footer always sit on
+   one value at every scroll position and on every plate — with the bars now
+   transparent, that hold is also what carries their cream labels over the
+   picture. Between the ramps the shade holds a floor, and the floor is per
+   plate (`--plate-shade`): a dark picture reaches the ceiling a composite
+   behind text answers to with less darkening than a bright one. */
 .stage-plate-shade {
-  /* The header's own height, so the ramp starts at the bar's lower edge —
-     `--gold-hold`'s reasoning, applied to the window instead of a section. */
+  /* The header's own height, so the ramp starts at the bar's lower edge and
+     the transparent chrome's cream labels always fall on flat gold. */
   --stage-hold: 65px;
   /* The footer's, for the same reason at the other end: the bar is 149px at
      both viewports, and the shade must already be at full gold on the row it
@@ -675,170 +315,13 @@ body {
     --stage-hold: 81px;
   }
 }
-/* The ground a block of type stands on once the stage is a photograph rather
-   than a floor: a defocused copy of the plate showing behind it, confined to
-   the block. Never a flat colour laid over a photograph — a panel of paint on
-   a picture is the one thing that puts an edge back on this page. The blur is
-   rasterized at a quarter size and magnified by a composited scale, which
-   gives the identical 28px result off a sixteenth of the pixels: a blur is
-   priced by the area it rasterizes, not by its radius. */
-.panel-pane-blur {
-  left: 0;
-  top: 0;
-  width: 25%;
-  height: 25%;
-  transform: scale(4);
-  transform-origin: 0 0;
-  filter: blur(7px) brightness(0.4) saturate(0.8);
-}
-/* The gold the words stand on — one soft-edged pool per block of type, not a
-   veil over the frame. It is anchored to the block it carries rather than to
-   the section, because the content column caps at 84rem while the viewport
-   does not: a pool placed at a fraction of the *viewport* sits under the
-   heading at 1440 and nine points of screen width off it at 2560. Given the
-   block's own box it tracks the type at every width by construction.
 
-   The falloff is separable — a fade across, multiplied by a fade down —
-   rather than one radial, and that is measured rather than stylistic. A
-   radial's alpha at the *corners* of a wide block of type is far below its
-   centre: over the 606px lead column an ellipse sized to the block delivered
-   0.62 at the middle and ~0.15 at the ends of the lines, which is where the
-   contrast actually failed. Sizing the ellipse until the corners held would
-   have taken it past 2000px across — the full-frame veil this is not allowed
-   to be. Two crossed fades hold the declared alpha over the whole block and
-   spend every bit of softness in the margin around it. The fade length *is*
-   the bleed, so the held region is exactly the block at every viewport, and
-   the pool reaches zero on its own edges — no cut can show.
-
-   The two masks multiply by nesting rather than by `mask-composite`, so a
-   browser without composite support cannot fall back to the horizontal fade
-   alone and draw a hard edge along the top and bottom.
-
-   Between and around the pools the ground stays photographic: on desktop the
-   globe's half of the grid, both side margins and the section's own edges are
-   never touched. On a phone the type block is the full width of the screen,
-   so the horizontal softness has nowhere to live and lands off-frame — there
-   the pool's locality is vertical, which is the axis that has room. */
-.ground-lift {
-  /* The bleeds are the whole of the pool outside the block, so they are what
-     decides how much text-free ground it lightens. At 96px the ledger's pool
-     ran 1485x390 for a block of 1293x198 and reached almost a third of the way
-     up the section on either side of it; the held region is the block whatever
-     the bleed is, so shortening the ramps costs the type nothing and gives the
-     photograph back the margins. */
-  --lift-bleed-x: 44px;
-  --lift-fade: 44px;
-  --lift-bleed-top: var(--lift-fade);
-  /* How long each ramp is, apart from how far the box reaches past the block.
-     They are the same length for a lift, whose held region is meant to be
-     exactly the block; a pool that has to read as haze rather than as a
-     soft-edged rectangle starts its ramps inboard instead — same footprint,
-     several times the softness. */
-  --lift-ramp-x: var(--lift-bleed-x);
-  --lift-ramp-y: var(--lift-fade);
-  position: absolute;
-  left: calc(-1 * var(--lift-bleed-x));
-  right: calc(-1 * var(--lift-bleed-x));
-  top: calc(-1 * var(--lift-bleed-top));
-  bottom: calc(-1 * var(--lift-fade));
-  --lift-fade-x: linear-gradient(
-    to right,
-    transparent 0,
-    rgb(0 0 0 / 0.1) calc(var(--lift-ramp-x) * 0.3),
-    rgb(0 0 0 / 0.45) calc(var(--lift-ramp-x) * 0.55),
-    rgb(0 0 0 / 0.82) calc(var(--lift-ramp-x) * 0.8),
-    #000 var(--lift-ramp-x),
-    #000 calc(100% - var(--lift-ramp-x)),
-    rgb(0 0 0 / 0.82) calc(100% - var(--lift-ramp-x) * 0.8),
-    rgb(0 0 0 / 0.45) calc(100% - var(--lift-ramp-x) * 0.55),
-    rgb(0 0 0 / 0.1) calc(100% - var(--lift-ramp-x) * 0.3),
-    transparent 100%
-  );
-  --lift-mask-y: linear-gradient(
-    to bottom,
-    transparent 0,
-    rgb(0 0 0 / 0.1) calc(var(--lift-ramp-y) * 0.3),
-    rgb(0 0 0 / 0.45) calc(var(--lift-ramp-y) * 0.55),
-    rgb(0 0 0 / 0.82) calc(var(--lift-ramp-y) * 0.8),
-    #000 var(--lift-ramp-y),
-    #000 calc(100% - var(--lift-ramp-y)),
-    rgb(0 0 0 / 0.82) calc(100% - var(--lift-ramp-y) * 0.8),
-    rgb(0 0 0 / 0.45) calc(100% - var(--lift-ramp-y) * 0.55),
-    rgb(0 0 0 / 0.1) calc(100% - var(--lift-ramp-y) * 0.3),
-    transparent 100%
-  );
-  -webkit-mask-image: var(--lift-mask-y);
-  mask-image: var(--lift-mask-y);
-}
-/* Below `md` the heading sits on the section's own top row — that is the fold
-   decision, not a gap to close — and the section clips. A pool that bleeds
-   upward past that edge is cut there, and the cut lands exactly on the hero
-   seam: measured, it took that join from 3 to 18 while every other join on
-   the page holds 3 or under. Sitting flush instead and spending the fade
-   downward costs nothing, because it is spent over the same 72px the
-   photograph itself takes to arrive — the lift and the ground come up
-   together, and the seam keeps the single gold it shares with the hero. */
-@media (max-width: 767px) {
-  .ground-lift-flush-top {
-    --lift-bleed-top: 0px;
-    /* Shorter than the default, because flush the fade is spent *inside* the
-       block rather than above it, and the lead begins only 50px down. At 72px
-       its first line sat mid-ramp and measured 4.26–4.56 across runs — on the
-       floor, and moving. At 48px the pool is at full strength before the lead
-       starts and only the heading sits in the ramp, which is `ink` against a
-       3.0 floor with 7.4 measured: the one element here that can spare it. */
-    --lift-fade: 48px;
-  }
-}
-/* 0.62 was the start and it missed: at that strength the lead measured 4.28
-   on a phone against its 4.5 floor. Three 0.04 steps take it to 0.74, still
-   under the 0.78 ceiling, and the plate's black-point lift carries the rest —
-   between them the lead clears with margin instead of sitting on the line. */
-.ground-lift-pool {
-  background-color: color-mix(in srgb, var(--color-gold-wash) 74%, transparent);
-  -webkit-mask-image: var(--lift-fade-x);
-  mask-image: var(--lift-fade-x);
-}
-@media (min-width: 768px) {
-  .ground-lift {
-    --lift-bleed-x: 72px;
-    --lift-fade: 44px;
-  }
-}
-/* The offer panels' reading ground. Same box and same two crossed fades as a
-   lift, but what fills it is the stage's own photograph out of focus rather
-   than a colour — the panels stand on a picture, and a flat pane laid over a
-   picture is precisely the edge this page exists without. The margins are
-   longer than a lift's because this pool has no type column beside it to end
-   against: the panel is full-bleed and the ground either side of the block is
-   open stage. */
-.panel-pane {
-  --lift-bleed-x: 40px;
-  --lift-fade: 72px;
-  --lift-bleed-top: 88px;
-  --lift-ramp-x: 132px;
-  --lift-ramp-y: 168px;
-}
-@media (min-width: 768px) {
-  .panel-pane {
-    --lift-bleed-x: 96px;
-    --lift-fade: 104px;
-    --lift-bleed-top: 112px;
-    --lift-ramp-x: 232px;
-    --lift-ramp-y: 208px;
-  }
-}
-.panel-pane-plate {
-  overflow: hidden;
-  -webkit-mask-image: var(--lift-fade-x);
-  mask-image: var(--lift-fade-x);
-}
-/* The offer panels are full-bleed, so their text is inset from the viewport
-   edge rather than held in the 72rem content column: in the column a 576px
-   block starts 400px in on a 1920 screen, which reads as floating toward the
-   middle rather than anchored to its side. The gutter grows with the screen
-   — ~90px at 1440, ~140px at 1920 — and is clamped at both ends so a laptop
-   keeps a frame and an ultrawide never drifts the block back inward. */
+/* The offer panels are full-bleed, so their text tracks the viewport edge
+   rather than the 72rem content column: in the column a 576px block starts
+   400px in on a 1920 screen, which reads as floating toward the middle rather
+   than anchored to its side. The gutter grows with the screen — ~90px at 1440,
+   ~140px at 1920 — and is clamped at both ends so a laptop keeps a frame and
+   an ultrawide never drifts the block back inward. */
 .offer-panel-inset {
   padding-inline: 1rem;
 }
@@ -852,6 +335,7 @@ body {
     padding-inline: clamp(5rem, 10.42vw - 60px, 10rem);
   }
 }
+
 /* Stage entrance — time-based, once per load. A StageScene arms after
    hydration (never under reduced motion) and fires the first time it enters
    view; from that instant every layer plays on the clock, not the
@@ -908,115 +392,12 @@ body {
 .stage[data-on] .stage-rule {
   transition: scale 400ms var(--ease-out-quart);
 }
-/* The globe rises into the clearing and does no more on top of that: the
-   tilt-and-zoom is gone. Its own turn carries the rest of the arrival — the
-   canvas spins the sphere in on entry and lets that extra speed bleed off
-   into the steady rotation the globe never stops making (see the entrance
-   spin in dotted-globe), so the entrance emerges out of the object rather
-   than sitting on it. Two things only: a fast opacity reveal so the eye
-   follows the movement rather than a fade, and a long, quiet settle on the
-   rise — the last of the clearing's beats to come to rest. */
-.stage[data-armed]:not([data-on]) .stage-globe {
-  opacity: 0;
-  translate: 0 120px;
-}
-@media (max-width: 767px) {
-  .stage[data-armed]:not([data-on]) .stage-globe {
-    translate: 0 88px;
-  }
-}
-.stage[data-on] .stage-globe {
-  transition:
-    opacity 200ms var(--ease-out-quart),
-    translate 1200ms var(--ease-out-quart);
-}
-/* A soft pool of late sun where a scene's print and words sit — the same
-   warmth as the home page's drifting amber pools, held still. */
-.gold-pool {
-  background: radial-gradient(
-    ellipse 65% 50% at 50% 42%,
-    color-mix(in srgb, var(--color-amber-soft) 16%, transparent),
-    transparent 72%
-  );
-}
+
 /* Evening shadow: under framed prints, and as the raised state of
    interactive cards (open accordion, hovered contact card) — defined as a
-   utility so hover/open variants reuse the same shadow. The warm brown it
-   carried on the cream ground has nothing left to darken now the ground is
-   pine, so the colour goes deeper than the floor; the offsets are unchanged. */
+   utility so hover/open variants reuse the same shadow. */
 @utility print-shadow {
   box-shadow: 0 24px 48px -24px rgb(4 8 5 / 0.55);
-}
-/* The resin lamp given direction: a warm whisper directly under the halo
-   inside a wider pine light dome, so dark grounds shade from lit to deep
-   instead of sitting flat. Same lamp, same hue — falloff, not a new light. */
-.lamp-falloff {
-  background:
-    radial-gradient(
-      ellipse 50% 28% at 50% 0%,
-      color-mix(in srgb, var(--color-resin) 10%, transparent),
-      transparent 70%
-    ),
-    radial-gradient(
-      ellipse 90% 60% at 50% 0%,
-      color-mix(in srgb, var(--color-pine-800) 35%, transparent),
-      transparent 78%
-    );
-}
-/* Fine photographic grain over dark surfaces, tiled from an inline SVG so
-   nothing is fetched. Whisper-level: it reads as texture, never as pattern. */
-.film-grain {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23g)'/%3E%3C/svg%3E");
-  background-repeat: repeat;
-  opacity: 0.05;
-}
-
-/* Living atmosphere — the warm ground's two drifting light layers. Both are
-   tiled at a fixed 840px so the warm light stays continuous however tall the
-   page grows, rather than stretching into one giant blob. Each pool is a
-   closest-side circle centered in its own tile, so it has faded to nothing by
-   the time it reaches an edge — a pool that is still colored where the tile
-   ends draws a hard line down the page. The second layer is offset half a
-   tile so the two grids interleave instead of stacking. They drift on
-   alternate so the loop eases back on itself instead of snapping at its end.
-   Transform only; the tiles are painted once and never repainted. */
-.atmosphere-glow-a {
-  background-image: radial-gradient(
-    circle closest-side at 50% 50%,
-    color-mix(in srgb, var(--color-amber-soft) 24%, transparent),
-    transparent
-  );
-  background-size: 840px 840px;
-  background-repeat: repeat;
-}
-.atmosphere-glow-b {
-  background-image: radial-gradient(
-    circle closest-side at 50% 50%,
-    color-mix(in srgb, var(--color-amber) 15%, transparent),
-    transparent
-  );
-  background-size: 840px 840px;
-  background-position: 420px 260px;
-  background-repeat: repeat;
-}
-@keyframes atmosphere-drift {
-  from {
-    transform: translate3d(-32px, -22px, 0);
-  }
-  to {
-    transform: translate3d(32px, 22px, 0);
-  }
-}
-@media (prefers-reduced-motion: no-preference) {
-  .atmosphere-glow-a,
-  .atmosphere-glow-b {
-    animation: atmosphere-drift 40s var(--ease-in-out-cubic) infinite alternate;
-    will-change: transform;
-  }
-  .atmosphere-glow-b {
-    animation-duration: 56s;
-    animation-direction: alternate-reverse;
-  }
 }
 
 /* The home hero's static HTML carries its intro in the visible resting
@@ -1034,22 +415,17 @@ body {
 /* Hero first-load title card — once per load, on the clock. The same inline
    script adds `hero-load` before the hero parses, so the choreography runs
    from the very first paint; without JS the class never lands and the hero
-   renders at rest. The frame settles on the page's one long master curve,
-   the headline words rise out of clipped lines, the gold veil warms up under
-   all of it, and the strike and pill land last. Movement is the individual translate/scale properties, never
-   `transform` — the expansion writes inline transforms on these elements or
-   their parents, and the two must compose rather than fight. */
+   renders at rest. The poster settles in on the page's one long master curve
+   and the headline words rise out of clipped lines, the strike and pill last.
+   Movement is the individual translate/scale properties, never `transform` —
+   the expansion writes inline transforms on these elements or their parents,
+   and the two must compose rather than fight. */
 .hero-mask {
   overflow: clip;
   padding-block: 0.15em;
   margin-block: -0.15em;
 }
 @media (prefers-reduced-motion: no-preference) {
-  /* The poster photograph settles in on the page's one long master curve —
-     opacity up and a slow scale down, so the place arrives rather than being
-     simply there. The card no longer takes a load animation: it is hidden
-     under the poster and cross-dissolves in on scroll, so a load entrance on
-     it would fight the inline cross-dissolve opacity. */
   .hero-load .hero-poster {
     animation: hero-poster-in 1200ms var(--ease-out-quart) both;
   }
@@ -1061,9 +437,6 @@ body {
   }
   .hero-load .hero-word-late {
     animation-delay: 300ms;
-  }
-  .hero-load .hero-sky-lift {
-    animation: hero-veil-in 1200ms var(--ease-in-out-cubic) both;
   }
   .hero-load .hero-strike {
     animation: hero-strike-in 400ms var(--ease-out-quart) 850ms both;
@@ -1089,11 +462,6 @@ body {
     translate: 0 115%;
   }
 }
-@keyframes hero-veil-in {
-  from {
-    opacity: 0.45;
-  }
-}
 @keyframes hero-strike-in {
   from {
     scale: 0 1;
@@ -1106,6 +474,92 @@ body {
   }
 }
 
+/* On phones the expanded hero card rests lower in its screen. The card is
+   centered in 100dvh and the fold decision keeps the next section below it,
+   which fixes a geometric floor of gold under the expanded card that padding
+   can no longer touch. Dropping the card spends that gold directly — but only
+   once the card has grown into it: the drop is scaled by the hero's own
+   expansion progress (`--hero-drop-progress`, written by the hero from the
+   same value that sizes the card), so the collapsed card opens centered where
+   the composition wants it and the offset eases in with the growth. */
+.hero-drop-scope {
+  --hero-card-drop: 0px;
+  --hero-drop-progress: 0;
+  /* The depth of the card's foot: how far up from its base the photograph has
+     finished dissolving. `--hero-foot` is the depth at the card's outer
+     corners; `--hero-foot-arc` is the reach of the second, elliptical mask
+     that takes the centre higher still. */
+  --hero-foot: 280px;
+  --hero-foot-arc: 340px;
+}
+@media (max-width: 767px) {
+  .hero-drop-scope {
+    --hero-card-drop: clamp(0px, 50dvh - 350px, 96px);
+    --hero-foot: 176px;
+    --hero-foot-arc: 230px;
+  }
+}
+.hero-stage-drop {
+  transform: translateY(calc(var(--hero-card-drop) * var(--hero-drop-progress)));
+}
+/* The card's foot. The expanded hero used to stop on a ruled line: photograph,
+   hairline and drop shadow all ending in the same row with the floor starting
+   underneath it. These masks take that row away instead of painting over it —
+   masking resolves to the real ground, which can never differ from itself.
+   The ramp rides the elements the expansion sizes, so the edge stays pinned to
+   the card's own base through the whole growth instead of sliding up through
+   the picture. `--foot-halo` inflates the mask box past the border box so the
+   card's soft shadow falls inside it. */
+.hero-foot-fade {
+  --foot-halo: 0px;
+  --foot-mask: linear-gradient(
+    to top,
+    transparent 0px,
+    transparent var(--foot-halo),
+    rgb(0 0 0 / 0.03) calc(var(--foot-halo) + var(--hero-foot) * 0.14),
+    rgb(0 0 0 / 0.13) calc(var(--foot-halo) + var(--hero-foot) * 0.3),
+    rgb(0 0 0 / 0.36) calc(var(--foot-halo) + var(--hero-foot) * 0.5),
+    rgb(0 0 0 / 0.66) calc(var(--foot-halo) + var(--hero-foot) * 0.68),
+    rgb(0 0 0 / 0.9) calc(var(--foot-halo) + var(--hero-foot) * 0.85),
+    #000 calc(var(--foot-halo) + var(--hero-foot))
+  );
+  -webkit-mask-image: var(--foot-mask);
+  mask-image: var(--foot-mask);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: calc(100% + var(--foot-halo) * 2)
+    calc(100% + var(--foot-halo) * 2);
+  mask-size: calc(100% + var(--foot-halo) * 2) calc(100% + var(--foot-halo) * 2);
+}
+.hero-foot-halo {
+  --foot-halo: 80px;
+}
+/* The foot is not a ruled edge either. A second mask on the frame inside the
+   ramp lifts the picture higher at the centre than at the corners, so what is
+   left reads as a shallow arc. Nesting the two masks multiplies them, which is
+   the result `mask-composite: intersect` would give without depending on it. */
+.hero-foot-arc {
+  --arc-mask: radial-gradient(
+    ellipse 62% var(--hero-foot-arc) at 50% 100%,
+    transparent 0%,
+    rgb(0 0 0 / 0.08) 20%,
+    rgb(0 0 0 / 0.3) 42%,
+    rgb(0 0 0 / 0.62) 64%,
+    rgb(0 0 0 / 0.88) 84%,
+    #000 100%
+  );
+  -webkit-mask-image: var(--arc-mask);
+  mask-image: var(--arc-mask);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: calc(100% + 4px) calc(100% + 4px);
+  mask-size: calc(100% + 4px) calc(100% + 4px);
+}
+
 /* FAQ answers rise softly into place as their details element opens; the
    reduced-motion rule below collapses the duration. */
 @keyframes accordion-open {
@@ -1116,21 +570,6 @@ body {
 }
 details[open] .accordion-answer {
   animation: accordion-open 400ms var(--ease-out-quart);
-}
-
-/* One-shot kick of the closing arc's junction node as the lamp ignites:
-   a quick scale-and-glow pulse, then back to the trail dots' resting
-   weight. The glow half runs on a separate blurred underlay so the dot's
-   pine ring never flickers. */
-@keyframes node-flare {
-  50% {
-    transform: scale(1.75);
-  }
-}
-@keyframes node-flare-glow {
-  50% {
-    opacity: 0.7;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {

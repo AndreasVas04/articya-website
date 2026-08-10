@@ -9,7 +9,6 @@ import {
   type ReactNode,
 } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { ResinEmbers } from "@/components/resin-embers";
 import { ResponsiveImage } from "@/components/responsive-image";
 import { cn } from "@/lib/utils";
 
@@ -294,10 +293,6 @@ const ScrollExpandMedia = ({
   const hintBefore = hintDotIndex >= 0 ? hintLabel!.slice(0, hintDotIndex) : "";
   const hintAfter = hintDotIndex >= 0 ? hintLabel!.slice(hintDotIndex + 1) : "";
 
-  // The page's living atmosphere sits behind this frame and shows through, so
-  // the hero is lit by the same gold field as everything below it; `gold-field`
-  // adds only the edges, taking the top up into the header's gold and the
-  // bottom down into the first section's.
   return (
     <div className="overflow-hidden">
       {/* The bottom edge paints nothing at either viewport. Nothing below this
@@ -305,8 +300,7 @@ const ScrollExpandMedia = ({
           stage runs behind all of it — so there is no second edge for the
           anchor to meet, and an opaque ramp ending on the hero's last row is a
           ruled line straight across the page. Open, the stage runs up under
-          the card's own dissolving foot and the two pictures hand over. The
-          top edge keeps the chrome variant: that one still meets a bar. */}
+          the card's own dissolving foot and the two pictures hand over. */}
       {/* --hero-drop-progress feeds the mobile stage drop from the same
           value that sizes the card, so the drop arrives with the growth
           rather than sitting under the collapsed card. */}
@@ -314,14 +308,6 @@ const ScrollExpandMedia = ({
         className="gold-field gold-field-chrome-top gold-field-open-bottom hero-drop-scope relative flex min-h-[100dvh] flex-col items-center justify-start overflow-hidden"
         style={{ "--hero-drop-progress": progress } as CSSProperties}
       >
-        {/* The pool the card's foot dissolves into — first in the section, so
-            the collapsed poster paints straight over it and it is uncovered by
-            the same fade that hands the poster to the card. No clock of its
-            own. */}
-        <div
-          aria-hidden="true"
-          className="hero-foot-pool pointer-events-none absolute inset-x-0 bottom-0 z-0"
-        />
         <motion.div
           className="absolute inset-0 z-0"
           initial={false}
@@ -335,14 +321,11 @@ const ScrollExpandMedia = ({
               sizes as the first slide, so the browser picks the identical
               variant URL and one download serves both. The top gold fall that
               carries the headline lives in its own layer below, so the
-              photograph here is never veiled — only the sky band the words
-              overhang is lifted, the rest stays at strength.
+              photograph here is never veiled.
 
               It carries no top fade. The layer starts at the section's top,
               which the fixed header covers, so a ramp there only spends its
-              first visible rows washing the picture out against the bar —
-              which is what left a gold strip under the chrome. Unfaded, the
-              photograph meets the bar on its own first row. */}
+              first visible rows washing the picture out against the bar. */}
           <ResponsiveImage
             src={bgImageSrc}
             alt=""
@@ -352,45 +335,16 @@ const ScrollExpandMedia = ({
             className="hero-poster object-cover saturate-[1.06] sepia-[0.08]"
             style={{ objectPosition: "50% 32%" }}
           />
-          {/* The resin embers — the atmosphere gaining life. They ride inside
-              this backdrop layer on purpose: over the photograph, behind the
-              card and headline, running under the header with it, and faded
-              out with the whole layer as the card expands — so the
-              moment needs no scroll logic of its own. `paused` only stops the
-              loop once the layer is invisible. They hold still in the frame (no
-              pointer parallax), so the atmosphere's gentle lean drifts past
-              them instead of the two fighting over the cursor. */}
-          <ResinEmbers paused={progress >= 1} />
-          {/* Grain rides the backdrop rather than the section, so it fades out
-              with it: past full expansion the ground behind the frame is the
-              page atmosphere, which carries its own grain at the same
-              strength. Two stacked layers would read as twice the texture. */}
+          {/* The plate's own darkening, and the whole of it. It carries the
+              cream nav across the top of the picture and the headline under
+              it, and it is a full-width top-to-bottom ramp rather than a
+              shape: the sky lift and the title pool it replaces were a local
+              fall held across the headline's own width, which is a panel by
+              another name. Riding inside this layer, it fades out with the
+              poster as the card takes over. */}
           <div
             aria-hidden="true"
-            className="film-grain pointer-events-none absolute inset-0 mix-blend-multiply"
-          />
-        </motion.div>
-
-        {/* The top gold fall — the sky lift that carries the dark headline.
-            Held at strength across the headline band, then eased into the sky
-            by mid-frame, so the words clear 4.5:1 while the vista below keeps
-            the photograph at full strength. Edge-anchored from the top, so it
-            reads as morning light gathering in the sky rather than a panel cut
-            over the picture. It sits in its own layer above the photograph
-            (not under the header mask, so it is at full strength behind the
-            words) and fades out with the poster as the card grows. The title
-            pool concentrates a little more light on exactly where the words
-            sit, blurred well past its box so it reads as light, not an edge. */}
-        <motion.div
-          className="pointer-events-none absolute inset-0 z-[1]"
-          initial={false}
-          animate={{ opacity: 1 - progress }}
-          transition={{ duration: 0.2, ease: EASE_IN_OUT_CUBIC }}
-        >
-          <div aria-hidden="true" className="hero-sky-lift absolute inset-0" />
-          <div
-            aria-hidden="true"
-            className="hero-title-pool absolute left-1/2 top-[23%] h-[13rem] w-[28rem] max-w-[92vw] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold-wash/26 blur-[60px]"
+            className="plate-shade pointer-events-none absolute inset-0 [--shade-bottom:18%] [--shade-mid:46%] [--shade-mid-from:24%] [--shade-mid-to:58%] [--shade-top:62%]"
           />
         </motion.div>
 
@@ -479,16 +433,14 @@ const ScrollExpandMedia = ({
                   animate={{ opacity: overlayOpacity }}
                   transition={{ duration: 0.2, ease: EASE_IN_OUT_CUBIC }}
                 />
-                {/* Constant edge lift inside the frame; the dynamic wash
-                    above handles legibility, this keeps the photo's corners
-                    dissolving into the cream once the wash eases off. */}
+                {/* The card's own darkening: strong at the top, where the
+                    transparent nav crosses the picture at full expansion, and
+                    strong again at the base, where the intro stands. Full
+                    width, top to bottom, inside the plate — the local pool
+                    that used to sit under the intro's block is gone. */}
                 <div
                   aria-hidden="true"
-                  className="photo-vignette-warm pointer-events-none absolute inset-0 rounded-[inherit]"
-                />
-                <div
-                  aria-hidden="true"
-                  className="film-grain pointer-events-none absolute inset-0 rounded-[inherit] mix-blend-multiply"
+                  className="plate-shade pointer-events-none absolute inset-0 [--shade-bottom:78%] [--shade-mid:22%] [--shade-mid-from:22%] [--shade-mid-to:46%] [--shade-top:34%]"
                 />
               </div>
             </div>
@@ -520,13 +472,17 @@ const ScrollExpandMedia = ({
                     paint, never the DOM text. */}
                 {hintLabel && (
                   <div className="order-last mt-6 flex flex-col items-center gap-3">
-                    {/* A short strike of the same gold, carrying the eye from
-                        the headline down into the pill. */}
+                    {/* A short strike of the same amber, carrying the eye from
+                        the headline down into the label. */}
                     <span
                       aria-hidden="true"
                       className="hero-strike h-[1.25px] w-[88px] bg-amber"
                     />
-                    <p className="hero-pill rounded-full border border-amber bg-gold-wash/85 px-4 py-1 text-[0.8125rem] font-semibold leading-[1.4] text-ink">
+                    {/* No pill. The rounded fill and its border were a shape
+                        behind text, which is the one thing nothing on this
+                        site is now allowed to be — the label stands on the
+                        picture's own darkening like everything else. */}
+                    <p className="hero-pill text-[0.8125rem] font-semibold leading-[1.4] text-ink">
                       {hintSeparator ? (
                         <>
                           {hintBefore}
@@ -540,7 +496,7 @@ const ScrollExpandMedia = ({
                   </div>
                 )}
                 {title && (
-                  <h1 className="flex flex-col items-center gap-3 text-center font-display text-[clamp(2.75rem,6vw,4.5rem)] font-semibold leading-[1.05] tracking-[-0.02em] text-ink md:gap-4">
+                  <h1 className="flex flex-col items-center gap-1 text-center font-display text-[clamp(3.4rem,11vw,10rem)] font-semibold leading-[0.94] tracking-[-0.025em] text-ink md:gap-2">
                     <span className="hero-mask block">
                       <span className="hero-word block">{firstWord}</span>
                     </span>
@@ -582,34 +538,12 @@ const ScrollExpandMedia = ({
                   mounted && !contentVisible && "pointer-events-none"
                 )}
               >
-                {/* The block the intro's ground is measured against. The
-                    statement's own track sets it, so the lift and the warm
-                    pocket below are anchored to the words at every viewport
-                    instead of to the card — which is what keeps the rest of the
-                    photograph at full strength. */}
-                <div className="relative flex w-full max-w-[30rem] flex-col items-center md:max-w-[46rem]">
-                  {/* The local lift. The statement sits inside the photograph
-                      rather than on a gold band cut out beneath it, so the
-                      ground behind the words is the image. A soft-edged gold
-                      pool carries the dark ink over it — held across this
-                      block, gone by 92px either side of it and 44px above, so
-                      the rest of the frame is the photograph and nothing else.
-                      A fade across nested inside a fade down, the two
-                      multiplying; see the class for why it is not a radial. */}
-                  <div aria-hidden="true" className="hero-photo-lift pointer-events-none">
-                    <div className="hero-photo-lift-pool absolute inset-0" />
-                  </div>
-                  {/* The pocket of warm light the statement rests in — a soft
-                      amber pool centered on the words, riding over the lift so
-                      the region reads as sun gathering low in the frame rather
-                      than as a panel edge. */}
-                  <div
-                    aria-hidden="true"
-                    className="pointer-events-none absolute left-1/2 top-1/2 h-[150%] w-[78%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-amber-soft/16 blur-[80px]"
-                  />
-                  <div className="relative flex w-full flex-col items-center">
-                    {children}
-                  </div>
+                {/* The intro stands on the card's own bottom darkening and on
+                    nothing else — the block-anchored pool and the warm pocket
+                    that used to sit under it are gone with every other lift on
+                    the site. */}
+                <div className="relative flex w-full flex-col items-center">
+                  {children}
                 </div>
               </div>
               {/* The gold frame that used to ring this overlay is gone. It

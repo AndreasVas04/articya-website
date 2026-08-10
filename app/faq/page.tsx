@@ -43,7 +43,7 @@ export default function FaqPage() {
                     >
                       <Icon className="size-5" strokeWidth={1.5} />
                     </span>
-                    <h2 className="font-display text-[1.75rem] font-semibold leading-[1.1] tracking-[-0.01em] text-ink">
+                    <h2 className="font-display text-[clamp(1.9rem,3.6vw,3rem)] font-semibold leading-[1.1] tracking-[-0.025em] text-ink">
                       {section.heading}
                     </h2>
                   </div>
@@ -67,7 +67,7 @@ export default function FaqPage() {
                             against 12px under it when open, so the pair groups
                             downward. */}
                         <summary className="flex cursor-pointer list-none items-center justify-between gap-6 rounded-lg p-5 transition-colors duration-200 ease-out-quart hover:bg-amber-soft/20 group-open:rounded-b-none group-open:pb-3 md:px-8 [&::-webkit-details-marker]:hidden">
-                          <h3 className="font-sans text-[1.0625rem] font-semibold leading-[1.45] text-ink">
+                          <h3 className="font-sans text-[clamp(1rem,1.3vw,1.16rem)] font-semibold leading-[1.45] text-ink">
                             {item.question}
                           </h3>
                           <span
@@ -77,7 +77,7 @@ export default function FaqPage() {
                             {arrow}
                           </span>
                         </summary>
-                        <p className="accordion-answer px-5 pb-5 leading-[1.7] text-ink-soft md:px-8 md:pb-6">
+                        <p className="accordion-answer max-w-[44ch] px-5 pb-5 text-[clamp(1rem,1.3vw,1.16rem)] leading-[1.66] text-ink-soft md:px-8 md:pb-6">
                           {item.answer}
                         </p>
                       </details>

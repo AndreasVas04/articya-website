@@ -23,12 +23,13 @@ function isActive(pathname: string, href: string) {
 // to be.
 const HOME_RESET_EVENT = "home:reset";
 
-// Chrome, not content: one gold bar on every page, matched by the footer —
-// both carry `gold-chrome`, the anchor gold lifted toward paper so the two
-// flat bars stay soft where the sections stay rich. The amber hairline on its
-// lower edge is a signature, not a seam: it is the accent marks' own weight
-// and alpha, so the two chrome bars join the gold-line system that draws the
-// heading bars, the card frames and the nav underline.
+// The chrome is not a bar. There is no fill behind it, no blur, no rule under
+// it: the nav sits directly on the photograph, in cream, with amber on the
+// item you are on. What carries the labels is the picture's own darkening —
+// the stage plates and the hero plate each hold flat gold for the bar's height
+// at the top of the window, so a label never lands on open picture whatever
+// the scroll position. A bar would have been a panel behind text, which is the
+// one thing this page no longer has anywhere.
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
@@ -77,8 +78,18 @@ export function SiteHeader() {
   }, [open]);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b-[1.25px] border-amber/50 bg-gold-chrome">
-      <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 md:h-20">
+    <header className="fixed inset-x-0 top-0 z-50">
+      {/* The darkening the labels are carried by — see `.chrome-shade`. It is
+          a layer of the window, not a background of this element: the header
+          itself has none, and this ramp reaches nothing at its lower end. */}
+      <div
+        aria-hidden="true"
+        className={cn(
+          "chrome-shade pointer-events-none absolute inset-x-0 top-0",
+          open && "chrome-shade-open"
+        )}
+      />
+      <nav className="relative mx-auto flex h-16 max-w-6xl items-center justify-between px-4 md:h-20">
         <Link
           href="/"
           onClick={(event) => {
@@ -98,7 +109,7 @@ export function SiteHeader() {
             className="h-11 w-auto md:h-14"
             priority
           />
-          <span className="font-display text-lg font-semibold tracking-[-0.01em] text-ink md:text-xl">
+          <span className="font-display text-lg font-semibold tracking-[-0.025em] text-ink md:text-xl">
             ArtiCYa
           </span>
         </Link>
@@ -119,11 +130,9 @@ export function SiteHeader() {
         <ul
           ref={panelRef}
           className={cn(
-            // The open panel is positioned against the header's padding box,
-            // so it covers the bar's own hairline — it carries the same one
-            // on its lower edge instead, and the chrome still closes on the
-            // signature line wherever the menu ends.
-            "absolute inset-x-0 top-full flex-col gap-1 border-b-[1.25px] border-amber/50 bg-gold-chrome px-4 pb-6 pt-2 md:static md:flex md:flex-row md:items-center md:gap-8 md:border-0 md:bg-transparent md:p-0",
+            // The open panel carries no surface either — it is the same cream
+            // type, one step further down the same photograph.
+            "absolute inset-x-0 top-full flex-col gap-1 px-4 pb-6 pt-2 md:static md:flex md:flex-row md:items-center md:gap-8 md:p-0",
             open ? "flex" : "hidden"
           )}
         >
@@ -135,13 +144,11 @@ export function SiteHeader() {
                   href={item.href}
                   onClick={() => setOpen(false)}
                   className={cn(
-                    "group relative block py-2 text-[0.8125rem] font-semibold uppercase leading-[1.4] tracking-[0.08em] text-bark transition-colors duration-200 hover:text-resin-deep md:py-1",
-                    active && "text-resin-deep"
+                    "group relative block py-2 text-[0.8125rem] font-semibold uppercase leading-[1.4] tracking-[0.08em] text-ink transition-colors duration-200 hover:text-amber md:py-1",
+                    active && "text-amber"
                   )}
                 >
                   {item.label}
-                  {/* The bright amber lives in the underline, never the label:
-                      it measures 2.27 on the chrome, so it is a mark, not text. */}
                   <span
                     aria-hidden="true"
                     className={cn(

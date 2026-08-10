@@ -2,13 +2,9 @@ import ScrollExpandMedia from "@/components/ui/scroll-expansion-hero";
 import { StatCounter } from "@/components/stat-counter";
 import { Reveal } from "@/components/reveal";
 import { StageScene } from "@/components/stage-entrance";
-import { LivingAtmosphere } from "@/components/living-atmosphere";
 import { OfferPanel } from "@/components/offer-panel";
 import { GainTrail } from "@/components/gain-trail";
-import { GroundLift } from "@/components/ground-lift";
 import { PhotoStage, type StagePlate } from "@/components/photo-stage";
-import { DottedGlobe } from "@/components/ui/dotted-globe";
-import { LampCta } from "@/components/ui/lamp";
 import { ButtonLink } from "@/components/ui/button";
 import { imagePreload } from "@/lib/images";
 import { hero, whatWeDo, gain } from "@/content/home";
@@ -63,13 +59,7 @@ export default function HomePage() {
           fetchPriority="high"
         />
       )}
-      {/* The whole page shares one warm ground, hero included: a single
-          atmosphere instance spans the wrapper, so the drifting light is one
-          continuous field rather than a per-section grid that restarts — and
-          restarting it at the hero's lower edge would land two different
-          phases of the same tiling on either side of that line. */}
       <div className="relative">
-        <LivingAtmosphere />
         {/* One fixed photographic ground for the whole page below the hero.
             No section under it paints anything, so there is no edge anywhere
             for a seam to fall on: what changes down the page is which
@@ -93,12 +83,11 @@ export default function HomePage() {
             aria-hidden="true"
             className="block h-px w-[82px] translate-y-14 bg-amber/55 opacity-0 duration-[700ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] motion-reduce:translate-y-0"
           />
-          {/* 15px on mobile, against 17px before: at 17 the statement broke
-              to four ragged lines inside the card's width and the tagline
-              stopped reading as one calm sentence. 15px with `text-balance`
-              settles it to three even lines, and 15 is the floor — below it
-              the line stops being comfortable at arm's length. */}
-          <p className="mt-4 max-w-[30rem] translate-y-14 text-balance text-center font-display text-[0.9375rem] font-medium md:max-w-[46rem] md:text-[1.25rem] leading-[1.35] tracking-[-0.01em] text-ink opacity-0 duration-[700ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] group-data-[expanded]:delay-100 motion-reduce:translate-y-0">
+          {/* The statement is body copy now, on the body step and in the body
+              face: the display-face "hero statement" was its own size, its own
+              family and its own weight for a single sentence, which is a step
+              the ramp does not need. */}
+          <p className="mt-5 max-w-[44ch] translate-y-14 text-balance text-center text-[clamp(1rem,1.3vw,1.16rem)] leading-[1.66] text-ink opacity-0 duration-[700ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] group-data-[expanded]:delay-100 motion-reduce:translate-y-0">
             {hero.text}
           </p>
           <div className="mt-5 translate-y-14 opacity-0 duration-[700ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] group-data-[expanded]:delay-300 motion-reduce:translate-y-0">
@@ -121,46 +110,28 @@ export default function HomePage() {
               looking. Dropping it lands the heading area ~155px under the
               card block, so the entrance starts while the card is still
               leaving the viewport and the two moments overlap. */}
-          {/* The whole clearing arrives as one event: a single scene wraps
-              the text, the globe and the stats ledger, fires once at -30% —
-              deep enough that a real share of the composition is on screen —
-              and plays a single rising wave with internal order on the
-              clock: the rule draws and the text column lifts, the heading
-              surfaces out of its clipped line a beat in, the globe takes
-              the stage from below while the flash crests behind it, and the
-              ledger rows land last, left to right. One trigger, one
-              direction, staggered beats — never three sections drip-feeding
-              their own entrances. */}
-          {/* Desktop breathes into the frame it has: above xl the composition
-              widens past the 72rem column and the globe and type take the width
-              they were sitting inside of, so the section stops floating in the
-              middle of a 1440 frame. Capped against the viewport so it never
-              crowds the edges on a 1280 laptop. Mobile and md are untouched. */}
+          {/* The whole clearing arrives as one event: a single scene wraps the
+              text and the stats ledger, fires once at -30% — deep enough that
+              a real share of the composition is on screen — and plays a single
+              rising wave with internal order on the clock: the rule draws and
+              the text column lifts, the heading surfaces out of its clipped
+              line a beat in, and the ledger rows land last, left to right. */}
           {/* The clearing stands on the page's stage: hero-2 is the plate
               behind it, so the world the hero opened on carries on under the
-              heading instead of ending at a seam. The type's own pools are
-              what make it readable — the ground beside them stays
-              photographic. */}
+              heading instead of ending at a seam. The plate's own darkening is
+              what makes the type readable — the pools that used to sit under
+              each block are gone. */}
           <div className="relative">
             <StageScene
               fireMargin="-30%"
               className="relative mx-auto max-w-6xl px-4 xl:max-w-[min(84rem,92vw)]"
             >
-              {/* Text left, the lit world right, the stats ledger reading
-                  under it — with the countries column landing directly beneath
-                  the globe, since the globe is that number made visible. */}
               <div
                 data-stage-plate="0"
                 data-stage-strength="0.9"
                 className="relative md:grid md:grid-cols-12 md:items-start md:gap-x-12 xl:gap-x-20"
               >
-                {/* The wrapper exists to give the pool a box: the lift is
-                    anchored to the type column, not to the section, so it
-                    tracks the column at every width — and it sits outside
-                    `.stage-lift` so the ground the words stand on is already
-                    there when they arrive, rather than riding in with them. */}
                 <div className="relative md:col-span-6 md:self-center">
-                  <GroundLift className="ground-lift-flush-top" />
                   <div className="stage-lift relative">
                     <span
                       aria-hidden="true"
@@ -168,7 +139,7 @@ export default function HomePage() {
                     />
                     <div className="stage-mask mt-2">
                       <h2
-                        className="stage-mask-rise font-display text-[1.75rem] font-semibold leading-[1.1] tracking-[-0.01em] md:text-[clamp(2rem,4vw,3rem)]"
+                        className="stage-mask-rise font-display text-[clamp(2.3rem,6vw,5rem)] font-semibold leading-[0.94] tracking-[-0.025em]"
                         style={{ transitionDelay: "80ms" }}
                       >
                         {whatWeDo.title}
@@ -178,23 +149,10 @@ export default function HomePage() {
                       className="stage-rise"
                       style={{ transitionDelay: "250ms" }}
                     >
-                      <p className="mt-2 border-l border-hairline pl-5 text-[1.0625rem] leading-[1.5] text-ink-soft md:mt-8 md:text-xl md:leading-[1.55]">
+                      <p className="mt-2 max-w-[44ch] text-[clamp(1rem,1.3vw,1.16rem)] leading-[1.66] text-ink-soft md:mt-8">
                         {whatWeDo.lead}
                       </p>
                     </div>
-                  </div>
-                </div>
-                {/* The globe rises with the wave, then its own rotation
-                    finishes the arrival: the sphere spins in and settles into
-                    the turn it never stops making, so the entrance belongs to
-                    the object. No glow behind it — the halo is the section's,
-                    not a flash of the entrance. */}
-                <div className="relative mt-2 md:col-span-6 md:mt-0 md:self-center">
-                  <div
-                    className="stage-globe relative isolate"
-                    style={{ transitionDelay: "200ms" }}
-                  >
-                    <DottedGlobe className="mx-auto w-full max-w-[16rem] md:max-w-[24rem] xl:max-w-[30rem]" />
                   </div>
                 </div>
               </div>
@@ -202,19 +160,14 @@ export default function HomePage() {
               {/* The ledger carries no rules of its own beyond the desktop
                   column dividers: horizontal lines are the one mark this page
                   never draws, so the mobile rows structure themselves on the
-                  numeral/label baseline alone and the grid fades straight
-                  into the gold below. The rows are the wave's last beats, and
-                  each counter still starts its 700ms count only when it
-                  crosses into view — the ledger writes itself. */}
+                  numeral/label baseline alone. The rows are the wave's last
+                  beats, and each counter still starts its 700ms count only
+                  when it crosses into view — the ledger writes itself. */}
               <div
                 data-stage-plate="0"
                 data-stage-strength="0.9"
                 className="relative mt-2 md:mt-12"
               >
-                {/* The ledger's own pool. Same technique, its own box: the
-                    numerals and labels sit a screen apart from the heading on
-                    a phone, so one pool cannot carry both. */}
-                <GroundLift />
                 <div className="relative grid md:grid-cols-3 md:divide-x md:divide-hairline">
                   {whatWeDo.stats.map((stat, i) => (
                     <div
@@ -237,7 +190,6 @@ export default function HomePage() {
             {whatWeDo.cards.map((card, i) => (
               <OfferPanel
                 key={card.title}
-                pane={plates[1].src}
                 title={card.title}
                 text={card.text}
                 icon={offerIcons[i] ?? "globe"}
@@ -269,7 +221,7 @@ export default function HomePage() {
                 aria-hidden="true"
                 className="mx-auto block h-[1.25px] w-16 bg-amber"
               />
-              <h2 className="mt-3 font-display text-[clamp(2rem,4vw,3rem)] font-semibold leading-[1.1] tracking-[-0.01em]">
+              <h2 className="mt-3 font-display text-[clamp(2.3rem,6vw,5rem)] font-semibold leading-[0.94] tracking-[-0.025em]">
                 {gain.title}
               </h2>
             </Reveal>
@@ -284,31 +236,29 @@ export default function HomePage() {
         </section>
 
         {/* The closing beat, on the same plate the trail walked in on and now
-            at nearly full strength — the world comes up to meet the lamp: the
-            trail's thread walks down into the lamp and the light opens on
-            the ground it has been lighting all page. The headline is the one
-            place the accent carries text, so it takes the text-safe amber
-            and leaves the bright one to the glow around it. */}
+            at nearly full strength. The lamp is gone — its line, cone, node
+            and ignition were a light fixture drawn on the page, and what the
+            section is actually for is three pieces of type. They stand on the
+            plate itself, and the closing line keeps the one place the accent
+            carries text. */}
         <section
           data-stage-plate="2"
           data-stage-strength="0.95"
-          className="relative overflow-hidden text-ink"
+          className="relative overflow-hidden px-4 pb-24 pt-16 text-ink md:pb-32 md:pt-24"
         >
-          <LampCta>
-            {/* ink, not ink-soft: this line sits deepest in the pool, where
-                the warm wash measures 4.14 against ink-soft — under AA. */}
-            <p className="max-w-2xl translate-y-24 text-center text-xl leading-[1.55] text-ink opacity-0 duration-[700ms] ease-out-quart group-data-[lit]:translate-y-0 group-data-[lit]:opacity-100 group-data-[lit]:transition-[opacity,transform] group-data-[lit]:delay-300 motion-reduce:translate-y-0">
+          <Reveal className="mx-auto flex max-w-6xl flex-col items-center text-center">
+            <p className="max-w-[44ch] text-[clamp(1rem,1.3vw,1.16rem)] leading-[1.66] text-ink">
               {gain.text}
             </p>
-            <p className="mt-8 max-w-3xl translate-y-24 text-center font-display text-[clamp(2.25rem,5vw,3.75rem)] font-semibold leading-[1.15] tracking-[-0.01em] text-resin-deep opacity-0 duration-[700ms] ease-out-quart [text-shadow:0_0_34px_color-mix(in_srgb,var(--color-amber-soft)_55%,transparent)] group-data-[lit]:translate-y-0 group-data-[lit]:opacity-100 group-data-[lit]:transition-[opacity,transform] group-data-[lit]:delay-[450ms] motion-reduce:translate-y-0">
+            <p className="mt-8 max-w-[18ch] font-display text-[clamp(2.3rem,6vw,5rem)] font-semibold leading-[0.94] tracking-[-0.025em] text-resin-deep">
               {gain.highlight}
             </p>
-            <div className="mt-10 translate-y-24 opacity-0 duration-[700ms] ease-out-quart group-data-[lit]:translate-y-0 group-data-[lit]:opacity-100 group-data-[lit]:transition-[opacity,transform] group-data-[lit]:delay-[600ms] motion-reduce:translate-y-0">
+            <div className="mt-10">
               <ButtonLink href={gain.cta.href} variant="gold">
                 {gain.cta.label}
               </ButtonLink>
             </div>
-          </LampCta>
+          </Reveal>
         </section>
       </div>
     </>

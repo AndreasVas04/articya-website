@@ -9,7 +9,6 @@ import {
   useTransform,
 } from "framer-motion";
 import { Globe, GraduationCap } from "lucide-react";
-import { ResponsiveImage } from "@/components/responsive-image";
 import { cn } from "@/lib/utils";
 
 // Icons live here because component references can't cross the
@@ -38,9 +37,6 @@ const FADE: CSSProperties = { opacity: 0 };
 const DRAW: CSSProperties = { scale: "0 1" };
 
 interface OfferPanelProps {
-  /** The stage plate this panel stands on — the pane behind its words is that
-   *  same photograph out of focus, never a colour laid over it. */
-  pane: string;
   title: string;
   text: string;
   icon: keyof typeof icons;
@@ -56,7 +52,6 @@ interface OfferPanelProps {
 // panel renders unpinned with everything visible, so the exported HTML is the
 // resting state.
 export function OfferPanel({
-  pane,
   title,
   text,
   icon,
@@ -154,22 +149,6 @@ export function OfferPanel({
             ref={textRef}
             className={cn("relative max-w-xl", flip && "md:ml-auto")}
           >
-            {/* The ground the words read against: the stage's own plate,
-                defocused and confined to the block. The reading wash this
-                replaces was a cream ramp built across the whole panel, which
-                is a flat colour laid over a photograph — the one thing that
-                puts an edge back on a page built to have none. */}
-            <div
-              aria-hidden="true"
-              className="ground-lift panel-pane pointer-events-none"
-            >
-              <div className="panel-pane-plate absolute inset-0">
-                <div className="panel-pane-blur absolute">
-                  <ResponsiveImage src={pane} alt="" fill sizes="100vw" />
-                </div>
-              </div>
-            </div>
-
             <div className="relative">
               <motion.span
                 aria-hidden="true"
@@ -179,7 +158,7 @@ export function OfferPanel({
                 <Icon className="size-6" strokeWidth={1.5} />
               </motion.span>
               <h3
-                className="mt-6 font-display text-[clamp(2rem,4vw,3rem)] font-semibold leading-[1.1] tracking-[-0.01em] text-ink"
+                className="mt-6 font-display text-[clamp(2.3rem,6vw,5rem)] font-semibold leading-[0.94] tracking-[-0.025em] text-ink"
                 style={enter(0, LIFT)}
               >
                 {title}
@@ -194,7 +173,7 @@ export function OfferPanel({
                   nothing, and making the spans inline-block to earn one would
                   stop them wrapping across lines. */}
               <p
-                className="mt-5 leading-[1.7] text-ink md:text-xl md:leading-[1.55]"
+                className="mt-5 max-w-[44ch] text-[clamp(1rem,1.3vw,1.16rem)] leading-[1.66] text-ink"
                 style={enter(2, RISE)}
               >
                 {groups.map((group, i) => (

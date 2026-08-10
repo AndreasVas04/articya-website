@@ -184,7 +184,7 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
             style={enter(0, DRAW)}
           />
           <p
-            className="mt-6 max-w-3xl leading-[1.7] text-ink md:mt-8 md:text-xl md:leading-[1.55]"
+            className="mt-6 max-w-[44ch] text-[clamp(1rem,1.3vw,1.16rem)] leading-[1.66] text-ink md:mt-8"
             style={enter(1, FADE)}
           >
             {groups.join(" ")}
@@ -225,9 +225,6 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
         key={compact ? "compact" : "wide"}
         className="sticky top-0 h-svh overflow-hidden"
       >
-        {/* The same pool of late sun the scenes sit in, under the gathering
-            mosaic. */}
-        <div aria-hidden="true" className="gold-pool absolute inset-0" />
         <motion.div
           className="absolute inset-0 z-10 flex items-center justify-center px-4"
           style={{ opacity: textOut, y: textDrift }}
@@ -243,7 +240,7 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
                 nothing, and making the spans inline-block to earn one would
                 stop them wrapping across lines. */}
             <p
-              className="mt-8 text-xl leading-[1.55] text-ink"
+              className="mx-auto mt-8 max-w-[44ch] text-[clamp(1rem,1.3vw,1.16rem)] leading-[1.66] text-ink"
               style={enter(1, RISE)}
             >
               {groups.map((group, i) => (

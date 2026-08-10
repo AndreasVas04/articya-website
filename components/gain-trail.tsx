@@ -8,11 +8,13 @@ import { cn } from "@/lib/utils";
 
 const icons = [Compass, Users, Award, HandCoins];
 
-// The rail dissolves at the top instead of stopping on a cut edge. The
-// bottom runs full strength to the container's edge, where the lamp's
-// descent thread picks it up, so the amber line crosses the junction into
-// the closing section unbroken.
-const RAIL_FADE = "linear-gradient(to bottom, transparent, black 7%, black)";
+// The rail dissolves at both ends instead of stopping on a cut edge. The
+// bottom used to run at full strength into the closing section, where the
+// lamp's descent thread picked the stroke up; with the lamp gone there is
+// nothing below it to hand to, and a line that simply stops reads as a
+// broken one.
+const RAIL_FADE =
+  "linear-gradient(to bottom, transparent, black 7%, black 86%, transparent)";
 
 // The four gains as stations along a trail. An amber line draws itself down
 // the path as the user scrolls, passing a lit node at each station; stations
@@ -90,7 +92,7 @@ export function GainTrail({ items }: { items: string[] }) {
                   </span>
                   <span
                     className={cn(
-                      "font-display text-[clamp(1.5rem,2.5vw,2.25rem)] font-semibold leading-[1.2] text-ink",
+                      "font-display text-[clamp(1.9rem,3.6vw,3rem)] font-semibold leading-[1.1] tracking-[-0.025em] text-ink",
                       !right && "md:text-right"
                     )}
                   >

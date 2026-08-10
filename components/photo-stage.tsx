@@ -226,7 +226,6 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
           <div className="stage-plate-shade absolute inset-0" />
         </div>
       ))}
-      <div className="film-grain absolute inset-0" />
     </div>
   );
 }

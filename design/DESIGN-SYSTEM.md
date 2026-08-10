@@ -1,5 +1,43 @@
 # ArtiCYa Design System — "Resin & Pine"
 
+> **STRIP — read this before anything below it.** The site was taken back to
+> photography, type and one accent. What follows is still the palette, the
+> contrast method and the grounds model, but four passages of it describe
+> things that no longer exist:
+>
+> - **Every lift and every pool is deleted.** `.hero-sky-lift`,
+>   `.hero-photo-lift`, `.hero-foot-pool`, `.ground-lift`, `.panel-pane`,
+>   `.gold-pool` and the inner-page hero lift are gone, with the hero title
+>   pool and the hint pill's fill. A local, soft-edged shape sitting behind a
+>   block of type is a panel however long its ramp is, and the page now has
+>   none. What carries text over a photograph is **`.plate-shade`**: one
+>   full-width, top-to-bottom darkening built into the plate, tuned per use
+>   through `--shade-top` / `--shade-mid` / `--shade-bottom` and the two mid
+>   stops. It has no horizontal extent, so it can only ever read as a darker
+>   photograph.
+> - **The chrome is not a bar.** Header and footer carry no fill, no blur and
+>   no amber hairline; the nav sits on the picture in `ink`, with `amber` on
+>   the active item. What carries the labels is **`.chrome-shade`** — the same
+>   construction pinned to the top of the *window* rather than to a plate,
+>   because a gradient inside a photograph scrolls away from a fixed bar and
+>   below the inner heroes there is no photograph at all. It grows while the
+>   mobile menu is open. The inner-page hero's own bottom hairline went with
+>   the chrome's.
+> - **Four components are gone**: the dotted globe and its land data,
+>   the lamp CTA (the closing section's frozen text now stands as plain type on
+>   the plate), the resin embers, and the living atmosphere with its pointer
+>   parallax and its two drifting glow layers. `.film-grain` is deleted
+>   site-wide. The single-light-source thread therefore runs from the gains
+>   trail and stops there; the trail's rail now dissolves at both ends.
+> - **The type scale below is superseded** by the display ramp in **Typography
+>   — the strip scale**.
+>
+> Everything else holds: the tokens, the stage and its plates, the gold field
+> on the hero and the inner pages, the amber accent marks, the inset-ring
+> frames and cards, the clock-based entrances, and the measurement method
+> (glyph cores on the rendered composite, worst case swept across a whole
+> traversal, both viewports).
+
 ## Narrative
 
 The hour after a summer hike in Troodos: pine forest going black-green as the
@@ -423,6 +461,28 @@ Usage rules derived from the table:
 
 Display: **Bricolage Grotesque** · Body: **Instrument Sans** — both loaded via
 `next/font`, exposed as `font-display` and `font-sans`.
+
+### The strip scale
+
+This supersedes the step table below it. Five rules, and they are floors:
+
+| Step | Value | Where |
+|---|---|---|
+| Hero headline | `clamp(3.4rem, 11vw, 10rem)` / 0.94 | The home hero h1 and every inner-page hero h1 — 158.4px at 1440, 54.4px at 390 |
+| Section heading | `clamp(2.3rem, 6vw, 5rem)` / 0.94 | "What we do", "What you gain", "Get in touch", the offer-panel titles, the closing line — 80 / 36.8px |
+| Sub-heading | `clamp(1.9rem, 3.6vw, 3rem)` | The FAQ group headings and the gains trail items — 48 / 30.4px |
+| Body | `clamp(1rem, 1.3vw, 1.16rem)` / 1.66, `max-width: 44ch` | Every paragraph on the site, the FAQ questions and answers, the Contact channel values — 18.56 / 16px |
+| Tracking | `-0.025em` | All display type, the wordmark and the stat numerals included |
+
+The old **Hero statement** step is retired with the rest: one sentence in the
+display face at its own size and its own weight was a step the ramp did not
+need, and the home hero's tagline is body copy now. The **Stat numeral** keeps
+its own clamp — it is the one monumental role that is neither a heading nor
+prose — and takes the tracking with everything else.
+
+The measure rule is unchanged in intent and now enforced by a declaration
+rather than by per-block tracks: `44ch` lands every prose block inside the
+70-character ceiling at both viewports.
 
 | Step | Size / line height | Font | Use |
 |---|---|---|---|

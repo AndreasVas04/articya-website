@@ -20,18 +20,18 @@ const icons: Record<string, React.ReactNode> = {
   ),
 };
 
-// The lower half of the site's chrome: the same gold-chrome surface as the
-// header, closing every page on the gold it opened with — and carrying the
-// same amber hairline on the edge it shares with the body, so the two bars
-// bracket every page with one mark.
+// The lower half of the site's chrome, and like the header it is no longer a
+// bar: no fill, no rule on the edge it shares with the body. The page simply
+// runs out under it. On home the stage plates hold flat gold for the footer's
+// height at the bottom of the window, so the cream type here always closes on
+// one value; on the inner pages the body's own dark floor does the same job.
 //
 // `relative` is not layout — it is paint order. The home page's photographic
 // stage is a fixed layer, and a fixed layer paints after every static block on
-// the page however opaque that block's own background is; without a position
-// here the bar renders under the picture and its type all but disappears.
+// the page, so without a position here the footer renders under the picture.
 export function SiteFooter() {
   return (
-    <footer className="relative border-t-[1.25px] border-amber/50 bg-gold-chrome py-8">
+    <footer className="relative py-8">
       <div className="mx-auto flex max-w-5xl flex-col items-center gap-5 px-4">
         <div className="flex gap-4">
           {footer.social.map((s) => (

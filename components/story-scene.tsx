@@ -138,8 +138,6 @@ export function StoryScene({
           active ? "sticky top-0 flex h-svh items-center" : "py-16 md:py-24"
         )}
       >
-        {/* A soft pool of late sun where the print and its words sit. */}
-        <div aria-hidden="true" className="gold-pool absolute inset-0" />
         <div className="relative mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-8 px-4 md:grid-cols-12 md:gap-x-0">
           <motion.div
             className={cn(
@@ -200,7 +198,7 @@ export function StoryScene({
                 nothing, and making the spans inline-block to earn one would
                 stop them wrapping across lines. */}
             <p
-              className="mt-6 leading-[1.7] text-ink md:mt-8 md:text-xl md:leading-[1.55]"
+              className="mt-6 max-w-[44ch] text-[clamp(1rem,1.3vw,1.16rem)] leading-[1.66] text-ink md:mt-8"
               style={enter(1, RISE)}
             >
               {groups.map((group, i) => (
