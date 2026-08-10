@@ -423,8 +423,12 @@ const ScrollExpandMedia = ({
                 maxWidth: "100%",
                 maxHeight: "85vh",
                 opacity: cardOpacity,
+                // The card's own shadow, off the deepest ground rather than
+                // off `ink` — ink is the page's cream now, and a 14% cream
+                // spread at 50px would ring the card in light instead of
+                // seating it.
                 boxShadow:
-                  "0 0 50px color-mix(in srgb, var(--color-ink) 14%, transparent)",
+                  "0 0 50px color-mix(in srgb, var(--color-gold-anchor) 55%, transparent)",
               }}
             >
               {/* Square corners, deliberately: expanded, this frame is as wide

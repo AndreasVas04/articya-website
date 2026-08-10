@@ -143,7 +143,10 @@ export function StoryScene({
         <div className="relative mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-8 px-4 md:grid-cols-12 md:gap-x-0">
           <motion.div
             className={cn(
-              "print-shadow bg-plaster-bright p-2 ring-1 ring-amber/55 md:p-3",
+              // The print's mat is a container, so it takes the container
+              // ground: a paper-bright mat is the one object on these pages
+              // that would still read as the light world.
+              "print-shadow bg-gold-card p-2 ring-1 ring-amber/55 md:p-3",
               image.wide ? "md:col-span-6" : "md:col-span-5",
               flip
                 ? image.wide

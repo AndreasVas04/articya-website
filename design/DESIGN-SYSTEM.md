@@ -40,15 +40,49 @@ gradients — the only gradients are atmosphere (see Atmospheric grounds).
 
 ## Warm palette — the home page's living atmosphere
 
-> **The home page is fully converted.** Every section — hero, "What we do"
-> with the stats and the globe, both offer panels, "What you gain" and the
-> closing lamp — now stands in the warm gold world described below, and this
-> table is the direction of record for all of it. The dusk palette above still
-> governs the inner pages. Passages elsewhere in this document that describe
-> home as "one continuous pine-950 world" — the narrative, the signature
-> element thread, parts of the atmospheric-ground table — are **stale for
-> home and correct for the inner pages**; read them that way rather than
-> resolving the conflict by reverting a section.
+> **DIRECTION CHANGE — the gold world is now a dark one.** The token *names*
+> below are unchanged and still name the same roles; their **values** were
+> swapped for the pine-dark set in the table that follows, site-wide. Nothing
+> structural moved with them: no layout, no geometry, no timing, no opacity
+> ramp, and every document height is identical to the pixel at 1440×900 and
+> 390×844. A later mechanical pass renames the tokens.
+>
+> Everywhere below — and everywhere else in this document — that a passage
+> says gold, cream, warm ground, *lift* or *lightening*, read it as naming
+> the mechanism, not the direction: a lift is still a local, soft-edged,
+> block-anchored pool spending its softness in the margin, but it now sinks
+> the photograph toward the floor instead of raising it toward paper. The
+> hex values in the prose and in the measured-contrast tables are stale.
+>
+> | Token | Was | Now |
+> |---|---|---|
+> | `gold-wash` | `#EDE2C8` | `#141C16` — deep pine, the floor |
+> | `gold-anchor` | `#E9D9B4` | `#0E1510` — deepest, where photographs dissolve to |
+> | `gold-chrome` | `#EFE4CB` | `#101811` — nav and footer |
+> | `gold-card` | `#EFE1C7` | `#1A2419` — containers |
+> | `ink` | `#2A3329` | `#EDE2C8` — primary text, now cream |
+> | `ink-soft` | `#52594F` | `#B9B4A2` — secondary text |
+> | `resin-deep` | `#845110` | `#D69A47` — lifted to read on dark |
+> | `bark` | `#5C4B32` | `#C9BB9E` — resting nav label, lifted with it |
+> | `pine` | `#285C3C` | `#7FA98A` — structural marks, lifted with it |
+> | `hairline` | `rgba(42,51,41,.14)` | `rgba(237,226,200,.14)` — the same 14%, inverted |
+> | `amber` · `amber-fill` · `amber-lit` · `amber-edge` · `amber-soft` | — | unchanged |
+>
+> `button-ink` (`#221A0C`) is new and is the one dark string left on the site:
+> cream `ink` measures 2.06 on `amber-fill`, so the filled control keeps a dark
+> label. The fill is a light object whatever the ground behind it is.
+>
+> Measured on the rendered composite at glyph cores, worst case swept across
+> each page's whole traversal, both viewports: large text **3.12–4.51** against
+> a 3.0 floor; body text **4.64–4.88** against 4.5 — with one exception, the
+> offer panels' prose, which dips to **3.06** (desktop) / **3.69** (mobile)
+> during the ~18% of the pin where the reading wash is still at its 0.6 floor.
+> That dip is not the swap's: measured on the pre-swap build at the same
+> frames it was **3.41** / **3.94**, already under AA. Settled — the wash
+> fully built, which is the state the panels hold for the rest of the pin —
+> the same prose measures **7.39–7.68** (desktop) and **9.57–9.67** (mobile),
+> against 6.87–7.70 and 7.88–7.89 before. Raising the wash's floor from 0.6
+> would close it; that floor is an opacity ramp and was left alone.
 
 | Token | Hex | Role |
 |---|---|---|

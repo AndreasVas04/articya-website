@@ -7,58 +7,65 @@
   --color-pine-800: #3e5433;
   --color-lichen: #566350;
   --color-resin: #e19a3c;
-  --color-resin-deep: #845110;
+  /* Lifted to read on the dark ground: #845110 was the text-safe accent when
+     the ground was cream and measures 1.9 on it now. */
+  --color-resin-deep: #d69a47;
   --color-resin-light: #f2c177;
   --color-sage: #a9b39a;
   --color-plaster: #f2efe6;
   --color-plaster-bright: #faf8f2;
   --color-plaster-muted: #e0e4cd;
 
-  /* Warm daylight palette — the home page's living-atmosphere world.
-     Roles and measured contrast in /design/DESIGN-SYSTEM.md. One rule:
-     ink carries every piece of text, amber is the only accent, pine is
-     small structural marks only, and no text on this ground is ever white
-     or cream. */
-  --color-ink: #2a3329;
-  /* A shade deeper than the neutral cream ground once wanted: the gold floor
-     and the atmosphere's amber pools warm the composite behind this text to
-     around rgb(231,214,184), where the old value measured 4.35 and missed AA.
-     Measured on that composite, not on the flat token. */
-  --color-ink-soft: #52594f;
+  /* The site's own palette — the living-atmosphere world, now a dark one.
+     Roles in /design/DESIGN-SYSTEM.md. One rule: ink carries every piece of
+     text, amber is the only accent, pine is small structural marks only.
+     The token names are the gold world's and are kept: the values below are
+     the pine-dark set that replaced it. */
+  --color-ink: #ede2c8;
+  --color-ink-soft: #b9b4a2;
   --color-amber: #c88a3a;
   --color-amber-soft: #e2ab52;
-  --color-pine: #285c3c;
-  --color-hairline: rgba(42, 51, 41, 0.14);
+  /* Lifted out of the near-black green it was on the light ground: at #285c3c
+     the icon strokes and the globe's land dots measured 2.2 on the floor,
+     under the 3.0 a graphical mark answers to. Same green, raised until it
+     reads (6.58 on the floor). */
+  --color-pine: #7fa98a;
+  /* The same 14% rule inverted: a hairline is the ground's own text colour
+     laid on thin, so on a dark ground it is cream rather than ink. */
+  --color-hairline: rgba(237, 226, 200, 0.14);
 
-  /* The home page's two golds. `gold-wash` is the visible floor — every
-     section shows it, so no stretch of the page reads as neutral cream.
-     `gold-anchor` is the same gold a shade deeper: it fills the chrome and
-     the hero's tagline card, and it is what every section fades to at its
-     top and bottom edges, so section meets section, nav and footer in one
-     unbroken band. `gold-chrome` is the header and footer only: the anchor
-     lifted back toward paper so the two flat bars read as soft warm gold
-     rather than saturated, while the sections keep the anchor at their
-     edges. `bark` is the chrome's resting nav label (6.30 on the chrome).
-     The amber fills are the accent lightened just far enough that
-     `ink` on them clears AA — `amber` itself measures 4.46, a hair short. */
-  --color-bark: #5c4b32;
-  --color-gold-wash: #ede2c8;
-  --color-gold-anchor: #e9d9b4;
-  --color-gold-chrome: #efe4cb;
-  /* The two edge golds at zero alpha. Fades name these explicitly rather
-     than ending on `transparent`, which is a colorless black and can pull a
-     gradient through grey. */
-  --color-gold-anchor-0: rgb(233 217 180 / 0);
-  --color-gold-chrome-0: rgb(239 228 203 / 0);
-  --color-gold-wash-0: rgb(237 226 200 / 0);
+  /* The page's three grounds. `gold-wash` is the visible floor — every
+     section shows it, so no stretch of the page reads as untreated. The
+     others are the same pine a shade either side of it: `gold-anchor` is the
+     deepest, what every section fades to at its top and bottom edges (so
+     section meets section, nav and footer in one unbroken band) and what a
+     photograph dissolves into; `gold-chrome` is the header and footer only,
+     a hair off the floor so the two flat bars sit quietly against the
+     sections. `bark` is the chrome's resting nav label (9.55 on the chrome).
+     The amber fills are the accent lightened just far enough that the
+     button's own label clears AA on them. */
+  --color-bark: #c9bb9e;
+  --color-gold-wash: #141c16;
+  --color-gold-anchor: #0e1510;
+  --color-gold-chrome: #101811;
+  /* The three ground colours at zero alpha. Fades name these explicitly
+     rather than ending on `transparent`, which is a colorless black and can
+     pull a gradient through grey. */
+  --color-gold-anchor-0: rgb(14 21 16 / 0);
+  --color-gold-chrome-0: rgb(16 24 17 / 0);
+  --color-gold-wash-0: rgb(20 28 22 / 0);
   --color-amber-soft-0: rgb(226 171 82 / 0);
   --color-amber-fill: #ce9440;
   --color-amber-lit: #d8a254;
   --color-amber-edge: #b87a28;
-  /* Card and box containers on the gold ground (FAQ accordions, contact
-     channel cards): the wash lifted a half-step toward paper, framed by an
-     amber hairline rather than a grey or green border. */
-  --color-gold-card: #efe1c7;
+  /* The label on the amber fills. Cream `ink` measures 2.06 on `amber-fill`,
+     so the one control that carries a filled accent keeps a dark label: the
+     fill is a light object whatever the ground behind it is. */
+  --color-button-ink: #221a0c;
+  /* Card and box containers on the dark ground (FAQ accordions, contact
+     channel cards): the floor lifted a half-step, framed by an amber
+     hairline rather than a grey or green border. */
+  --color-gold-card: #1a2419;
 
   --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
   --ease-in-out-cubic: cubic-bezier(0.65, 0, 0.35, 1);
@@ -76,8 +83,8 @@
 
 body {
   font-family: var(--font-sans);
-  background-color: var(--color-plaster);
-  color: var(--color-pine-950);
+  background-color: var(--color-gold-wash);
+  color: var(--color-ink);
 }
 
 /* Two-ring focus indicator: the pine ring carries the contrast on plaster
@@ -885,11 +892,13 @@ body {
     transparent 72%
   );
 }
-/* Warm evening shadow: under framed prints on the gold ground, and as the
-   raised state of interactive cards (open accordion, hovered contact card)
-   — defined as a utility so hover/open variants reuse the same shadow. */
+/* Evening shadow: under framed prints, and as the raised state of
+   interactive cards (open accordion, hovered contact card) — defined as a
+   utility so hover/open variants reuse the same shadow. The warm brown it
+   carried on the cream ground has nothing left to darken now the ground is
+   pine, so the colour goes deeper than the floor; the offsets are unchanged. */
 @utility print-shadow {
-  box-shadow: 0 24px 48px -24px rgb(60 35 5 / 0.4);
+  box-shadow: 0 24px 48px -24px rgb(4 8 5 / 0.55);
 }
 /* The resin lamp given direction: a warm whisper directly under the halo
    inside a wider pine light dome, so dark grounds shade from lit to deep
