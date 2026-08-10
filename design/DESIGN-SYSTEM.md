@@ -38,68 +38,6 @@ gradients — the only gradients are atmosphere (see Atmospheric grounds).
 | `plaster-bright` | `#FAF8F2` | Cards on light; body text on dark |
 | `plaster-muted` | `#E0E4CD` | Green-tinted alternating bands; secondary text on dark |
 
-## Photographic grounds — the flat-colour pass
-
-> **The site no longer stands on colour.** Every zone that was painted
-> `gold-wash`, `gold-anchor` or `gold-card` now stands on one of our own
-> photographs at full strength. The gold tokens survive in four roles and no
-> others: the header and footer chrome, 1.25px accent rules, thin inset-ring
-> frames, and the seams between zones. Where a passage below still describes a
-> filled gold area larger than 200px in any dimension as correct — the
-> `gold-wash` floor "every section shows", `.gold-field`'s anchored edges on the
-> body sections, the `gold-card` panels, About's alternating chrome and anchor
-> bands — read it as the history of the ground it replaced, not as direction.
-> The one exception is the **home hero**, which is frozen: its `.gold-field`
-> edges, its tagline card and the living atmosphere's floor behind it are
-> untouched, and that band is the only place on the site where flat gold is
-> still the ground.
-
-**The Portugal set.** Seven portrait frames in `public/images/_originals/pt/`,
-ungraded — they run through the same ladder and encoder as everything else but
-skip `resinHour`, which is a separate pass. Two ship cropped, and the crop is
-**baked into the variants** rather than left to `object-position`: it is a
-content rule, not a composition preference, and a CSS crop still ships the
-pixels — any later change of framing, of the element's aspect ratio, or of the
-`sizes` the browser picks would bring the excluded material back into frame.
-
-**Zones meet on a seam, not on a fade.** Two photographic grounds cannot
-dissolve into each other: a fade passes through whatever is beneath them, and
-beneath them is the flat gold this pass exists to remove. So each ground is
-opaque to its own edges and the join is signed with `.zone-seam` — the same
-1.25px `amber` at 0.5 alpha the chrome carries on the edge it shares with the
-body, drawn in its own absolutely positioned layer so it costs the document no
-height. One edge is different: the ground under the frozen hero rises out of
-the hero's dissolving foot over the field's own 72/150px ramp, because that
-foot really does end on gold.
-
-**One wash, capped at 0.55.** A reading wash over a photograph is
-`.ground-lift` — a pool anchored to the block, its falloff a fade across
-multiplied by a fade down — and it may not exceed **0.55** at its strongest
-point. It is never stacked: a section pool and a card pool over the same words
-compose to 0.80, which is the cap by another name. `.card-lift` is the same
-pool held inside a card, which is why the FAQ accordions and the Contact
-channels carry a frame and a pool but no fill.
-
-That ceiling decides the type colour. At 0.55, `ink` clears 4.5:1 over ground
-as dark as ~62/255; `ink-soft` needs ~185, which is open sky and nothing else.
-So **secondary body copy over a photograph takes `ink`** — the "What we do"
-lead, the stats ledger labels, the FAQ answers and the Contact channel labels
-all moved. `ink-soft` keeps its role on the chrome, which is still a flat bar.
-
-**Framing is a contrast decision, not styling.** These frames are portrait and
-most zones are wider than they are tall on a desktop, so `object-cover` keeps
-the full width and the framing chooses which band of the picture falls under
-the words. Every value is measured per viewport (`.photo-frame`, `--frame-y` /
-`--frame-y-sm`), never eyed — measured on the bare ground behind the block, then
-confirmed at glyph cores on the composite.
-
-**What the cap cannot buy.** At 0.55 the worst *pixel* under a glyph is
-bounded by the darkest pixel of the photograph beneath it, and a real
-photograph contains near-black — hair, foliage, a power line. Body copy over
-such a frame therefore cannot hold 4.5:1 at its worst pixel at any permitted
-wash; it holds it across the block and misses on isolated cores. The measured
-numbers, worst pixel and distribution both, are in the reskin report.
-
 ## Warm palette — the home page's living atmosphere
 
 > **The home page is fully converted.** Every section — hero, "What we do"
@@ -656,9 +594,9 @@ fix a table.
     cream. Depth inside the gold comes from the living atmosphere's amber
     pools, full-bleed photography and the resin light, never from switching
     ground.
-  - **Inner pages** (about, faq, contact) are text-heavy and stand on a
-    photograph below their heroes, not on `plaster` and not on gold; no dark
-    section may appear there outside the hero. The hero is the **photograph full-bleed with the
+  - **Inner pages** (about, faq, contact) are text-heavy and keep `plaster`
+    as the default background below their heroes; no dark section may appear
+    there outside the hero. The hero is the **photograph full-bleed with the
     type centred over it** — heading, lede and accent rule vertically centred,
     the picture running edge to edge under the chrome. What carries the dark
     ink is **not** a full-frame veil: the old flat scrim at ~85–90% across the
@@ -674,11 +612,9 @@ fix a table.
     lift is local and graded, not a wash over the picture.
   - **Header and footer** are one `gold-chrome` surface site-wide, solid on every
     page and never transparent over a hero — so navigation reads the same
-    everywhere. They are the only flat gold left on the site, and the amber
-    hairline on the edge each shares with the body is the only rule either bar
-    carries. The first and last sections no longer fade to meet them: a
-    photographic ground runs to the bar, and the hairline marks the threshold
-    the way it already did on the inner-page heroes.
+    everywhere. The first and last sections fade to this same gold, so chrome
+    and body meet as one band; the amber hairline on the shared edge is the
+    only rule either bar carries, and it is a signature, not a seam.
 - Every page's first screen must read "green outdoors": photography plus at
   least two green token roles above the fold. On light grounds those are
   lichen labels, sage pills/borders, plaster-muted bands; on the dark home
@@ -876,19 +812,14 @@ section. Nothing else may put a gradient or texture on a ground:
 | `.lamp-falloff` | The seam lamp given direction: a warm whisper directly under the halo inside a wider `pine-800` light dome, shading the ground from lit to deep | Astride the home hero seam only — mirrored above it inside the hero, falling away below it, so the two grounds meet with no edge |
 | `.hero-photo-lift` / `-pool` | Soft-edged `gold-wash` pool **anchored to the block of type**, its falloff a fade across multiplied by a fade down — a **local** lightening, not a band across the frame. The model for every lift on the site (`.hero-sky-lift`, the inner-page hero lift): strong where the words fall, gone by the edges, ending on the zero-alpha gold so the ramp never pulls through grey | Behind the home hero intro only, so dark ink reads low inside the photograph while the rest of the frame stays at full strength (4.5 floor; **6.04/8.33** measured on the composite) |
 | `.hero-sky-lift` | The poster opening's version: a top-anchored `gold-wash` fall, **held across the headline band** and released to zero toward the frame's sides and into the sky by mid-frame | Behind the home collapsed headline, over the full-strength `home-hero.jpg` vista — carries the dark headline while the sky at the sides and the mountains and lake below stay at full strength (headline is large type, see the floors below; **6.0/6.2** measured) |
-| Inner-page hero lift | A **vertically graded** `gold-wash` pool: lighter across the large heading (3.0 floor), full behind the body-size lede (4.5 floor), masked to a central ellipse so the sides stay pure photograph. Two profiles, split by `md`, because the lede sits at a different height on the two viewports. Now capped at **0.55** like every other reading wash, which is why the three heroes changed photograph: the office interiors carried near-black detail directly under the centred type, where 0.55 tops out at 3.15:1 | Behind the centred type on the About/FAQ/Contact heroes only |
+| Inner-page hero lift | A **vertically graded** `gold-wash` pool: lighter across the large heading (3.0 floor), full behind the body-size lede (4.5 floor), masked to a central ellipse so the sides stay pure photograph. Two profiles, split by `md`, because the lede sits at a different height on the two viewports | Behind the centred type on the About/FAQ/Contact heroes only — the local lift that replaced the old full-frame scrim (measured: heading **3.7–3.9**, lede **4.6–4.75**) |
 | `.hero-foot-fade` | The card's foot: an eased bottom ramp taking the photograph and the intro's lift to nothing over `--hero-foot` (280px desktop / 176px mobile). `--foot-halo` inflates the mask box past the border box on the card, so the drop shadow's lower edge goes with it and the other three sides keep theirs | The expanded hero card and its intro lift — the elements the expansion sizes, never a parent |
 | `.hero-foot-arc` | A second mask nested inside the ramp, an ellipse reaching `--hero-foot-arc` (340/230px) up from the base, so the picture retreats higher at the centre than at the corners and the foot is a curve rather than a line | The hero frame only |
 | `.hero-foot-pool` | The light the picture leaves on the ground: `amber-soft` cresting just above the card's base, gathered in the middle rather than run across the width, gone by the section's last row so the seam below is untouched | Anchored to the home hero's lower edge, behind the backdrop photograph |
 | `.photo-vignette` | Edges falling toward `pine-950` | Inside photographic frames and hero photos only |
 | `.film-grain` | Fine tiled SVG grain at 5% opacity, killing the flat digital-paint feel | Over dark grounds and photographic frames |
-| `.photo-ground` | The photographic substrate a zone stands on: one of our own frames, opaque and full-bleed, under the same whisper grain every other photographic surface carries. Not a texture over a ground — it *is* the ground | Every zone on every page except the frozen home hero |
-| `.photo-ground-rise` | The same ground faded in over its first 72/150px | The one edge that meets the frozen hero's dissolving foot |
-| `.photo-frame` | Per-viewport framing on a ground's `<img>` (`--frame-y` / `--frame-y-sm`) — which band of a portrait frame falls under the words. A contrast decision, measured, not styling | Every ground image |
-| `.zone-seam` | The signed join between two photographic zones: 1.25px `amber` at 0.5, in its own layer so it costs no height | Every zone boundary that is not the hero's |
-| `.ground-parallax` / `.ground-plate` | The travelling ground under the "What we do" clearing: one of our own photographs at 0.85, no blur, `saturate(0.9)`, moving at a fraction of the page's scroll rate behind the block. The mask belongs to the block, the plate moves inside it | Behind the "What we do" stage only — the one scroll-linked layer on the site (see The travelling ground) |
-| `.ground-lift` / `-pool` | The reading wash: a soft-edged `gold-wash` pool anchored to a block of type, its falloff a fade across multiplied by a fade down, capped at **0.55** and never stacked with another wash | Behind every block of type that stands on a photograph |
-| `.card-lift` | The same pool held inside a card (`inset: 0`), so a card on a photographic ground can carry a frame and its words without carrying a fill | FAQ accordions, Contact channel cards |
+| `.ground-parallax` / `.ground-plate` | The photographic ground under the "What we do" clearing: one of our own photographs, blurred and lifted, travelling at a fraction of the page's scroll rate behind the block. The mask belongs to the block, the plate moves inside it | Behind the "What we do" stage only — the one scroll-linked layer on the site (see The travelling ground) |
+| `.ground-lift` / `-pool` | The gold a block of type stands on once a photograph is under it: a soft-edged pool anchored to the block, its falloff a fade across multiplied by a fade down, its bleeds kept short so the ground beside the block stays photographic | Over the "What we do" type column and its stats ledger only |
 | `.gold-field` | Top and bottom edges at `gold-anchor`, falling to it at zero alpha toward the middle where the `gold-wash` floor takes over | Every home section, and every full-bleed offer panel — it is what makes the seams continuous |
 | `.gold-field-chrome-top` / `-bottom` | The same field with that one edge ending on `gold-chrome` instead, and — on the top variant — held flat for the header's height before the ramp starts | The hero (top) and the closing section (bottom) only: the two edges that meet a chrome bar rather than another section |
 | `.gold-field-open-top` | The same field with its top edge painting nothing at all | A section or panel whose top opens onto its own section's floor rather than onto another field edge — the first offer panel only |
@@ -896,14 +827,10 @@ section. Nothing else may put a gradient or texture on a ground:
 | `.plaster-light` | Soft pool of `plaster-bright` | Behind the About scenes and the finale mosaic |
 | `.print-shadow` | Soft `pine-950` drop shadow | Under framed prints on plaster; the raised state of interactive cards (open accordion, hovered contact card) |
 
-**Environment photographs.** This rule governs a photograph used as
-*atmosphere* under a dark ground, and it no longer governs the site's grounds:
-a `.photo-ground` is the substrate, opaque and unfiltered, and the travelling
-ground under "What we do" left this rule when it stopped being a texture (see
-the flat-colour pass). Where it still applies, a dark stretch may sink one of
-our own photographs into its ground as atmosphere: blurred (≥ 14px),
-desaturated, darkened, at ≤ 20% opacity — the home hero's backdrop is the one
-sanctioned exception, see below — and masked so it dissolves into pure `pine-950`
+**Environment photographs.** A dark stretch may sink one of our own
+photographs into its ground as atmosphere: blurred (≥ 14px), desaturated,
+darkened, at ≤ 20% opacity — the home hero's backdrop is the one sanctioned
+exception, see below — and masked so it dissolves into pure `pine-950`
 at both ends of its stretch — it never touches a seam, and is felt more
 than seen. The home page carries
 two: the forest canopy behind the "What we do" clearing, and a faint band of
@@ -1146,9 +1073,10 @@ Rules, in order of precedence:
 **"What we do" stands on photographic ground, not on flat gold.** The hero's
 card dissolves its picture into the gold at its foot; below the seam the
 section used to be colour and nothing else, so the eye read one world ending
-and a flat field beginning. `IMG_4585` — hikers on a path above a valley, the
-frame in the set with the most incident and the least empty sky — sits behind
-the block and moves at a fraction of the page's rate. Depth is **0.30** on desktop
+and a flat field beginning. `hero-2.jpg` — the tree-lined road from the same
+walk as the hero slides, the only photograph in the graded set that is
+landscape, has real depth and carries no readable faces — now sits behind the
+block and moves at a fraction of the page's rate. Depth is **0.30** on desktop
 and **0.18** on a phone, measured over the block's own traversal rather than
 the document's, and centred on it, so the plate's travel is symmetric.
 
@@ -1171,15 +1099,14 @@ overhang **96px**, never exposed. Both seams are untouched — hero → section 
 ground → first panel measure **3** and **2** at both viewports, identical with
 the layer present and absent.
 
-**The blur is gone, and with it the construction that paid for it.** The plate
-used to be rasterized at a quarter size and magnified back by four, because a
-blur's cost is the area it rasterizes and at 1440 this plate is ~1584×1942:
-applied at full size, `blur(16px)` put 66 of 145 frames over 24ms through the
-section. There is nothing to blur now — the layer runs at **0.85 opacity, no
-blur, `saturate(0.9)`** — so the quarter-size box would only be throwing three
-quarters of the resolution away. The plate is drawn at full size, and the
-frame cost of a plain `object-cover` image under a transform is not the cost a
-large-area blur was.
+**Blur is priced by area, not by radius, and that decided the construction.**
+At 1440 this plate is ~1584×1942. Applied at full size, `blur(16px)` put **66
+of 145 frames over 24ms** with a 50ms p95 through the section; `blur(4px)` still
+put 54 there. Blurring a quarter-size box and scaling it back by 4 gives the
+identical 16px result off a sixteenth of the pixels: **10 of 180 frames**,
+against **9 of 178** for the same page with the layer removed. The globe, which
+shares this zone, is no longer the cost it once was — measured with and without
+its canvas, the difference through the section is inside the noise.
 
 **The lift's falloff is separable, and that is measured rather than
 stylistic.** A radial's alpha at the *corners* of a wide block of type is far
@@ -1223,17 +1150,17 @@ mid-tones barely move the gold, but its deepest shadows still pulled the ground
 under 17px `ink-soft`, which starts with only 5.62 on bare gold and has nothing
 to give.
 
-**This plate used to be capped by the environment-photograph rule, and no
-longer is.** Measured in the section's right third with the globe and every
-text box carved out — 150k pixels of pure ground at 1440 — the old layer
-rendered at **7%** of what the picture measures through nothing (RMS 0.144
-against 2.070), and turning the pools off moved it only to 0.149. The gap was
-the rule itself: 20% opacity, 16px of blur, `saturate(0.45)` and a black-point
-lift, written for a photograph sunk into a dark ground as atmosphere. Applied
-to a *ground*, it produced a texture nobody could see and a section that still
-read as flat gold. The rule does not govern here: this is the substrate, and it
-runs at 0.85 with no blur. What carries the lead's 4.5 is the capped pool over
-the block and the framing under it, not a ceiling on the picture.
+**This plate's strength is capped by what it is, not by the pools over it.**
+Measured in the section's right third with the globe and every text box carved
+out — 150k pixels of pure ground at 1440 — the layer renders at **7%** of what
+the ungraded `hero-2` measures through nothing (RMS 0.144 against 2.070), and
+turning the pools off entirely moves it to 0.149. The gap is the
+environment-photograph rule itself: 20% opacity, 16px of blur, `saturate(0.45)`
+and the black-point lift, which are what let a photograph sit under body copy on
+gold at all. So the travelling ground is the one photographic surface on the
+page that cannot be brought toward full strength — the ceiling is the rule, and
+the rule is what the lead's 4.5 rests on. What the pools *can* give back is the
+margin around the type, and they now do.
 
 Measured at glyph cores on the rendered composite, worst case swept across the
 section's whole traversal at twenty scroll positions, both viewports:
@@ -1245,10 +1172,11 @@ section's whole traversal at twenty scroll positions, both viewports:
 | Stat numerals | `ink` | 3.0 | **7.40–7.47** | **7.45–7.47** |
 | Stat labels | `ink-soft` | 4.5 | **4.60–4.66** | **4.57–4.61** |
 
-The ground no longer shares a variant with the hero slideshow: it is one of the
-Portugal frames (`IMG_4585`, the hikers above the valley) rather than `hero-2`,
-so it is a request of its own. That is the cost of the layer being a picture
-rather than a texture.
+The ground costs **no image bytes**: the plate resolves to the same variant the
+hero slideshow has already fetched for its third slide (`hero-2-1366.avif` at
+390, `hero-2-1536.avif` at 1440) — one request serves both. The whole layer
+adds **~1.1 KB gzipped**: +363 B of HTML, +464 B of CSS, ~+300 B of route JS,
+with First Load JS unchanged.
 
 ## Do / Don't
 

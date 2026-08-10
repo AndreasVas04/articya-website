@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion, useScroll } from "framer-motion";
 import { Award, Compass, HandCoins, Users } from "lucide-react";
-import { GroundLift } from "@/components/ground-parallax";
 import { Reveal } from "@/components/reveal";
 import { cn } from "@/lib/utils";
 
@@ -73,15 +72,10 @@ export function GainTrail({ items }: { items: string[] }) {
             />
             <div
               className={cn(
-                "relative",
                 right ? "md:col-start-2 md:pl-20" : "md:col-start-1 md:pr-20"
               )}
             >
-              {/* One capped pool per station: the stations are spread down a
-                  screen and a half of forest, so a single pool for the section
-                  would either miss them or become the veil the cap forbids. */}
-              <GroundLift />
-              <Reveal delayMs={i * 80} className="relative">
+              <Reveal delayMs={i * 80}>
                 <div
                   className={cn(
                     "flex items-center gap-5",

@@ -55,6 +55,11 @@
   --color-amber-fill: #ce9440;
   --color-amber-lit: #d8a254;
   --color-amber-edge: #b87a28;
+  /* Card and box containers on the gold ground (FAQ accordions, contact
+     channel cards): the wash lifted a half-step toward paper, framed by an
+     amber hairline rather than a grey or green border. */
+  --color-gold-card: #efe1c7;
+
   --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
   --ease-in-out-cubic: cubic-bezier(0.65, 0, 0.35, 1);
 }
@@ -143,94 +148,41 @@ body {
     animation: none;
   }
 }
-/* ---------------------------------------------------------------------------
-   Photographic grounds.
-
-   The ground under a zone is a photograph, not a colour. The layer is opaque
-   and full-bleed, it carries the same whisper grain every other photographic
-   surface on the site carries, and it ends on the zone's own edges — where
-   the next zone's ground begins. Two photographs meeting is an edit, so the
-   join is signed with the chrome's own amber hairline rather than smoothed
-   into a band of colour: a fade between two grounds has to pass through
-   whatever is underneath them, and underneath them is the flat gold this
-   exists to remove.
-
-   One edge is different. The home hero is frozen, and its card dissolves its
-   foot into gold; the ground below it therefore rises *out of* that gold over
-   the same 72/150px the gold field's own ramp takes, so the picture arrives
-   where the hero's dissolve ends instead of cutting across it. */
-.photo-ground {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  z-index: 0;
-  pointer-events: none;
-}
-/* A ground's framing is per viewport, because the same photograph in a wide
-   box and in a tall one lands different bands of itself under the same block
-   of type — and it is the band under the type that decides whether the block
-   is legible. Both values are chosen by measuring the ground behind the words,
-   never by eye. */
-.photo-frame {
-  object-position: 50% var(--frame-y-sm, 50%);
-}
-@media (min-width: 768px) {
-  .photo-frame {
-    object-position: 50% var(--frame-y, 50%);
-  }
-}
-.photo-ground-rise {
-  --rise: 72px;
-  --rise-mask: linear-gradient(
+/* Dissolves a full-bleed photographic frame into the ground at its top and
+   bottom edges. It masks rather than painting cream over the photo: the
+   ground here is the living atmosphere, so a flat repaint lands a shade
+   lighter and cooler than the glow it covers and draws exactly the seam it
+   was meant to hide. Masking resolves to the real ground instead, so the two
+   can never differ. The ramp is eased, not linear — a linear alpha fade
+   leaves a visible kink where it meets the flat ground. */
+.photo-edge-dissolve {
+  --edge: 18%;
+  --edge-mask: linear-gradient(
     to bottom,
-    transparent 0,
-    rgb(0 0 0 / 0.06) calc(var(--rise) * 0.3),
-    rgb(0 0 0 / 0.32) calc(var(--rise) * 0.55),
-    rgb(0 0 0 / 0.72) calc(var(--rise) * 0.78),
-    #000 var(--rise)
+    transparent 0%,
+    rgb(0 0 0 / 0.04) calc(var(--edge) * 0.125),
+    rgb(0 0 0 / 0.16) calc(var(--edge) * 0.25),
+    rgb(0 0 0 / 0.5) calc(var(--edge) * 0.5),
+    rgb(0 0 0 / 0.84) calc(var(--edge) * 0.75),
+    rgb(0 0 0 / 0.96) calc(var(--edge) * 0.875),
+    #000 var(--edge),
+    #000 calc(100% - var(--edge)),
+    rgb(0 0 0 / 0.96) calc(100% - var(--edge) * 0.875),
+    rgb(0 0 0 / 0.84) calc(100% - var(--edge) * 0.75),
+    rgb(0 0 0 / 0.5) calc(100% - var(--edge) * 0.5),
+    rgb(0 0 0 / 0.16) calc(100% - var(--edge) * 0.25),
+    rgb(0 0 0 / 0.04) calc(100% - var(--edge) * 0.125),
+    transparent 100%
   );
-  -webkit-mask-image: var(--rise-mask);
-  mask-image: var(--rise-mask);
-}
-@media (min-width: 768px) {
-  /* A ground's framing is per viewport, because the same photograph in a wide
-   box and in a tall one lands different bands of itself under the same block
-   of type — and it is the band under the type that decides whether the block
-   is legible. Both values are chosen by measuring the ground behind the words,
-   never by eye. */
-.photo-frame {
-  object-position: 50% var(--frame-y-sm, 50%);
-}
-@media (min-width: 768px) {
-  .photo-frame {
-    object-position: 50% var(--frame-y, 50%);
-  }
-}
-.photo-ground-rise {
-    --rise: 150px;
-  }
-}
-/* The signed join between two photographic zones — the same 1.25px amber at
-   0.5 alpha the chrome carries on the edge it shares with the body, doing the
-   same job over the same material. It is drawn in its own absolutely
-   positioned layer rather than as a border so it costs the document no
-   height. */
-.zone-seam {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  height: 1.25px;
-  z-index: 30;
-  background-color: color-mix(in srgb, var(--color-amber) 50%, transparent);
-  pointer-events: none;
+  -webkit-mask-image: var(--edge-mask);
+  mask-image: var(--edge-mask);
 }
 /* The gold every home section stands in. Its top and bottom edges are the
    chrome's own `gold-anchor`, falling to that gold at zero alpha toward the
    middle, where the page's `gold-wash` floor carries the color instead — so
    the section is gold end to end and the living atmosphere still drifts
    through its center. Sitting under every child puts the edges exactly where
-   a panel's edge mask has taken its photograph away, so the gold
+   a panel's `photo-edge-dissolve` has masked its photograph away, so the gold
    reads as the ground the panel dissolves into, never as a tint over the
    picture. Two of these meeting — section to section, or the first and last
    to the header and footer — make one continuous band across the seam, which
@@ -356,7 +308,7 @@ body {
     rgb(0 0 0 / 0.1) calc(100% - var(--intro-fade-x) * 0.3),
     transparent 100%
   );
-  background-color: color-mix(in srgb, var(--color-gold-wash) 55%, transparent);
+  background-color: color-mix(in srgb, var(--color-gold-wash) 60%, transparent);
   -webkit-mask-image: var(--intro-mask-x);
   mask-image: var(--intro-mask-x);
 }
@@ -375,12 +327,11 @@ body {
     --intro-fade-bottom: 48px;
   }
   /* A phone crops the same photograph tighter and lands the statement over
-     busier ground, so the same alpha reads a couple of points of ratio lower
-     there. Both viewports now sit on the 0.55 ceiling — the statement had
-     8.33/6.04 against a 4.5 floor, so it is the one block on the site with
-     enough headroom to give the whole difference back to the picture. */
+     busier ground, so the same alpha reads 2.8 points of ratio lower there.
+     The pool holds its old strength on mobile rather than the desktop value,
+     which keeps the statement at the reading it already had. */
   .hero-photo-lift-pool {
-    background-color: color-mix(in srgb, var(--color-gold-wash) 55%, transparent);
+    background-color: color-mix(in srgb, var(--color-gold-wash) 66%, transparent);
   }
 }
 /* The poster opening's sky lift — the top gold fall that carries the collapsed
@@ -418,8 +369,8 @@ body {
   --sky-fade: 10rem;
   background: linear-gradient(
     to bottom,
-    color-mix(in srgb, var(--color-gold-anchor) 55%, transparent) 0%,
-    color-mix(in srgb, var(--color-gold-anchor) 53%, transparent) 26%,
+    color-mix(in srgb, var(--color-gold-anchor) 56%, transparent) 0%,
+    color-mix(in srgb, var(--color-gold-anchor) 54%, transparent) 26%,
     color-mix(in srgb, var(--color-gold-wash) 40%, transparent) 35%,
     color-mix(in srgb, var(--color-gold-wash) 15%, transparent) 42%,
     var(--color-gold-wash-0) 48%
@@ -446,8 +397,8 @@ body {
     --sky-fade: 6rem;
     background: linear-gradient(
       to bottom,
-      color-mix(in srgb, var(--color-gold-anchor) 55%, transparent) 0%,
-      color-mix(in srgb, var(--color-gold-anchor) 53%, transparent) 26%,
+      color-mix(in srgb, var(--color-gold-anchor) 60%, transparent) 0%,
+      color-mix(in srgb, var(--color-gold-anchor) 58%, transparent) 26%,
       color-mix(in srgb, var(--color-gold-wash) 42%, transparent) 33%,
       color-mix(in srgb, var(--color-gold-wash) 15%, transparent) 38%,
       var(--color-gold-wash-0) 43%
@@ -490,8 +441,7 @@ body {
    hairline, gold frame and drop shadow all ending in the same row with the
    gold floor starting underneath it, which is the one join on this page that
    read as a handover rather than as ground. These masks take that row away
-   instead of painting over it, and for the same reason every edge mask here
-   masks rather than repaints:
+   instead of painting over it — the same reason `.photo-edge-dissolve` masks:
    the ground here is the living atmosphere under the field's own ramp, so a
    flat repaint would land a shade off whatever is really behind and draw back
    the seam it was meant to erase. Masking resolves to the real ground, which
@@ -616,6 +566,27 @@ body {
   --gold-bottom: var(--color-gold-chrome);
   --gold-bottom-0: var(--color-gold-chrome-0);
 }
+/* An edge that opens onto its own section's floor rather than onto another
+   field edge paints nothing at all. The anchor exists so two edges can meet
+   on one value; where there is no second edge — the first offer panel starts
+   partway down the "What we do" section, with the floor above it — the
+   anchor has nothing to meet and lands a step deeper than the ground beside
+   it, drawing a full-width line across the page at the panel's top. Worse,
+   it is opaque, so it also covers the living atmosphere the row above it
+   shows. Painting nothing lets the real ground run straight through the
+   join, and the panel's `photo-edge-dissolve` carries the photograph across
+   it on its own. */
+.gold-field-open-top {
+  --gold-top: transparent;
+  --gold-top-0: transparent;
+}
+/* The floor under a gold field on the inner pages. On home the floor is the
+   living atmosphere behind every section; the inner pages paint it
+   themselves. Declared after .gold-field because the field's background
+   shorthand resets background-color — a utility would lose the same fight. */
+.gold-floor {
+  background-color: var(--color-gold-wash);
+}
 /* The ground under the "What we do" clearing — the hero's world carried on
    below the seam instead of the picture ending and colour beginning. The
    photograph travels at a fraction of the page's rate (see GroundParallax),
@@ -626,18 +597,12 @@ body {
    gold seam above is untouched, the fade-out completes in the empty gap over
    the first offer panel, and the travelling photograph can never bring its
    own edge into view. Eased rather than linear, for the reason
-   every other edge mask here is — a straight alpha ramp leaves a visible kink
+   `.photo-edge-dissolve` is — a straight alpha ramp leaves a visible kink
    where it meets the flat ground. */
-   The layer used to fade out at its lower edge as well, into the gold floor
-   that carried the rest of the page. There is no gold floor left to fade
-   into: the ground now runs opaque to its last row, which is the first offer
-   panel's first row, and the two photographs meet on the amber seam. Only the
-   top still ramps — that edge meets the frozen hero's dissolving foot, which
-   does end on gold. */
 .ground-parallax {
   /* The same length as the gold field's own edge ramp, so the ground arriving
-     and the hero's anchor edge falling to the floor are one event rather than
-     two ramps of different lengths crossing each other. */
+     and the anchor edge falling to the floor are one event rather than two
+     ramps of different lengths crossing each other. */
   --ground-fade: 72px;
   --ground-mask: linear-gradient(
     to bottom,
@@ -646,41 +611,58 @@ body {
     rgb(0 0 0 / 0.32) calc(var(--ground-fade) * 0.55),
     rgb(0 0 0 / 0.72) calc(var(--ground-fade) * 0.78),
     #000 var(--ground-fade),
-    #000 100%
+    #000 calc(100% - var(--ground-fade)),
+    rgb(0 0 0 / 0.72) calc(100% - var(--ground-fade) * 0.78),
+    rgb(0 0 0 / 0.32) calc(100% - var(--ground-fade) * 0.55),
+    rgb(0 0 0 / 0.06) calc(100% - var(--ground-fade) * 0.3),
+    transparent 100%
   );
   -webkit-mask-image: var(--ground-mask);
   mask-image: var(--ground-mask);
 }
 /* The plate that travels. Over-sized well past the block on every side so no
-   edge of it can reach the mask's held middle at any scroll position.
-
-   It used to sit at 20% opacity under 16px of blur at `saturate(0.45)`, with a
-   black-point lift on top — the environment-photograph rule, written for a
-   photograph sunk into a dark ground as atmosphere. Measured through the
-   section, that layer rendered at 7% of what the picture carries on its own:
-   it was a texture nobody could see, and the ground still read as flat gold.
-   It is a ground now, not a whisper — 0.85 opacity, no blur, `saturate(0.9)`
-   — so the picture is simply the picture, and the reading pools over the type
-   do the legibility work they were always doing.
-
-   Dropping the blur also retires the quarter-size raster this layer used to
-   be composed at: that trick existed only to make a large-area blur
-   affordable, and magnifying a quarter-size box by four with nothing to blur
-   it just throws three quarters of the resolution away. The plate is drawn at
-   full size. */
+   edge of it can reach the mask's held middle at any scroll position — the
+   vertical margin covers the travel several times over, and the horizontal
+   one covers the blur, which would otherwise sample transparency and fade
+   the picture's own left and right edges into gold.
+   Blurred and desaturated to the environment-photograph rule, and lifted
+   rather than darkened: this ground is gold, so a photograph sunk into it
+   has to give up its own contrast upward, not down. The `contrast()` below 1
+   is a black-point lift, and it is what the lead's legibility actually turned
+   on: at 20% opacity the picture's mid-tones barely move the gold, but its
+   deepest shadows still pulled the ground under 17px `ink-soft`, which starts
+   with only 5.62 on bare gold and has nothing to give. Raising the pool alone
+   bought +0.2 of ratio between 0.70 and the 0.78 ceiling; capping how dark
+   the photograph may go was the lever that worked. */
 .ground-plate {
   --ground-oversize: 280px;
-  /* Enough that the plate's own left and right edges stay outside the mask's
-     frame at every viewport, so the picture never pales at the window's first
-     and last columns. */
+  /* Wider than the blur's own soft edge: blur(4px) magnified 4x fades over
+     ~48px, and that fade must die outside the mask's frame or the picture
+     pales at the window's first and last columns. */
   --ground-bleed: 96px;
   top: calc(-1 * var(--ground-oversize));
   bottom: calc(-1 * var(--ground-oversize));
   left: calc(-1 * var(--ground-bleed));
   right: calc(-1 * var(--ground-bleed));
-  opacity: 0.85;
-  filter: saturate(0.9);
+  opacity: 0.2;
   will-change: transform;
+}
+/* The blur is rasterized at a quarter size and magnified back by a composited
+   scale, which is the whole reason this layer is affordable. A blur's cost is
+   the area it has to rasterize, and at 1440 this plate is ~1584x1942: measured
+   through the section at natural scroll speed, blur(16px) applied at full size
+   put 66 of 145 frames over 24ms with a 50ms p95, and blur(4px) still put 54
+   there — the radius barely matters, the area is everything. Blurring a
+   quarter-size box and scaling it 4x gives the identical 16px result off 1/16th
+   the pixels: 9 frames of 176, which is the page without this layer at all. */
+.ground-plate-blur {
+  left: 0;
+  top: 0;
+  width: 25%;
+  height: 25%;
+  transform: scale(4);
+  transform-origin: 0 0;
+  filter: blur(4px) saturate(0.45) contrast(0.72) brightness(1.14);
 }
 @media (min-width: 768px) {
   .ground-parallax {
@@ -726,7 +708,7 @@ body {
      the bleed is, so shortening the ramps costs the type nothing and gives the
      photograph back the margins. */
   --lift-bleed-x: 44px;
-  --lift-fade: 56px;
+  --lift-fade: 44px;
   --lift-bleed-top: var(--lift-fade);
   position: absolute;
   left: calc(-1 * var(--lift-bleed-x));
@@ -769,16 +751,10 @@ body {
     --lift-fade: 48px;
   }
 }
-/* 0.55 is the ceiling, and it is a hard one: a reading wash over a photograph
-   may not be stronger than this anywhere on the site, so what the pool can no
-   longer do the composition has to. Two things replaced the strength it gave
-   up. The grounds are chosen and positioned so the calm, light band of each
-   frame — sky, an overcast road, a valley at distance — is the part that falls
-   under a block of type, rather than whatever the crop happened to land there.
-   And secondary body copy over a photographic ground takes `ink` rather than
-   `ink-soft`: at 0.55 over anything but open sky, `ink-soft` cannot reach 4.5
-   arithmetically, while `ink` clears it over ground as dark as ~62/255. That is
-   a colour-role change, and it is the one the ceiling forces. */
+/* 0.62 was the start and it missed: at that strength the lead measured 4.28
+   on a phone against its 4.5 floor. Three 0.04 steps take it to 0.74, still
+   under the 0.78 ceiling, and the plate's black-point lift carries the rest —
+   between them the lead clears with margin instead of sitting on the line. */
 .ground-lift-pool {
   --lift-fade-x: linear-gradient(
     to right,
@@ -793,42 +769,14 @@ body {
     rgb(0 0 0 / 0.1) calc(100% - var(--lift-bleed-x) * 0.3),
     transparent 100%
   );
-  background-color: color-mix(in srgb, var(--color-gold-wash) 55%, transparent);
+  background-color: color-mix(in srgb, var(--color-gold-wash) 74%, transparent);
   -webkit-mask-image: var(--lift-fade-x);
   mask-image: var(--lift-fade-x);
 }
-/* The same pool, held inside a card instead of bleeding around a block. A
-   card on a photographic ground carries no fill: `gold-card` was a flat gold
-   panel 552px wide on the FAQ and 282px on Contact, which is a painted zone
-   however small the radius on it. What is left is the amber frame — an
-   outline earns its place by enclosing — and this pool, soft-edged and inside
-   the frame, carrying the words. `inset: 0` overrides the block variant's
-   negative insets, so the softness is spent within the card rather than on the
-   photograph around it.
-
-   Specificity, not source order: the block variant re-declares its ramps
-   inside a `min-width: 768px` block further down, and a media query carries no
-   specificity of its own — so a plain `.card-lift` later in the file still
-   loses to it on desktop, and the card's 552x140 box ends up entirely ramp
-   with no held region. Measured, that was the difference between an answer
-   reading 6.5 and one reading 2.7. Two classes beat one at any source
-   position. */
-.ground-lift.card-lift {
-  --lift-bleed-x: 22px;
-  --lift-fade: 16px;
-  inset: 0;
-}
-/* Longer ramps than the pool carried at 0.74. The held region is the block
-   whatever the ramp is — the fade length *is* the bleed — so spending more of
-   it costs the type nothing and buys the softness the shorter version could
-   not afford: at 72/44 over a photograph the pool read as a soft-cornered
-   rectangle laid on the picture, which is the panel a local lift exists not to
-   be. At 0.55 the wider footprint is also cheaper than it was, because what it
-   spreads is a third less gold. */
 @media (min-width: 768px) {
   .ground-lift {
-    --lift-bleed-x: 104px;
-    --lift-fade: 68px;
+    --lift-bleed-x: 72px;
+    --lift-fade: 44px;
   }
 }
 /* The offer panels are full-bleed, so their text is inset from the viewport
@@ -927,6 +875,15 @@ body {
   transition:
     opacity 200ms var(--ease-out-quart),
     translate 1200ms var(--ease-out-quart);
+}
+/* A soft pool of late sun where a scene's print and words sit — the same
+   warmth as the home page's drifting amber pools, held still. */
+.gold-pool {
+  background: radial-gradient(
+    ellipse 65% 50% at 50% 42%,
+    color-mix(in srgb, var(--color-amber-soft) 16%, transparent),
+    transparent 72%
+  );
 }
 /* Warm evening shadow: under framed prints on the gold ground, and as the
    raised state of interactive cards (open accordion, hovered contact card)

@@ -1,7 +1,6 @@
 import { Mail } from "lucide-react";
 import { PageHero } from "@/components/page-hero";
 import { Reveal } from "@/components/reveal";
-import { GroundLift, PhotoGround } from "@/components/ground-parallax";
 import { pageMetadata } from "@/lib/metadata";
 import { meta, hero, details } from "@/content/contact";
 
@@ -48,25 +47,16 @@ function ChannelCard({
     <a
       href={href}
       {...(external ? { target: "_blank", rel: "noreferrer" } : {})}
-      className="group relative flex h-full items-center gap-5 rounded-lg border border-amber/55 p-5 transition duration-200 ease-out-quart hover:-translate-y-0.5 hover:border-amber/80 hover:print-shadow md:flex-col md:px-6 md:py-10 md:text-center"
+      className="group flex h-full items-center gap-5 rounded-lg border border-amber/55 bg-gold-card p-5 transition duration-200 ease-out-quart hover:-translate-y-0.5 hover:border-amber/80 hover:print-shadow md:flex-col md:px-6 md:py-10 md:text-center"
     >
-      {/* No fill: `gold-card` was a 282px panel of flat gold on a photographic
-          ground. The amber frame stays and this soft-edged pool inside it
-          carries the words — one wash, at the 0.55 ceiling, never stacked. */}
-      <div
-        aria-hidden="true"
-        className="ground-lift card-lift pointer-events-none rounded-lg"
-      >
-        <div className="ground-lift-pool absolute inset-0" />
-      </div>
       <span
         aria-hidden="true"
-        className="relative flex size-12 shrink-0 items-center justify-center rounded-full border border-pine/30 text-pine transition-colors duration-200 ease-out-quart group-hover:border-resin-deep/50 group-hover:text-resin-deep md:size-14"
+        className="flex size-12 shrink-0 items-center justify-center rounded-full border border-pine/30 text-pine transition-colors duration-200 ease-out-quart group-hover:border-resin-deep/50 group-hover:text-resin-deep md:size-14"
       >
         {icon}
       </span>
-      <span className="relative min-w-0">
-        <span className="block text-[0.8125rem] font-semibold uppercase leading-[1.4] tracking-[0.08em] text-ink md:mt-6">
+      <span className="min-w-0">
+        <span className="block text-[0.8125rem] font-semibold uppercase leading-[1.4] tracking-[0.08em] text-ink-soft md:mt-6">
           {label}
         </span>
         {/* Body weight, not semibold: at 16/600 the value sat 3px from its
@@ -88,13 +78,11 @@ export default function ContactPage() {
     <>
       <PageHero image={hero.image} heading={hero.heading} text={hero.text} />
 
-      <section className="relative overflow-hidden px-4 py-20 md:py-28">
-        <PhotoGround src="/images/pt/IMG_4585.jpg" framing={{ y: 55, ySm: 46 }} />
-        <div className="relative mx-auto max-w-4xl">
-          <Reveal className="relative text-center">
-            <GroundLift />
-            <span aria-hidden="true" className="relative mx-auto block h-[1.25px] w-16 bg-amber" />
-            <h2 className="relative mt-4 font-display text-[clamp(2rem,4vw,3rem)] font-semibold leading-[1.1] tracking-[-0.01em] text-ink">
+      <section className="gold-field gold-field-chrome-bottom gold-floor px-4 py-20 md:py-28">
+        <div className="mx-auto max-w-4xl">
+          <Reveal className="text-center">
+            <span aria-hidden="true" className="mx-auto block h-[1.25px] w-16 bg-amber" />
+            <h2 className="mt-4 font-display text-[clamp(2rem,4vw,3rem)] font-semibold leading-[1.1] tracking-[-0.01em] text-ink">
               {details.heading}
             </h2>
           </Reveal>

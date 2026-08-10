@@ -9,8 +9,7 @@ import {
   useTransform,
 } from "framer-motion";
 import { ResponsiveImage } from "@/components/responsive-image";
-import { GroundLift, PhotoGround } from "@/components/ground-parallax";
-import { cn, type Framing } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 const easeInOutCubic = cubicBezier(0.65, 0, 0.35, 1);
 
@@ -41,10 +40,8 @@ interface SceneImage {
 interface StorySceneProps {
   groups: string[];
   image: SceneImage;
-  /** The scene's own photographic ground, and where the frame sits behind it. */
-  ground: string;
-  groundFraming?: Framing;
   flip?: boolean;
+  muted?: boolean;
 }
 
 // One scene of the About story: a daylight sibling of the home offer panel.
@@ -58,9 +55,8 @@ interface StorySceneProps {
 export function StoryScene({
   groups,
   image,
-  ground,
-  groundFraming,
   flip = false,
+  muted = false,
 }: StorySceneProps) {
   const ref = useRef<HTMLElement | null>(null);
   const textRef = useRef<HTMLDivElement | null>(null);
@@ -132,23 +128,18 @@ export function StoryScene({
       ref={ref}
       className={cn(
         "relative",
+        muted ? "bg-gold-anchor" : "bg-gold-chrome",
         active && (groups.length > 1 ? "h-[170svh] md:h-[190svh]" : "h-[150svh] md:h-[160svh]")
       )}
     >
-      {/* The join with the scene above, signed. The scenes used to alternate
-          between two flat golds — chrome and anchor bands — which is what made
-          the page read as painted zones with prints hung on them. */}
-      <span aria-hidden="true" className="zone-seam" />
       <div
         className={cn(
           "relative overflow-hidden",
           active ? "sticky top-0 flex h-svh items-center" : "py-16 md:py-24"
         )}
       >
-        {/* The scene stands in the place it is describing. The ground rides
-            the pinned frame rather than the taller section, so it holds still
-            behind the print for the whole beat instead of sliding through it. */}
-        <PhotoGround src={ground} framing={groundFraming} />
+        {/* A soft pool of late sun where the print and its words sit. */}
+        <div aria-hidden="true" className="gold-pool absolute inset-0" />
         <div className="relative mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-8 px-4 md:grid-cols-12 md:gap-x-0">
           <motion.div
             className={cn(
@@ -188,7 +179,6 @@ export function StoryScene({
           <div
             ref={textRef}
             className={cn(
-              "relative",
               image.wide ? "md:col-span-5" : "md:col-span-6",
               flip
                 ? "md:col-start-1 md:row-start-1"
@@ -197,12 +187,9 @@ export function StoryScene({
                   : "md:col-start-7"
             )}
           >
-            {/* One reading pool per block, capped at 0.55 — never stacked
-                with another wash, which is what the cap means. */}
-            <GroundLift />
             <span
               aria-hidden="true"
-              className="relative block h-[1.25px] w-16 origin-left bg-amber"
+              className="block h-[1.25px] w-16 origin-left bg-amber"
               style={enter(0, DRAW)}
             />
             {/* The paragraph lifts as one block and its groups light up
@@ -210,7 +197,7 @@ export function StoryScene({
                 nothing, and making the spans inline-block to earn one would
                 stop them wrapping across lines. */}
             <p
-              className="relative mt-6 leading-[1.7] text-ink md:mt-8 md:text-xl md:leading-[1.55]"
+              className="mt-6 leading-[1.7] text-ink md:mt-8 md:text-xl md:leading-[1.55]"
               style={enter(1, RISE)}
             >
               {groups.map((group, i) => (

@@ -1,60 +1,8 @@
 "use client";
 
-import { useEffect, useRef, type CSSProperties } from "react";
+import { useEffect, useRef } from "react";
 import { ResponsiveImage } from "@/components/responsive-image";
-import { cn, framingVars, type Framing } from "@/lib/utils";
-
-// The photographic ground a zone stands on. Opaque, full-bleed, edge to edge:
-// it is the substrate, not a texture over one, so it carries no opacity cap
-// and no blur — only the same whisper grain every other photographic surface
-// on the site carries.
-//
-// `position` is the whole art direction. These frames are portrait and the
-// zones they fill are wider than they are tall on a desktop, so `object-cover`
-// keeps the full width and chooses which band of the picture survives. That
-// choice is not decorative: it decides what falls under the type, and the
-// reading pool is capped at 0.55, so a block of body copy is legible only over
-// the calm light band of a frame — sky, an overcast road, a valley at
-// distance. Every value here was set by measuring the composite at the glyphs,
-// not by eye.
-//
-// `rise` fades the ground in over its first 72/150px. Exactly one edge on the
-// site needs it: the one under the frozen home hero, whose card dissolves its
-// foot into gold.
-export function PhotoGround({
-  src,
-  framing,
-  rise = false,
-  className,
-  style,
-  priority = false,
-}: {
-  src: string;
-  framing?: Framing;
-  rise?: boolean;
-  className?: string;
-  style?: CSSProperties;
-  priority?: boolean;
-}) {
-  return (
-    <div
-      aria-hidden="true"
-      className={cn("photo-ground", rise && "photo-ground-rise", className)}
-      style={style}
-    >
-      <ResponsiveImage
-        src={src}
-        alt=""
-        fill
-        priority={priority}
-        sizes="100vw"
-        className="photo-frame object-cover"
-        style={framingVars(framing)}
-      />
-      <div className="film-grain absolute inset-0 mix-blend-multiply" />
-    </div>
-  );
-}
+import { cn } from "@/lib/utils";
 
 // The gold a block of type stands on once there is a photograph under it.
 // Two nested boxes because the pool's falloff is the product of a fade across
@@ -87,13 +35,7 @@ const DEPTH_MOBILE = 0.18;
 // pure function of `window.scrollY` — the listener is passive, it only ever
 // coalesces into one rAF, and that frame writes a single transform. If the
 // visitor never scrolls, nothing runs.
-export function GroundParallax({
-  src,
-  framing,
-}: {
-  src: string;
-  framing?: Framing;
-}) {
+export function GroundParallax({ src }: { src: string }) {
   const sceneRef = useRef<HTMLDivElement | null>(null);
   const plateRef = useRef<HTMLDivElement | null>(null);
 
@@ -161,21 +103,16 @@ export function GroundParallax({
     >
       {/* The mask is fixed to the block while the plate moves inside it, so
           the photograph's own edge can never travel into view — what fades is
-          always the first rows of the section, where the hero's gold ends. */}
+          always the same two rows of the section. */}
       <div className="ground-parallax absolute inset-0 overflow-hidden">
-        {/* No blur box any more: with the blur gone there is nothing for a
-            quarter-size raster to save, and magnifying one by four would only
-            throw the resolution away. The plate is the picture at full size. */}
+        {/* The blur lives on the inner box, which is a quarter of the plate
+            and scaled back up — see the class, it is what keeps this layer off
+            the frame budget. Sizing stays in CSS so a utility and the rule can
+            never disagree about it. */}
         <div ref={plateRef} className="ground-plate absolute">
-          <ResponsiveImage
-            src={src}
-            alt=""
-            fill
-            sizes="100vw"
-            className="photo-frame object-cover"
-            style={framingVars(framing)}
-          />
-          <div className="film-grain absolute inset-0 mix-blend-multiply" />
+          <div className="ground-plate-blur absolute">
+            <ResponsiveImage src={src} alt="" fill sizes="100vw" />
+          </div>
         </div>
       </div>
     </div>

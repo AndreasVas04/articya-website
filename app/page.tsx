@@ -5,7 +5,7 @@ import { StageScene } from "@/components/stage-entrance";
 import { LivingAtmosphere } from "@/components/living-atmosphere";
 import { OfferPanel } from "@/components/offer-panel";
 import { GainTrail } from "@/components/gain-trail";
-import { GroundLift, GroundParallax, PhotoGround } from "@/components/ground-parallax";
+import { GroundLift, GroundParallax } from "@/components/ground-parallax";
 import { DottedGlobe } from "@/components/ui/dotted-globe";
 import { LampCta } from "@/components/ui/lamp";
 import { ButtonLink } from "@/components/ui/button";
@@ -86,7 +86,7 @@ export default function HomePage() {
 
         {/* overflow-clip (not hidden) so the offer panels' sticky frames can
             pin against the viewport. */}
-        <section className="relative overflow-clip text-ink">
+        <section className="gold-field relative overflow-clip text-ink">
           {/* No top padding on either viewport. Mobile spends the lever on
               the fold decision — the accent rule sits on the section's own
               top edge, exactly at the fold. Desktop used to keep pt-24, but
@@ -119,10 +119,7 @@ export default function HomePage() {
               the scene has to reach the section's own edges, and the stage
               below it is held in the content column. */}
           <div className="relative">
-            <GroundParallax
-              src="/images/pt/IMG_4585.jpg"
-              framing={{ y: 32, ySm: 62 }}
-            />
+            <GroundParallax src="/images/hero-2.jpg" />
             <StageScene
               fireMargin="-30%"
               className="relative mx-auto max-w-6xl px-4 xl:max-w-[min(84rem,92vw)]"
@@ -155,7 +152,7 @@ export default function HomePage() {
                       className="stage-rise"
                       style={{ transitionDelay: "250ms" }}
                     >
-                      <p className="mt-2 border-l border-hairline pl-5 text-[1.0625rem] leading-[1.5] text-ink md:mt-8 md:text-xl md:leading-[1.55]">
+                      <p className="mt-2 border-l border-hairline pl-5 text-[1.0625rem] leading-[1.5] text-ink-soft md:mt-8 md:text-xl md:leading-[1.55]">
                         {whatWeDo.lead}
                       </p>
                     </div>
@@ -216,6 +213,7 @@ export default function HomePage() {
                 text={card.text}
                 icon={offerIcons[i] ?? "globe"}
                 flip={i % 2 === 1}
+                openTop={i === 0}
               />
             ))}
           </div>
@@ -231,22 +229,14 @@ export default function HomePage() {
             beat on top of a gap the panel had already opened — 113px from the
             last line of the panel to this heading. The accent rule sits on the
             section's top edge instead and the join reads as one beat. */}
-        <section className="relative overflow-hidden px-4 text-ink md:pt-32">
-          {/* The trail walks a path climbing through the forest — the ground
-              is the picture of the thing the stations describe. This is the
-              one zone on the site carrying no body copy at all: every string
-              in it is display type against a 3.0 floor, which is what lets the
-              darkest frame in the set stand under it. */}
-          <PhotoGround src="/images/pt/IMG_4599.jpg" framing={{ y: 92, ySm: 92 }} />
-          <span aria-hidden="true" className="zone-seam" />
+        <section className="gold-field relative px-4 text-ink md:pt-32">
           <div className="relative mx-auto max-w-6xl">
-            <Reveal className="relative text-center">
-              <GroundLift />
+            <Reveal className="text-center">
               <span
                 aria-hidden="true"
-                className="relative mx-auto block h-[1.25px] w-16 bg-amber"
+                className="mx-auto block h-[1.25px] w-16 bg-amber"
               />
-              <h2 className="relative mt-3 font-display text-[clamp(2rem,4vw,3rem)] font-semibold leading-[1.1] tracking-[-0.01em]">
+              <h2 className="mt-3 font-display text-[clamp(2rem,4vw,3rem)] font-semibold leading-[1.1] tracking-[-0.01em]">
                 {gain.title}
               </h2>
             </Reveal>
@@ -265,15 +255,7 @@ export default function HomePage() {
             the ground it has been lighting all page. The headline is the one
             place the accent carries text, so it takes the text-safe amber
             and leaves the bright one to the glow around it. */}
-        <section className="relative overflow-hidden text-ink">
-          {/* The valley at warm light — the last picture of the walk the page
-              has been taking. Its even distant haze is the brightest, calmest
-              ground in the set, which is what the closing paragraph and the
-              accent-coloured headline need: measured across every framing, the
-              road-and-walls frame that stood here put a power line through the
-              headline whichever band it showed. */}
-          <PhotoGround src="/images/pt/IMG_4619.jpg" framing={{ y: 78, ySm: 84 }} />
-          <span aria-hidden="true" className="zone-seam" />
+        <section className="gold-field gold-field-chrome-bottom relative overflow-hidden text-ink">
           <LampCta>
             {/* ink, not ink-soft: this line sits deepest in the pool, where
                 the warm wash measures 4.14 against ink-soft — under AA. */}

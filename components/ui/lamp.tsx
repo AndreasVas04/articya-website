@@ -8,7 +8,6 @@ import {
   useScroll,
   useTransform,
 } from "framer-motion";
-import { GroundLift } from "@/components/ground-parallax";
 import { cn } from "@/lib/utils";
 
 // The light the lamp lays on the ground, anchored to the line and spreading
@@ -302,15 +301,9 @@ export function LampCta({ children, className }: LampCtaProps) {
 
         {/* The words live inside the pool: pulled up so the paragraph sits
             in the pool's upper-to-mid band and the headline in its warm
-            middle, with only the button reaching the dying edge. The lamp's
-            own pool only warms the ground it sits on; the reading pool is a
-            separate, capped layer, and it is what carries the dark ink over
-            the photograph the section now stands on. */}
+            middle, with only the button reaching the dying edge. */}
         <div className="relative z-10 -mt-32 flex w-full flex-col items-center">
-          <GroundLift />
-          <div className="relative flex w-full flex-col items-center">
-            {children}
-          </div>
+          {children}
         </div>
       </div>
     </div>
