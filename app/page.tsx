@@ -17,13 +17,14 @@ const offerIcons = ["globe", "graduation"] as const;
 // gone. Every plate takes the same darkening; the per-plate floors that used
 // to vary it held the middle of each picture down and are gone.
 const plates: StagePlate[] = [
-  // The clearing: the tree-lined road, the hero's own world carried on below
-  // the seam.
-  { src: "/images/hero-2.jpg", position: "50% 42%" },
-  // The panels: the rope, close and quiet, all but out at 0.18.
-  { src: "/images/home-youth.jpg", position: "50% 45%" },
-  // The walk out, and the page closing on the vista it opened on.
-  { src: "/images/hero-1.jpg", position: "50% 62%" },
+  // The clearing: the valley in warm light, the hero's own world carried on
+  // below the seam. Cropped to its top 60% — the lower third is fencing and
+  // roof tiles.
+  { src: "/images/pt/IMG_4619.jpg", position: "50% 42%" },
+  // The panels: the road between stone walls, quiet, all but out at 0.18.
+  { src: "/images/pt/IMG_4582.jpg", position: "50% 45%" },
+  // The village at blue hour, and the page closing on it.
+  { src: "/images/pt/IMG_4739.jpg", position: "50% 55%" },
 ];
 
 // The first hero slide is the LCP; the backdrop reuses the same variant, so

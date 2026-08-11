@@ -5,7 +5,7 @@ export const meta = {
 };
 
 export const hero = {
-  image: "/images/Contact.jpg",
+  image: "/images/hero-1.jpg",
   heading: "Contact",
   text: "If you are interested in Erasmus+ opportunities, collaboration, or have any questions, feel free to get in touch with us.",
 };

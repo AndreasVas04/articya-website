@@ -6,7 +6,7 @@ export const meta = {
 
 export const hero = {
   slides: [
-    "/images/home-hero.jpg",
+    "/images/pt/IMG_4585.jpg",
     "/images/hero-1.jpg",
     "/images/hero-2.jpg",
     "/images/hero-3.jpg",
@@ -28,13 +28,13 @@ export const whatWeDo = {
   cards: [
     {
       badge: "\u{1F30D}",
-      image: "/images/home-youth.jpg",
+      image: "/images/pt/IMG_4599.jpg",
       title: "Youth Exchanges",
       text: "International group experiences for young people aged 13–30 lasting 5 to 21 days. Participate through workshops, cultural activities and shared living experiences. No prior experience needed. Travel, accommodation and meals are fully covered. Receive a Youthpass certificate recognizing your learning.",
     },
     {
       badge: "\u{1F393}",
-      image: "/images/FAQ.jpg",
+      image: "/images/pt/IMG_4721.jpg",
       title: "Training Courses",
       text: "Professional development programs for youth workers aged 18+ with no upper age limit, lasting 2 to 14 days. Focused on skill-building through workshops, simulations and networking opportunities. Open to educators, trainers and young people involved in youth work on topics like inclusion, digital tools and community engagement.",
     },

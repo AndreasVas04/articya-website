@@ -43,9 +43,21 @@ const GROUPS = {
   trail: ["hero-1.jpg", "AboutImage2.jpg", "home-hero.jpg"], // open midday, cool cast, big blue sky
   forest: ["hero-2.jpg", "hero-3.jpg"], // canopy light, deep shadows
   closeup: ["home-youth.jpg", "home-training.jpg"], // washed midday close-ups, already warm
-  office: ["FAQ.jpg", "About.jpg", "Contact.jpg"], // even indoor light, beige on beige
   flash: ["AboutImage1.jpg"], // mixed flash + ambient interior
 };
+
+// Shots that go through the variant pipeline without a grade: they are resized
+// and encoded from their own pixels and nothing else. A group name here is not
+// a look, it is the absence of one — `gradeToRaw` returns these untouched.
+const UNGRADED = [
+  "pt/IMG_4585.jpg",
+  "pt/IMG_4619.jpg",
+  "pt/IMG_4582.jpg",
+  "pt/IMG_4739.jpg",
+  "pt/IMG_4599.jpg",
+  "pt/IMG_4721.jpg",
+  "pt/IMG_4735.jpg",
+];
 
 // ---------------------------------------------------------------------------
 // The three candidate grades. Each is a point of view, not an intensity.
@@ -805,7 +817,7 @@ function lumaStats(data, n) {
 // as high as they'll go, cheapest first.
 const QUALITY_FLOOR = 88;
 const QUALITY_CAP = 95;
-const HOME_SET = new Set(["hero-1.jpg", "hero-2.jpg", "hero-3.jpg", "home-youth.jpg", "FAQ.jpg"]);
+const HOME_SET = new Set(["hero-1.jpg", "hero-2.jpg", "hero-3.jpg", "home-youth.jpg"]);
 const BUDGETS = { home: 4.8e6, all: 12.5e6 }; // bytes
 
 async function allocateQualities(items, encodeAt) {
@@ -870,7 +882,9 @@ for (const [group, files] of Object.entries(GROUPS)) {
   for (const file of files) FILE_GROUP[file] = group;
 }
 
-export const gradedFiles = Object.keys(FILE_GROUP);
+// Everything the variant pipeline emits: the graded set plus the ungraded one.
+// `gradeToRaw` is what tells them apart, so callers need no special case.
+export const gradedFiles = [...Object.keys(FILE_GROUP), ...UNGRADED];
 export const productionStrength = STRENGTHS.target;
 
 // Grade one source file (from _originals) to raw 8-bit RGB pixels, exactly as
@@ -881,10 +895,17 @@ export const productionStrength = STRENGTHS.target;
 // bake it, see responsive-images.mjs).
 export async function gradeToRaw(file, strength = STRENGTHS.target) {
   const group = FILE_GROUP[file];
-  if (!group) throw new Error(`No grade group for "${file}"`);
-  const params = GRADES[PRODUCTION_GRADE](strength)[group];
+  if (!group && !UNGRADED.includes(file)) throw new Error(`No grade group for "${file}"`);
   const srcPath = path.join(SRC, file);
   const meta = await sharp(srcPath).metadata();
+
+  // The ungraded set: decoded and handed straight back, no curve, no dither.
+  if (!group) {
+    const { data, info } = await sharp(srcPath).raw().toBuffer({ resolveWithObject: true });
+    return { out8: data, width: info.width, height: info.height, orientation: meta.orientation };
+  }
+
+  const params = GRADES[PRODUCTION_GRADE](strength)[group];
   const { data, info } = await sharp(srcPath).raw().toBuffer({ resolveWithObject: true });
   const n = info.width * info.height;
   const graded = new Float32Array(n * 3);

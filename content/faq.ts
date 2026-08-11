@@ -15,7 +15,7 @@ export const meta = {
 };
 
 export const hero = {
-  image: "/images/FAQ.jpg",
+  image: "/images/hero-2.jpg",
   heading: "Frequently Asked Questions",
   text: "Here you can find answers to the most common questions about Erasmus+ opportunities and participation with ArtiCYa.",
 };
