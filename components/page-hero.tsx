@@ -61,7 +61,7 @@ export function PageHero({ image, heading, text }: PageHeroProps) {
           still ends on photograph. Full width, top to bottom — no shape. */}
       <div
         aria-hidden="true"
-        className="plate-shade pointer-events-none absolute inset-0 [--shade-bottom:48%] [--shade-mid:16%] [--shade-mid-from:30%] [--shade-mid-to:78%] [--shade-top:62%]"
+        className="plate-shade pointer-events-none absolute inset-0 [--shade-bottom:48%] [--shade-mid:45%] [--shade-mid-from:30%] [--shade-mid-to:78%] [--shade-top:62%]"
       />
 
       {/* The centred type — heading and lede over the photograph. The block

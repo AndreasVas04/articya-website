@@ -47,7 +47,7 @@ function ChannelCard({
     <a
       href={href}
       {...(external ? { target: "_blank", rel: "noreferrer" } : {})}
-      className="group flex h-full items-center gap-5 rounded-lg border border-amber/55 bg-gold-card p-5 transition duration-200 ease-out-quart hover:-translate-y-0.5 hover:border-amber/80 hover:print-shadow md:flex-col md:px-6 md:py-10 md:text-center"
+      className="group flex h-full items-center gap-5 py-6 transition-colors duration-200 ease-out-quart md:flex-col md:py-10 md:text-center"
     >
       <span
         aria-hidden="true"
@@ -86,7 +86,10 @@ export default function ContactPage() {
               {details.heading}
             </h2>
           </Reveal>
-          <div className="mt-12 grid grid-cols-1 gap-4 md:mt-16 md:grid-cols-3 md:gap-6">
+          {/* No fills: the three channels are separated by one amber
+              hairline — horizontal between the stacked rows on mobile,
+              vertical between the columns on desktop. */}
+          <div className="mt-12 grid grid-cols-1 divide-y-[1.25px] divide-amber/34 md:mt-16 md:grid-cols-3 md:divide-x-[1.25px] md:divide-y-0">
             <Reveal delayMs={100}>
               <ChannelCard
                 icon={<Mail className="size-5" strokeWidth={1.5} />}

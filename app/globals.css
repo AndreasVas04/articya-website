@@ -99,21 +99,28 @@ body {
 
    `gold-anchor` rather than black: the page's own deepest ground, so a
    darkened picture and the ground beside it are the same colour family. */
-.plate-shade {
-  --shade-top: 84%;
-  --shade-mid: 16%;
-  --shade-bottom: 72%;
-  --shade-mid-from: 42%;
-  --shade-mid-to: 64%;
-  background: linear-gradient(
-    to bottom,
-    color-mix(in srgb, var(--color-gold-anchor) var(--shade-top), transparent) 0%,
-    color-mix(in srgb, var(--color-gold-anchor) var(--shade-mid), transparent)
-      var(--shade-mid-from),
-    color-mix(in srgb, var(--color-gold-anchor) var(--shade-mid), transparent)
-      var(--shade-mid-to),
-    color-mix(in srgb, var(--color-gold-anchor) var(--shade-bottom), transparent) 100%
-  );
+/* Declared in `components` rather than unlayered, and that is load-bearing:
+   every use tunes this through `[--shade-*]` utilities, and an unlayered rule
+   beats a layered utility at equal specificity. Unlayered, the defaults below
+   silently won and all three plates rendered the same shade no matter what
+   their call sites asked for. */
+@layer components {
+  .plate-shade {
+    --shade-top: 84%;
+    --shade-mid: 16%;
+    --shade-bottom: 72%;
+    --shade-mid-from: 42%;
+    --shade-mid-to: 64%;
+    background: linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--color-gold-anchor) var(--shade-top), transparent) 0%,
+      color-mix(in srgb, var(--color-gold-anchor) var(--shade-mid), transparent)
+        var(--shade-mid-from),
+      color-mix(in srgb, var(--color-gold-anchor) var(--shade-mid), transparent)
+        var(--shade-mid-to),
+      color-mix(in srgb, var(--color-gold-anchor) var(--shade-bottom), transparent) 100%
+    );
+  }
 }
 
 /* The chrome carries no bar, so what keeps a cream nav label off the picture —
@@ -309,6 +316,97 @@ body {
 @media (min-width: 1280px) {
   .offer-panel-inset {
     padding-inline: clamp(5rem, 10.42vw - 60px, 10rem);
+  }
+}
+
+/* The offer panels' photograph as an object on the ground: the outline is
+   drawn inset so it lands on the picture's own last row rather than outside
+   it, and the shadow is long and soft enough to read as the floor receiving
+   the picture rather than as a border with a blur on it. */
+.offer-panel-photo {
+  outline: 1.25px solid color-mix(in srgb, var(--color-amber) 34%, transparent);
+  outline-offset: -1.25px;
+  box-shadow: 0 40px 90px rgba(0, 0, 0, 0.55);
+}
+
+/* A section's number, set as pseudo-content so not one character of it enters
+   the DOM — the site's visible text is frozen, and this is a mark rather than
+   a string. It sits behind its heading at cream 7.5%, which is low enough to
+   read as the ground remembering a number and never as a second headline. */
+.ghost-numeral {
+  /* Contains the -1 so the numeral sits behind its own heading and never
+     drops behind the page's photographic stage. */
+  isolation: isolate;
+}
+.ghost-numeral::before {
+  content: var(--ghost-num, "");
+  position: absolute;
+  left: -0.06em;
+  top: -0.42em;
+  z-index: -1;
+  pointer-events: none;
+  font-size: clamp(6rem, 15vw, 13rem);
+  font-weight: 700;
+  line-height: 1;
+  color: color-mix(in srgb, var(--color-ink) 7.5%, transparent);
+}
+
+/* "What you gain" — one photograph doing both jobs. The right half is the
+   picture sharp; the left half is the same picture thrown far out of focus and
+   darkened, and the words stand on that. It is never a flat colour over a
+   photograph, and it is not a local shape: the defocused copy fills its whole
+   column, edge to edge, so there is no soft-edged patch anywhere in it.
+   The blur box is inset -50px so the radius has real pixels to pull from
+   outside the column and the blur never thins toward the edges. */
+.gain-split-blur {
+  position: absolute;
+  inset: -50px;
+  filter: blur(28px) brightness(0.4) saturate(0.8);
+}
+.gain-split {
+  outline: 1.25px solid color-mix(in srgb, var(--color-amber) 30%, transparent);
+  outline-offset: -1.25px;
+  min-height: 66svh;
+}
+
+/* Edge furniture — the wordmark down the left edge and the section index down
+   the right. Desktop only: below 860px the screen is the content and there is
+   no margin to stand anything in. Both are fixed, vertically centred and
+   inert, so they never take a tap or a scroll. */
+.edge-furniture {
+  display: none;
+}
+@media (min-width: 860px) {
+  .edge-furniture {
+    display: block;
+    position: fixed;
+    top: 50%;
+    translate: 0 -50%;
+    z-index: 20;
+    pointer-events: none;
+  }
+  .edge-furniture::before,
+  .edge-index li::before {
+    content: var(--edge-text, "");
+  }
+  .edge-wordmark {
+    left: 1.6rem;
+    writing-mode: vertical-rl;
+    letter-spacing: 0.34em;
+    font-size: clamp(1.4rem, 2.4vw, 2.2rem);
+    color: color-mix(in srgb, var(--color-ink) 10%, transparent);
+  }
+  .edge-index {
+    right: 1.6rem;
+    font-size: 0.66rem;
+    letter-spacing: 0.14em;
+    color: color-mix(in srgb, var(--color-ink) 30%, transparent);
+  }
+  .edge-index li + li {
+    margin-top: 0.9rem;
+  }
+  .edge-index [data-on] {
+    color: var(--color-amber);
   }
 }
 

@@ -1,28 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState, type CSSProperties } from "react";
-import {
-  cubicBezier,
-  motion,
-  useReducedMotion,
-  useScroll,
-  useTransform,
-} from "framer-motion";
+import { useReducedMotion } from "framer-motion";
 import { Globe, GraduationCap } from "lucide-react";
+import { ResponsiveImage } from "@/components/responsive-image";
 import { cn } from "@/lib/utils";
 
 // Icons live here because component references can't cross the
 // server/client boundary as props.
 const icons = { globe: Globe, graduation: GraduationCap };
-
-const easeInOutCubic = cubicBezier(0.65, 0, 0.35, 1);
-
-// Eased 0→1 over a slice of the pinned scroll. Computed transforms are used
-// throughout (rather than useTransform's range form) because the range form
-// gets promoted to a native view-timeline animation, which measures element
-// visibility instead of pin progress inside a sticky frame.
-const stageWindow = (value: number, from: number, to: number) =>
-  easeInOutCubic(Math.min(Math.max((value - from) / (to - from), 0), 1));
 
 // Text plays on the clock, never on the scrollbar. Scrubbed by pin progress
 // a real flick collapses the whole entrance into a couple of frames and the
@@ -36,24 +22,36 @@ const RISE: CSSProperties = { translate: "0 40px" };
 const FADE: CSSProperties = { opacity: 0 };
 const DRAW: CSSProperties = { scale: "0 1" };
 
+// How wide the photograph renders, so the browser fetches that width and no
+// more: 42% of the container up to 520px on desktop, a stacked block below it.
+const PHOTO_SIZES = "(min-width: 768px) min(42vw, 520px), 72vw";
+
 interface OfferPanelProps {
   title: string;
   text: string;
+  image: string;
+  index: number;
   icon: keyof typeof icons;
   flip?: boolean;
 }
 
-// A full-bleed panel staged as a pinned scroll beat. It carries no ground of
-// its own: the page's photographic stage runs behind it and drops to a quiet
-// 0.18 through the pin, so the panel reads as the world going still while the
-// words are spoken rather than as a band with edges. The frame sticks while
-// the reader scrolls through it; the words fire once on the first in-view
+// A panel staged as a pinned scroll beat: text on one side, a floating
+// photograph on the other, and the two sides swap between the two panels.
+//
+// The photograph used to be the whole panel — full-bleed, edge to edge, with
+// the words laid over it. It is an object now, sized and framed, standing on
+// the page's own quiet ground with empty floor all around it. That emptiness
+// is the point: the stage drops to 0.18 through the pin, so what the reader
+// sees is a dark room with one lit picture in it. The frame sticks while the
+// reader scrolls through it; the words fire once on the first in-view
 // crossing and play on the clock. Before mount and under reduced motion the
 // panel renders unpinned with everything visible, so the exported HTML is the
 // resting state.
 export function OfferPanel({
   title,
   text,
+  image,
+  index,
   icon,
   flip = false,
 }: OfferPanelProps) {
@@ -83,19 +81,6 @@ export function OfferPanel({
     return () => observer.disconnect();
   }, [entered]);
 
-  // Pin progress: the panel's own sticky stretch, which the icon reads off.
-  // The photo drift that used to need a second, whole-traversal scale is gone
-  // with the panel's photograph — the stage carries the picture now.
-  const { scrollYProgress: stage } = useScroll({
-    target: ref,
-    offset: ["start start", "end end"],
-  });
-
-  const iconOpacity = useTransform(() => stageWindow(stage.get(), 0.07, 0.17));
-  const iconY = useTransform(
-    () => 24 * (1 - stageWindow(stage.get(), 0.07, 0.17))
-  );
-
   const Icon = icons[icon];
   const active = mounted && !reducedMotion;
 
@@ -124,6 +109,7 @@ export function OfferPanel({
   return (
     <section
       ref={ref}
+      data-index-section=""
       data-stage-plate="1"
       data-stage-strength="0.18"
       className={cn("relative", active && "h-[190svh] md:h-[240svh]")}
@@ -134,55 +120,75 @@ export function OfferPanel({
           active ? "sticky top-0 h-svh" : "min-h-[92svh]"
         )}
       >
-        {/* These panels are full-bleed, so their text tracks the viewport
-            edge rather than the 72rem content column: inside the column a
-            576px block starts 400px in on a 1920 screen and reads as
-            floating toward the middle instead of anchored to its side.
-            `offer-panel-inset` carries the gutter — see globals.css. */}
+        {/* The inset keeps the block off the viewport edge at every width —
+            the photograph is an object on the ground, so it must never run
+            out to the screen's own border. */}
         <div
           className={cn(
-            "offer-panel-inset relative mx-auto flex w-full items-end pb-10 md:items-center md:pb-0",
-            active ? "h-full" : "min-h-[92svh] pt-[46svh] md:py-32"
+            "offer-panel-inset relative mx-auto flex w-full items-center",
+            active ? "h-full" : "min-h-[92svh] py-24 md:py-32"
           )}
         >
           <div
-            ref={textRef}
-            className={cn("relative max-w-xl", flip && "md:ml-auto")}
+            className={cn(
+              "relative flex w-full flex-col items-center gap-12 md:flex-row md:items-center md:gap-[8vw]",
+              flip && "md:flex-row-reverse"
+            )}
           >
-            <div className="relative">
-              <motion.span
-                aria-hidden="true"
-                className="flex size-12 items-center justify-center rounded-full border border-pine/30 bg-gold-wash/70 text-pine backdrop-blur-sm"
-                style={active ? { opacity: iconOpacity, y: iconY } : undefined}
-              >
-                <Icon className="size-6" strokeWidth={1.5} />
-              </motion.span>
-              <h3
-                className="mt-6 font-display text-[clamp(2.3rem,6vw,5rem)] font-semibold leading-[0.94] tracking-[-0.025em] text-ink"
-                style={enter(0, LIFT)}
-              >
-                {title}
-              </h3>
-              <span
-                aria-hidden="true"
-                className="mt-4 block h-[1.25px] w-16 origin-left bg-amber"
-                style={enter(1, DRAW)}
+            <div ref={textRef} className="relative w-full md:flex-1">
+              <div className="relative">
+                <span
+                  aria-hidden="true"
+                  className="flex size-12 items-center justify-center rounded-full border border-pine/30 text-pine"
+                  style={enter(0, FADE)}
+                >
+                  <Icon className="size-6" strokeWidth={1.5} />
+                </span>
+                {/* The ghosted numeral rides the heading as pseudo-content,
+                    so no character of it enters the DOM. */}
+                <h3
+                  className="ghost-numeral relative mt-6 font-display text-[clamp(2.3rem,6vw,5rem)] font-semibold leading-[0.94] tracking-[-0.025em] text-ink"
+                  style={{ ...enter(0, LIFT), "--ghost-num": `"0${index + 1}"` } as CSSProperties}
+                >
+                  {title}
+                </h3>
+                <span
+                  aria-hidden="true"
+                  className="mt-4 block h-[1.25px] w-16 origin-left bg-amber"
+                  style={enter(1, DRAW)}
+                />
+                {/* The paragraph lifts as one block and its sentences light up
+                    inside it: a transform on a non-replaced inline box does
+                    nothing, and making the spans inline-block to earn one would
+                    stop them wrapping across lines. */}
+                <p
+                  className="mt-5 max-w-[44ch] text-[clamp(1rem,1.3vw,1.16rem)] leading-[1.66] text-ink"
+                  style={enter(2, RISE)}
+                >
+                  {groups.map((group, i) => (
+                    <span key={i} style={enter(2 + i, FADE)}>
+                      {group}
+                      {i < groups.length - 1 ? " " : ""}
+                    </span>
+                  ))}
+                </p>
+              </div>
+            </div>
+
+            {/* The photograph: an object with ground around it, not a
+                background. 42% of the container to a 520px cap, 3/4 portrait,
+                a 1.25px amber outline drawn inset so it sits on the picture's
+                own edge, and a long soft shadow seating it on the floor. */}
+            <div
+              className="offer-panel-photo relative w-[72%] max-w-[320px] shrink-0 md:w-[42%] md:max-w-[520px]"
+              style={enter(1, LIFT)}
+            >
+              <ResponsiveImage
+                src={image}
+                alt=""
+                sizes={PHOTO_SIZES}
+                className="block aspect-[3/4] w-full object-cover"
               />
-              {/* The paragraph lifts as one block and its sentences light up
-                  inside it: a transform on a non-replaced inline box does
-                  nothing, and making the spans inline-block to earn one would
-                  stop them wrapping across lines. */}
-              <p
-                className="mt-5 max-w-[44ch] text-[clamp(1rem,1.3vw,1.16rem)] leading-[1.66] text-ink"
-                style={enter(2, RISE)}
-              >
-                {groups.map((group, i) => (
-                  <span key={i} style={enter(2 + i, FADE)}>
-                    {group}
-                    {i < groups.length - 1 ? " " : ""}
-                  </span>
-                ))}
-              </p>
             </div>
           </div>
         </div>

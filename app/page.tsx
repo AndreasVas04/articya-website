@@ -5,11 +5,17 @@ import { StageScene } from "@/components/stage-entrance";
 import { OfferPanel } from "@/components/offer-panel";
 import { GainTrail } from "@/components/gain-trail";
 import { PhotoStage, type StagePlate } from "@/components/photo-stage";
+import { ResponsiveImage } from "@/components/responsive-image";
+import { EdgeWordmark, SectionIndex } from "@/components/edge-furniture";
 import { ButtonLink } from "@/components/ui/button";
 import { imagePreload } from "@/lib/images";
 import { hero, whatWeDo, gain } from "@/content/home";
 
 const offerIcons = ["globe", "graduation"] as const;
+
+// The photograph "What you gain" is built on, sharp one side and defocused
+// under the words on the other.
+const gainImage = "/images/pt/IMG_4735.jpg";
 
 // The three photographs the page stands on, and the only grounds below the
 // hero. Two of them are hero slides the browser has already fetched, so the
@@ -67,6 +73,8 @@ export default function HomePage() {
             before every section in the markup, so paint order alone keeps it
             behind the content and the hero's own stacking is untouched. */}
         <PhotoStage plates={plates} />
+        <EdgeWordmark />
+        <SectionIndex />
 
         <ScrollExpandMedia
           slides={hero.slides}
@@ -121,14 +129,14 @@ export default function HomePage() {
               heading instead of ending at a seam. The plate's own darkening is
               what makes the type readable — the pools that used to sit under
               each block are gone. */}
-          <div className="relative">
+          <div className="relative" data-index-section="">
             <StageScene
               fireMargin="-30%"
               className="relative mx-auto max-w-6xl px-4 xl:max-w-[min(84rem,92vw)]"
             >
               <div
                 data-stage-plate="0"
-                data-stage-strength="0.9"
+                data-stage-strength="0.26"
                 className="relative md:grid md:grid-cols-12 md:items-start md:gap-x-12 xl:gap-x-20"
               >
                 <div className="relative md:col-span-6 md:self-center">
@@ -165,7 +173,7 @@ export default function HomePage() {
                   when it crosses into view — the ledger writes itself. */}
               <div
                 data-stage-plate="0"
-                data-stage-strength="0.9"
+                data-stage-strength="0.22"
                 className="relative mt-2 md:mt-12"
               >
                 <div className="relative grid md:grid-cols-3 md:divide-x md:divide-hairline">
@@ -183,6 +191,17 @@ export default function HomePage() {
             </StageScene>
           </div>
 
+          {/* A breathing zone: no text stands here, so the photograph comes
+              all the way up between two reading passages. It is a measurement
+              marker and nothing else — zero height, so it moves no layout and
+              only tells the stage where the ground is allowed to be loud. */}
+          <div
+            aria-hidden="true"
+            data-stage-plate="0"
+            data-stage-strength="0.92"
+            className="h-0"
+          />
+
           {/* The panels open onto the same ground the stats close on — the
               stage simply goes quiet under them — so this margin is a beat of
               breathing, not a gap between two surfaces. */}
@@ -192,6 +211,8 @@ export default function HomePage() {
                 key={card.title}
                 title={card.title}
                 text={card.text}
+                image={card.image}
+                index={i}
                 icon={offerIcons[i] ?? "globe"}
                 flip={i % 2 === 1}
               />
@@ -210,27 +231,64 @@ export default function HomePage() {
             beat on top of a gap the panel had already opened — 113px from the
             last line of the panel to this heading. The accent rule sits on the
             section's top edge instead and the join reads as one beat. */}
+        {/* Holds the ground quiet until the last panel has actually finished.
+            A zone is keyed at its own middle, so without this the climb toward
+            the next zone starts at the panel's midpoint and runs across the
+            back half of its pin — which put the second panel's prose back on a
+            bright picture. */}
+        <div
+          aria-hidden="true"
+          data-stage-plate="1"
+          data-stage-strength="0.18"
+          className="h-0"
+        />
+
         <section
+          data-index-section=""
           data-stage-plate="2"
-          data-stage-strength="0.55"
+          data-stage-strength="0.3"
           className="relative px-4 text-ink md:pt-32"
         >
-          <div className="relative mx-auto max-w-6xl">
-            <Reveal className="text-center">
-              <span
-                aria-hidden="true"
-                className="mx-auto block h-[1.25px] w-16 bg-amber"
-              />
-              <h2 className="mt-3 font-display text-[clamp(2.3rem,6vw,5rem)] font-semibold leading-[0.94] tracking-[-0.025em]">
-                {gain.title}
-              </h2>
-            </Reveal>
+          {/* One photograph doing both jobs: sharp on the right, thrown out of
+              focus on the left where the words stand. The text ground is the
+              picture itself defocused — never a flat colour over it. */}
+          <div className="gain-split relative mx-auto grid max-w-6xl overflow-hidden md:grid-cols-2">
+            <div className="relative isolate overflow-hidden px-6 py-16 md:px-10 md:py-20">
+              <div aria-hidden="true" className="gain-split-blur -z-10">
+                <ResponsiveImage
+                  src={gainImage}
+                  alt=""
+                  fill
+                  sizes="400px"
+                  className="object-cover"
+                />
+              </div>
+              <Reveal className="text-center">
+                <span
+                  aria-hidden="true"
+                  className="mx-auto block h-[1.25px] w-16 bg-amber"
+                />
+                <h2
+                  className="ghost-numeral relative mt-3 font-display text-[clamp(2.3rem,6vw,5rem)] font-semibold leading-[0.94] tracking-[-0.025em]"
+                  style={{ "--ghost-num": '"03"' } as React.CSSProperties}
+                >
+                  {gain.title}
+                </h2>
+              </Reveal>
 
-            {/* The first station carries its own `py-10` before the node, so
-                on mobile this margin was the second half of a 106px gap
-                between the heading and the first gain. */}
-            <div className="mt-6 md:mt-20">
-              <GainTrail items={gain.items} />
+              <div className="mt-6 md:mt-10">
+                <GainTrail items={gain.items} />
+              </div>
+            </div>
+
+            <div className="relative min-h-[52svh] md:min-h-0">
+              <ResponsiveImage
+                src={gainImage}
+                alt=""
+                fill
+                sizes="(min-width: 768px) 50vw, 100vw"
+                className="object-cover"
+              />
             </div>
           </div>
         </section>
@@ -241,9 +299,22 @@ export default function HomePage() {
             section is actually for is three pieces of type. They stand on the
             plate itself, and the closing line keeps the one place the accent
             carries text. */}
-        <section
+        {/* The second breathing zone, and it lands here because "What you
+            gain" carries its own ground: its words stand on the defocused half
+            of their own photograph inside the outline, not on the stage. So
+            the stage is free to come all the way up between that box and the
+            closing line without costing either of them a point of contrast. */}
+        <div
+          aria-hidden="true"
           data-stage-plate="2"
-          data-stage-strength="0.95"
+          data-stage-strength="0.92"
+          className="h-0"
+        />
+
+        <section
+          data-index-section=""
+          data-stage-plate="2"
+          data-stage-strength="0.28"
           className="relative overflow-hidden px-4 pb-24 pt-16 text-ink md:pb-32 md:pt-24"
         >
           <Reveal className="mx-auto flex max-w-6xl flex-col items-center text-center">
