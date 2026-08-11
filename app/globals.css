@@ -101,7 +101,7 @@ body {
    darkened picture and the ground beside it are the same colour family. */
 .plate-shade {
   --shade-top: 84%;
-  --shade-mid: 48%;
+  --shade-mid: 16%;
   --shade-bottom: 72%;
   --shade-mid-from: 42%;
   --shade-mid-to: 64%;
@@ -127,21 +127,21 @@ body {
    there is no photograph to put one in at all. It grows while the mobile menu
    is open, so the ramp still ends below the last item rather than under it. */
 .chrome-shade {
-  --chrome-shade-h: 150px;
+  --chrome-shade-h: 130px;
   height: var(--chrome-shade-h);
   background: linear-gradient(
     to bottom,
-    color-mix(in srgb, var(--color-gold-anchor) 90%, transparent) 0%,
-    color-mix(in srgb, var(--color-gold-anchor) 85%, transparent) 38%,
-    color-mix(in srgb, var(--color-gold-anchor) 46%, transparent) 66%,
-    color-mix(in srgb, var(--color-gold-anchor) 15%, transparent) 86%,
+    color-mix(in srgb, var(--color-gold-anchor) 86%, transparent) 0%,
+    color-mix(in srgb, var(--color-gold-anchor) 70%, transparent) 38%,
+    color-mix(in srgb, var(--color-gold-anchor) 34%, transparent) 66%,
+    color-mix(in srgb, var(--color-gold-anchor) 9%, transparent) 86%,
     var(--color-gold-anchor-0) 100%
   );
   transition: height 200ms var(--ease-out-quart);
 }
 @media (min-width: 768px) {
   .chrome-shade {
-    --chrome-shade-h: 180px;
+    --chrome-shade-h: 150px;
   }
 }
 /* Open, the ramp has four labels to carry instead of one row of them, so it
@@ -153,10 +153,10 @@ body {
   --chrome-shade-h: 360px;
   background: linear-gradient(
     to bottom,
-    color-mix(in srgb, var(--color-gold-anchor) 90%, transparent) 0%,
-    color-mix(in srgb, var(--color-gold-anchor) 86%, transparent) 64%,
-    color-mix(in srgb, var(--color-gold-anchor) 46%, transparent) 80%,
-    color-mix(in srgb, var(--color-gold-anchor) 15%, transparent) 92%,
+    color-mix(in srgb, var(--color-gold-anchor) 72%, transparent) 0%,
+    color-mix(in srgb, var(--color-gold-anchor) 68.8%, transparent) 64%,
+    color-mix(in srgb, var(--color-gold-anchor) 36.8%, transparent) 80%,
+    color-mix(in srgb, var(--color-gold-anchor) 12%, transparent) 92%,
     var(--color-gold-anchor-0) 100%
   );
 }
@@ -275,45 +275,21 @@ body {
   overflow: hidden;
   will-change: transform;
 }
-/* A plate's own darkening, and the whole of it. The top and bottom hold flat
-   gold for the height of the chrome, so the nav and the footer always sit on
-   one value at every scroll position and on every plate — with the bars now
-   transparent, that hold is also what carries their cream labels over the
-   picture. Between the ramps the shade holds a floor, and the floor is per
-   plate (`--plate-shade`): a dark picture reaches the ceiling a composite
-   behind text answers to with less darkening than a bright one. */
+/* A plate's own darkening, and the whole of it. One shape for every plate:
+   the picture is carried at the top and the bottom, where the chrome crosses
+   it, and released through the whole middle where the reader is actually
+   looking at it. The per-plate floors this replaces (0.50 / 0.52 / 0.64) were
+   held flat across the entire middle band, which is why the photographs read
+   dark in their centres rather than only at their edges — a floor is a hold,
+   not a falloff, and a picture spends its whole middle inside it. */
 .stage-plate-shade {
-  /* The header's own height, so the ramp starts at the bar's lower edge and
-     the transparent chrome's cream labels always fall on flat gold. */
-  --stage-hold: 65px;
-  /* The footer's, for the same reason at the other end: the bar is 149px at
-     both viewports, and the shade must already be at full gold on the row it
-     covers or the picture ends on a ruled line. */
-  --stage-foot: 149px;
-  --shade: var(--plate-shade, 0.5);
-  /* The floor, and the two points the ramps pass through on the way to it. */
-  --shade-floor: calc(var(--shade) * 100%);
-  --shade-knee: calc((var(--shade) + (1 - var(--shade)) * 0.42) * 100%);
   background: linear-gradient(
     to bottom,
-    var(--color-gold-anchor) 0,
-    var(--color-gold-anchor) var(--stage-hold),
-    color-mix(in srgb, var(--color-gold-anchor) var(--shade-knee), transparent)
-      calc(var(--stage-hold) + 90px),
-    color-mix(in srgb, var(--color-gold-anchor) var(--shade-floor), transparent)
-      calc(var(--stage-hold) + 210px),
-    color-mix(in srgb, var(--color-gold-anchor) var(--shade-floor), transparent)
-      calc(100% - 330px),
-    color-mix(in srgb, var(--color-gold-anchor) var(--shade-knee), transparent)
-      calc(100% - 190px),
-    var(--color-gold-anchor) calc(100% - var(--stage-foot)),
-    var(--color-gold-anchor) 100%
+    color-mix(in srgb, var(--color-gold-anchor) 52%, transparent) 0%,
+    color-mix(in srgb, var(--color-gold-anchor) 16%, transparent) 22%,
+    color-mix(in srgb, var(--color-gold-anchor) 16%, transparent) 62%,
+    color-mix(in srgb, var(--color-gold-anchor) 70%, transparent) 100%
   );
-}
-@media (min-width: 768px) {
-  .stage-plate-shade {
-    --stage-hold: 81px;
-  }
 }
 
 /* The offer panels are full-bleed, so their text tracks the viewport edge

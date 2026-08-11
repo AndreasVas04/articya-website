@@ -344,7 +344,7 @@ const ScrollExpandMedia = ({
               poster as the card takes over. */}
           <div
             aria-hidden="true"
-            className="plate-shade pointer-events-none absolute inset-0 [--shade-bottom:18%] [--shade-mid:46%] [--shade-mid-from:24%] [--shade-mid-to:58%] [--shade-top:62%]"
+            className="plate-shade pointer-events-none absolute inset-0 [--shade-bottom:18%] [--shade-mid:16%] [--shade-mid-from:24%] [--shade-mid-to:58%] [--shade-top:62%]"
           />
         </motion.div>
 
@@ -440,7 +440,7 @@ const ScrollExpandMedia = ({
                     that used to sit under the intro's block is gone. */}
                 <div
                   aria-hidden="true"
-                  className="plate-shade pointer-events-none absolute inset-0 [--shade-bottom:78%] [--shade-mid:22%] [--shade-mid-from:22%] [--shade-mid-to:46%] [--shade-top:34%]"
+                  className="plate-shade pointer-events-none absolute inset-0 [--shade-bottom:78%] [--shade-mid:16%] [--shade-mid-from:22%] [--shade-mid-to:46%] [--shade-top:34%]"
                 />
               </div>
             </div>

@@ -14,17 +14,16 @@ const offerIcons = ["globe", "graduation"] as const;
 // The three photographs the page stands on, and the only grounds below the
 // hero. Two of them are hero slides the browser has already fetched, so the
 // stage costs one image for the whole page — the offer panels' own two are
-// gone. Each carries its own darkening strength: `hero-1` opens on a bright
-// sky and needs more of it than the road under the pines to hold the ceiling
-// a composite behind text answers to.
+// gone. Every plate takes the same darkening; the per-plate floors that used
+// to vary it held the middle of each picture down and are gone.
 const plates: StagePlate[] = [
   // The clearing: the tree-lined road, the hero's own world carried on below
   // the seam.
-  { src: "/images/hero-2.jpg", position: "50% 42%", shade: 0.5 },
+  { src: "/images/hero-2.jpg", position: "50% 42%" },
   // The panels: the rope, close and quiet, all but out at 0.18.
-  { src: "/images/home-youth.jpg", position: "50% 45%", shade: 0.52 },
+  { src: "/images/home-youth.jpg", position: "50% 45%" },
   // The walk out, and the page closing on the vista it opened on.
-  { src: "/images/hero-1.jpg", position: "50% 62%", shade: 0.64 },
+  { src: "/images/hero-1.jpg", position: "50% 62%" },
 ];
 
 // The first hero slide is the LCP; the backdrop reuses the same variant, so

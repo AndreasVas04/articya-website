@@ -15,13 +15,6 @@ export interface StagePlate {
   src: string;
   /** object-position for the cover crop. */
   position?: string;
-  /**
-   * How much of the plate its own darkening carries in the middle band, where
-   * the top and bottom ramps have run out. Per plate rather than shared: a
-   * dark photograph reaches the ceiling with less of it than a bright one, and
-   * spending more than a picture needs only throws away the picture.
-   */
-  shade: number;
 }
 
 interface StageFrame {
@@ -202,7 +195,7 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
           key={plate.src}
           data-plate-layer=""
           className="stage-plate absolute inset-0"
-          style={{ opacity: 0, "--plate-shade": plate.shade } as React.CSSProperties}
+          style={{ opacity: 0 }}
         >
           <div
             data-plate-image=""
@@ -216,13 +209,11 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
               style={plate.position ? { objectPosition: plate.position } : undefined}
             />
           </div>
-          {/* The plate's own darkening, and the whole of it: the top and
-              bottom ramps take the picture down to the chrome's gold on the
-              two rows the fixed header and the footer sit on, so both bars
-              meet the ground on one value at every scroll position, and the
-              middle band holds the floor the type reads against. Because it
-              rides inside the plate it fades with it — there is no scrim,
-              veil or wash anywhere else on the page. */}
+          {/* The plate's own darkening, and the whole of it: one shape on
+              every plate, carrying the picture where the chrome crosses it and
+              releasing it through the whole middle. Because it rides inside
+              the plate it fades with it — there is no scrim, veil or wash
+              anywhere else on the page. */}
           <div className="stage-plate-shade absolute inset-0" />
         </div>
       ))}
