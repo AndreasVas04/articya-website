@@ -18,19 +18,29 @@ const offerIcons = ["globe", "graduation"] as const;
 const gainImage = "/images/pt/IMG_4735.jpg";
 
 // The three photographs the page stands on, and the only grounds below the
-// hero. Two of them are hero slides the browser has already fetched, so the
-// stage costs one image for the whole page — the offer panels' own two are
-// gone. Every plate takes the same darkening; the per-plate floors that used
+// hero. Every plate takes the same darkening; the per-plate floors that used
 // to vary it held the middle of each picture down and are gone.
 const plates: StagePlate[] = [
-  // The clearing: the valley in warm light, the hero's own world carried on
-  // below the seam. Cropped to its top 60% — the lower third is fencing and
-  // roof tiles.
-  { src: "/images/pt/IMG_4619.jpg", position: "50% 42%" },
-  // The panels: the road between stone walls, quiet, all but out at 0.18.
-  { src: "/images/pt/IMG_4582.jpg", position: "50% 45%" },
-  // The village at blue hour, and the page closing on it.
-  { src: "/images/pt/IMG_4739.jpg", position: "50% 55%" },
+  // The clearing: the road between the stone walls under flat overcast light.
+  // Cropped below the cable that crosses the whole of its sky, and held a
+  // little off full saturation so the green either side of the road stays a
+  // ground rather than a colour.
+  {
+    src: "/images/pt/IMG_4582-road.jpg",
+    position: "50% 40%",
+    saturation: 0.88,
+    brightness: 0.78,
+  },
+  // The panels: the valley in warm light, quiet, all but out at 0.18. Cropped
+  // above the four lines that cross its lower right — faint at 0.18, but a
+  // cable is the one thing on these frames that reads as clutter however faint
+  // it is.
+  { src: "/images/pt/IMG_4619-valley.jpg", position: "50% 50%" },
+  // The village at blue hour, and the page closing on it. The same lane crop
+  // the gains stand on: the whole frame above it is the pole and its cables,
+  // and this plate shows through the masked ends of that photograph, so an
+  // uncropped one would have put them straight back into the top of it.
+  { src: "/images/pt/IMG_4739-lane.jpg", position: "50% 30%" },
 ];
 
 // The first hero slide is the LCP; the backdrop reuses the same variant, so
@@ -124,15 +134,21 @@ export default function HomePage() {
               rising wave with internal order on the clock: the rule draws and
               the text column lifts, the heading surfaces out of its clipped
               line a beat in, and the ledger rows land last, left to right. */}
-          {/* The clearing stands on the page's stage: hero-2 is the plate
-              behind it, so the world the hero opened on carries on under the
+          {/* The clearing stands on the page's stage: the road between the
+              stone walls, so the world the hero opened on carries on under the
               heading instead of ending at a seam. The plate's own darkening is
               what makes the type readable — the pools that used to sit under
               each block are gone. */}
           <div className="relative" data-index-section="">
+            {/* The clearing takes a whole screen and stands its words in the
+                middle of it. It used to open flush against the hero's foot,
+                which put the heading and the ledger in the bottom quarter of
+                the screen the reader lands on with three empty quarters of
+                photograph above them — the block read as having fallen to the
+                bottom of the frame rather than as standing in it. */}
             <StageScene
               fireMargin="-30%"
-              className="relative mx-auto max-w-6xl px-4 xl:max-w-[min(84rem,92vw)]"
+              className="relative mx-auto flex min-h-svh max-w-6xl flex-col justify-center px-4 xl:max-w-[min(84rem,92vw)]"
             >
               <div
                 data-stage-plate="0"
@@ -191,14 +207,20 @@ export default function HomePage() {
             </StageScene>
           </div>
 
-          {/* A breathing zone: no text stands here, so the photograph comes
-              all the way up between two reading passages. It is a measurement
-              marker and nothing else — zero height, so it moves no layout and
-              only tells the stage where the ground is allowed to be loud. */}
+          {/* A breathing zone: the photograph swells between two reading
+              passages. It is a measurement marker and nothing else — zero
+              height, so it moves no layout and only tells the stage where the
+              ground is allowed to be loud. It is 0.42 rather than the 0.92 it
+              carried, and the difference is the half screen between it and the
+              ledger: a marker with no height is keyed half a viewport above
+              itself, so at 0.92 the ground reached full strength while the
+              stats were still being read, and the labels measured 1.3 against
+              a 4.5 floor. The swell is what a reading passage can survive
+              beside it, not what the empty stretch could take. */}
           <div
             aria-hidden="true"
             data-stage-plate="0"
-            data-stage-strength="0.92"
+            data-stage-strength="0.42"
             className="h-0"
           />
 

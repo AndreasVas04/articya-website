@@ -36,6 +36,47 @@ const MANIFEST = path.join(OUT, "manifest.json");
 const LADDER = [384, 640, 768, 1024, 1152, 1366, 1600, 1920, 2560];
 const MAX_WIDTH = 2560;
 
+// Frames published as a crop of an original rather than as the whole picture.
+// A power line crossing a sky cannot be masked out of a photograph and cannot
+// be cropped out with `object-position` either — a portrait source in a phone's
+// viewport is fitted by its height, so the browser shows every row of it
+// whatever the position says. So the cut is made here, in the pixels, once:
+// every variant and both viewports then get the same frame. Fractions of the
+// display-oriented image; a cropped frame is a manifest entry of its own and
+// its source keeps its uncropped one.
+const CROPS = {
+  // The lane down through the village at blue hour. The sky above 0.52 carries
+  // the pole and its cables right across the frame.
+  "/images/pt/IMG_4739-lane.jpg": {
+    file: "pt/IMG_4739.jpg",
+    left: 0,
+    top: 0.52,
+    width: 0.695,
+    height: 0.48,
+  },
+  // The road between the stone walls. Same reason: one heavy cable crosses the
+  // whole of the overcast sky down to the pole at 0.45.
+  "/images/pt/IMG_4582-road.jpg": {
+    file: "pt/IMG_4582.jpg",
+    left: 0,
+    top: 0.46,
+    width: 1,
+    height: 0.54,
+  },
+  // The valley in warm light. Four heavy lines run out of the right edge at
+  // 0.59 and across the whole lower right of the frame, and cutting above them
+  // leaves nothing but sky — the village is in the bottom third. The cut is
+  // vertical instead: the left 55%, from the ridge down, is the same view with
+  // none of them in it.
+  "/images/pt/IMG_4619-valley.jpg": {
+    file: "pt/IMG_4619.jpg",
+    left: 0,
+    top: 0.3,
+    width: 0.55,
+    height: 0.7,
+  },
+};
+
 // Encode settings. Quality first: at or above the grade's q88 floor, and
 // verified against the graded master at display size (flat skies/walls at
 // 1:1). AVIF has no 8x8 blocking so it holds flat regions at a lower number;
@@ -75,7 +116,7 @@ const displayDims = (w, h, o) => (o >= 5 && o <= 8 ? { w: h, h: w } : { w, h });
 // config forces a rebuild.
 function signature() {
   const parts = [`v${CONFIG_VERSION}`, `strength${productionStrength}`, `ladder${LADDER.join(",")}`,
-    `fmt${FORMATS.map((f) => f.ext).join(",")}`];
+    `fmt${FORMATS.map((f) => f.ext).join(",")}`, `crops${JSON.stringify(CROPS)}`];
   for (const f of ["scripts/responsive-images.mjs", "scripts/grade-photos.mjs"]) {
     parts.push(`${f}:${fs.statSync(path.join(ROOT, f)).mtimeMs}`);
   }
@@ -105,8 +146,19 @@ async function run() {
   let count = 0;
   let bytes = 0;
 
+  // Every frame to emit, keyed by the source it is graded from, so a file that
+  // ships both whole and cropped is decoded and graded once.
+  const jobs = new Map();
   for (const file of gradedFiles) {
-    const base = path.basename(file, path.extname(file));
+    jobs.set(file, [{ key: `/images/${file}`, crop: null }]);
+  }
+  for (const [key, crop] of Object.entries(CROPS)) {
+    const list = jobs.get(crop.file);
+    if (!list) throw new Error(`Crop "${key}" names an ungraded source "${crop.file}"`);
+    list.push({ key, crop });
+  }
+
+  for (const [file, frames] of jobs) {
     const { out8, width, height, orientation } = await gradeToRaw(file, productionStrength);
 
     // Bake orientation once, then resize every variant from the display-
@@ -115,35 +167,49 @@ async function run() {
       sharp(out8, { raw: { width, height, channels: 3 } }),
       orientation
     ).raw().toBuffer({ resolveWithObject: true });
-    const dispW = oriented.info.width;
-    const dispH = oriented.info.height;
+    const fullW = oriented.info.width;
+    const fullH = oriented.info.height;
 
-    const widths = LADDER.filter((w) => w <= Math.min(dispW, MAX_WIDTH));
-    if (widths.length === 0 || widths[widths.length - 1] < Math.min(dispW, MAX_WIDTH)) {
-      // Always offer the exact display cap so the largest screens are covered.
-      widths.push(Math.min(dispW, MAX_WIDTH));
-    }
+    for (const { key, crop } of frames) {
+      const base = path.basename(key, path.extname(key));
+      const region = crop && {
+        left: Math.round(fullW * crop.left),
+        top: Math.round(fullH * crop.top),
+        width: Math.round(fullW * crop.width),
+        height: Math.round(fullH * crop.height),
+      };
+      const dispW = region ? region.width : fullW;
+      const dispH = region ? region.height : fullH;
 
-    for (const w of widths) {
-      for (const fmt of FORMATS) {
-        const pipe = sharp(oriented.data, {
-          raw: { width: dispW, height: dispH, channels: 3 },
-        }).resize({ width: w, withoutEnlargement: true });
-        const buf = await fmt.encode(pipe).toBuffer();
-        fs.writeFileSync(path.join(OUT, `${base}-${w}.${fmt.ext}`), buf);
-        count++;
-        bytes += buf.length;
+      const widths = LADDER.filter((w) => w <= Math.min(dispW, MAX_WIDTH));
+      if (widths.length === 0 || widths[widths.length - 1] < Math.min(dispW, MAX_WIDTH)) {
+        // Always offer the exact display cap so the largest screens are covered.
+        widths.push(Math.min(dispW, MAX_WIDTH));
       }
-    }
 
-    images[`/images/${file}`] = {
-      base,
-      width: dispW,
-      height: dispH,
-      widths,
-      formats: FORMATS.map((f) => f.ext),
-    };
-    console.log(`  ${file.padEnd(20)} ${dispW}x${dispH}  ${widths.length} widths`);
+      for (const w of widths) {
+        for (const fmt of FORMATS) {
+          let pipe = sharp(oriented.data, {
+            raw: { width: fullW, height: fullH, channels: 3 },
+          });
+          if (region) pipe = pipe.extract(region);
+          pipe = pipe.resize({ width: w, withoutEnlargement: true });
+          const buf = await fmt.encode(pipe).toBuffer();
+          fs.writeFileSync(path.join(OUT, `${base}-${w}.${fmt.ext}`), buf);
+          count++;
+          bytes += buf.length;
+        }
+      }
+
+      images[key] = {
+        base,
+        width: dispW,
+        height: dispH,
+        widths,
+        formats: FORMATS.map((f) => f.ext),
+      };
+      console.log(`  ${base.padEnd(22)} ${dispW}x${dispH}  ${widths.length} widths`);
+    }
   }
 
   const manifest = {
@@ -154,7 +220,8 @@ async function run() {
   };
   fs.writeFileSync(MANIFEST, JSON.stringify(manifest, null, 2));
   console.log(
-    `responsive-images: ${count} files, ${(bytes / 1e6).toFixed(1)}MB across ${gradedFiles.length} images.`
+    `responsive-images: ${count} files, ${(bytes / 1e6).toFixed(1)}MB across ` +
+      `${gradedFiles.length + Object.keys(CROPS).length} frames.`
   );
 }
 
