@@ -44,36 +44,54 @@ const MAX_WIDTH = 2560;
 // every variant and both viewports then get the same frame. Fractions of the
 // display-oriented image; a cropped frame is a manifest entry of its own and
 // its source keeps its uncropped one.
+// Every cut here is the largest rectangle of its frame that holds no cable,
+// found by measuring where the cables actually run rather than by trimming
+// until the picture behaved. A crop is the last resort for a cable and the
+// only one: contrast is bought with plate strength, never by taking a frame
+// apart.
 const CROPS = {
-  // The lane down through the village at blue hour. The sky above 0.52 carries
-  // the pole and its cables right across the frame.
+  // The lane down through the village at blue hour, full width. The cables
+  // descend from both top corners onto the pole and the chimney and are clear
+  // by 0.52; below that the whole lane is in — the granite houses and the green
+  // railings on the right that the old 69.5% strip cut away.
   "/images/pt/IMG_4739-lane.jpg": {
     file: "pt/IMG_4739.jpg",
     left: 0,
     top: 0.52,
-    width: 0.695,
+    width: 1,
     height: 0.48,
   },
-  // The road between the stone walls. Same reason: one heavy cable crosses the
-  // whole of the overcast sky down to the pole at 0.45.
+  // The road between the stone walls. One heavy cable crosses the whole of the
+  // overcast sky and lands on the pole, with a second running back left off it;
+  // the lowest of them sits at 0.44, so the cut is there and the mist over the
+  // far hills comes back with the extra band.
   "/images/pt/IMG_4582-road.jpg": {
     file: "pt/IMG_4582.jpg",
     left: 0,
-    top: 0.46,
+    top: 0.44,
     width: 1,
-    height: 0.54,
+    height: 0.56,
   },
-  // The valley in warm light. Four heavy lines run out of the right edge at
-  // 0.59 and across the whole lower right of the frame, and cutting above them
-  // leaves nothing but sky — the village is in the bottom third. The cut is
-  // vertical instead: the left 55%, from the ridge down, is the same view with
-  // none of them in it.
+  // The valley in warm light — open sky over the ridge. The cables are a single
+  // bundle in the bottom-right corner, entering the right edge at 0.71 and
+  // leaving the bottom edge at 0.55. A corner is not a rectangle, so the cut
+  // has to take a band off two sides; of every pair that clears the bundle this
+  // one keeps the most picture with the ridge still whole.
   "/images/pt/IMG_4619-valley.jpg": {
     file: "pt/IMG_4619.jpg",
     left: 0,
-    top: 0.3,
-    width: 0.55,
-    height: 0.7,
+    top: 0,
+    width: 0.7,
+    height: 0.895,
+  },
+  // The two cattle on the road, the village behind. The pole and its cables own
+  // the whole upper third of this frame; the lower two thirds are the picture.
+  "/images/pt/IMG_4735-road.jpg": {
+    file: "pt/IMG_4735.jpg",
+    left: 0,
+    top: 1 / 3,
+    width: 1,
+    height: 2 / 3,
   },
 };
 

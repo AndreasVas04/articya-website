@@ -13,36 +13,37 @@ import { hero, whatWeDo, gain } from "@/content/home";
 
 const offerIcons = ["globe", "graduation"] as const;
 
+// One frame in the set was shot under a hard midday sun and reads a day apart
+// from the blue-hour and overcast frames beside it. The correction is per
+// photograph, not per panel — see `.photo-midday`.
+const offerPhotoTone = ["photo-midday", undefined] as const;
+
 // The photograph "What you gain" is built on, sharp at one end and defocused
-// under the words at the other. The lane crop, not the whole frame: above it
-// the pole and its cables cross the sky from side to side, and no heading can
-// be set over that.
-const gainImage = "/images/pt/IMG_4739-lane.jpg";
+// under the words at the other: the valley under open sky, the ridge running
+// the width of it. It is also the plate this section and the closing stand on,
+// so the frame's two masked ends dissolve into their own picture rather than
+// into a different one.
+const gainImage = "/images/pt/IMG_4619-valley.jpg";
 
 // The three photographs the page stands on, and the only grounds below the
 // hero. Every plate takes the same darkening; the per-plate floors that used
 // to vary it held the middle of each picture down and are gone.
 const plates: StagePlate[] = [
   // The clearing: the road between the stone walls under flat overcast light.
-  // Cropped below the cable that crosses the whole of its sky, and held a
-  // little off full saturation so the green either side of the road stays a
-  // ground rather than a colour.
+  // Held a little off full saturation so the green either side of the road
+  // stays a ground rather than a colour. It carries no brightness filter — the
+  // white road is bright, and what answers that is the strength the type stands
+  // on it at, not a picture darkened before it ever reaches the page.
   {
     src: "/images/pt/IMG_4582-road.jpg",
-    position: "50% 40%",
+    position: "45% 100%",
     saturation: 0.88,
-    brightness: 0.78,
   },
-  // The panels: the valley in warm light, quiet, all but out at 0.18. Cropped
-  // above the four lines that cross its lower right — faint at 0.18, but a
-  // cable is the one thing on these frames that reads as clutter however faint
-  // it is.
-  { src: "/images/pt/IMG_4619-valley.jpg", position: "50% 50%" },
-  // The village at blue hour, and the page closing on it. The same lane crop
-  // the gains stand on: the whole frame above it is the pole and its cables,
-  // and this plate shows through the masked ends of that photograph, so an
-  // uncropped one would have put them straight back into the top of it.
-  { src: "/images/pt/IMG_4739-lane.jpg", position: "50% 30%" },
+  // The panels: the lane at blue hour, quiet, all but out at 0.18.
+  { src: "/images/pt/IMG_4739-lane.jpg", position: "50% 50%" },
+  // The gains and the closing: the valley, the same frame the gains section
+  // lays edge to edge over it.
+  { src: gainImage, position: "50% 70%" },
 ];
 
 // The first hero slide is the LCP; the backdrop reuses the same variant, so
@@ -154,7 +155,7 @@ export default function HomePage() {
             >
               <div
                 data-stage-plate="0"
-                data-stage-strength="0.26"
+                data-stage-strength="0.16"
                 className="relative md:grid md:grid-cols-12 md:items-start md:gap-x-12 xl:gap-x-20"
               >
                 <div className="relative md:col-span-6 md:self-center">
@@ -191,7 +192,7 @@ export default function HomePage() {
                   when it crosses into view — the ledger writes itself. */}
               <div
                 data-stage-plate="0"
-                data-stage-strength="0.22"
+                data-stage-strength="0.16"
                 className="relative mt-2 md:mt-12"
               >
                 <div className="relative grid md:grid-cols-3 md:divide-x md:divide-hairline">
@@ -218,11 +219,14 @@ export default function HomePage() {
               itself, so at 0.92 the ground reached full strength while the
               stats were still being read, and the labels measured 1.3 against
               a 4.5 floor. The swell is what a reading passage can survive
-              beside it, not what the empty stretch could take. */}
+              beside it, not what the empty stretch could take. It reads 0.33
+              rather than 0.42 only because the plate no longer carries a
+              brightness filter: 0.42 of a picture dimmed to 0.78 and 0.33 of
+              the picture itself are the same swell. */}
           <div
             aria-hidden="true"
             data-stage-plate="0"
-            data-stage-strength="0.42"
+            data-stage-strength="0.33"
             className="h-0"
           />
 
@@ -238,6 +242,7 @@ export default function HomePage() {
                 image={card.image}
                 index={i}
                 icon={offerIcons[i] ?? "globe"}
+                photoClass={offerPhotoTone[i]}
                 flip={i % 2 === 1}
               />
             ))}
@@ -287,8 +292,17 @@ export default function HomePage() {
               sizes="100vw"
               className="gain-photo"
             />
+            {/* Softest last, and that is load-bearing. Each copy is opaque out
+                to its own hold and only then fades, so the last one painted is
+                the one the reader sees over that whole stretch: in DOM order
+                1→4 the gentlest step covered the other three and the left of
+                the frame rendered at blur 6px / brightness 0.86 instead of
+                30px / 0.42 — the ramp existed in the stylesheet and nowhere on
+                the page. It was invisible while this section stood on a
+                blue-hour lane, which was dark enough to carry the words on its
+                own; under an open sky it measured 1.22. */}
             <div className="gain-defocus">
-              {[1, 2, 3, 4].map((step) => (
+              {[4, 3, 2, 1].map((step) => (
                 <div key={step} className={`gain-soft gain-soft-${step}`}>
                   <ResponsiveImage
                     src={gainImage}
@@ -325,12 +339,14 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* The closing beat, on the same plate the trail walked in on and now
-            at nearly full strength. The lamp is gone — its line, cone, node
-            and ignition were a light fixture drawn on the page, and what the
-            section is actually for is three pieces of type. They stand on the
-            plate itself, and the closing line keeps the one place the accent
-            carries text. */}
+        {/* The closing beat, on the same plate the trail walked in on. Both its
+            numbers came down with the plate change: the valley under open sky
+            is a far brighter picture than the blue-hour lane that stood here,
+            and the closing line measured 3.04 against its 3.0 floor on it. The
+            lamp is gone — its line, cone, node and ignition were a light
+            fixture drawn on the page, and what the section is actually for is
+            three pieces of type. They stand on the plate itself, and the
+            closing line keeps the one place the accent carries text. */}
         {/* The second breathing zone. It used to take the ground all the way
             up here, on the reasoning that "What you gain" stood inside its own
             outlined box and could not be touched by it. There is no box now:
@@ -343,14 +359,14 @@ export default function HomePage() {
         <div
           aria-hidden="true"
           data-stage-plate="2"
-          data-stage-strength="0.36"
+          data-stage-strength="0.26"
           className="h-0"
         />
 
         <section
           data-index-section=""
           data-stage-plate="2"
-          data-stage-strength="0.28"
+          data-stage-strength="0.2"
           className="relative overflow-hidden px-4 pb-24 pt-16 text-ink md:pb-32 md:pt-24"
         >
           <Reveal className="mx-auto flex max-w-6xl flex-col items-center text-center">

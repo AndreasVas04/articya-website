@@ -5,7 +5,9 @@ export const meta = {
 };
 
 export const hero = {
-  image: "/images/hero-3.jpg",
+  // The oak, the two cattle and the village beyond. hero-3 is not lost with
+  // it — it still holds its tile in the gallery below.
+  image: "/images/pt/IMG_4721.jpg",
   heading: "About ArtiCYa",
   text: "A Cyprus-based organization committed to non-formal education, creativity, and social inclusion through Erasmus+ programmes.",
 };

@@ -329,6 +329,25 @@ body {
   box-shadow: 0 40px 90px rgba(0, 0, 0, 0.55);
 }
 
+/* One frame in the Portugal set was shot under a hard midday sun, and beside
+   the blue-hour and overcast frames it reads as a different day. Measured over
+   the 3:4 window the panel actually shows, its yellow-greens sit at Lab
+   a -7.11 / b 12.45 against the a -6.05 / b 10.55 the road and the valley
+   share. This is a matching pass on that one photograph, not a treatment for
+   the panel, so it goes on the picture and nothing else.
+
+   Two moves, because a CSS filter chain has only these two to give. `saturate`
+   is what carries warm to neutral here — it lands the greens on a -5.90 /
+   b 10.22, inside half a Lab unit of the target — and `hue-rotate` takes the
+   frame's own cast off the green axis, a -4.12 to -2.92, at a cost of 0.4 on
+   the b match. Nothing darkens it: a brightness filter would be answering the
+   picture's contrast with the picture, which is what plate strength is for. */
+@layer components {
+  .photo-midday {
+    filter: saturate(0.82) hue-rotate(-4deg);
+  }
+}
+
 /* A section's number, set as pseudo-content so not one character of it enters
    the DOM — the site's visible text is frozen, and this is a mark rather than
    a string. It sits behind its heading at cream 7.5%, which is low enough to
@@ -390,10 +409,11 @@ body {
   /* Every copy of the frame is cropped identically, or the soft layers would
      drift against the sharp one under them. Each viewport reads one half of
      this and ignores the other: desktop fits the crop by its width and takes
-     the top of it — the houses, not the empty road at the foot — and a phone
-     fits it by its height and takes the slice with the granite house in it. */
+     the lower part of it, so the ridge runs across the frame with the sky over
+     it rather than sky alone; a phone fits it by its height and takes the
+     middle column, where the ridge is at its highest. */
   .gain-photo {
-    object-position: 78% 0%;
+    object-position: 50% 88%;
   }
   .gain-defocus {
     position: absolute;

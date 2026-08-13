@@ -33,6 +33,8 @@ interface OfferPanelProps {
   index: number;
   icon: keyof typeof icons;
   flip?: boolean;
+  /** Per-frame colour correction, where one photograph sits off the set. */
+  photoClass?: string;
 }
 
 // A panel staged as a pinned scroll beat: text on one side, a floating
@@ -54,6 +56,7 @@ export function OfferPanel({
   index,
   icon,
   flip = false,
+  photoClass,
 }: OfferPanelProps) {
   const ref = useRef<HTMLElement | null>(null);
   const textRef = useRef<HTMLDivElement | null>(null);
@@ -187,7 +190,10 @@ export function OfferPanel({
                 src={image}
                 alt=""
                 sizes={PHOTO_SIZES}
-                className="block aspect-[3/4] w-full object-cover"
+                className={cn(
+                  "block aspect-[3/4] w-full object-cover",
+                  photoClass
+                )}
               />
             </div>
           </div>
