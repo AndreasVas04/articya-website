@@ -351,22 +351,105 @@ body {
   color: color-mix(in srgb, var(--color-ink) 7.5%, transparent);
 }
 
-/* "What you gain" — one photograph doing both jobs. The right half is the
-   picture sharp; the left half is the same picture thrown far out of focus and
-   darkened, and the words stand on that. It is never a flat colour over a
-   photograph, and it is not a local shape: the defocused copy fills its whole
-   column, edge to edge, so there is no soft-edged patch anywhere in it.
-   The blur box is inset -50px so the radius has real pixels to pull from
-   outside the column and the blur never thins toward the edges. */
-.gain-split-blur {
-  position: absolute;
-  inset: -50px;
-  filter: blur(28px) brightness(0.4) saturate(0.8);
-}
-.gain-split {
-  outline: 1.25px solid color-mix(in srgb, var(--color-amber) 30%, transparent);
-  outline-offset: -1.25px;
-  min-height: 66svh;
+/* "What you gain" — one photograph, edge to edge, going out of focus across
+   itself. There is no second picture and no panel: the same frame is drawn
+   again at four blur radii, each masked to a band that fades into the next, so
+   what crosses the frame is a continuous ramp — 30px of defocus at the left
+   edge to none at `--gain-soft`, with the brightness falling 0.42 → 1.0 over
+   the same span. The words stand on the soft end. Because every stop is a
+   gradient there is no vertical edge anywhere in it, and because the ramp runs
+   the full height of the frame there is no shape behind the type either.
+
+   The whole soft stack is rasterized at a quarter of the frame and magnified
+   back: a blur is priced by the area it rasterizes and not by its radius, so
+   the four radii are quartered with it. */
+@layer components {
+  /* The frame's two ends are masked away rather than painted over. What is on
+     the other side of them is the page's own stage — another photograph, at
+     whatever strength the scroll has it at — so a ramp to a flat colour can
+     only ever land a shade off it and draw back the line it was meant to
+     erase: measured, a 27–37 channel step at the exact boundary row. A mask
+     resolves to the real ground, which can never differ from itself. */
+  .gain-ground {
+    --gain-end: 140px;
+    --gain-end-mask: linear-gradient(
+      to bottom,
+      transparent 0,
+      #000 var(--gain-end),
+      #000 calc(100% - var(--gain-end)),
+      transparent 100%
+    );
+    -webkit-mask-image: var(--gain-end-mask);
+    mask-image: var(--gain-end-mask);
+  }
+  @media (min-width: 768px) {
+    .gain-ground {
+      --gain-end: 220px;
+    }
+  }
+  /* Every copy of the frame is cropped identically, or the soft layers would
+     drift against the sharp one under them. Each viewport reads one half of
+     this and ignores the other: desktop fits the crop by its width and takes
+     the top of it — the houses, not the empty road at the foot — and a phone
+     fits it by its height and takes the slice with the granite house in it. */
+  .gain-photo {
+    object-position: 78% 0%;
+  }
+  .gain-defocus {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 25%;
+    height: 25%;
+    scale: 4;
+    transform-origin: 0 0;
+    will-change: transform;
+  }
+  .gain-soft {
+    position: absolute;
+    inset: 0;
+    /* Each layer holds full strength to its own start, then hands over to the
+       next softer one by the stop where that one is already full. */
+    --gain-mask: linear-gradient(
+      to right,
+      #000 calc(var(--gain-soft) * var(--gain-hold)),
+      transparent calc(var(--gain-soft) * var(--gain-fade))
+    );
+    -webkit-mask-image: var(--gain-mask);
+    mask-image: var(--gain-mask);
+  }
+  .gain-soft-1 {
+    --gain-hold: 0;
+    --gain-fade: 0.25;
+    filter: blur(7.5px) brightness(0.42);
+  }
+  .gain-soft-2 {
+    --gain-hold: 0.25;
+    --gain-fade: 0.5;
+    filter: blur(5px) brightness(0.56);
+  }
+  .gain-soft-3 {
+    --gain-hold: 0.5;
+    --gain-fade: 0.75;
+    filter: blur(3px) brightness(0.72);
+  }
+  .gain-soft-4 {
+    --gain-hold: 0.75;
+    --gain-fade: 1;
+    filter: blur(1.5px) brightness(0.86);
+  }
+  /* The ramp ends at 52% of the frame on desktop, where the words occupy the
+     left 46% of it. A phone has no room for a column beside a picture, so the
+     ramp there is spent across the whole width instead and the words sit in
+     the soft end of it — the same gradient across the same one picture. */
+  .gain-frame {
+    --gain-soft: 120%;
+  }
+  @media (min-width: 768px) {
+    .gain-frame {
+      --gain-soft: 52%;
+    }
+  }
 }
 
 /* Edge furniture — the wordmark down the left edge and the section index down

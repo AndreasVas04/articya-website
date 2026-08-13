@@ -13,9 +13,11 @@ import { hero, whatWeDo, gain } from "@/content/home";
 
 const offerIcons = ["globe", "graduation"] as const;
 
-// The photograph "What you gain" is built on, sharp one side and defocused
-// under the words on the other.
-const gainImage = "/images/pt/IMG_4735.jpg";
+// The photograph "What you gain" is built on, sharp at one end and defocused
+// under the words at the other. The lane crop, not the whole frame: above it
+// the pole and its cables cross the sky from side to side, and no heading can
+// be set over that.
+const gainImage = "/images/pt/IMG_4739-lane.jpg";
 
 // The three photographs the page stands on, and the only grounds below the
 // hero. Every plate takes the same darkening; the per-plate floors that used
@@ -269,48 +271,56 @@ export default function HomePage() {
           data-index-section=""
           data-stage-plate="2"
           data-stage-strength="0.3"
-          className="relative px-4 text-ink md:pt-32"
+          className="gain-frame relative isolate flex min-h-svh items-center overflow-hidden text-ink"
         >
-          {/* One photograph doing both jobs: sharp on the right, thrown out of
-              focus on the left where the words stand. The text ground is the
-              picture itself defocused — never a flat colour over it. */}
-          <div className="gain-split relative mx-auto grid max-w-6xl overflow-hidden md:grid-cols-2">
-            <div className="relative isolate overflow-hidden px-6 py-16 md:px-10 md:py-20">
-              <div aria-hidden="true" className="gain-split-blur -z-10">
-                <ResponsiveImage
-                  src={gainImage}
-                  alt=""
-                  fill
-                  sizes="400px"
-                  className="object-cover"
-                />
-              </div>
-              <Reveal className="text-center">
-                <span
-                  aria-hidden="true"
-                  className="mx-auto block h-[1.25px] w-16 bg-amber"
-                />
-                <h2
-                  className="ghost-numeral relative mt-3 font-display text-[clamp(2.3rem,6vw,5rem)] font-semibold leading-[0.94] tracking-[-0.025em]"
-                  style={{ "--ghost-num": '"03"' } as React.CSSProperties}
-                >
-                  {gain.title}
-                </h2>
-              </Reveal>
-
-              <div className="mt-6 md:mt-10">
-                <GainTrail items={gain.items} />
-              </div>
+          {/* One photograph, edge to edge, and it goes out of focus across
+              itself: the sharp frame with four softer copies of the same frame
+              masked over its left, each fading into the next. There is no
+              second picture, no divider and no box — what the words stand on
+              is the far end of a gradient, so the ground under them can only
+              ever read as this photograph, defocused. */}
+          <div aria-hidden="true" className="gain-ground absolute inset-0 -z-10">
+            <ResponsiveImage
+              src={gainImage}
+              alt=""
+              fill
+              sizes="100vw"
+              className="gain-photo"
+            />
+            <div className="gain-defocus">
+              {[1, 2, 3, 4].map((step) => (
+                <div key={step} className={`gain-soft gain-soft-${step}`}>
+                  <ResponsiveImage
+                    src={gainImage}
+                    alt=""
+                    fill
+                    sizes="100vw"
+                    className="gain-photo"
+                  />
+                </div>
+              ))}
             </div>
+            {/* The frame's own darkening, and the whole of it. Full width, so
+                it has no horizontal extent to read as a shape behind anything;
+                it carries the picture where the chrome crosses it and releases
+                it through the middle, and it rides inside the masked layer so
+                it dissolves at the two ends along with the photograph. */}
+            <div className="plate-shade pointer-events-none absolute inset-0 [--shade-bottom:70%] [--shade-mid:6%] [--shade-mid-from:20%] [--shade-mid-to:60%] [--shade-top:70%]" />
+          </div>
 
-            <div className="relative min-h-[52svh] md:min-h-0">
-              <ResponsiveImage
-                src={gainImage}
-                alt=""
-                fill
-                sizes="(min-width: 768px) 50vw, 100vw"
-                className="object-cover"
+          <div className="relative w-full px-6 py-20 md:w-[46%] md:px-12 md:py-24">
+            <Reveal className="text-center">
+              <span
+                aria-hidden="true"
+                className="mx-auto block h-[1.25px] w-16 bg-amber"
               />
+              <h2 className="mt-3 font-display text-[clamp(2.3rem,6vw,5rem)] font-semibold leading-[0.94] tracking-[-0.025em]">
+                {gain.title}
+              </h2>
+            </Reveal>
+
+            <div className="mt-6 md:mt-10">
+              <GainTrail items={gain.items} />
             </div>
           </div>
         </section>
@@ -321,15 +331,19 @@ export default function HomePage() {
             section is actually for is three pieces of type. They stand on the
             plate itself, and the closing line keeps the one place the accent
             carries text. */}
-        {/* The second breathing zone, and it lands here because "What you
-            gain" carries its own ground: its words stand on the defocused half
-            of their own photograph inside the outline, not on the stage. So
-            the stage is free to come all the way up between that box and the
-            closing line without costing either of them a point of contrast. */}
+        {/* The second breathing zone. It used to take the ground all the way
+            up here, on the reasoning that "What you gain" stood inside its own
+            outlined box and could not be touched by it. There is no box now:
+            the gains are a full-bleed photograph, so a loud stage immediately
+            under its foot draws the one thing that frame exists not to have —
+            a horizontal line under a picture — and the same swell was carrying
+            the closing lede and line at 2.2 and 1.3 against their floors. Both
+            answer to one number, and it is the swell either side of a reading
+            passage rather than a spike between two of them. */}
         <div
           aria-hidden="true"
           data-stage-plate="2"
-          data-stage-strength="0.92"
+          data-stage-strength="0.36"
           className="h-0"
         />
 
