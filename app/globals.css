@@ -50,6 +50,18 @@
   --color-gold-anchor-0: rgb(14 21 16 / 0);
   --color-gold-chrome-0: rgb(16 24 17 / 0);
   --color-gold-wash-0: rgb(20 28 22 / 0);
+  /* `gold-anchor` turned onto the hue of the sky it darkens, at the same
+     lightness and the same chroma (L* 6.07 against 6.03, C* 4.11 against
+     4.21) — one hue rotation and nothing else. A darkening only darkens what
+     shares its hue: `gold-anchor` is a green-black, so over the poster's blue
+     sky it rotates the hue instead of dropping the level. Measured on the
+     rendered composite at the strength the headline needs, the green-black
+     took the sky 43.6° off its own hue and left 44% of its chroma — an
+     olive-teal band, not sky; this one holds the hue to 0.5° and 64%, at the
+     same text contrast to within 0.03 of a ratio. The poster plate is its
+     only use: every other plate darkens a green or warm picture, where
+     `gold-anchor` is the hue that matches and stays. */
+  --color-sky-anchor: #0f1419;
   --color-amber-fill: #ce9440;
   --color-amber-lit: #d8a254;
   --color-amber-edge: #b87a28;
@@ -98,7 +110,9 @@ body {
    three strengths and the two mid stops; nothing else about it varies.
 
    `gold-anchor` rather than black: the page's own deepest ground, so a
-   darkened picture and the ground beside it are the same colour family. */
+   darkened picture and the ground beside it are the same colour family. A
+   plate whose subject is the sky overrides `--shade-color` — see
+   `--color-sky-anchor`, which is that same anchor on the sky's own hue. */
 /* Declared in `components` rather than unlayered, and that is load-bearing:
    every use tunes this through `[--shade-*]` utilities, and an unlayered rule
    beats a layered utility at equal specificity. Unlayered, the defaults below
@@ -106,6 +120,7 @@ body {
    their call sites asked for. */
 @layer components {
   .plate-shade {
+    --shade-color: var(--color-gold-anchor);
     --shade-top: 84%;
     --shade-mid: 16%;
     --shade-bottom: 72%;
@@ -113,12 +128,12 @@ body {
     --shade-mid-to: 64%;
     background: linear-gradient(
       to bottom,
-      color-mix(in srgb, var(--color-gold-anchor) var(--shade-top), transparent) 0%,
-      color-mix(in srgb, var(--color-gold-anchor) var(--shade-mid), transparent)
+      color-mix(in srgb, var(--shade-color) var(--shade-top), transparent) 0%,
+      color-mix(in srgb, var(--shade-color) var(--shade-mid), transparent)
         var(--shade-mid-from),
-      color-mix(in srgb, var(--color-gold-anchor) var(--shade-mid), transparent)
+      color-mix(in srgb, var(--shade-color) var(--shade-mid), transparent)
         var(--shade-mid-to),
-      color-mix(in srgb, var(--color-gold-anchor) var(--shade-bottom), transparent) 100%
+      color-mix(in srgb, var(--shade-color) var(--shade-bottom), transparent) 100%
     );
   }
 }

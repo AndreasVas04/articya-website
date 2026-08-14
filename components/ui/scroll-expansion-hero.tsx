@@ -341,10 +341,22 @@ const ScrollExpandMedia = ({
               shape: the sky lift and the title pool it replaces were a local
               fall held across the headline's own width, which is a panel by
               another name. Riding inside this layer, it fades out with the
-              poster as the card takes over. */}
+              poster as the card takes over.
+
+              This is the one plate that darkens toward `sky-anchor` rather
+              than `gold-anchor`. The headline falls on open sky, and a
+              green-black over blue does not lower the sky, it turns it: at
+              this strength the anchor cost the sky 43.6° of hue and more than
+              half its chroma while the same stops on the sky's own hue cost
+              0.5° and buy the identical ratio.
+
+              The mid holds from 8%, which is inside the header's own height at
+              both viewports — so the top ramp lives entirely under the bar and
+              the picture emerges below the chrome already flat, with no step
+              on the join. */}
           <div
             aria-hidden="true"
-            className="plate-shade pointer-events-none absolute inset-0 [--shade-bottom:18%] [--shade-mid:16%] [--shade-mid-from:24%] [--shade-mid-to:58%] [--shade-top:62%]"
+            className="plate-shade pointer-events-none absolute inset-0 [--shade-bottom:8%] [--shade-color:var(--color-sky-anchor)] [--shade-mid:66%] [--shade-mid-from:8%] [--shade-mid-to:64%] [--shade-top:92%]"
           />
         </motion.div>
 
