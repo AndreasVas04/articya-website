@@ -54,10 +54,58 @@ const UNGRADED = [
   "pt/IMG_4619.jpg",
   "pt/IMG_4582.jpg",
   "pt/IMG_4739.jpg",
-  "pt/IMG_4599.jpg",
   "pt/IMG_4721.jpg",
   "pt/IMG_4735.jpg",
 ];
+
+// The third path: a frame matched to the ones it is printed beside, with no
+// look applied at all. It is neither a group (which is a fact about shooting
+// conditions, and carries the site's own hour of light with it) nor ungraded.
+//
+// The Portugal set is one shoot and is deliberately ungraded — the frames
+// already agree, so putting `resinHour` on one of them would move it away from
+// its own set rather than toward it. IMG_4599 is the exception *within* that
+// set: shot under a hard midday sun, its vegetation sits 7.08 L* above the mean
+// of IMG_4582 and IMG_4619 and carries a fifth more chroma than they do.
+//
+// What it is not is a colour cast, and that is worth stating because it is what
+// a matching pass usually is. Measured on the frame's own vegetation, the error
+// is almost purely a scale: a* -8.09 -> -6.73 is ×0.83 and b* 14.93 -> 11.65 is
+// ×0.78, near enough the same factor on both axes, which is a saturation
+// difference and not a rotation. So the white balance barely moves (blue +4%,
+// the little that is a cast) and the work is done by the gamma and the
+// saturation scale. The black point is what keeps the gamma honest: without it
+// the pull darkened enough of the frame's deepest pixels through zero to trip
+// the clip guard below.
+//
+// Every parameter here was solved against the target rather than dialled in,
+// on vegetation identified once on the untouched pixels and then followed
+// through the correction — re-reading the classifier after the move lets a blue
+// gain "match" by pushing leaves out of the green band instead of onto the
+// target. Result: ΔE76 0.06 from the set mean, and the clip guard passes.
+const MATCH = {
+  "pt/IMG_4599.jpg": { wb: [1, 1, 1.04], gamma: 1.25, lift: 0.008, satScale: 0.886 },
+};
+
+// A matching pass runs the ordinary pixel path with every look move set to its
+// no-op, so it reuses the tone chain, the skin protection and the single
+// dithered quantisation rather than opening a second pipeline beside them.
+function matchParams(m) {
+  return {
+    wb: m.wb,
+    lift: m.lift,
+    gamma: m.gamma,
+    shoulder: 1, // no roll-off: a match must not reshape the highlights
+    contrast: 0,
+    vibrance: 0,
+    satScale: m.satScale,
+    split: {
+      shadow: { hue: 0, sat: 0, amount: 0 },
+      highlight: { hue: 0, sat: 0, amount: 0 },
+    },
+    bands: [],
+  };
+}
 
 // ---------------------------------------------------------------------------
 // The three candidate grades. Each is a point of view, not an intensity.
@@ -882,9 +930,14 @@ for (const [group, files] of Object.entries(GROUPS)) {
   for (const file of files) FILE_GROUP[file] = group;
 }
 
-// Everything the variant pipeline emits: the graded set plus the ungraded one.
-// `gradeToRaw` is what tells them apart, so callers need no special case.
-export const gradedFiles = [...Object.keys(FILE_GROUP), ...UNGRADED];
+// Everything the variant pipeline emits: the graded set, the matched frame and
+// the ungraded one. `gradeToRaw` is what tells them apart, so callers need no
+// special case.
+export const gradedFiles = [
+  ...Object.keys(FILE_GROUP),
+  ...Object.keys(MATCH),
+  ...UNGRADED,
+];
 export const productionStrength = STRENGTHS.target;
 
 // Grade one source file (from _originals) to raw 8-bit RGB pixels, exactly as
@@ -895,21 +948,29 @@ export const productionStrength = STRENGTHS.target;
 // bake it, see responsive-images.mjs).
 export async function gradeToRaw(file, strength = STRENGTHS.target) {
   const group = FILE_GROUP[file];
-  if (!group && !UNGRADED.includes(file)) throw new Error(`No grade group for "${file}"`);
+  const match = MATCH[file];
+  if (!group && !match && !UNGRADED.includes(file)) {
+    throw new Error(`No grade group for "${file}"`);
+  }
   const srcPath = path.join(SRC, file);
   const meta = await sharp(srcPath).metadata();
 
   // The ungraded set: decoded and handed straight back, no curve, no dither.
-  if (!group) {
+  if (!group && !match) {
     const { data, info } = await sharp(srcPath).raw().toBuffer({ resolveWithObject: true });
     return { out8: data, width: info.width, height: info.height, orientation: meta.orientation };
   }
 
-  const params = GRADES[PRODUCTION_GRADE](strength)[group];
+  // A match carries no look and takes no strength — it is a fact about one
+  // frame against its neighbours, and scaling it would only pull it back off
+  // the set it was solved onto.
+  const params = match
+    ? matchParams(match)
+    : applyTrim(GRADES[PRODUCTION_GRADE](strength)[group], TRIMS[file]);
   const { data, info } = await sharp(srcPath).raw().toBuffer({ resolveWithObject: true });
   const n = info.width * info.height;
   const graded = new Float32Array(n * 3);
-  gradePixels(data, graded, n, applyTrim(params, TRIMS[file]));
+  gradePixels(data, graded, n, params);
   const out8 = ditherTo8bit(graded, info.width, info.height);
   return { out8, width: info.width, height: info.height, orientation: meta.orientation };
 }

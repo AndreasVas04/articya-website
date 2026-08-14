@@ -13,11 +13,6 @@ import { hero, whatWeDo, gain } from "@/content/home";
 
 const offerIcons = ["globe", "graduation"] as const;
 
-// One frame in the set was shot under a hard midday sun and reads a day apart
-// from the blue-hour and overcast frames beside it. The correction is per
-// photograph, not per panel — see `.photo-midday`.
-const offerPhotoTone = ["photo-midday", undefined] as const;
-
 // The photograph "What you gain" is built on, sharp at one end and defocused
 // under the words at the other: the valley under open sky, the ridge running
 // the width of it. It is also the plate this section and the closing stand on,
@@ -242,7 +237,6 @@ export default function HomePage() {
                 image={card.image}
                 index={i}
                 icon={offerIcons[i] ?? "globe"}
-                photoClass={offerPhotoTone[i]}
                 flip={i % 2 === 1}
               />
             ))}
