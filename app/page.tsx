@@ -312,8 +312,17 @@ export default function HomePage() {
                 it has no horizontal extent to read as a shape behind anything;
                 it carries the picture where the chrome crosses it and releases
                 it through the middle, and it rides inside the masked layer so
-                it dissolves at the two ends along with the photograph. */}
-            <div className="plate-shade pointer-events-none absolute inset-0 [--shade-bottom:70%] [--shade-mid:6%] [--shade-mid-from:20%] [--shade-mid-to:60%] [--shade-top:70%]" />
+                it dissolves at the two ends along with the photograph.
+
+                The middle held 6%, which is what a blue-hour lane needed. This
+                frame is a valley under open sky and the words stand on the sky
+                end of the defocus ramp: the trail items measured 1.60–2.64
+                against a 3.0 floor. The release is now 44%, and it darkens
+                toward `sky-anchor` — the sky owns this frame's chroma (its own
+                hue is −109.5°/−98.4°, the green-black's is 152.5°), so the
+                default took it 28° off its hue at this strength where the
+                sky's own dark takes it 4.4°. */}
+            <div className="plate-shade pointer-events-none absolute inset-0 [--shade-bottom:70%] [--shade-color:var(--color-sky-anchor)] [--shade-mid:44%] [--shade-mid-from:20%] [--shade-mid-to:60%] [--shade-top:70%]" />
           </div>
 
           <div className="relative w-full px-6 py-20 md:w-[46%] md:px-12 md:py-24">

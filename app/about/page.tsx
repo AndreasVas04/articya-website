@@ -18,7 +18,16 @@ export default function AboutPage() {
   return (
     <>
       <SmoothScroll />
-      <PageHero image={hero.image} heading={hero.heading} text={hero.text} />
+      {/* The oak and the cattle: an evening frame, and the most saturated of
+          the three. It needs the least darkening and can afford the least —
+          61% is where the headline clears 4.0 with the picture still holding
+          60.5% of its chroma. */}
+      <PageHero
+        image={hero.image}
+        heading={hero.heading}
+        text={hero.text}
+        shade={{ top: 78, mid: 61, base: 64 }}
+      />
 
       <article>
         {story.map((scene, i) => (

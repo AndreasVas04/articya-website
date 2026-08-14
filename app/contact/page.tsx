@@ -76,7 +76,16 @@ function ChannelCard({
 export default function ContactPage() {
   return (
     <>
-      <PageHero image={hero.image} heading={hero.heading} text={hero.text} />
+      {/* The walk out to the reservoir under a midday sun: a white track and
+          pale water straight through the middle of the frame, both clipped at
+          255 before any darkening reaches them. It takes the most of the
+          three, and it is the one picture that has the least colour to lose. */}
+      <PageHero
+        image={hero.image}
+        heading={hero.heading}
+        text={hero.text}
+        shade={{ top: 82, mid: 65, base: 68 }}
+      />
 
       <section className="gold-field gold-field-chrome-bottom gold-floor px-4 py-20 md:py-28">
         <div className="mx-auto max-w-4xl">

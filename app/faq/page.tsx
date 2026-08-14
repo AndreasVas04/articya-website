@@ -21,7 +21,15 @@ const sectionIcons = [Compass, ShieldCheck, Backpack, Send];
 export default function FaqPage() {
   return (
     <>
-      <PageHero image={hero.image} heading={hero.heading} text={hero.text} />
+      {/* The shaded forest road. Dark already through the trees, but the
+          longest headline on the site crosses the whole frame, including the
+          gap of open sky the road runs toward. */}
+      <PageHero
+        image={hero.image}
+        heading={hero.heading}
+        text={hero.text}
+        shade={{ top: 81, mid: 64, base: 67 }}
+      />
 
       <section className="gold-field gold-field-chrome-bottom gold-floor px-4 py-16 md:py-24">
         <div className="mx-auto max-w-6xl">

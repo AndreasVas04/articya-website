@@ -58,10 +58,21 @@
      rendered composite at the strength the headline needs, the green-black
      took the sky 43.6° off its own hue and left 44% of its chroma — an
      olive-teal band, not sky; this one holds the hue to 0.5° and 64%, at the
-     same text contrast to within 0.03 of a ratio. The poster plate is its
-     only use: every other plate darkens a green or warm picture, where
-     `gold-anchor` is the hue that matches and stays. */
+     same text contrast to within 0.03 of a ratio. It also darkens "What you
+     gain", whose frame is a valley under open sky and whose chroma the sky
+     therefore owns: measured over the frame, its own hue is −109.5° (desktop)
+     and −98.4° (mobile), against this dark's −99.3°. */
   --color-sky-anchor: #0f1419;
+  /* The same rotation the other way, for the pictures that are neither sky nor
+     the green-black's own green: the three inner-page hero photographs measure
+     95.5°, 98.9° and 105° over their frames — yellow-greens, where
+     `gold-anchor` is a blue-green at 152.5°. At the strength their headlines
+     need, the green-black took them 11.8°, 15.1° and 26.3° off their own hue;
+     this one holds all three inside 4.6° and returns 2–5 points of chroma at
+     the same stops. Derived exactly as `sky-anchor` was — `gold-anchor`'s
+     lightness and chroma on the pictures' hue (L* 5.87 against 6.03, C* 4.29
+     against 4.22, h 98°). */
+  --color-land-anchor: #15130b;
   --color-amber-fill: #ce9440;
   --color-amber-lit: #d8a254;
   --color-amber-edge: #b87a28;

@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import { Reveal } from "@/components/reveal";
 import { ResponsiveImage } from "@/components/responsive-image";
 import { imagePreload } from "@/lib/images";
@@ -6,9 +7,17 @@ interface PageHeroProps {
   image: string;
   heading: string;
   text: string;
+  /** How hard this photograph has to be darkened, in percent — see below. */
+  shade: { top: number; mid: number; base: number };
 }
 
 const HERO_SIZES = "100vw";
+
+// The band the shade holds its mid strength through. It is shared where the
+// strengths are not: the type is centred the same way on all three pages, so
+// it falls in the same stretch of every frame, and only how much darkening
+// that stretch needs changes from picture to picture.
+const SHADE_BAND = { "--shade-mid-from": "30%", "--shade-mid-to": "78%" };
 
 // The inner pages open on the photograph full-bleed with the type centred over
 // it. What carries the type is the plate's own top-to-bottom darkening and
@@ -23,7 +32,13 @@ const HERO_SIZES = "100vw";
 //
 // It is also what carries the transparent nav over the top of the frame, which
 // is why the top of the ramp is the strongest part of it.
-export function PageHero({ image, heading, text }: PageHeroProps) {
+//
+// The strength is per page. One number for three photographs cannot work: a
+// shaded forest road arrives most of the way down on its own, and a sunlit
+// track between a hillside and a reservoir arrives blown out. At the single
+// 45% mid all three shared, every headline and every lede measured 2.4–3.1
+// against 4.0 and 4.5.
+export function PageHero({ image, heading, text, shade }: PageHeroProps) {
   // This photograph is the page's LCP, so it is preloaded (the preload scanner
   // cannot see it inside the component) and never lazy-loaded.
   const preload = imagePreload(image, HERO_SIZES);
@@ -58,10 +73,24 @@ export function PageHero({ image, heading, text }: PageHeroProps) {
       {/* The plate's own darkening: strongest along the top, where the
           transparent nav crosses the picture, holding through the band the
           centred type falls in, and easing off toward the base so the frame
-          still ends on photograph. Full width, top to bottom — no shape. */}
+          still ends on photograph. Full width, top to bottom — no shape.
+
+          It darkens toward `land-anchor` rather than the default `gold-anchor`
+          for the same reason the poster darkens toward `sky-anchor`: these
+          three frames are yellow-greens and the default is a blue-green, so at
+          the strength the headlines need it rotated them 12–26° off their own
+          hue instead of dropping the level. */}
       <div
         aria-hidden="true"
-        className="plate-shade pointer-events-none absolute inset-0 [--shade-bottom:48%] [--shade-mid:45%] [--shade-mid-from:30%] [--shade-mid-to:78%] [--shade-top:62%]"
+        className="plate-shade pointer-events-none absolute inset-0 [--shade-color:var(--color-land-anchor)]"
+        style={
+          {
+            ...SHADE_BAND,
+            "--shade-top": `${shade.top}%`,
+            "--shade-mid": `${shade.mid}%`,
+            "--shade-bottom": `${shade.base}%`,
+          } as CSSProperties
+        }
       />
 
       {/* The centred type — heading and lede over the photograph. The block
