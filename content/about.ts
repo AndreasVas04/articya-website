@@ -66,8 +66,18 @@ export const gallery = [
     src: "/images/hero-1.jpg",
     alt: "Participants hiking along a lakeside mountain trail",
   },
-  { src: "/images/AboutImage2.jpg", alt: "Youth exchange activities" },
-  { src: "/images/AboutImage1.jpg", alt: "ArtiCYa team activities" },
+  // The two Portugal frames the offer panels handed back when those panels
+  // took the organization's own photographs. They land on the tiles the two
+  // About scenes above already own, so the mosaic stops printing the same two
+  // pictures twice.
+  {
+    src: "/images/pt/IMG_4735-road.jpg",
+    alt: "Two cattle on the road into the village",
+  },
+  {
+    src: "/images/pt/IMG_4599.jpg",
+    alt: "The hillside above the valley in hard midday sun",
+  },
   {
     src: "/images/hero-3.jpg",
     alt: "Participants talking on mossy rocks in the forest",
