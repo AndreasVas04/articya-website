@@ -83,8 +83,52 @@ const UNGRADED = [
 // through the correction — re-reading the classifier after the move lets a blue
 // gain "match" by pushing leaves out of the green band instead of onto the
 // target. Result: ΔE76 0.06 from the set mean, and the clip guard passes.
+//
+// The seven older frames take this path too, and that is the whole of the
+// "one grade" decision. They were shot years apart from the Portugal set and
+// were carrying `resinHour` at 5×, which was built for a gold ground: warm
+// highlights, a shadow tint drifting toward pine, a golden pull on sunlit
+// foliage. Beside an ungraded set that reads as yellowed and filtered, and it
+// is measurable — b* over their own non-sky, non-skin content ran 9.4 to 21.6
+// against the set's 4.8. A look cannot be matched onto a set that has none, so
+// the look comes off and a trim goes on in its place.
+//
+// What a match may decide, and what it may not:
+//
+//   * the cast is the grade's. a* and b* go onto the set's mean, because a
+//     global tint is what reads as "filtered" and it is the same tint whatever
+//     is in front of the camera.
+//   * the level and the colour weight are the photograph's. L* and C* are
+//     facts about the light and the subject, and the set itself spans L*
+//     34.9-70.9 and C* 4.7-20.0 — one open valley against one blue-hour lane.
+//     So those two are brought back inside the set's own range and no further.
+//     Forcing every frame onto one point is not matching a body of work, it is
+//     flattening it: solved that way the canopy frames wanted gamma 0.62 and
+//     the interior wanted 1.45, both at their bounds, to reach a number the
+//     set's own frames miss by 26.
+//
+// Every parameter was solved against those targets rather than dialled in, on
+// a referent fixed on the untouched pixels and followed through the correction
+// — re-reading the classifier after the move lets a frame "match" by pushing
+// content out of the band instead of onto the target. Three frames sit on the
+// blue gain's bound (1.16) and land 2-6 b* warm of the mean; the bound is the
+// point past which a correction stops being a trim and starts being a
+// different photograph.
 const MATCH = {
   "pt/IMG_4599.jpg": { wb: [1, 1, 1.04], gamma: 1.25, lift: 0.008, satScale: 0.886 },
+  // Open midday over the reservoir: already the closest of the seven, so the
+  // trim is almost nothing.
+  "hero-1.jpg": { wb: [1.012, 1, 1.028], gamma: 1.013, lift: 0.006, satScale: 1.07 },
+  // The shaded forest road, and the one frame whose level moves: at L* 20.8 it
+  // sat 14 points below anything in the set.
+  "hero-2.jpg": { wb: [1.064, 1, 1.16], gamma: 0.716, lift: 0.006, satScale: 0.88 },
+  "hero-3.jpg": { wb: [0.943, 1, 1.16], gamma: 0.981, lift: 0.006, satScale: 1.3 },
+  // Mixed flash and ambient indoors — the brightest of the seven, held to the
+  // set's own ceiling rather than pulled to its middle.
+  "AboutImage1.jpg": { wb: [0.946, 1, 1.059], gamma: 1.078, lift: 0.006, satScale: 1.039 },
+  "AboutImage2.jpg": { wb: [1.086, 1, 1.16], gamma: 1.027, lift: 0.006, satScale: 1.06 },
+  "home-training.jpg": { wb: [0.933, 1, 1.058], gamma: 0.99, lift: 0.006, satScale: 0.915 },
+  "home-youth.jpg": { wb: [0.927, 1, 0.884], gamma: 0.997, lift: 0.006, satScale: 0.6 },
 };
 
 // A matching pass runs the ordinary pixel path with every look move set to its
@@ -389,6 +433,10 @@ function cyprusSummer() {
 // correction is a fact about shooting conditions; a trim is about how one
 // frame sits beside the ones it is printed next to, which is a different
 // question and the last one a colourist answers.
+//
+// Nothing reaches these any more: every file they name is in MATCH, which
+// takes the file first. They stay with `resinHour` and the groups, as that
+// look's own apparatus.
 //
 // The About mosaic is why they exist: seven photographs physically touch
 // there, and a tile that reads as a different day is visible in a way the
@@ -933,10 +981,11 @@ for (const [group, files] of Object.entries(GROUPS)) {
 // Everything the variant pipeline emits: the graded set, the matched frame and
 // the ungraded one. `gradeToRaw` is what tells them apart, so callers need no
 // special case.
+// A matched file may also name a group — `gradeToRaw` takes the match first,
+// so the group is the shooting-condition record `resinHour` would read if it
+// were ever put back on. The set is therefore deduplicated.
 export const gradedFiles = [
-  ...Object.keys(FILE_GROUP),
-  ...Object.keys(MATCH),
-  ...UNGRADED,
+  ...new Set([...Object.keys(FILE_GROUP), ...Object.keys(MATCH), ...UNGRADED]),
 ];
 export const productionStrength = STRENGTHS.target;
 
@@ -1027,12 +1076,17 @@ async function bake(strength, label, outDir) {
 
       const before = lumaStats(data, n);
       const graded = new Float32Array(n * 3);
-      gradePixels(data, graded, n, applyTrim(params[group], TRIMS[file]));
+      // Same decision gradeToRaw makes: a match takes the file whatever group
+      // it also names, so the masters and the variants can never disagree.
+      gradePixels(
+        data, graded, n,
+        MATCH[file] ? matchParams(MATCH[file]) : applyTrim(params[group], TRIMS[file])
+      );
       const out8 = ditherTo8bit(graded, info.width, info.height);
       const after = lumaStats(out8, n);
 
       items.push({
-        file, group, out8,
+        file, group: MATCH[file] ? "match" : group, out8,
         width: info.width, height: info.height,
         orientation: meta.orientation,
         originalSize: original.size,

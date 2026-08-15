@@ -79,12 +79,15 @@ export default function ContactPage() {
       {/* The walk out to the reservoir under a midday sun: a white track and
           pale water straight through the middle of the frame, both clipped at
           255 before any darkening reaches them. It takes the most of the
-          three, and it is the one picture that has the least colour to lose. */}
+          three, and it is the one picture that has the least colour to lose.
+          A step deeper since the grade: matched to the set the frame keeps
+          more of its highlights than `resinHour`'s shoulder left it, and at
+          82/65/68 the lede measured 4.52 desktop and 4.48 mobile. */}
       <PageHero
         image={hero.image}
         heading={hero.heading}
         text={hero.text}
-        shade={{ top: 82, mid: 65, base: 68 }}
+        shade={{ top: 84, mid: 69, base: 71 }}
       />
 
       <section className="gold-field gold-field-chrome-bottom gold-floor px-4 py-20 md:py-28">

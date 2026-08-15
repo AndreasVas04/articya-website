@@ -10,32 +10,21 @@ const easeInOutCubic = cubicBezier(0.65, 0, 0.35, 1);
 // image never reads as moving on its own — it settles as it takes the stage.
 const ARRIVE_SCALE = 0.07;
 
+// A plate carries no per-image correction. The saturation and brightness
+// hooks that used to sit here were a second grade running on every paint, and
+// a filter chain has only saturation, hue and level to give — it cannot reach
+// what a tone error actually is. Tone is decided once, in the pixels, by the
+// grade.
 export interface StagePlate {
   /** Content image path, e.g. "/images/hero-2.jpg". */
   src: string;
   /** object-position for the cover crop. */
   position?: string;
-  /** Held below 1 where a plate's own colour runs hotter than the ground. */
-  saturation?: number;
-  /** Held below 1 where a plate is brighter than the text on it can carry. */
-  brightness?: number;
 }
 
 interface StageFrame {
   scroll: number;
   values: number[];
-}
-
-// A plate's own correction, applied to the picture rather than to the layer, so
-// the shade and the arrival scale are untouched by it. Only a plate that needs
-// one declares it: the road under flat overcast light is the brightest and the
-// coolest picture on the page, and at full strength its white road carries no
-// text at all.
-function plateFilter(plate: StagePlate): string | undefined {
-  const parts = [];
-  if (plate.saturation !== undefined) parts.push(`saturate(${plate.saturation})`);
-  if (plate.brightness !== undefined) parts.push(`brightness(${plate.brightness})`);
-  return parts.length > 0 ? parts.join(" ") : undefined;
 }
 
 // The photographic ground the whole page below the hero stands on: one fixed
@@ -222,10 +211,7 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
               alt=""
               fill
               sizes="100vw"
-              style={{
-                objectPosition: plate.position,
-                filter: plateFilter(plate),
-              }}
+              style={{ objectPosition: plate.position }}
             />
           </div>
           {/* The plate's own darkening, and the whole of it: one shape on

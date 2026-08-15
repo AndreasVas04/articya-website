@@ -23,12 +23,15 @@ export default function FaqPage() {
     <>
       {/* The shaded forest road. Dark already through the trees, but the
           longest headline on the site crosses the whole frame, including the
-          gap of open sky the road runs toward. */}
+          gap of open sky the road runs toward. The darkening came up a step
+          with the grade: matched to the set this frame sits 18 L* brighter
+          than `resinHour` left it, and at 81/64/67 the lede measured 4.57
+          desktop and 4.38 mobile against a 4.5 floor. */}
       <PageHero
         image={hero.image}
         heading={hero.heading}
         text={hero.text}
-        shade={{ top: 81, mid: 64, base: 67 }}
+        shade={{ top: 83, mid: 68, base: 70 }}
       />
 
       <section className="gold-field gold-field-chrome-bottom gold-floor px-4 py-16 md:py-24">
