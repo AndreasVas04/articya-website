@@ -21,23 +21,23 @@ const offerIcons = ["globe", "graduation"] as const;
 const gainImage = "/images/pt/IMG_4619-valley.jpg";
 
 // The three photographs the page stands on, and the only grounds below the
-// hero. Every plate takes the same darkening; the per-plate floors that used
-// to vary it held the middle of each picture down and are gone.
+// hero. Every plate takes the same darkening, and none carries a filter: a
+// per-image correction on the way to the screen is a second grade, and the
+// grade is the one place tone is decided now.
+//
+// A plate is either a photograph or it is nothing — there is no strength
+// between 0.04 and 0.75 anywhere on the site. At 0.16–0.18 a picture is
+// neither: it is a haze with shapes in it, which is what every quiet zone
+// below used to render.
 const plates: StagePlate[] = [
   // The clearing: the road between the stone walls under flat overcast light.
-  // Held a little off full saturation so the green either side of the road
-  // stays a ground rather than a colour. It carries no brightness filter — the
-  // white road is bright, and what answers that is the strength the type stands
-  // on it at, not a picture darkened before it ever reaches the page.
-  {
-    src: "/images/pt/IMG_4582-road.jpg",
-    position: "45% 100%",
-    saturation: 0.88,
-  },
-  // The panels: the lane at blue hour, quiet, all but out at 0.18.
+  { src: "/images/pt/IMG_4582-road.jpg", position: "45% 100%" },
+  // The panels' ground. They now carry their own photographs as objects, so
+  // this plate is held at nothing under them.
   { src: "/images/pt/IMG_4739-lane.jpg", position: "50% 50%" },
   // The gains and the closing: the valley, the same frame the gains section
-  // lays edge to edge over it.
+  // lays edge to edge over it — so the finale is that picture arriving at full
+  // strength out of its own defocused copy.
   { src: gainImage, position: "50% 70%" },
 ];
 
@@ -150,7 +150,7 @@ export default function HomePage() {
             >
               <div
                 data-stage-plate="0"
-                data-stage-strength="0.16"
+                data-stage-strength="0"
                 className="relative md:grid md:grid-cols-12 md:items-start md:gap-x-12 xl:gap-x-20"
               >
                 <div className="relative md:col-span-6 md:self-center">
@@ -187,7 +187,7 @@ export default function HomePage() {
                   when it crosses into view — the ledger writes itself. */}
               <div
                 data-stage-plate="0"
-                data-stage-strength="0.16"
+                data-stage-strength="0"
                 className="relative mt-2 md:mt-12"
               >
                 <div className="relative grid md:grid-cols-3 md:divide-x md:divide-hairline">
@@ -205,23 +205,23 @@ export default function HomePage() {
             </StageScene>
           </div>
 
-          {/* A breathing zone: the photograph swells between two reading
-              passages. It is a measurement marker and nothing else — zero
-              height, so it moves no layout and only tells the stage where the
-              ground is allowed to be loud. It is 0.42 rather than the 0.92 it
-              carried, and the difference is the half screen between it and the
-              ledger: a marker with no height is keyed half a viewport above
-              itself, so at 0.92 the ground reached full strength while the
-              stats were still being read, and the labels measured 1.3 against
-              a 4.5 floor. The swell is what a reading passage can survive
-              beside it, not what the empty stretch could take. It reads 0.33
-              rather than 0.42 only because the plate no longer carries a
-              brightness filter: 0.42 of a picture dimmed to 0.78 and 0.33 of
-              the picture itself are the same swell. */}
+          {/* The breathing zone that used to swell here is held at nothing, and
+              the page's geometry is why. A zone is keyed at its own middle, so
+              the window this marker has to work in runs from the ledger's key
+              to the point where the first panel's words are on screen: 416px
+              at 1440×900, 444px at 390×844 — under half a screen either side
+              of a peak. A picture that arrives and leaves inside a quarter of
+              a viewport is a flash, not a breath, and the only way to buy the
+              room is to open an empty stretch of page. The stage is a fixed
+              layer, so scrolling an empty stretch moves nothing on screen at
+              all: that is the stall this phase exists to avoid, and it costs
+              more than the swell is worth. The marker stays, at nothing, so
+              the ground is held down through the whole reading passage rather
+              than drifting up toward the panels. */}
           <div
             aria-hidden="true"
             data-stage-plate="0"
-            data-stage-strength="0.33"
+            data-stage-strength="0"
             className="h-0"
           />
 
@@ -262,14 +262,14 @@ export default function HomePage() {
         <div
           aria-hidden="true"
           data-stage-plate="1"
-          data-stage-strength="0.18"
+          data-stage-strength="0"
           className="h-0"
         />
 
         <section
           data-index-section=""
           data-stage-plate="2"
-          data-stage-strength="0.3"
+          data-stage-strength="0.9"
           className="gain-frame relative isolate flex min-h-svh items-center overflow-hidden text-ink"
         >
           {/* One photograph, edge to edge, and it goes out of focus across
@@ -342,34 +342,33 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* The closing beat, on the same plate the trail walked in on. Both its
-            numbers came down with the plate change: the valley under open sky
-            is a far brighter picture than the blue-hour lane that stood here,
-            and the closing line measured 3.04 against its 3.0 floor on it. The
-            lamp is gone — its line, cone, node and ignition were a light
-            fixture drawn on the page, and what the section is actually for is
-            three pieces of type. They stand on the plate itself, and the
-            closing line keeps the one place the accent carries text. */}
-        {/* The second breathing zone. It used to take the ground all the way
-            up here, on the reasoning that "What you gain" stood inside its own
-            outlined box and could not be touched by it. There is no box now:
-            the gains are a full-bleed photograph, so a loud stage immediately
-            under its foot draws the one thing that frame exists not to have —
-            a horizontal line under a picture — and the same swell was carrying
-            the closing lede and line at 2.2 and 1.3 against their floors. Both
-            answer to one number, and it is the swell either side of a reading
-            passage rather than a spike between two of them. */}
-        <div
-          aria-hidden="true"
-          data-stage-plate="2"
-          data-stage-strength="0.26"
-          className="h-0"
-        />
+        {/* The closing beat, and the page's one loud ground: the lane at blue
+            hour, at 0.90, rising out of the dark the gains frame dissolves
+            into. The lamp is gone — its line, cone, node and ignition were a
+            light fixture drawn on the page, and what the section is actually
+            for is three pieces of type. They stand on the plate itself,
+            carried by the plate's own darkening, and the closing line keeps
+            the one place the accent carries text.
+
+            It is the lane rather than the valley the gains stand on, and the
+            picture decided that. The valley is the brightest frame in the set
+            by 20 L*, and at 0.90 the closing line measured 1.00 against a 3.0
+            floor on it — the only way to carry the words on that frame is to
+            darken it back to the haze this phase exists to remove. The lane is
+            the darkest, so it can be a photograph and carry type at the same
+            time. It also gives the page the alternation the ground is for:
+            photograph, clean dark, photograph. */}
+        {/* The breathing marker that stood here is gone, and taking it out is
+            what buys the finale its dissolve. Keyed half a viewport above
+            itself it sat 450px below the gains, so the climb into the closing
+            ran in two steps with the steep one first. Without it the ramp is
+            one run from the gains zone to the closing — 0.81 viewports at
+            1440×900, 0.74 at 390×844. */}
 
         <section
           data-index-section=""
-          data-stage-plate="2"
-          data-stage-strength="0.2"
+          data-stage-plate="1"
+          data-stage-strength="0"
           className="relative overflow-hidden px-4 pb-24 pt-16 text-ink md:pb-32 md:pt-24"
         >
           <Reveal className="mx-auto flex max-w-6xl flex-col items-center text-center">

@@ -143,9 +143,18 @@ export function SiteHeader() {
                 <Link
                   href={item.href}
                   onClick={() => setOpen(false)}
+                  // The active and hovered label is `resin-light`, not
+                  // `amber`. Amber is a mark on this site and never text, and
+                  // over a photograph it could not carry the state anyway: at
+                  // 13px it measured 3.53 on home and 2.95 on About against a
+                  // 4.5 floor. Cream with the underline alone was the other
+                  // way out, but the underline is desktop-only, so a phone
+                  // would show no active state at all. `resin-light` is the
+                  // palette's own accent-text-on-dark and clears the floor at
+                  // both viewports with the warm note intact.
                   className={cn(
-                    "group relative block py-2 text-[0.8125rem] font-semibold uppercase leading-[1.4] tracking-[0.08em] text-ink transition-colors duration-200 hover:text-amber md:py-1",
-                    active && "text-amber"
+                    "group relative block py-2 text-[0.8125rem] font-semibold uppercase leading-[1.4] tracking-[0.08em] text-ink transition-colors duration-200 hover:text-resin-light md:py-1",
+                    active && "text-resin-light"
                   )}
                 >
                   {item.label}

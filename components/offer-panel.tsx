@@ -40,9 +40,11 @@ interface OfferPanelProps {
 //
 // The photograph used to be the whole panel — full-bleed, edge to edge, with
 // the words laid over it. It is an object now, sized and framed, standing on
-// the page's own quiet ground with empty floor all around it. That emptiness
-// is the point: the stage drops to 0.18 through the pin, so what the reader
-// sees is a dark room with one lit picture in it. The frame sticks while the
+// clean dark ground with empty floor all around it. That emptiness is the
+// point: the stage is held at nothing through the pin — not at the 0.18 haze
+// it used to carry — so what the reader sees is a dark room with one lit
+// picture in it, and the picture is the brightest thing in the section by
+// design: no plate behind it, no dimming, no filter. The frame sticks while the
 // reader scrolls through it; the words fire once on the first in-view
 // crossing and play on the clock. Before mount and under reduced motion the
 // panel renders unpinned with everything visible, so the exported HTML is the
@@ -111,7 +113,7 @@ export function OfferPanel({
       ref={ref}
       data-index-section=""
       data-stage-plate="1"
-      data-stage-strength="0.18"
+      data-stage-strength="0"
       className={cn("relative", active && "h-[190svh] md:h-[240svh]")}
     >
       <div
