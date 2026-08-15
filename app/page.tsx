@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import ScrollExpandMedia from "@/components/ui/scroll-expansion-hero";
 import { StatCounter } from "@/components/stat-counter";
 import { Reveal } from "@/components/reveal";
@@ -10,8 +11,6 @@ import { EdgeWordmark, SectionIndex } from "@/components/edge-furniture";
 import { ButtonLink } from "@/components/ui/button";
 import { imagePreload } from "@/lib/images";
 import { hero, whatWeDo, gain } from "@/content/home";
-
-const offerIcons = ["globe", "graduation"] as const;
 
 // The photograph "What you gain" is built on, sharp at one end and defocused
 // under the words at the other: the valley under open sky, the ridge running
@@ -30,7 +29,9 @@ const gainImage = "/images/pt/IMG_4619-valley.jpg";
 // neither: it is a haze with shapes in it, which is what every quiet zone
 // below used to render.
 const plates: StagePlate[] = [
-  // The clearing: the road between the stone walls under flat overcast light.
+  // The clearing, and the loud passage between the two offer panels: the road
+  // between the stone walls under flat overcast light. The clearing holds it
+  // at nothing and the passage is the one place it comes up to full strength.
   { src: "/images/pt/IMG_4582-road.jpg", position: "45% 100%" },
   // The panels' ground. They now carry their own photographs as objects, so
   // this plate is held at nothing under them.
@@ -230,15 +231,74 @@ export default function HomePage() {
               breathing, not a gap between two surfaces. */}
           <div className="mt-10 md:mt-24">
             {whatWeDo.cards.map((card, i) => (
-              <OfferPanel
-                key={card.title}
-                title={card.title}
-                text={card.text}
-                image={card.image}
-                index={i}
-                icon={offerIcons[i] ?? "globe"}
-                flip={i % 2 === 1}
-              />
+              <Fragment key={card.title}>
+                {/* The loud passage between the two panels. Two quiet zones in
+                    a row is the one thing the rhythm forbids, and the panels
+                    were the second and third of four: the road between the
+                    stone walls comes up to full strength here, carrying no
+                    text at all, so the reader crosses a photograph between the
+                    two readings instead of one long dark stretch. It is the
+                    plate the page already fetches for the clearing and has
+                    never actually shown.
+
+                    What the reader crosses with nothing to read is not this
+                    block's height — it is the gap between the last row of one
+                    panel's prose leaving the top of the window and the first
+                    row of the next one's entering the bottom, and the panels
+                    are pinned, so each of those costs most of a screen on top
+                    of the pin. That gap is 0.98 of a viewport on desktop and
+                    0.93 on a phone, which is the ceiling: a longer one is a
+                    passage where only the background changes.
+
+                    The four markers are why the block is taller than the gap.
+                    A zone is keyed half a window above its own middle, so left
+                    to the defaults the crossfade would start under the words
+                    still leaving and finish under the words already arriving —
+                    measured that way, the second panel's title came in over a
+                    0.8 plate at 2.45 against a 3.0 floor. These put the two
+                    ramps and the plateau between them inside the gap instead:
+                    quiet, up, hold, down, quiet. The plate is at full strength
+                    for 0.81 of a viewport on both, and every ramp crosses its
+                    own half-way point with the words off the screen. The two
+                    viewports carry different numbers because their prose sits
+                    at different heights inside the frame. */}
+                {i > 0 && (
+                  <div
+                    aria-hidden="true"
+                    data-stage-plate="0"
+                    data-stage-strength="0.9"
+                    className="relative h-[130svh] md:h-[145svh]"
+                  >
+                    <span
+                      data-stage-plate="0"
+                      data-stage-strength="0"
+                      className="absolute inset-x-0 top-0 h-0 md:top-[18svh]"
+                    />
+                    <span
+                      data-stage-plate="0"
+                      data-stage-strength="0.9"
+                      className="absolute inset-x-0 top-[14svh] h-0 md:top-[48svh]"
+                    />
+                    <span
+                      data-stage-plate="0"
+                      data-stage-strength="0.9"
+                      className="absolute inset-x-0 top-[85svh] h-0 md:top-[108svh]"
+                    />
+                    <span
+                      data-stage-plate="0"
+                      data-stage-strength="0"
+                      className="absolute inset-x-0 top-[99svh] h-0 md:top-[138svh]"
+                    />
+                  </div>
+                )}
+                <OfferPanel
+                  title={card.title}
+                  text={card.text}
+                  image={card.image}
+                  index={i}
+                  flip={i % 2 === 1}
+                />
+              </Fragment>
             ))}
           </div>
         </section>

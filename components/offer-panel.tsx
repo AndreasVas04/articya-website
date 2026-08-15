@@ -2,13 +2,8 @@
 
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { useReducedMotion } from "framer-motion";
-import { Globe, GraduationCap } from "lucide-react";
 import { ResponsiveImage } from "@/components/responsive-image";
 import { cn } from "@/lib/utils";
-
-// Icons live here because component references can't cross the
-// server/client boundary as props.
-const icons = { globe: Globe, graduation: GraduationCap };
 
 // Text plays on the clock, never on the scrollbar. Scrubbed by pin progress
 // a real flick collapses the whole entrance into a couple of frames and the
@@ -23,38 +18,49 @@ const FADE: CSSProperties = { opacity: 0 };
 const DRAW: CSSProperties = { scale: "0 1" };
 
 // How wide the photograph renders, so the browser fetches that width and no
-// more: 42% of the container up to 520px on desktop, a stacked block below it.
-const PHOTO_SIZES = "(min-width: 768px) min(42vw, 520px), 72vw";
+// more: the 29% column on desktop, a stacked block below it.
+const PHOTO_SIZES = "(min-width: 768px) 29vw, 72vw";
+
+// The eyebrow label, one per panel, in the order the panels appear. Like the
+// numerals it is pseudo-content and never enters the DOM — the site's visible
+// text is frozen, and both of these are marks rather than strings. CSS
+// uppercases them.
+//
+// Both are held to eight characters, and that is a measurement rather than a
+// preference: the numeral leads the row at 2.6× the heading's cap height, so
+// on a narrow desktop it takes most of the 32% column on its own. Measured
+// across every width from 768 up, eight characters keep the label inside the
+// column plus its gap and clear of the photograph; "Development" reached the
+// picture's edge at 768.
+const EYEBROWS = ["Mobility", "Practice"];
 
 interface OfferPanelProps {
   title: string;
   text: string;
   image: string;
   index: number;
-  icon: keyof typeof icons;
   flip?: boolean;
 }
 
-// A panel staged as a pinned scroll beat: text on one side, a floating
-// photograph on the other, and the two sides swap between the two panels.
+// A panel staged as a pinned scroll beat, composed to section A of
+// design/REFERENCE-LANGUAGE.md: text on one side, a photograph on the other
+// entering the section 12% higher than the words, and the two sides swap
+// between the two panels.
 //
-// The photograph used to be the whole panel — full-bleed, edge to edge, with
-// the words laid over it. It is an object now, sized and framed, standing on
-// clean dark ground with empty floor all around it. That emptiness is the
-// point: the stage is held at nothing through the pin — not at the 0.18 haze
-// it used to carry — so what the reader sees is a dark room with one lit
-// picture in it, and the picture is the brightest thing in the section by
-// design: no plate behind it, no dimming, no filter. The frame sticks while the
-// reader scrolls through it; the words fire once on the first in-view
-// crossing and play on the clock. Before mount and under reduced motion the
-// panel renders unpinned with everything visible, so the exported HTML is the
-// resting state.
+// The photograph is an object, sized and framed by nothing at all, standing on
+// clean dark ground with empty floor around it. That emptiness is the point:
+// the stage is held at nothing through the pin, so what the reader sees is a
+// dark room with one lit picture in it, and the picture is the brightest thing
+// in the section by design — no plate behind it, no dimming, no filter. The
+// frame sticks for exactly one viewport of scroll; the words fire once on the
+// first in-view crossing and play on the clock. Before mount and under reduced
+// motion the panel renders unpinned with everything visible, so the exported
+// HTML is the resting state.
 export function OfferPanel({
   title,
   text,
   image,
   index,
-  icon,
   flip = false,
 }: OfferPanelProps) {
   const ref = useRef<HTMLElement | null>(null);
@@ -83,7 +89,6 @@ export function OfferPanel({
     return () => observer.disconnect();
   }, [entered]);
 
-  const Icon = icons[icon];
   const active = mounted && !reducedMotion;
 
   // The hidden half of a text entrance exists only between mount and the
@@ -114,77 +119,90 @@ export function OfferPanel({
       data-index-section=""
       data-stage-plate="1"
       data-stage-strength="0"
-      className={cn("relative", active && "h-[190svh] md:h-[240svh]")}
+      className={cn("relative", active && "h-[200svh]")}
     >
+      {/* The ground is held down for the whole pin rather than only at the
+          section's middle. A zone is keyed half a viewport above its own
+          centre, so the section's own marker alone lets the climb toward the
+          loud passage below start while the words are still being read; these
+          two put a quiet key on the first and last frame of the pin. */}
+      {active && (
+        <>
+          <div
+            aria-hidden="true"
+            data-stage-plate="1"
+            data-stage-strength="0"
+            className="absolute inset-x-0 top-1/4 h-0"
+          />
+          <div
+            aria-hidden="true"
+            data-stage-plate="1"
+            data-stage-strength="0"
+            className="absolute inset-x-0 top-3/4 h-0"
+          />
+        </>
+      )}
       <div
         className={cn(
           "relative",
           active ? "sticky top-0 h-svh" : "min-h-[92svh]"
         )}
       >
-        {/* The inset keeps the block off the viewport edge at every width —
-            the photograph is an object on the ground, so it must never run
-            out to the screen's own border. */}
         <div
           className={cn(
-            "offer-panel-inset relative mx-auto flex w-full items-center",
+            "relative flex w-full items-center px-4 md:px-0",
             active ? "h-full" : "min-h-[92svh] py-24 md:py-32"
           )}
         >
           <div
             className={cn(
-              "relative flex w-full flex-col items-center gap-12 md:flex-row md:items-center md:gap-[8vw]",
-              flip && "md:flex-row-reverse"
+              "offer-panel-grid relative w-full",
+              flip && "offer-panel-grid-flip"
             )}
           >
-            <div ref={textRef} className="relative w-full md:flex-1">
-              <div className="relative">
-                <span
-                  aria-hidden="true"
-                  className="flex size-12 items-center justify-center rounded-full border border-pine/30 text-pine"
-                  style={enter(0, FADE)}
-                >
-                  <Icon className="size-6" strokeWidth={1.5} />
-                </span>
-                {/* The ghosted numeral rides the heading as pseudo-content,
-                    so no character of it enters the DOM. */}
-                <h3
-                  className="ghost-numeral relative mt-6 font-display text-[clamp(2.3rem,6vw,5rem)] font-semibold leading-[0.94] tracking-[-0.025em] text-ink"
-                  style={{ ...enter(0, LIFT), "--ghost-num": `"0${index + 1}"` } as CSSProperties}
-                >
-                  {title}
-                </h3>
-                <span
-                  aria-hidden="true"
-                  className="mt-4 block h-[1.25px] w-16 origin-left bg-amber"
-                  style={enter(1, DRAW)}
-                />
-                {/* The paragraph lifts as one block and its sentences light up
-                    inside it: a transform on a non-replaced inline box does
-                    nothing, and making the spans inline-block to earn one would
-                    stop them wrapping across lines. */}
-                <p
-                  className="mt-5 max-w-[44ch] text-[clamp(1rem,1.3vw,1.16rem)] leading-[1.66] text-ink"
-                  style={enter(2, RISE)}
-                >
-                  {groups.map((group, i) => (
-                    <span key={i} style={enter(2 + i, FADE)}>
-                      {group}
-                      {i < groups.length - 1 ? " " : ""}
-                    </span>
-                  ))}
-                </p>
-              </div>
+            <div ref={textRef} className="offer-panel-text relative w-full">
+              {/* Reading left to right: the numeral, a 48px amber rule, the
+                  label. The numeral's vertical centre is this row, so its
+                  lower half falls across the heading's first word. */}
+              <span
+                aria-hidden="true"
+                className="offer-eyebrow"
+                style={
+                  {
+                    ...enter(0, FADE),
+                    "--ghost-num": `"0${index + 1}"`,
+                    "--eyebrow": `"${EYEBROWS[index] ?? ""}"`,
+                  } as CSSProperties
+                }
+              >
+                <span className="offer-numeral" />
+                <span className="offer-eyebrow-rule" style={enter(0, DRAW)} />
+                <span className="offer-eyebrow-text" />
+              </span>
+              <h3
+                className="offer-panel-title mt-6 font-display font-semibold tracking-[-0.025em] text-ink"
+                style={enter(0, LIFT)}
+              >
+                {title}
+              </h3>
+              {/* The paragraph lifts as one block and its sentences light up
+                  inside it: a transform on a non-replaced inline box does
+                  nothing, and making the spans inline-block to earn one would
+                  stop them wrapping across lines. */}
+              <p
+                className="mt-5 max-w-[44ch] text-[clamp(1rem,1.3vw,1.16rem)] leading-[1.66] text-ink"
+                style={enter(2, RISE)}
+              >
+                {groups.map((group, i) => (
+                  <span key={i} style={enter(2 + i, FADE)}>
+                    {group}
+                    {i < groups.length - 1 ? " " : ""}
+                  </span>
+                ))}
+              </p>
             </div>
 
-            {/* The photograph: an object with ground around it, not a
-                background. 42% of the container to a 520px cap, 3/4 portrait,
-                a 1.25px amber outline drawn inset so it sits on the picture's
-                own edge, and a long soft shadow seating it on the floor. */}
-            <div
-              className="offer-panel-photo relative w-[72%] max-w-[320px] shrink-0 md:w-[42%] md:max-w-[520px]"
-              style={enter(1, LIFT)}
-            >
+            <div className="offer-panel-photo relative" style={enter(1, LIFT)}>
               <ResponsiveImage
                 src={image}
                 alt=""

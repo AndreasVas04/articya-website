@@ -325,34 +325,154 @@ body {
   );
 }
 
-/* The offer panels are full-bleed, so their text tracks the viewport edge
-   rather than the 72rem content column: in the column a 576px block starts
-   400px in on a 1920 screen, which reads as floating toward the middle rather
-   than anchored to its side. The gutter grows with the screen — ~90px at 1440,
-   ~140px at 1920 — and is clamped at both ends so a laptop keeps a frame and
-   an ultrawide never drifts the block back inward. */
-.offer-panel-inset {
-  padding-inline: 1rem;
-}
-@media (min-width: 768px) {
-  .offer-panel-inset {
-    padding-inline: 4rem;
+/* The offer panels' composition, measured off the reference set — see
+   design/REFERENCE-LANGUAGE.md section A. Five tracks across the viewport,
+   and the two outer ones are the margins: 17% on the text's side, 12% on the
+   photograph's, with 32% of text and 29% of picture either side of a 10% gap.
+   The sides alternate between the two panels, so the whole geometry mirrors
+   and the margins swap with it.
+   Everything here is layered, so a Tailwind utility on the same element still
+   wins — which is why each property below has exactly one owner and the
+   markup carries no width, gap or margin utility of its own. */
+@layer components {
+  /* Mobile stacks: a narrow screen cannot afford side placement. The block is
+     centred in the frame below the chrome rather than in the whole frame —
+     the header is fixed and carries no fill, so a row centred against the
+     window's own middle lands the eyebrow level with the wordmark. */
+  .offer-panel-grid {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3rem;
+    padding-top: 4rem;
   }
-}
-@media (min-width: 1280px) {
-  .offer-panel-inset {
-    padding-inline: clamp(5rem, 10.42vw - 60px, 10rem);
+  @media (min-width: 768px) {
+    .offer-panel-grid {
+      display: grid;
+      grid-template-columns: 17% 32% 10% 29% 12%;
+      align-items: start;
+      gap: 0;
+      /* Half the photograph's lift below, so the composition's bounding box
+         is centred in the frame rather than hanging above it. */
+      padding-top: 6svh;
+    }
+    /* Both on row 1 explicitly. Auto-placement packs sparsely and never moves
+       back up a row, so on the flipped panel — where the photograph's column
+       comes before the text's but the text comes first in the DOM — the
+       picture would drop to a second row of its own. */
+    .offer-panel-grid > .offer-panel-text,
+    .offer-panel-grid > .offer-panel-photo {
+      grid-row: 1;
+    }
+    .offer-panel-grid > .offer-panel-text {
+      grid-column: 2;
+    }
+    .offer-panel-grid > .offer-panel-photo {
+      grid-column: 4;
+    }
+    .offer-panel-grid-flip {
+      grid-template-columns: 12% 29% 10% 32% 17%;
+    }
+    .offer-panel-grid-flip > .offer-panel-text {
+      grid-column: 4;
+    }
+    .offer-panel-grid-flip > .offer-panel-photo {
+      grid-column: 2;
+    }
   }
-}
 
-/* The offer panels' photograph as an object on the ground: the outline is
-   drawn inset so it lands on the picture's own last row rather than outside
-   it, and the shadow is long and soft enough to read as the floor receiving
-   the picture rather than as a border with a blur on it. */
-.offer-panel-photo {
-  outline: 1.25px solid color-mix(in srgb, var(--color-amber) 34%, transparent);
-  outline-offset: -1.25px;
-  box-shadow: 0 40px 90px rgba(0, 0, 0, 0.55);
+  /* The photograph is 3:4 and carries no border, ring, shadow or radius — the
+     reference frame is the picture and nothing else. It starts 12% of the
+     section above the text block's top edge: the two columns are aligned to
+     one line and this margin lifts the picture off it, which is what stops
+     the pair reading as a row of a grid. The width cap is the height rule
+     turned around — 86% of the section, at 3:4 — so on a window wide enough
+     for the column to outgrow it the picture stops instead of overrunning the
+     frame. Below about a 2.2:1 window the column is the narrower of the two
+     and the cap never binds. */
+  .offer-panel-photo {
+    width: 72%;
+    max-width: 320px;
+    aspect-ratio: 3 / 4;
+  }
+  @media (min-width: 768px) {
+    .offer-panel-photo {
+      width: min(100%, 64.5svh);
+      max-width: none;
+      margin-top: -12svh;
+    }
+  }
+
+  /* The eyebrow row: numeral, rule, label, left to right on one line, sitting
+     above the heading. The rule used to sit under the heading, which is the
+     wrong axis — it belongs beside the words it labels. */
+  .offer-eyebrow {
+    position: relative;
+    /* In front of the heading. The numeral overlaps it, and an element that
+       comes first in the DOM would otherwise paint under it. */
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  /* The numeral is a zero-height box, so it contributes its own advance width
+     to the row — which is what keeps the reading order numeral → rule → label
+     — and nothing at all to the row's height. The glyph overflows it, centred
+     on the row, and falls across the heading below. */
+  .offer-numeral {
+    display: grid;
+    place-items: center;
+    height: 0;
+    font-family: var(--font-display);
+    /* 2.6× the heading's cap height. The two ends are solved rather than
+       rounded: measured on the rendered faces the heading's cap is 0.660 of
+       its size and these digits are 0.687 of theirs, which lands the ratio at
+       2.60 on both viewports where the clamp's ends bind. */
+    font-size: clamp(5.75rem, 15vw, 13.27rem);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.025em;
+    color: color-mix(in srgb, var(--color-ink) 8%, transparent);
+    pointer-events: none;
+  }
+  .offer-numeral::before {
+    content: var(--ghost-num, "");
+  }
+  .offer-eyebrow-rule {
+    flex: none;
+    width: 48px;
+    height: 1.25px;
+    background: var(--color-amber);
+    transform-origin: left;
+  }
+  /* Both marks are pseudo-content: the site's visible text is frozen and
+     checked character for character, and these are marks rather than strings.
+     Amber carries the label here — the ceiling that forbids it text was
+     measured on the cream ground; on this floor it reads at 5.98. */
+  .offer-eyebrow-text::before {
+    content: var(--eyebrow, "");
+    display: block;
+    font-size: 11px;
+    line-height: 1.2;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--color-amber);
+  }
+
+  /* 5.9% of the viewport, and a measure narrow enough that both frozen titles
+     break onto exactly two lines at either viewport — never one, never three. */
+  .offer-panel-title {
+    max-width: 10ch;
+    font-size: clamp(2.3rem, 6vw, 5rem);
+    line-height: 1.12;
+  }
+  @media (min-width: 768px) {
+    .offer-panel-title {
+      font-size: 5.9vw;
+    }
+  }
 }
 
 /* `.photo-midday` stood here: a `saturate(0.82) hue-rotate(-4deg)` chain on
@@ -364,28 +484,6 @@ body {
    vegetation still sat 4.68 L* above the set with the filter running. Graded,
    it lands 0.06 ΔE76 off the mean of IMG_4582 and IMG_4619, and one encode
    carries it instead of a filter running on every paint. */
-
-/* A section's number, set as pseudo-content so not one character of it enters
-   the DOM — the site's visible text is frozen, and this is a mark rather than
-   a string. It sits behind its heading at cream 7.5%, which is low enough to
-   read as the ground remembering a number and never as a second headline. */
-.ghost-numeral {
-  /* Contains the -1 so the numeral sits behind its own heading and never
-     drops behind the page's photographic stage. */
-  isolation: isolate;
-}
-.ghost-numeral::before {
-  content: var(--ghost-num, "");
-  position: absolute;
-  left: -0.06em;
-  top: -0.42em;
-  z-index: -1;
-  pointer-events: none;
-  font-size: clamp(6rem, 15vw, 13rem);
-  font-weight: 700;
-  line-height: 1;
-  color: color-mix(in srgb, var(--color-ink) 7.5%, transparent);
-}
 
 /* "What you gain" — one photograph, edge to edge, going out of focus across
    itself. There is no second picture and no panel: the same frame is drawn
