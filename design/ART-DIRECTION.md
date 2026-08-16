@@ -78,9 +78,11 @@ not covered twice.
   large empty bands above and below the content.
 - A full screen given to a photograph with no content on it at all.
 - Two consecutive passages of quiet dark ground.
-- Background photographs held at 0.05–0.74 strength. At that level a photograph
-  is neither a picture nor a clean ground — it is a grey-green haze with ghost
-  shapes in it. Strength is either ≥0.75 or ≤0.04.
+- Background photographs held at anything between 0.00 and 1.00. At 0.05–0.74 a
+  photograph is neither a picture nor a clean ground — it is a grey-green haze
+  with ghost shapes in it — and 0.90, which replaced it, is a picture with a
+  veil on. Strength is 1.00 or 0.00; the only numbers in between are the
+  crossfades themselves. See `REFERENCE-LANGUAGE.md` §F1.
 
 **Treatments**
 - Any panel, tile, card or frosted box behind text.
@@ -106,8 +108,11 @@ not covered twice.
 
 ## 4 · Section-by-section notes
 
-**Hero** — approved and close to final. IMG_4585, the group on the path above the
-valley. Do not restructure it.
+**Hero** — settled. IMG_4585, the group on the path above the valley, and the
+plate is now painted twice with the h1 between the copies (§8). The five frozen
+mechanics stay frozen; the crop, the block's height in the frame and the mask
+are the three numbers that place the words on the skyline and they are tuned
+together — move one and re-measure the other two.
 
 **The lede** — "A youth organization connecting young people in Cyprus…" is
 currently under-weighted. It needs more presence in the composition. It must not
@@ -200,7 +205,48 @@ bolting them on individually has produced worse results than leaving them out.
 
 ## 8 · Current state
 
-`a685079`. The dark world, the Portugal set, the alternating panels and the
-measured geometry are all in. The contrast sweep is clean. What is not yet
-solved is the one thing that matters most: the composition does not yet read as
-award-level. The zones named in §4 are where that work sits.
+`9647a04`. The dark world, the Portugal set, the alternating panels and the
+measured geometry are all in, and four things have landed on top of them.
+
+**The panels are unpinned.** 200svh and the sticky frame are gone; each panel is
+one viewport, scrolled through. Home lost 1800px at 1440×900 and 1531px at
+390×844 — 9.34 viewports down to 7.32.
+
+**The ledger is polarised.** 1.00 or 0.00 and nothing held in between; 0.90 is
+struck out with the rest. Reading down: loud, quiet, loud, quiet, loud, quiet.
+Numbers in `REFERENCE-LANGUAGE.md` §F1.
+
+**The road passage carries words.** It was 0.98 of a viewport of photograph with
+nothing to read on it. It now carries the sentence the panel above it ends on —
+"Receive a Youthpass certificate recognizing your learning." — as a statement at
+3.5% of the viewport width with its own last clause under it. Nothing was
+written and nothing moved in the document: text can only be given to a zone
+adjacent to it in the source, because parity compares each page as one ordered
+string. That constraint decides every future move of this kind.
+
+**The hero is split.** The poster is painted twice with the h1 between the
+copies — the reference set's "type inside the depth" (§6) — the front copy
+masked to the land traced off the frame's own skyline, so the hills cross the
+headline's feet. The label reads above the headline now, as an eyebrow: it has
+to, or the land swallows it. The five frozen mechanics are untouched.
+
+The contrast sweep is clean: 188 text elements over four pages, both viewports,
+worst pixel per element across every scroll position, none below its floor. The
+old 2.22/1.78 headline defect is closed — 5.27/5.27 desktop, 5.34/6.28 mobile.
+
+What is still open:
+
+- **The lede, "What you gain", the closing** — §4 above. Under-designed, and the
+  panels' geometry is now the only part of home that is settled.
+- **Fencing in the road frame.** `IMG_4582-road` carries a chain-link fence in
+  its top-left corner, and the passage is now a screen the reader stops and
+  reads on, so it is in the frame the longest of anything on the page. It breaks
+  the second photography rule in §2. The crop is already 56% of the original
+  area, under the 60% floor, so this cannot be cropped out — it needs a
+  different frame or a different pan.
+- **The home h1 under reduced motion.** The hero renders expanded, so the
+  headline and the label sit at opacity 0. Pre-existing, still open.
+- **Real-device confirmation.** Everything above is measured in a headless
+  browser at 1440×900 and 390×844. §7 stands: emulation does not reproduce the
+  phone, and the unpinned panels, the shortened passage and the hero's split
+  have not been through a real one.

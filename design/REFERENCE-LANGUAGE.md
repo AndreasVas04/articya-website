@@ -28,6 +28,23 @@ model for ArtiCYa's offer panels.
 Sides **alternate**: section 01 text-left/photo-right, section 02
 photo-left/text-right, section 03 text-left/photo-right.
 
+**Built, and the pin is gone with it.** ArtiCYa's panels were 200svh sections
+with the frame stuck to the viewport for a full screen of scroll. That bought
+nothing the composition was not already doing — the photograph's −12svh lift
+and the numeral's overlap are what break the horizontal band — and cost two
+screens in which nothing on the page moved. Each panel is now `min-h-svh`,
+scrolled straight through, and home lost 1800px at 1440×900 and 1531px at
+390×844 for it. The layout is the one reduced motion always saw.
+
+**This geometry also settles what the panels cannot take.** The heading and the
+photograph are in different columns by construction, so "type inside the depth"
+(§6 of ART-DIRECTION) has nowhere to land here: vertical occlusion needs the
+type *on* the picture, and horizontal occlusion eats whole letters — burying
+enough of the Training Courses heading to read, ~110px at 85px type, hides the
+"T" and the "C" outright, and both lines are left-aligned to the same x. The
+device belongs to full-bleed frames. Do not buy it by moving this geometry: the
+alternation is worth more than one occlusion.
+
 ### A2. The photograph
 
 | | value |
@@ -236,14 +253,55 @@ Reading down any reference page, the ground alternates:
 
 **LOUD → QUIET → LOUD → QUIET → LOUD**
 
-- LOUD = photograph at ≥ 0.90, little or no text
-- QUIET = clean dark ground at 0.00, text carries the passage
+- LOUD = photograph at **1.00**
+- QUIET = clean dark ground at **0.00**
 
-**Never two QUIET zones in a row.** ArtiCYa currently has four consecutive
-quiet zones on home — that is the single largest deviation from the references.
+**Never two QUIET zones in a row.** Every LOUD zone must be **≥ 0.8 viewport
+heights** so it registers as a breath, not a flash.
 
-Every LOUD zone must be **≥ 0.8 viewport heights** so it registers as a
-breath, not a flash.
+### F1. Home, as built
+
+The ledger is polarised: 1.00 or 0.00 and no value in between held anywhere.
+0.90 was struck out with the rest — a photograph at 0.90 is a picture with a
+veil on it, not a picture and not a floor. Sampled every quarter viewport down
+the page:
+
+| zone | ground | carries |
+|---|---|---|
+| hero | **1.00** | headline, label, intro |
+| clearing + panel 01 | **0.00** | heading, lead, ledger, panel prose |
+| the road | **1.00** | the statement the panel above ends on |
+| panel 02 | **0.00** | panel prose |
+| what you gain | **1.00** | heading, four lines |
+| closing | **0.00** | statement, line, CTA |
+
+**Every sample is 1.00 or 0.00 on desktop** (0 of 27 in between). One sample on
+a phone reads 0.07, inside the finale's own 0.74-viewport dissolve. Nothing is
+*held* between 0.05 and 0.90 anywhere on the page.
+
+The road passage is the one screen where words stand on a photograph at full
+strength, and two numbers make that possible. Its four zone keys give ramps of
+0.18 viewport each, holding the plate under 0.35 for as long as either panel's
+prose is on screen, and ≥0.9 for 0.87 of a viewport (desktop) / 0.80 (mobile) —
+the floor above, with no headroom left. And `.stage-plate-shade` releases to
+**62%** through the middle rather than 16%: a scrolling block passes through
+every row of the window, so the plate's own full-width ramp has to carry the
+type everywhere, not only where it comes to rest. At 16% cream measured 1.31 on
+the brightest pixel of that road against a 4.5 floor.
+
+### F2. No screen without words
+
+The corollary of F, and the harder half. A LOUD zone with nothing written on it
+is a stall however short it is kept. Home has none now: the longest stretch on
+the page with nothing painted is **175px desktop / 225px mobile** — 0.19 and
+0.27 of a viewport, the handover while one clock entrance has left and the next
+has not yet fired. It was 0.98 of a viewport before the road took its sentence.
+
+Text may only be given to a new zone that is **adjacent to it in the document**
+— `scripts/verify-text-parity.mjs` compares each page's whole visible text as
+one ordered string, so a line that moves across the order fails parity on that
+page. The road's sentence works because the passage sits immediately after the
+first panel in the markup. Nothing else on home could have been put there.
 
 ---
 
