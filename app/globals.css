@@ -309,20 +309,38 @@ body {
   will-change: transform;
 }
 /* A plate's own darkening, and the whole of it. One shape for every plate:
-   the picture is carried at the top and the bottom, where the chrome crosses
-   it, and released through the whole middle where the reader is actually
-   looking at it. The per-plate floors this replaces (0.50 / 0.52 / 0.64) were
-   held flat across the entire middle band, which is why the photographs read
-   dark in their centres rather than only at their edges — a floor is a hold,
-   not a falloff, and a picture spends its whole middle inside it. */
-.stage-plate-shade {
-  background: linear-gradient(
-    to bottom,
-    color-mix(in srgb, var(--color-gold-anchor) 52%, transparent) 0%,
-    color-mix(in srgb, var(--color-gold-anchor) 16%, transparent) 22%,
-    color-mix(in srgb, var(--color-gold-anchor) 16%, transparent) 62%,
-    color-mix(in srgb, var(--color-gold-anchor) 70%, transparent) 100%
-  );
+   the picture carried hardest at the top and the bottom, where the chrome
+   crosses it, and released through the middle.
+
+   The middle used to release to 16%, and that was right while the stage was
+   scenery — no plate on this page ever had a word standing on it. It does
+   now. With the ledger polarised the stage is only ever *visible* in one
+   place, the loud passage between the two offer panels, and that passage
+   carries the sentence the panel above it ends on. Measured on the rendered
+   composite at 16%, cream on the brightest pixel of that road ran 1.31
+   against a 4.5 floor: the picture is an overcast frame and its road is very
+   nearly white. The release is 62% instead, which is what the worst pixel in
+   the whole traversal needs — a scrolling block passes through every row of
+   the window, so the darkening has to carry it everywhere, not only where it
+   comes to rest. It is the plate's own full-width, top-to-bottom ramp doing
+   it, which is the one device allowed between a photograph and the words on
+   it; nothing local is drawn behind the type.
+
+   The other place a plate shows through is where "What you gain" dissolves at
+   its two masked ends, and the deeper middle helps there rather than hurting:
+   that frame's own shade is 70% at both ends, so the stage behind it now
+   arrives at 52-62% and 65-70% instead of 52% and 36%, and the two sides of
+   the dissolve meet closer than they did. */
+@layer components {
+  .stage-plate-shade {
+    background: linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--color-gold-anchor) 52%, transparent) 0%,
+      color-mix(in srgb, var(--color-gold-anchor) 62%, transparent) 22%,
+      color-mix(in srgb, var(--color-gold-anchor) 62%, transparent) 62%,
+      color-mix(in srgb, var(--color-gold-anchor) 70%, transparent) 100%
+    );
+  }
 }
 
 /* The offer panels' composition, measured off the reference set — see

@@ -48,6 +48,28 @@ const plates: StagePlate[] = [
 // this one preload covers both.
 const heroPreload = imagePreload(hero.slides[0], "100vw");
 
+// The passage between the panels carries the closing sentence of the panel
+// above it, and the split is made here rather than in /content because the
+// string does not move: the passage sits immediately after the first panel in
+// the markup, so lifting the panel's last sentence out of its paragraph and
+// standing it on the photograph leaves the page's visible text, read top to
+// bottom, character for character what it was. Every other frozen line is a
+// screen or more away from the passage in that order and could not be given to
+// it at all. The heading and the body below it are the two halves of that one
+// sentence — they rejoin across the tag boundary, which is where the parity
+// check collapses whitespace.
+const panels = whatWeDo.cards.map((card, i) => {
+  if (i !== 0) return { ...card, handoff: null };
+  const sentences = card.text.split(/(?<=\.) /);
+  const last = sentences[sentences.length - 1];
+  const cut = last.indexOf(" recognizing");
+  return {
+    ...card,
+    text: sentences.slice(0, -1).join(" "),
+    handoff: { heading: last.slice(0, cut), body: last.slice(cut + 1) },
+  };
+});
+
 export default function HomePage() {
   return (
     <>
@@ -233,70 +255,107 @@ export default function HomePage() {
               stage simply goes quiet under them — so this margin is a beat of
               breathing, not a gap between two surfaces. */}
           <div className="mt-10 md:mt-24">
-            {whatWeDo.cards.map((card, i) => (
+            {panels.map((card, i) => (
               <Fragment key={card.title}>
-                {/* The loud passage between the two panels. Two quiet zones in
-                    a row is the one thing the rhythm forbids: the road between
-                    the stone walls comes up here, carrying no text at all, so
-                    the reader crosses a photograph between the two readings
-                    instead of one long dark stretch. It is the plate the page
-                    already fetches for the clearing and has never shown.
+                {/* The loud passage between the two panels, and the one screen
+                    on this page where words stand on a photograph at its own
+                    full strength. Two quiet zones in a row is the one thing the
+                    rhythm forbids: the road between the stone walls comes up
+                    here, so the reader crosses a picture between the two
+                    readings instead of one long dark stretch. It is the plate
+                    the page already fetches for the clearing and had never
+                    actually shown.
 
-                    Full strength, not 0.9. The ground on this page is now
-                    either a photograph or it is nothing — 1.00 or 0.00 and no
-                    value in between held anywhere — so the passage is the
-                    picture at its own strength and the panels either side of
-                    it are clean dark.
+                    Full strength, not 0.9. The ground on this page is either a
+                    photograph or it is nothing — 1.00 or 0.00 and no value in
+                    between held anywhere.
 
-                    What the reader crosses with nothing to read is not this
-                    block's height — it is the gap from the last row of one
-                    panel's prose leaving the top of the window to the first row
-                    of the next one's entering the bottom. Measured on the
-                    unpinned panels that gap is 0.99 of a viewport on desktop
-                    and 0.99 on a phone: the ceiling, since a longer one is a
-                    passage where only the background changes.
+                    It used to cross with nothing to read on it, 0.98 of a
+                    viewport of picture and no words, which is a stall inside
+                    the letter of the rule. It carries the sentence the panel
+                    above it ends on now: the promise the panel spends five
+                    lines earning, standing on the road at the size of a
+                    statement. Nothing was written for it and nothing moved on
+                    the page — see `panels` above for why this is the only
+                    string on the page that could be given to this screen.
 
-                    The four markers place the two ramps and the plateau inside
-                    that gap: quiet, up, hold, down, quiet. A zone is keyed half
-                    a window above its own middle, so left to the defaults the
-                    crossfade would start under the words still leaving and
-                    finish under the words already arriving — measured that way
-                    the second panel's title came in over a 0.8 plate at 2.45
-                    against a 3.0 floor. Each ramp is 0.18 of a viewport and
-                    carries under 0.35 of the picture for as long as any word is
-                    on the screen; the plate is at or above 0.9 for 0.87 of a
-                    viewport on desktop and 0.80 on a phone. Those two numbers
-                    are the whole budget — a longer breath and a gap inside 1.0
-                    viewport cannot both be had while the passage has nothing
-                    written on it. The two viewports carry different offsets
-                    because their prose sits at different heights in the frame. */}
+                    The four markers place the two ramps and the plateau under
+                    it: quiet, up, hold, down, quiet. A zone is keyed half a
+                    window above its own middle, so left to the defaults the
+                    crossfade would start under the words still leaving the
+                    panel above and finish under the words already arriving
+                    below — measured that way the second panel's title came in
+                    over a 0.8 plate at 2.45 against a 3.0 floor. Each ramp is
+                    0.18 of a viewport and holds under 0.35 of the picture for
+                    as long as either panel's prose is on the screen; the plate
+                    is at or above 0.9 for 0.87 of a viewport on desktop and
+                    0.80 on a phone. The two viewports carry different offsets
+                    because their prose sits at different heights in the
+                    frame. */}
                 {i > 0 && (
                   <div
-                    aria-hidden="true"
                     data-stage-plate="0"
                     data-stage-strength="1"
-                    className="relative h-[124svh] md:h-[143svh]"
+                    className="relative flex h-[124svh] items-center justify-center px-6 md:h-[143svh]"
                   >
                     <span
+                      aria-hidden="true"
                       data-stage-plate="0"
                       data-stage-strength="0"
                       className="absolute inset-x-0 top-0 h-0 md:top-[21svh]"
                     />
                     <span
+                      aria-hidden="true"
                       data-stage-plate="0"
                       data-stage-strength="1"
                       className="absolute inset-x-0 top-[16svh] h-0 md:top-[39svh]"
                     />
                     <span
+                      aria-hidden="true"
                       data-stage-plate="0"
                       data-stage-strength="1"
                       className="absolute inset-x-0 top-[89svh] h-0 md:top-[118svh]"
                     />
                     <span
+                      aria-hidden="true"
                       data-stage-plate="0"
                       data-stage-strength="0"
                       className="absolute inset-x-0 top-[105svh] h-0 md:top-[136svh]"
                     />
+                    {/* On the clock, once, like every other entrance on the
+                        page: the rule draws, the statement surfaces out of its
+                        clipped line, the qualifier rises under it. The two are
+                        one sentence and they read as one — the second is the
+                        first one's last clause, at the body step, so the break
+                        between them is a change of weight rather than a new
+                        thought. Neither is a heading element: this is a
+                        sentence carried on from the paragraph above, and
+                        marking a clause as a heading would tell a screen
+                        reader something that is not true. */}
+                    {panels[i - 1].handoff && (
+                      <StageScene className="relative max-w-[46rem] text-center">
+                        <span
+                          aria-hidden="true"
+                          className="stage-rule mx-auto block h-[1.25px] w-16 bg-amber"
+                        />
+                        <div className="stage-mask mt-5">
+                          <p
+                            className="stage-mask-rise font-display text-[clamp(1.75rem,7vw,2.6rem)] font-semibold leading-[1.12] tracking-[-0.025em] md:text-[3.5vw]"
+                            style={{ transitionDelay: "80ms" }}
+                          >
+                            {panels[i - 1].handoff!.heading}
+                          </p>
+                        </div>
+                        <div
+                          className="stage-rise"
+                          style={{ transitionDelay: "250ms" }}
+                        >
+                          <p className="mx-auto mt-4 max-w-[44ch] text-[clamp(1rem,1.3vw,1.16rem)] leading-[1.66] text-ink">
+                            {panels[i - 1].handoff!.body}
+                          </p>
+                        </div>
+                      </StageScene>
+                    )}
                   </div>
                 )}
                 <OfferPanel
