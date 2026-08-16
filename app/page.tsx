@@ -114,8 +114,9 @@ export default function HomePage() {
           </div>
         </ScrollExpandMedia>
 
-        {/* overflow-clip (not hidden) so the offer panels' sticky frames can
-            pin against the viewport. */}
+        {/* overflow-clip (not hidden) so the offer panels' ghosted numerals,
+            which overflow their own row by design, cannot open a horizontal
+            scrollbar on a narrow desktop window. */}
         <section className="relative overflow-clip text-ink">
           {/* No top padding on either viewport. Mobile spends the lever on
               the fold decision — the accent rule sits on the section's own

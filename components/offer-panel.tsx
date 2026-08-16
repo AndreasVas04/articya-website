@@ -42,20 +42,25 @@ interface OfferPanelProps {
   flip?: boolean;
 }
 
-// A panel staged as a pinned scroll beat, composed to section A of
-// design/REFERENCE-LANGUAGE.md: text on one side, a photograph on the other
-// entering the section 12% higher than the words, and the two sides swap
-// between the two panels.
+// A panel composed to section A of design/REFERENCE-LANGUAGE.md: text on one
+// side, a photograph on the other entering the section 12% higher than the
+// words, and the two sides swap between the two panels.
+//
+// One viewport, scrolled through, never pinned. The panel used to hold the
+// frame stuck for a full viewport of scroll inside a 200svh section, which
+// bought nothing the composition was not already doing — the photograph's
+// -12svh lift and the numeral's overlap are what break the horizontal band —
+// and cost two screens of scrolling in which the picture did not move. The
+// reference sections are 1.0 viewport and pass straight through.
 //
 // The photograph is an object, sized and framed by nothing at all, standing on
 // clean dark ground with empty floor around it. That emptiness is the point:
-// the stage is held at nothing through the pin, so what the reader sees is a
+// the stage is held at nothing under the panel, so what the reader sees is a
 // dark room with one lit picture in it, and the picture is the brightest thing
 // in the section by design — no plate behind it, no dimming, no filter. The
-// frame sticks for exactly one viewport of scroll; the words fire once on the
-// first in-view crossing and play on the clock. Before mount and under reduced
-// motion the panel renders unpinned with everything visible, so the exported
-// HTML is the resting state.
+// words fire once on the first in-view crossing and play on the clock; before
+// mount and under reduced motion everything is visible, so the exported HTML
+// is the resting state.
 export function OfferPanel({
   title,
   text,
@@ -119,41 +124,27 @@ export function OfferPanel({
       data-index-section=""
       data-stage-plate="1"
       data-stage-strength="0"
-      className={cn("relative", active && "h-[200svh]")}
+      className="relative"
     >
-      {/* The ground is held down for the whole pin rather than only at the
-          section's middle. A zone is keyed half a viewport above its own
-          centre, so the section's own marker alone lets the climb toward the
-          loud passage below start while the words are still being read; these
-          two put a quiet key on the first and last frame of the pin. */}
-      {active && (
-        <>
-          <div
-            aria-hidden="true"
-            data-stage-plate="1"
-            data-stage-strength="0"
-            className="absolute inset-x-0 top-1/4 h-0"
-          />
-          <div
-            aria-hidden="true"
-            data-stage-plate="1"
-            data-stage-strength="0"
-            className="absolute inset-x-0 top-3/4 h-0"
-          />
-        </>
-      )}
+      {/* The ground is held down across the whole panel rather than only at
+          its middle. A zone is keyed half a viewport above its own centre, so
+          the section's own marker alone lets the climb toward the loud passage
+          below start while the words are still being read; these two put a
+          quiet key on the panel's first and last frame. */}
       <div
-        className={cn(
-          "relative",
-          active ? "sticky top-0 h-svh" : "min-h-[92svh]"
-        )}
-      >
-        <div
-          className={cn(
-            "relative flex w-full items-center px-4 md:px-0",
-            active ? "h-full" : "min-h-[92svh] py-24 md:py-32"
-          )}
-        >
+        aria-hidden="true"
+        data-stage-plate="1"
+        data-stage-strength="0"
+        className="absolute inset-x-0 top-1/4 h-0"
+      />
+      <div
+        aria-hidden="true"
+        data-stage-plate="1"
+        data-stage-strength="0"
+        className="absolute inset-x-0 top-3/4 h-0"
+      />
+      <div className="relative">
+        <div className="relative flex min-h-svh w-full items-center px-4 py-16 md:px-0 md:py-0">
           <div
             className={cn(
               "offer-panel-grid relative w-full",
