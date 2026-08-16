@@ -10,7 +10,7 @@ import {
 } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { ResponsiveImage } from "@/components/responsive-image";
-import { cn } from "@/lib/utils";
+import { cn, withBasePath } from "@/lib/utils";
 
 // useLayoutEffect on the client, useEffect on the server: the effect it runs
 // only ever touches the DOM, so it is a no-op during server rendering, and
@@ -21,6 +21,11 @@ const useIsomorphicLayoutEffect =
 const EASE_IN_OUT_CUBIC: [number, number, number, number] = [0.65, 0, 0.35, 1];
 const SLIDE_INTERVAL_MS = 4500;
 const EXPAND_KEYS = ["ArrowDown", "PageDown", "End", " "];
+
+// The poster's own land silhouette, traced off the frame: everything below the
+// skyline, in the frame's 3:4 box. It is a mask rather than a picture, so it
+// carries no pixels of its own — see the plate that uses it below.
+const POSTER_RIDGE = "/images/pt/IMG_4585-ridge.svg";
 
 interface ScrollExpandMediaProps {
   slides: string[];
@@ -305,7 +310,7 @@ const ScrollExpandMedia = ({
           value that sizes the card, so the drop arrives with the growth
           rather than sitting under the collapsed card. */}
       <section
-        className="gold-field gold-field-chrome-top gold-field-open-bottom hero-drop-scope relative flex min-h-[100dvh] flex-col items-center justify-start overflow-hidden"
+        className="gold-field gold-field-chrome-top gold-field-open-bottom hero-drop-scope hero-plate relative isolate flex min-h-[100dvh] flex-col items-center justify-start overflow-hidden"
         style={{ "--hero-drop-progress": progress } as CSSProperties}
       >
         <motion.div
@@ -333,7 +338,7 @@ const ScrollExpandMedia = ({
             priority
             sizes="100vw"
             className="hero-poster object-cover saturate-[1.06] sepia-[0.08]"
-            style={{ objectPosition: "50% 32%" }}
+            style={{ objectPosition: "50% var(--hero-poster-y)" }}
           />
           {/* The plate's own darkening, and the whole of it. It carries the
               cream nav across the top of the picture and the headline under
@@ -457,35 +462,49 @@ const ScrollExpandMedia = ({
               </div>
             </div>
 
-            {/* The poster title, high in the frame over the sky lift where the
-                photograph is calmest and lightest — measured, not guessed: the
-                dark ridge and forest at the centre cannot carry dark ink, but
-                the lifted sky band clears 4.5:1 while the vista stays at full
-                strength. It hands off to the expanded state rather than being
-                cut: the group settles up and fades over the first third of the
-                expansion (`titleOpacity`/`titleShift`), on the same clock that
-                grows the card, so the opening becomes the gallery. The exit
-                transform rides this wrapper; each line's own load-rise rides
-                the inner span (individual `translate`), so the two channels
-                never fight. */}
+            {/* The poster title, standing on the skyline: the block sits high
+                enough that the words are on the open sky, which is the calmest
+                and lightest part of this frame, and low enough that the second
+                line's feet are in the hills, which is where the plate's second
+                half runs across them. The two viewports need different numbers
+                for the same relationship — the poster overflows the window's
+                height on a desktop and is fitted to it on a phone, so only one
+                of them can move the picture under the words, and the other
+                moves the words down the frame instead.
+
+                It hands off to the expanded state rather than being cut: the
+                group settles up and fades over the first third of the expansion
+                (`titleOpacity`/`titleShift`), on the same clock that grows the
+                card, so the opening becomes the gallery. The exit transform
+                rides this wrapper; each line's own load-rise rides the inner
+                span (individual `translate`), so the two channels never
+                fight. */}
             {(title || hintLabel) && (
               <div
-                className="pointer-events-none absolute inset-x-0 top-[15%] z-10 flex flex-col items-center px-4"
+                className="pointer-events-none absolute inset-x-0 top-[23.5%] z-10 flex flex-col items-center px-4 md:top-[15%]"
                 style={{
                   opacity: titleOpacity,
                   transform: `translateY(${titleShift}px)`,
                 }}
               >
-                {/* The hint precedes the headline in the source, then renders
-                    below it (`order-last`): the frozen visible-text order is
-                    "ArtiCYa · Cyprus" then "We are ArtiCYa" (it was the card's
-                    pill, ahead of the headline, in the original), and that
-                    order is content and must not drift — `order` moves only the
-                    paint, never the DOM text. */}
+                {/* The label reads above the headline, where the reference set
+                    puts an eyebrow, and that placement is load-bearing here:
+                    the headline is the lowest thing in this block, so it is the
+                    headline the land in front of the plate runs across. With
+                    the label under it, the label sat below the skyline and the
+                    foreground would have swallowed it whole.
+
+                    Its position in the source is unchanged. The frozen visible-
+                    text order is "ArtiCYa · Cyprus" then "We are ArtiCYa" (it
+                    was the card's pill, ahead of the headline, in the
+                    original), and that order is content: the strike and the
+                    label swap by `flex-col-reverse`, which moves only the
+                    paint, so the rule carries the eye down out of the label and
+                    into the words. */}
                 {hintLabel && (
-                  <div className="order-last mt-6 flex flex-col items-center gap-3">
-                    {/* A short strike of the same amber, carrying the eye from
-                        the headline down into the label. */}
+                  <div className="mb-6 flex flex-col-reverse items-center gap-3">
+                    {/* A short strike of the same amber, carrying the eye down
+                        out of the label and into the headline. */}
                     <span
                       aria-hidden="true"
                       className="hero-strike h-[1.25px] w-[88px] bg-amber"
@@ -571,6 +590,51 @@ const ScrollExpandMedia = ({
           </div>
 
         </div>
+
+        {/* The plate's second half, and the headline is between them. This is
+            the same photograph, the same crop and the same darkening as the
+            layer at the top of this section — drawn again over the words and
+            masked to its own land, so the skyline, the hills and everything
+            below them pass in front of the type instead of behind it. Nothing
+            about the picture changes: at rest the two layers are pixel for
+            pixel the layer they came from, and the split shows up only where
+            the words cross the ridge, which is the point.
+
+            It rides the headline's own exit rather than the poster's. The card
+            grows into this space as the poster leaves, and the land held at the
+            poster's opacity would lie across it; on the headline's clock the
+            layer is gone by the time the card has any size, which is the same
+            moment the words it is there for have gone.
+
+            Paint order is all this is. The expansion, the slideshow, the
+            hydration gate, the scroll restoration and the card's foot dissolve
+            are untouched — nothing here reads a state or writes one. */}
+        <motion.div
+          aria-hidden="true"
+          className="hero-ridge pointer-events-none absolute inset-0 z-20"
+          style={
+            {
+              "--ridge-mask": `url(${withBasePath(POSTER_RIDGE)})`,
+            } as CSSProperties
+          }
+          initial={false}
+          animate={{ opacity: titleOpacity }}
+          transition={{ duration: 0.2, ease: EASE_IN_OUT_CUBIC }}
+        >
+          <ResponsiveImage
+            src={bgImageSrc}
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="hero-poster object-cover saturate-[1.06] sepia-[0.08]"
+            style={{ objectPosition: "50% var(--hero-poster-y)" }}
+          />
+          <div
+            aria-hidden="true"
+            className="plate-shade pointer-events-none absolute inset-0 [--shade-bottom:8%] [--shade-color:var(--color-sky-anchor)] [--shade-mid:66%] [--shade-mid-from:8%] [--shade-mid-to:64%] [--shade-top:92%]"
+          />
+        </motion.div>
       </section>
     </div>
   );

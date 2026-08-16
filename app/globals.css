@@ -766,6 +766,42 @@ body {
   }
 }
 
+/* Type inside the depth. The hero's poster is drawn twice with the headline
+   between the two, and the copy in front is masked to the frame's own land —
+   the traced skyline and everything under it — so the hills run across the
+   words rather than behind them.
+
+   The mask has to land on the picture, not on the window, or the ridge in it
+   and the ridge in the photograph would part company at every other viewport
+   width. `mask-size: cover` with `mask-position` on the same two percentages
+   the image carries as `object-position` is exactly the transform
+   `object-fit: cover` applies, and the mask's box is the frame's own 3:4, so
+   the two resolve to the same rectangle at every size. `--hero-poster-y` is
+   the single owner of that number: both copies of the picture and the mask
+   read it, so they cannot drift apart.
+
+   Layered, like everything else here, so a utility on the same element still
+   wins. */
+@layer components {
+  .hero-plate {
+    /* Where the frame sits in the window. It carries the sky band the headline
+       stands on above the skyline and the land the same headline's feet go
+       into below it, so it is composition rather than framing: at 32% the
+       ridge cleared the words entirely and the split had nothing to show. */
+    --hero-poster-y: 33%;
+  }
+  .hero-ridge {
+    -webkit-mask-image: var(--ridge-mask);
+    mask-image: var(--ridge-mask);
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-size: cover;
+    mask-size: cover;
+    -webkit-mask-position: 50% var(--hero-poster-y);
+    mask-position: 50% var(--hero-poster-y);
+  }
+}
+
 /* On phones the expanded hero card rests lower in its screen. The card is
    centered in 100dvh and the fold decision keeps the next section below it,
    which fixes a geometric floor of gold under the expanded card that padding

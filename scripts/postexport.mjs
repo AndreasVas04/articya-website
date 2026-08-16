@@ -6,7 +6,9 @@
 //      full-resolution graded masters, the ungraded _originals and the legacy
 //      background masters are all unreferenced — no visitor requests them, so
 //      they are removed from the published output, the same reasoning that
-//      always excluded _originals.
+//      always excluded _originals. SVG counts as an image here: the hero's
+//      land mask lives beside the frame it was traced from and is referenced
+//      from markup like any other.
 
 import { readFileSync, writeFileSync, readdirSync, statSync, rmSync } from "node:fs";
 import path from "node:path";
@@ -31,7 +33,7 @@ function walk(dir, onFile) {
 // <picture>/<img>/<link> markup, which points at variants, is a real request.
 // basePath prefixes are normalised away by keying on the "/images/…" tail.
 const referenced = new Set();
-const IMG_URL = /\/images\/[^"'\s,)]+?\.(?:jpe?g|png|webp|avif)/gi;
+const IMG_URL = /\/images\/[^"'\s,)]+?\.(?:jpe?g|png|webp|avif|svg)/gi;
 walk(out, (file) => {
   if (!file.endsWith(".html")) return;
   const html = readFileSync(file, "utf8").replace(
