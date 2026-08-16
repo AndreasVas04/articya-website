@@ -24,10 +24,12 @@ const gainImage = "/images/pt/IMG_4619-valley.jpg";
 // per-image correction on the way to the screen is a second grade, and the
 // grade is the one place tone is decided now.
 //
-// A plate is either a photograph or it is nothing — there is no strength
-// between 0.04 and 0.75 anywhere on the site. At 0.16–0.18 a picture is
-// neither: it is a haze with shapes in it, which is what every quiet zone
-// below used to render.
+// A plate is either the whole photograph or it is nothing: 1.00 or 0.00, and
+// no value in between is held anywhere on the page. The ledger reading down
+// from the hero is loud, quiet, loud, quiet, loud, quiet, and the only numbers
+// between the two are the crossfades themselves. At 0.16–0.18 — or at 0.90 —
+// a picture is neither a picture nor a clean ground; it is a haze with shapes
+// in it, which is what every zone below used to render.
 const plates: StagePlate[] = [
   // The clearing, and the loud passage between the two offer panels: the road
   // between the stone walls under flat overcast light. The clearing holds it
@@ -234,61 +236,66 @@ export default function HomePage() {
             {whatWeDo.cards.map((card, i) => (
               <Fragment key={card.title}>
                 {/* The loud passage between the two panels. Two quiet zones in
-                    a row is the one thing the rhythm forbids, and the panels
-                    were the second and third of four: the road between the
-                    stone walls comes up to full strength here, carrying no
-                    text at all, so the reader crosses a photograph between the
-                    two readings instead of one long dark stretch. It is the
-                    plate the page already fetches for the clearing and has
-                    never actually shown.
+                    a row is the one thing the rhythm forbids: the road between
+                    the stone walls comes up here, carrying no text at all, so
+                    the reader crosses a photograph between the two readings
+                    instead of one long dark stretch. It is the plate the page
+                    already fetches for the clearing and has never shown.
+
+                    Full strength, not 0.9. The ground on this page is now
+                    either a photograph or it is nothing — 1.00 or 0.00 and no
+                    value in between held anywhere — so the passage is the
+                    picture at its own strength and the panels either side of
+                    it are clean dark.
 
                     What the reader crosses with nothing to read is not this
-                    block's height — it is the gap between the last row of one
-                    panel's prose leaving the top of the window and the first
-                    row of the next one's entering the bottom, and the panels
-                    are pinned, so each of those costs most of a screen on top
-                    of the pin. That gap is 0.98 of a viewport on desktop and
-                    0.93 on a phone, which is the ceiling: a longer one is a
+                    block's height — it is the gap from the last row of one
+                    panel's prose leaving the top of the window to the first row
+                    of the next one's entering the bottom. Measured on the
+                    unpinned panels that gap is 0.99 of a viewport on desktop
+                    and 0.99 on a phone: the ceiling, since a longer one is a
                     passage where only the background changes.
 
-                    The four markers are why the block is taller than the gap.
-                    A zone is keyed half a window above its own middle, so left
-                    to the defaults the crossfade would start under the words
-                    still leaving and finish under the words already arriving —
-                    measured that way, the second panel's title came in over a
-                    0.8 plate at 2.45 against a 3.0 floor. These put the two
-                    ramps and the plateau between them inside the gap instead:
-                    quiet, up, hold, down, quiet. The plate is at full strength
-                    for 0.81 of a viewport on both, and every ramp crosses its
-                    own half-way point with the words off the screen. The two
-                    viewports carry different numbers because their prose sits
-                    at different heights inside the frame. */}
+                    The four markers place the two ramps and the plateau inside
+                    that gap: quiet, up, hold, down, quiet. A zone is keyed half
+                    a window above its own middle, so left to the defaults the
+                    crossfade would start under the words still leaving and
+                    finish under the words already arriving — measured that way
+                    the second panel's title came in over a 0.8 plate at 2.45
+                    against a 3.0 floor. Each ramp is 0.18 of a viewport and
+                    carries under 0.35 of the picture for as long as any word is
+                    on the screen; the plate is at or above 0.9 for 0.87 of a
+                    viewport on desktop and 0.80 on a phone. Those two numbers
+                    are the whole budget — a longer breath and a gap inside 1.0
+                    viewport cannot both be had while the passage has nothing
+                    written on it. The two viewports carry different offsets
+                    because their prose sits at different heights in the frame. */}
                 {i > 0 && (
                   <div
                     aria-hidden="true"
                     data-stage-plate="0"
-                    data-stage-strength="0.9"
-                    className="relative h-[130svh] md:h-[145svh]"
+                    data-stage-strength="1"
+                    className="relative h-[124svh] md:h-[143svh]"
                   >
                     <span
                       data-stage-plate="0"
                       data-stage-strength="0"
-                      className="absolute inset-x-0 top-0 h-0 md:top-[18svh]"
+                      className="absolute inset-x-0 top-0 h-0 md:top-[21svh]"
                     />
                     <span
                       data-stage-plate="0"
-                      data-stage-strength="0.9"
-                      className="absolute inset-x-0 top-[14svh] h-0 md:top-[48svh]"
+                      data-stage-strength="1"
+                      className="absolute inset-x-0 top-[16svh] h-0 md:top-[39svh]"
                     />
                     <span
                       data-stage-plate="0"
-                      data-stage-strength="0.9"
-                      className="absolute inset-x-0 top-[85svh] h-0 md:top-[108svh]"
+                      data-stage-strength="1"
+                      className="absolute inset-x-0 top-[89svh] h-0 md:top-[118svh]"
                     />
                     <span
                       data-stage-plate="0"
                       data-stage-strength="0"
-                      className="absolute inset-x-0 top-[99svh] h-0 md:top-[138svh]"
+                      className="absolute inset-x-0 top-[105svh] h-0 md:top-[136svh]"
                     />
                   </div>
                 )}
@@ -330,7 +337,7 @@ export default function HomePage() {
         <section
           data-index-section=""
           data-stage-plate="2"
-          data-stage-strength="0.9"
+          data-stage-strength="1"
           className="gain-frame relative isolate flex min-h-svh items-center overflow-hidden text-ink"
         >
           {/* One photograph, edge to edge, and it goes out of focus across
@@ -403,22 +410,21 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* The closing beat, and the page's one loud ground: the lane at blue
-            hour, at 0.90, rising out of the dark the gains frame dissolves
-            into. The lamp is gone — its line, cone, node and ignition were a
-            light fixture drawn on the page, and what the section is actually
-            for is three pieces of type. They stand on the plate itself,
-            carried by the plate's own darkening, and the closing line keeps
-            the one place the accent carries text.
+        {/* The closing beat, on clean dark: the page's last quiet zone, coming
+            out of the valley the gains frame dissolves into. The lamp is gone —
+            its line, cone, node and ignition were a light fixture drawn on the
+            page, and what the section is actually for is three pieces of type.
+            They stand on the floor itself and the closing line keeps the one
+            place the accent carries text.
 
-            It is the lane rather than the valley the gains stand on, and the
-            picture decided that. The valley is the brightest frame in the set
-            by 20 L*, and at 0.90 the closing line measured 1.00 against a 3.0
-            floor on it — the only way to carry the words on that frame is to
-            darken it back to the haze this phase exists to remove. The lane is
-            the darkest, so it can be a photograph and carry type at the same
-            time. It also gives the page the alternation the ground is for:
-            photograph, clean dark, photograph. */}
+            It is quiet rather than loud, and the picture decided that. The
+            valley is the brightest frame in the set by 20 L*, and at full
+            strength the closing line measured 1.00 against a 3.0 floor on it;
+            the lane is the darkest and still only carries the words by being
+            darkened back to the haze the ledger exists to remove. So the
+            alternation closes the way it opens — a photograph, then nothing —
+            and the last screen of the page is the floor with three lines on
+            it. */}
         {/* The breathing marker that stood here is gone, and taking it out is
             what buys the finale its dissolve. Keyed half a viewport above
             itself it sat 450px below the gains, so the climb into the closing
