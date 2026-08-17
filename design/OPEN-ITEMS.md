@@ -10,16 +10,6 @@ follows is what still stops it reading as award-level.
 
 ---
 
-## B · Things that are broken
-
-**B2 · The header detaches on the home page.**
-Once the hero has expanded and the lede is on screen, the header reads as a
-separate dark bar sitting above the photograph rather than floating on it. It
-must sit inside the picture at every scroll position, on every page, the way it
-does at the top of the hero.
-
----
-
 ## C · The wordless passage and "What we do"
 
 These are one problem, not two.

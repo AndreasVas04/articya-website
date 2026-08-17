@@ -1001,17 +1001,11 @@ body {
   }
 }
 
-/* On phones the expanded hero card rests lower in its screen. The card is
-   centered in 100dvh and the fold decision keeps the next section below it,
-   which fixes a geometric floor of gold under the expanded card that padding
-   can no longer touch. Dropping the card spends that gold directly — but only
-   once the card has grown into it: the drop is scaled by the hero's own
-   expansion progress (`--hero-drop-progress`, written by the hero from the
-   same value that sizes the card), so the collapsed card opens centered where
-   the composition wants it and the offset eases in with the growth. */
+/* The hero's own scope, and the element the section index counts the hero by.
+   It carried a phone-only drop that sank the expanded card in its screen to
+   spend the gold stranded under it; the card is the window now, so there is
+   none, and the drop and its progress variable are gone. */
 .hero-drop-scope {
-  --hero-card-drop: 0px;
-  --hero-drop-progress: 0;
   /* The depth of the card's foot: how far up from its base the photograph has
      finished dissolving. `--hero-foot` is the depth at the card's outer
      corners; `--hero-foot-arc` is the reach of the second, elliptical mask
@@ -1021,13 +1015,9 @@ body {
 }
 @media (max-width: 767px) {
   .hero-drop-scope {
-    --hero-card-drop: clamp(0px, 50dvh - 350px, 96px);
     --hero-foot: 176px;
     --hero-foot-arc: 230px;
   }
-}
-.hero-stage-drop {
-  transform: translateY(calc(var(--hero-card-drop) * var(--hero-drop-progress)));
 }
 /* The card's foot. The expanded hero used to stop on a ruled line: photograph,
    hairline and drop shadow all ending in the same row with the floor starting

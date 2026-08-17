@@ -255,11 +255,21 @@ const ScrollExpandMedia = ({
   // At 1440 the expression resolves to 300 + 1250 × progress — the ramp it
   // replaces, to the pixel — so the pace there is not merely preserved but
   // identical, and the card still reaches the sides at progress 0.912.
-  const desktopEnd = ((1550 / 1440) * 100).toFixed(3);
+  const stageEnd = ((1550 / 1440) * 100).toFixed(3);
   const mediaWidth = isMobile
     ? `${300 + progress * 650}px`
-    : `calc(300px + ${progress} * (${desktopEnd}% - 300px))`;
-  const mediaHeight = 400 + progress * (isMobile ? 200 : 400);
+    : `calc(300px + ${progress} * (${stageEnd}% - 300px))`;
+  // The height runs the same ramp, overshooting the stage by the same fraction
+  // and stopped by the same cap. It used to land on a flat 800px desktop /
+  // 600px mobile under an 85vh ceiling, and that is what detached the header:
+  // expanded, the card was 765px of a 900px window and 600px of an 844px one,
+  // centred, so 68px and 194px of the top of the screen held no photograph at
+  // all. What the chrome then crossed was bare floor, and a nav on bare floor
+  // above a picture is a bar whatever it is made of — the one thing this
+  // header has never had. Full bleed on both axes, and the picture runs to
+  // every edge of the window the way the width already made it run to the
+  // sides.
+  const mediaHeight = `calc(400px + ${progress} * (${stageEnd}% - 400px))`;
 
   // The card cross-dissolves out of the poster as it grows. The collapsed
   // opening is the full-bleed photograph itself, so a small frame sitting on
@@ -306,13 +316,7 @@ const ScrollExpandMedia = ({
           anchor to meet, and an opaque ramp ending on the hero's last row is a
           ruled line straight across the page. Open, the stage runs up under
           the card's own dissolving foot and the two pictures hand over. */}
-      {/* --hero-drop-progress feeds the mobile stage drop from the same
-          value that sizes the card, so the drop arrives with the growth
-          rather than sitting under the collapsed card. */}
-      <section
-        className="gold-field gold-field-chrome-top gold-field-open-bottom hero-drop-scope hero-plate relative isolate flex min-h-[100dvh] flex-col items-center justify-start overflow-hidden"
-        style={{ "--hero-drop-progress": progress } as CSSProperties}
-      >
+      <section className="gold-field gold-field-chrome-top gold-field-open-bottom hero-drop-scope hero-plate relative isolate flex min-h-[100dvh] flex-col items-center justify-start overflow-hidden">
         <motion.div
           className="absolute inset-0 z-0"
           initial={false}
@@ -366,14 +370,13 @@ const ScrollExpandMedia = ({
         </motion.div>
 
         <div className="relative z-10 mx-auto flex w-full flex-col items-center">
-          {/* hero-stage-drop: on phones the whole stage — card, headline,
-              pill and intro band together — sinks lower in the screen as the
-              card expands, spending the gold the fold decision strands under
-              the expanded card. The offset rides the expansion progress (the
-              CSS var on the section), so the collapsed card opens centered.
-              See the class in globals.css for the clamp; desktop resolves to
-              zero. */}
-          <div className="hero-stage-drop relative flex h-[100dvh] w-full flex-col items-center justify-center">
+          {/* The stage the card is centred in. A phone-only drop used to sink
+              the whole stage as the card grew, spending the gold that the
+              600px card left stranded under itself. The card fills the window
+              now, so there is no gold under it to spend and the drop is gone
+              with it — held, it would have put 72px of the old band straight
+              back at the top of the screen. */}
+          <div className="relative flex h-[100dvh] w-full flex-col items-center justify-center">
             {/* The gallery card — hidden while the opening is the full-bleed
                 poster, cross-dissolved in as it grows so it never reads as a
                 second picture floating over the first.
@@ -389,9 +392,9 @@ const ScrollExpandMedia = ({
               className="hero-card hero-foot-fade hero-foot-halo absolute left-1/2 top-1/2 z-0 -translate-x-1/2 -translate-y-1/2"
               style={{
                 width: mediaWidth,
-                height: `${mediaHeight}px`,
+                height: mediaHeight,
                 maxWidth: "100%",
-                maxHeight: "85vh",
+                maxHeight: "100%",
                 opacity: cardOpacity,
                 // The card's own shadow, off the deepest ground rather than
                 // off `ink` — ink is the page's cream now, and a 14% cream
@@ -552,9 +555,9 @@ const ScrollExpandMedia = ({
               className="pointer-events-none absolute left-1/2 top-1/2 z-10 isolate -translate-x-1/2 -translate-y-1/2 overflow-hidden"
               style={{
                 width: mediaWidth,
-                height: `${mediaHeight}px`,
+                height: mediaHeight,
                 maxWidth: "100%",
-                maxHeight: "85vh",
+                maxHeight: "100%",
               }}
             >
               <div
@@ -565,7 +568,14 @@ const ScrollExpandMedia = ({
                   // px-4 on mobile rather than px-6: the card is only a phone
                   // wide there, and the 16px it gives back is what lets the
                   // statement settle onto three even lines.
-                  "hero-intro group pointer-events-auto absolute inset-x-0 bottom-0 flex flex-col items-center overflow-hidden rounded-[inherit] rounded-t-none px-4 py-5 opacity-0 md:px-6 duration-[400ms] ease-out-quart data-[expanded]:opacity-100 data-[expanded]:transition-opacity md:py-6",
+                  //
+                  // The foot padding is the band's own now. It used to be one
+                  // step, because the card stopped 68px short of the window on
+                  // a desktop and 50px short on a phone and that gutter stood
+                  // the statement off the fold. The card is the window, so the
+                  // band carries the clearance itself: the CTA rests 80px and
+                  // 64px above the bottom edge, which is where it sat before.
+                  "hero-intro group pointer-events-auto absolute inset-x-0 bottom-0 flex flex-col items-center overflow-hidden rounded-[inherit] rounded-t-none px-4 pb-16 pt-5 opacity-0 md:px-6 duration-[400ms] ease-out-quart data-[expanded]:opacity-100 data-[expanded]:transition-opacity md:pb-20 md:pt-6",
                   mounted && !contentVisible && "pointer-events-none"
                 )}
               >
