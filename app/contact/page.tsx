@@ -104,7 +104,7 @@ export default function ContactPage() {
         <div className="mx-auto max-w-4xl">
           <Reveal className="text-center">
             <span aria-hidden="true" className="mx-auto block h-[1.25px] w-16 bg-amber" />
-            <h2 className="mt-4 font-display text-[clamp(2.3rem,6vw,5rem)] font-semibold leading-[0.94] tracking-[-0.025em] text-ink">
+            <h2 className="mt-4 type-heading font-display font-semibold tracking-[-0.025em] text-ink">
               {details.heading}
             </h2>
           </Reveal>

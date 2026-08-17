@@ -36,9 +36,10 @@ export function PageHero({ heading, text }: PageHeroProps) {
       <div className="relative mx-auto flex w-full max-w-6xl flex-col items-center px-4 pb-16 pt-28 text-center md:pb-20 md:pt-36">
         <Reveal>
           <span aria-hidden="true" className="mx-auto block h-[1.25px] w-16 bg-amber" />
-          {/* 16ch of the display face, so the break travels with the clamped
-              size across viewports. */}
-          <h1 className="mx-auto mt-6 max-w-[16ch] text-balance font-display text-[clamp(3.4rem,11vw,10rem)] font-semibold leading-[0.94] tracking-[-0.025em] text-ink">
+          {/* 11ch of the display face, so the break travels with the size
+              across viewports — at register A the measure has to be much
+              narrower or the longest heading runs the width of the window. */}
+          <h1 className="type-title mx-auto mt-6 max-w-[11ch] text-balance font-display font-semibold tracking-[-0.025em] text-ink">
             {heading}
           </h1>
           <p className="mx-auto mt-8 max-w-[44ch] text-pretty text-[clamp(1rem,1.3vw,1.16rem)] leading-[1.66] text-ink">

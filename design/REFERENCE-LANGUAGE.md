@@ -92,11 +92,17 @@ Currently ArtiCYa puts the rule ABOVE the heading. Wrong axis.
 | | value |
 |---|---|
 | Heading | **2 lines**, forced. Never 1, never 3. |
-| Heading size | 40px at 683px-wide capture → **5.9%** of viewport width |
+| Heading size | register B — **3.5%** of viewport width |
 | Heading line-height | **1.12** |
 | Body | 5 lines max, width **44ch** |
 | Body size | ~62% of heading size |
 | Link | lowercase `read more` + **34px arrow rule**, amber |
+
+The 5.9% this table carried was the heading's *em size* read off the capture
+(40px in 683px). Re-measured by cap height — 16px, which is a 24px font, ≈46px
+at 1440 — MNTN's section heading is **3.2%**, and every other beside-the-
+paragraph heading in the set lands 3.2–5.0%. 5.9% put ArtiCYa's panel titles
+half again larger than the reference they were measured from. See §H.
 
 ### A6. Ground
 
@@ -315,3 +321,31 @@ first panel in the markup. Nothing else on home could have been put there.
 - No brightness filter used to fix contrast. Use plate strength.
 - No section pinned longer than 1.2 viewports.
 - No passage over 1.0 viewport where only the background changes.
+
+---
+
+## H. The two type registers
+
+Every site in the set runs two, about 4× apart, with nothing between them.
+
+| register | what it is | reference | ArtiCYa |
+|---|---|---|---|
+| **A — title bound to a photograph** | owns the frame it sits on; occluded by it, or read through it | Cabin Fever 14%, Namibia 20%, Slovakia 28% of viewport width | **14%** — the three inner-page h1s |
+| **B — heading beside a paragraph** | labels the words under or next to it | MNTN 3.2%, Cabin Fever's dark passage 3.5%, Grand Canyon 4.8%, Forest 5.0% | **3.5%** — panel titles, section headings, the road statement |
+
+ArtiCYa ran one ramp: 11.0% → 5.9% → 5.56% → 3.33% → 1.29%. The h1 was
+stranded in it — too large to be a heading, half the size of a title that owns
+a photograph, and only 1.9× the heading below it, so the eye had no gap to fall
+through.
+
+Coming down to 3.5% is **not** §3's rejected "display type at normal website
+scale", and the measurement is the argument: at 1440 register B is 50px, 2.7×
+the body copy, and register A is 202px.
+
+Both registers live in `globals.css` as `.type-title` and `.type-heading`. The
+panels' ghosted numeral rides register B by ratio — 2.498× the heading's own
+size, which is 2.6× its cap height — so the two can never drift.
+
+**The home hero is exempt.** It stays at 11% of viewport width. It is the one
+frame that is signed off, and its headline is bound into the photograph's depth
+already, which is what register A is for.

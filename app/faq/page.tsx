@@ -65,7 +65,7 @@ export default function FaqPage() {
                     >
                       <Icon className="size-5" strokeWidth={1.5} />
                     </span>
-                    <h2 className="font-display text-[clamp(1.9rem,3.6vw,3rem)] font-semibold leading-[1.1] tracking-[-0.025em] text-ink">
+                    <h2 className="type-heading font-display font-semibold tracking-[-0.025em] text-ink">
                       {section.heading}
                     </h2>
                   </div>

@@ -187,7 +187,7 @@ export default function HomePage() {
                     />
                     <div className="stage-mask mt-2">
                       <h2
-                        className="stage-mask-rise font-display text-[clamp(2.3rem,6vw,5rem)] font-semibold leading-[0.94] tracking-[-0.025em]"
+                        className="stage-mask-rise type-heading font-display font-semibold tracking-[-0.025em]"
                         style={{ transitionDelay: "80ms" }}
                       >
                         {whatWeDo.title}
@@ -340,7 +340,7 @@ export default function HomePage() {
                         />
                         <div className="stage-mask mt-5">
                           <p
-                            className="stage-mask-rise font-display text-[clamp(1.75rem,7vw,2.6rem)] font-semibold leading-[1.12] tracking-[-0.025em] md:text-[3.5vw]"
+                            className="stage-mask-rise type-heading font-display font-semibold tracking-[-0.025em]"
                             style={{ transitionDelay: "80ms" }}
                           >
                             {panels[i - 1].handoff!.heading}
@@ -458,7 +458,7 @@ export default function HomePage() {
                 aria-hidden="true"
                 className="mx-auto block h-[1.25px] w-16 bg-amber"
               />
-              <h2 className="mt-3 font-display text-[clamp(2.3rem,6vw,5rem)] font-semibold leading-[0.94] tracking-[-0.025em]">
+              <h2 className="mt-3 type-heading font-display font-semibold tracking-[-0.025em]">
                 {gain.title}
               </h2>
             </Reveal>
@@ -501,7 +501,7 @@ export default function HomePage() {
             <p className="max-w-[44ch] text-[clamp(1rem,1.3vw,1.16rem)] leading-[1.66] text-ink">
               {gain.text}
             </p>
-            <p className="mt-8 max-w-[18ch] font-display text-[clamp(2.3rem,6vw,5rem)] font-semibold leading-[0.94] tracking-[-0.025em] text-resin-deep">
+            <p className="mt-8 max-w-[18ch] type-heading font-display font-semibold tracking-[-0.025em] text-resin-deep">
               {gain.highlight}
             </p>
             <div className="mt-10">

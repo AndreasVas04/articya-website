@@ -466,11 +466,11 @@ body {
     place-items: center;
     height: 0;
     font-family: var(--font-display);
-    /* 2.6× the heading's cap height. The two ends are solved rather than
-       rounded: measured on the rendered faces the heading's cap is 0.660 of
-       its size and these digits are 0.687 of theirs, which lands the ratio at
-       2.60 on both viewports where the clamp's ends bind. */
-    font-size: clamp(5.75rem, 15vw, 13.27rem);
+    /* 2.6× the heading's cap height, expressed against the heading's own size
+       so the two move together. Measured on the rendered faces the heading's
+       cap is 0.660 of its size and these digits are 0.687 of theirs, so the
+       ratio is 2.6 × 0.660 / 0.687 = 2.498 of whatever the heading is. */
+    font-size: calc(var(--heading-size) * 2.498);
     font-weight: 700;
     line-height: 1;
     letter-spacing: -0.025em;
@@ -503,16 +503,64 @@ body {
     color: var(--color-amber);
   }
 
-  /* 5.9% of the viewport, and a measure narrow enough that both frozen titles
-     break onto exactly two lines at either viewport — never one, never three. */
-  .offer-panel-title {
-    max-width: 10ch;
-    font-size: clamp(2.3rem, 6vw, 5rem);
-    line-height: 1.12;
+  /* A measure narrow enough that both frozen titles break onto exactly two
+     lines at either viewport — never one, never three. The size is register B
+     (see `.type-heading`); the numeral is locked to it by ratio rather than by
+     a second clamp, so the two cannot drift apart when either moves. */
+  .offer-panel-text {
+    --heading-size: clamp(1.9rem, 5.6vw, 2.6rem);
   }
   @media (min-width: 768px) {
-    .offer-panel-title {
-      font-size: 5.9vw;
+    .offer-panel-text {
+      --heading-size: 3.5vw;
+    }
+  }
+  .offer-panel-title {
+    max-width: 10ch;
+    font-size: var(--heading-size);
+    line-height: 1.12;
+  }
+}
+
+/* The two type registers.
+ *
+ * The site ran one: 11.0% of viewport width at the h1, then 5.9%, 5.56%,
+ * 3.33%, 1.29%. Every reference runs two, about 4x apart with nothing between
+ * them — a *title bound to a photograph* (Cabin Fever 14%, Namibia 20%,
+ * Slovakia 28%) and a *heading beside a paragraph* (MNTN cap 16px in a 683px
+ * capture, ~3.2% as a font size; Cabin Fever's dark passage 3.5%; Grand Canyon
+ * 4.8%; Forest 5.0%). A single ramp leaves the h1 stranded: too large to be a
+ * heading, half the size of a title that owns a photograph, and only 1.9x the
+ * heading under it, so there is no gap for the eye to fall through.
+ *
+ * Coming down to 3.5% is not §3's rejected "display type at normal website
+ * scale", and the measurement is the argument: at 1440 register B is 50px,
+ * 2.7x the body copy, and register A is 202px. Nobody would call either
+ * normal. The home hero is exempt and stays at 11% — it is signed off.
+ *
+ * Both live here rather than in a `text-[clamp(...)]` utility because two
+ * registers are a system, and a system with its numbers spread across nine
+ * call sites is not one. */
+@layer components {
+  /* Register A — a title bound to a photograph. */
+  .type-title {
+    font-size: clamp(3.4rem, 12vw, 5rem);
+    line-height: 0.94;
+  }
+  @media (min-width: 768px) {
+    .type-title {
+      font-size: 14vw;
+    }
+  }
+
+  /* Register B — a heading beside, above or under a paragraph. */
+  .type-heading {
+    font-size: clamp(1.9rem, 5.6vw, 2.6rem);
+    line-height: 1.06;
+  }
+  @media (min-width: 768px) {
+    .type-heading {
+      font-size: 3.5vw;
     }
   }
 }
