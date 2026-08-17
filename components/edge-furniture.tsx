@@ -2,26 +2,20 @@
 
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 
-// The two pieces of furniture that stand in the page's side margins on a wide
-// screen: the wordmark down the left edge and the section index down the
-// right. Both are fixed, vertically centred and inert.
+// The section index down the right margin of a wide screen: fixed, vertically
+// centred and inert.
 //
-// Every character in both is CSS pseudo-content, never DOM text. The site's
+// A ghosted "ArtiCYa" ran down the left margin beside it — the reference set's
+// other piece of edge furniture. It is gone. The logo sits top-left on every
+// page and the headline says the name, so on the home hero the word appeared
+// three times on one screen and the vertical copy was the one that earned
+// nothing.
+//
+// Every character here is CSS pseudo-content, never DOM text. The site's
 // visible text is frozen and checked character for character against the
 // original pages, so furniture that entered the DOM would read as content
 // drift — and this is a mark, not something to be read aloud or found by
 // search. It is why the ghosted numerals are built the same way.
-
-export function EdgeWordmark() {
-  return (
-    <div
-      aria-hidden="true"
-      className="edge-furniture edge-wordmark"
-      // "ArtiCYa" with its capital Y, set as a string and never uppercased.
-      style={{ "--edge-text": '"ArtiCYa"' } as CSSProperties}
-    />
-  );
-}
 
 // The six beats of the home page, in order.
 const SECTIONS = ["01", "02", "03", "04", "05", "06"];

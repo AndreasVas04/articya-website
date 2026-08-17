@@ -758,10 +758,16 @@ body {
   }
 }
 
-/* Edge furniture — the wordmark down the left edge and the section index down
-   the right. Desktop only: below 860px the screen is the content and there is
-   no margin to stand anything in. Both are fixed, vertically centred and
-   inert, so they never take a tap or a scroll. */
+/* Edge furniture — the section index down the right margin. Desktop only:
+   below 860px the screen is the content and there is no margin to stand
+   anything in. It is fixed, vertically centred and inert, so it never takes a
+   tap or a scroll.
+
+   The ghosted "ArtiCYa" that ran down the left margin is gone. It was
+   REFERENCE-LANGUAGE §B1's measured ghost word, and the measurement was right,
+   but the reference it came from does not also carry a logotype top-left on
+   every page. This site does, and the home headline says the name as well, so
+   the vertical copy made three ArtiCYa on one screen. */
 .edge-furniture {
   display: none;
 }
@@ -774,23 +780,8 @@ body {
     z-index: 20;
     pointer-events: none;
   }
-  .edge-furniture::before,
   .edge-index li::before {
     content: var(--edge-text, "");
-  }
-  /* The ghost word, at the size REFERENCE-LANGUAGE §B1 measured off Trafalgar
-     and never raised to: 4.2% of the viewport at x=2.1%, 0.34em, cream at 14%.
-     It ran at 2.4vw and 10% — 58% of the size and 71% of the weight — which is
-     the difference between a mark on the page and a thing you have to be told
-     is there. §B1 also gives a vertical span of 78% of the viewport; that
-     number belongs to a nine-letter word, and "ArtiCYa" is seven, so the span
-     follows the letters at the specified tracking rather than being forced. */
-  .edge-wordmark {
-    left: 2.1%;
-    writing-mode: vertical-rl;
-    letter-spacing: 0.34em;
-    font-size: 4.2vw;
-    color: color-mix(in srgb, var(--color-ink) 14%, transparent);
   }
   /* The section rail, Grand Canyon's: a 1px vertical line at x=93% with the
      numbers beside it. It stood at x=98% with no line at all, which is a

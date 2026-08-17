@@ -7,7 +7,7 @@ import { OfferPanel } from "@/components/offer-panel";
 import { GainTrail } from "@/components/gain-trail";
 import { PhotoStage, type StagePlate } from "@/components/photo-stage";
 import { ResponsiveImage } from "@/components/responsive-image";
-import { EdgeWordmark, SectionIndex } from "@/components/edge-furniture";
+import { SectionIndex } from "@/components/edge-furniture";
 import { ButtonLink } from "@/components/ui/button";
 import { imagePreload } from "@/lib/images";
 import { hero, whatWeDo, gain } from "@/content/home";
@@ -106,7 +106,6 @@ export default function HomePage() {
             before every section in the markup, so paint order alone keeps it
             behind the content and the hero's own stacking is untouched. */}
         <PhotoStage plates={plates} />
-        <EdgeWordmark />
         <SectionIndex />
 
         <ScrollExpandMedia

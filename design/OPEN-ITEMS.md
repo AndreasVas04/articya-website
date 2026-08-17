@@ -12,12 +12,6 @@ follows is what still stops it reading as award-level.
 
 ## A · Things that should simply go, or get smaller
 
-**A1 · The vertical ghost wordmark comes out.**
-On the home hero the word "ArtiCYa" appears three times on one screen: the logo
-top-left, the headline, and the ghosted vertical wordmark on the left edge. The
-logo is always top-left on every page, so the vertical one earns nothing. Delete
-it site-wide. The section index rail on the right stays.
-
 **A2 · The FAQ heading is too large.**
 "Frequently Asked Questions" currently fills nearly the whole screen. The
 full-height treatment itself is good — keep it. Bring the type down so the
