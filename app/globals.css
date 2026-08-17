@@ -733,15 +733,27 @@ body {
   .edge-index li::before {
     content: var(--edge-text, "");
   }
+  /* The ghost word, at the size REFERENCE-LANGUAGE §B1 measured off Trafalgar
+     and never raised to: 4.2% of the viewport at x=2.1%, 0.34em, cream at 14%.
+     It ran at 2.4vw and 10% — 58% of the size and 71% of the weight — which is
+     the difference between a mark on the page and a thing you have to be told
+     is there. §B1 also gives a vertical span of 78% of the viewport; that
+     number belongs to a nine-letter word, and "ArtiCYa" is seven, so the span
+     follows the letters at the specified tracking rather than being forced. */
   .edge-wordmark {
-    left: 1.6rem;
+    left: 2.1%;
     writing-mode: vertical-rl;
     letter-spacing: 0.34em;
-    font-size: clamp(1.4rem, 2.4vw, 2.2rem);
-    color: color-mix(in srgb, var(--color-ink) 10%, transparent);
+    font-size: 4.2vw;
+    color: color-mix(in srgb, var(--color-ink) 14%, transparent);
   }
+  /* The section rail, Grand Canyon's: a 1px vertical line at x=93% with the
+     numbers beside it. It stood at x=98% with no line at all, which is a
+     column of numerals against the window's edge rather than a rail. */
   .edge-index {
-    right: 1.6rem;
+    left: 93%;
+    padding-left: 0.85rem;
+    border-left: 1px solid color-mix(in srgb, var(--color-ink) 22%, transparent);
     font-size: 0.66rem;
     letter-spacing: 0.14em;
     color: color-mix(in srgb, var(--color-ink) 30%, transparent);
