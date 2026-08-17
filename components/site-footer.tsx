@@ -32,7 +32,17 @@ const icons: Record<string, React.ReactNode> = {
 export function SiteFooter() {
   return (
     <footer className="relative py-8">
-      <div className="mx-auto flex max-w-5xl flex-col items-center gap-5 px-4">
+      {/* What carries the footer's line where a photograph runs under it, and
+          it is the same construction the header uses at the other end: one
+          full-width ramp, no edge, no surface, reaching above the footer so it
+          has already started before the words. A ground of its own would be a
+          horizontal line where one background meets the next, which is the one
+          thing the page does not draw. */}
+      <div
+        aria-hidden="true"
+        className="foot-shade pointer-events-none absolute inset-x-0 bottom-0 -top-24"
+      />
+      <div className="relative mx-auto flex max-w-5xl flex-col items-center gap-5 px-4">
         <div className="flex gap-4">
           {footer.social.map((s) => (
             <a

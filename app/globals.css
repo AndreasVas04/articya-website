@@ -194,6 +194,23 @@ body {
   );
 }
 
+/* The foot of every page, where the header's ramp is at its top. The stage
+   runs under the footer on the pages whose photograph does not end, so the
+   footer's own line needs the same thing the nav needed: a full-width
+   top-to-bottom darkening with no edge in it. It starts 96px above the
+   footer's box so the ramp is already under way before the first word. */
+@layer components {
+  .foot-shade {
+    background: linear-gradient(
+      to bottom,
+      var(--color-gold-anchor-0) 0%,
+      color-mix(in srgb, var(--color-gold-anchor) 34%, transparent) 32%,
+      color-mix(in srgb, var(--color-gold-anchor) 72%, transparent) 62%,
+      color-mix(in srgb, var(--color-gold-anchor) 92%, transparent) 100%
+    );
+  }
+}
+
 /* Inner-page hero photograph — a slow scale-from-in on load, so the frame
    arrives by settling rather than snapping on. The parent clips the overscan,
    so the picture eases from 6% in to flush; opacity is untouched, so the LCP
@@ -354,6 +371,34 @@ body {
      Rasterized at a quarter of the frame and magnified back, like the gains
      ramp: a blur is priced by the area it rasterizes and not by its radius, so
      5px here is 20px on the screen at a sixteenth of the cost. */
+  /* The text column of the split: everything Contact says stands to the left
+     of the seam. 48% of the viewport less the page's own margin, so the words
+     stop short of the line rather than running up to it. Below the breakpoint
+     there is no seam and no split — a phone has no room for a column beside a
+     picture — and the block is the full width. */
+  .contact-split {
+    max-width: 100%;
+  }
+  @media (min-width: 768px) {
+    .contact-split {
+      width: 48%;
+      max-width: 48%;
+      padding-right: 6%;
+      padding-left: 6%;
+    }
+  }
+
+  /* The seam of the split — 1px of cream at 30%, top to bottom. It is the one
+     vertical line on the site and it is meant to be seen: the reference draws
+     it rather than feathering the join, so the frame reads as one photograph
+     given two treatments instead of two photographs butted together. */
+  .stage-plate-seam {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: color-mix(in srgb, var(--color-ink) 30%, transparent);
+  }
   .stage-plate-soft {
     position: absolute;
     top: 0;

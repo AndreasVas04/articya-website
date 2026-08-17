@@ -24,6 +24,11 @@ export interface StagePlate {
   position?: string;
   /** The same frame again, out of focus — the ground a reading page stands on. */
   soft?: boolean;
+  /** The split: one photograph, two treatments, a hard vertical seam at this
+   *  percent of the width. Defocused to the left of it, sharp to the right,
+   *  and the picture runs straight through — the clip is on a full-size copy,
+   *  so the two sides cannot fall out of register. */
+  split?: number;
   /** This plate is the page's LCP: preloaded, eager, never lazy. */
   priority?: boolean;
   /** Overrides the shared stage darkening, in percent, and the dark it is
@@ -253,6 +258,30 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
                 style={{ objectPosition: plate.position }}
               />
             </div>
+            {plate.split !== undefined && (
+              <>
+                <div
+                  className="absolute inset-0"
+                  style={{ clipPath: `inset(0 ${100 - plate.split}% 0 0)` }}
+                >
+                  <div className="stage-plate-soft">
+                    <ResponsiveImage
+                      src={plate.src}
+                      alt=""
+                      fill
+                      sizes="100vw"
+                      style={{ objectPosition: plate.position }}
+                    />
+                  </div>
+                </div>
+                {/* A visible line, deliberately: the reference's seam is a
+                    mark, not a feather. */}
+                <div
+                  className="stage-plate-seam"
+                  style={{ left: `${plate.split}%` }}
+                />
+              </>
+            )}
           </div>
           {/* The plate's own darkening, and the whole of it: one shape on
               every plate, carrying the picture where the chrome crosses it and

@@ -18,10 +18,14 @@ export const metadata = pageMetadata({
 // the least colour to lose.
 const plates: StagePlate[] = [
   { src: hero.image, position: "50% 50%", priority: true, shade: { top: 84, mid: 69, base: 71, color: "var(--color-land-anchor)" } },
+  // The split: the same frame, defocused to the left of a hard seam at 48%
+  // and sharp to its right, with the invitation and the three channels
+  // standing on the soft side. One frame of the reference set's density, on
+  // the text the page already had.
   {
     src: hero.image,
     position: "50% 50%",
-    soft: true,
+    split: 48,
     shade: { top: 52, mid: 62, base: 70, from: "22%", to: "62%", color: "var(--color-land-anchor)" },
   },
 ];
@@ -63,7 +67,7 @@ function ChannelCard({
     <a
       href={href}
       {...(external ? { target: "_blank", rel: "noreferrer" } : {})}
-      className="group flex h-full items-center gap-5 py-6 transition-colors duration-200 ease-out-quart md:flex-col md:py-10 md:text-center"
+      className="group flex h-full items-center gap-5 py-6 transition-colors duration-200 ease-out-quart md:py-7"
     >
       <span
         aria-hidden="true"
@@ -99,19 +103,28 @@ export default function ContactPage() {
         data-index-section=""
         data-stage-plate="1"
         data-stage-strength="1"
-        className="relative px-4 py-20 md:py-28"
+        className="relative flex min-h-svh items-center px-4 py-20 md:py-28"
       >
-        <div className="mx-auto max-w-4xl">
-          <Reveal className="text-center">
-            <span aria-hidden="true" className="mx-auto block h-[1.25px] w-16 bg-amber" />
+        {/* The soft side of the seam, and nothing crosses it: the block is
+            capped at 48% of the viewport on desktop with the page's own
+            margin inside that, so every word stands on the defocused half and
+            the sharp half is left to be a photograph. */}
+        <div className="contact-split w-full">
+          <Reveal>
+            <span aria-hidden="true" className="block h-[1.25px] w-16 bg-amber" />
             <h2 className="mt-4 type-heading font-display font-semibold tracking-[-0.025em] text-ink">
               {details.heading}
             </h2>
+            {/* The rule under the heading at 62% of the text column — the same
+                mark the gains carry, from the same reference frame. */}
+            <span aria-hidden="true" className="mt-6 block h-px w-[62%] bg-hairline" />
           </Reveal>
           {/* No fills: the three channels are separated by one amber
               hairline — horizontal between the stacked rows on mobile,
               vertical between the columns on desktop. */}
-          <div className="mt-12 grid grid-cols-1 divide-y-[1.25px] divide-amber/34 md:mt-16 md:grid-cols-3 md:divide-x-[1.25px] md:divide-y-0">
+          {/* No fills, and one hairline between the rows: the three channels
+              stack down the soft column rather than sitting in three cells. */}
+          <div className="mt-4 grid grid-cols-1 divide-y-[1.25px] divide-amber/34 md:mt-6">
             <Reveal delayMs={100}>
               <ChannelCard
                 icon={<Mail className="size-5" strokeWidth={1.5} />}
