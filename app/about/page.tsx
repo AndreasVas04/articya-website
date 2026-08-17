@@ -36,7 +36,6 @@ export default function AboutPage() {
             groups={scene.groups}
             image={scene.image}
             flip={i % 2 === 1}
-            muted={i % 2 === 1}
           />
         ))}
         <GalleryFinale groups={closing.groups} images={gallery} />

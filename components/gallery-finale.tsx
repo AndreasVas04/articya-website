@@ -176,7 +176,7 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
   // grid. No pinning, no scroll-linked transforms.
   if (!mounted || reducedMotion) {
     return (
-      <section ref={container} className="bg-gold-anchor pt-16 md:pt-24">
+      <section ref={container} className="pt-16 md:pt-24">
         <div ref={textRef} className="mx-auto max-w-6xl px-4 pb-16 md:pb-24">
           <span
             aria-hidden="true"
@@ -219,7 +219,12 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
   return (
     <section
       ref={container}
-      className="relative h-[300vh] bg-gold-anchor md:h-[440vh]"
+      // The sticky child pins for this height less one viewport. At 300/440
+      // that was 2.0 and 3.4 viewports of held frame, against a 1.2 ceiling,
+      // and the last third of it carried no words at all. The choreography is
+      // written in fractions of the pin, so it plays unchanged, faster against
+      // the scroll.
+      className="relative h-[200vh] md:h-[220vh]"
     >
       <div
         key={compact ? "compact" : "wide"}
@@ -321,10 +326,9 @@ function FinaleTile({
       className="absolute top-0 flex h-full w-full items-center justify-center"
     >
       <div
-        className={cn(
-          "relative overflow-hidden rounded-xl ring-1 ring-amber/55",
-          TILES[index]
-        )}
+        // No ring, no radius, no shadow: the reference frame is the picture
+        // and nothing else, which is what the offer panels already do.
+        className={cn("relative overflow-hidden", TILES[index])}
       >
         <ResponsiveImage
           src={src}
