@@ -1,8 +1,14 @@
 import { Reveal } from "@/components/reveal";
+import { cn } from "@/lib/utils";
 
 interface PageHeroProps {
   heading: string;
   text: string;
+  /** A heading too long to set in two lines at the register's own size. It
+   *  drops to `.type-title-long` and takes the column as its measure instead
+   *  of the 11ch one, which only exists to stop a short heading running the
+   *  width of the window. */
+  longHeading?: boolean;
 }
 
 // The inner pages open on the photograph full-bleed with the type centred over
@@ -25,7 +31,7 @@ interface PageHeroProps {
 // else; the strength is per page and lives on the plate now, because a shaded
 // forest road arrives most of the way down on its own and a sunlit track
 // between a hillside and a reservoir arrives blown out.
-export function PageHero({ heading, text }: PageHeroProps) {
+export function PageHero({ heading, text, longHeading }: PageHeroProps) {
   return (
     <section
       data-index-section=""
@@ -39,7 +45,12 @@ export function PageHero({ heading, text }: PageHeroProps) {
           {/* 11ch of the display face, so the break travels with the size
               across viewports — at register A the measure has to be much
               narrower or the longest heading runs the width of the window. */}
-          <h1 className="type-title mx-auto mt-6 max-w-[11ch] text-balance font-display font-semibold tracking-[-0.025em] text-ink">
+          <h1
+            className={cn(
+              "type-title mx-auto mt-6 text-balance font-display font-semibold tracking-[-0.025em] text-ink",
+              longHeading ? "type-title-long max-w-none" : "max-w-[11ch]"
+            )}
+          >
             {heading}
           </h1>
           <p className="mx-auto mt-8 max-w-[44ch] text-pretty text-[clamp(1rem,1.3vw,1.16rem)] leading-[1.66] text-ink">

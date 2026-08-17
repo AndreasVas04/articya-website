@@ -598,6 +598,31 @@ body {
     }
   }
 
+  /* Register A again, sized to the measure instead of to the window.
+   *
+   * "Frequently Asked Questions" is 26 characters. At 14vw it cannot set in
+   * fewer than three lines at any desktop width, and three lines of register A
+   * is 568px of a 900px window — 63% of the screen given to one heading, which
+   * is a wall rather than a title. Every title in the reference set sets in one
+   * line or two.
+   *
+   * Two lines is therefore the number this is solved for, and the measure is
+   * what solves it: in the display face "Asked Questions" is 7.74em wide, and
+   * the hero's column is 1120px, so the break needs 144.7px or less. 130px
+   * takes it with a tenth of the measure still in hand, so a metric shift
+   * cannot push the heading back to three lines.
+   *
+   * The cap is in pixels because the column stops growing at `max-w-6xl` and
+   * `vw` does not — at 1920 the 14vw heading overflowed its own column by
+   * 111px on each side. Below 768 nothing changes: there the shared clamp
+   * already holds the heading at its floor and three lines is 18% of the
+   * screen, which is a heading, not a wall. */
+  @media (min-width: 768px) {
+    .type-title-long {
+      font-size: min(9.5vw, 130px);
+    }
+  }
+
   /* Register B — a heading beside, above or under a paragraph. */
   .type-heading {
     font-size: clamp(1.9rem, 5.6vw, 2.6rem);

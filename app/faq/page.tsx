@@ -38,7 +38,7 @@ export default function FaqPage() {
   return (
     <>
       <PhotoStage plates={plates} />
-      <PageHero heading={hero.heading} text={hero.text} />
+      <PageHero heading={hero.heading} text={hero.text} longHeading />
 
       <section
         data-index-section=""

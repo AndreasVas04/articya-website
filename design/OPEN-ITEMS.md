@@ -10,15 +10,6 @@ follows is what still stops it reading as award-level.
 
 ---
 
-## A · Things that should simply go, or get smaller
-
-**A2 · The FAQ heading is too large.**
-"Frequently Asked Questions" currently fills nearly the whole screen. The
-full-height treatment itself is good — keep it. Bring the type down so the
-heading is a heading, not a wall.
-
----
-
 ## B · Things that are broken
 
 **B1 · The FAQ hero photograph is not there on load.**
