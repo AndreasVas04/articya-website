@@ -163,23 +163,29 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
         }))
         .sort((x, y) => x.scroll - y.scroll);
 
-      const zero = plates.map(() => 0);
-      frames = [
-        // The stage is nothing until the first zone starts arriving, so the
-        // hero hands over to the dark ground and the ground brings the first
-        // photograph up under it.
-        {
-          scroll: Math.max(0, Math.min(...zones.map((z) => z.top)) - window.innerHeight),
-          values: zero,
-        },
-        ...keyed.map((k) => ({
-          scroll: k.scroll,
-          values: plates.map((_, i) => (i === k.plate ? k.strength : 0)),
-        })),
-      ];
-      // A lead-in that lands past its own first zone would invert the ramp.
-      if (frames.length > 1 && frames[0].scroll >= frames[1].scroll) {
-        frames[0].scroll = Math.max(0, frames[1].scroll - window.innerHeight);
+      frames = keyed.map((k) => ({
+        scroll: k.scroll,
+        values: plates.map((_, i) => (i === k.plate ? k.strength : 0)),
+      }));
+
+      // The run-up: the stage is nothing until the first zone starts arriving,
+      // so the hero hands over to the dark ground and the ground brings the
+      // first photograph up under it. It only exists where there is room for
+      // it. A page whose first zone is its own first screen — every inner
+      // page, where the zone is the hero — has nothing above it to run up
+      // from, and its photograph is the first thing the page paints rather
+      // than something that arrives.
+      //
+      // Clamping the run-up to 0 instead is what kept the FAQ hero blank until
+      // the reader scrolled. A zone is keyed at its own middle, so a first zone
+      // one pixel taller than the window keys *below* 0; the run-up clamped to
+      // 0 then sat above that key with the plate at nothing, and scroll 0
+      // landed on the bottom of the ramp. FAQ's heading wrapped to a third line
+      // and pushed its hero to 911px in a 900px window, which was the whole of
+      // it — 11px of overflow, and the page opened on bare floor.
+      const runUp = Math.min(...zones.map((z) => z.top)) - window.innerHeight;
+      if (runUp > 0 && runUp < frames[0].scroll) {
+        frames.unshift({ scroll: runUp, values: plates.map(() => 0) });
       }
 
       arrivals = plates.map((_, i) => {

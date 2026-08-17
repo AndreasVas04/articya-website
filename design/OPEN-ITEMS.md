@@ -12,10 +12,6 @@ follows is what still stops it reading as award-level.
 
 ## B · Things that are broken
 
-**B1 · The FAQ hero photograph is not there on load.**
-You have to scroll before the picture appears behind the heading. It should be
-present the moment the page opens, like every other hero.
-
 **B2 · The header detaches on the home page.**
 Once the hero has expanded and the lede is on screen, the header reads as a
 separate dark bar sitting above the photograph rather than floating on it. It
