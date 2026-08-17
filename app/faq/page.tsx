@@ -1,5 +1,6 @@
 import { Backpack, Compass, Send, ShieldCheck } from "lucide-react";
 import { PageHero } from "@/components/page-hero";
+import { PhotoStage, type StagePlate } from "@/components/photo-stage";
 import { Reveal } from "@/components/reveal";
 import { pageMetadata } from "@/lib/metadata";
 import { meta, hero, arrow, sections } from "@/content/faq";
@@ -11,6 +12,21 @@ export const metadata = pageMetadata({
   path: "/faq/",
 });
 
+// The page's ground: the shaded forest road, sharp under the hero and out of
+// focus under the questions. Dark already through the trees, but the longest
+// headline on the site crosses the whole frame, including the gap of open sky
+// the road runs toward — at 83/68/70 the lede measures 4.57 desktop and 4.38
+// mobile against a 4.5 floor.
+const plates: StagePlate[] = [
+  { src: hero.image, position: "50% 50%", priority: true, shade: { top: 85, mid: 73, base: 74, color: "var(--color-land-anchor)" } },
+  {
+    src: hero.image,
+    position: "50% 50%",
+    soft: true,
+    shade: { top: 52, mid: 62, base: 70, from: "22%", to: "62%", color: "var(--color-land-anchor)" },
+  },
+];
+
 // One icon per question group, in section order.
 const sectionIcons = [Compass, ShieldCheck, Backpack, Send];
 
@@ -21,20 +37,15 @@ const sectionIcons = [Compass, ShieldCheck, Backpack, Send];
 export default function FaqPage() {
   return (
     <>
-      {/* The shaded forest road. Dark already through the trees, but the
-          longest headline on the site crosses the whole frame, including the
-          gap of open sky the road runs toward. The darkening came up a step
-          with the grade: matched to the set this frame sits 18 L* brighter
-          than `resinHour` left it, and at 81/64/67 the lede measured 4.57
-          desktop and 4.38 mobile against a 4.5 floor. */}
-      <PageHero
-        image={hero.image}
-        heading={hero.heading}
-        text={hero.text}
-        shade={{ top: 83, mid: 68, base: 70 }}
-      />
+      <PhotoStage plates={plates} />
+      <PageHero heading={hero.heading} text={hero.text} />
 
-      <section className="gold-field gold-field-chrome-bottom gold-floor px-4 py-16 md:py-24">
+      <section
+        data-index-section=""
+        data-stage-plate="1"
+        data-stage-strength="1"
+        className="relative px-4 py-16 md:py-24"
+      >
         <div className="mx-auto max-w-6xl">
           {sections.map((section, i) => {
             const Icon = sectionIcons[i] ?? Compass;

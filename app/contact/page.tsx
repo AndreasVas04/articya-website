@@ -1,5 +1,6 @@
 import { Mail } from "lucide-react";
 import { PageHero } from "@/components/page-hero";
+import { PhotoStage, type StagePlate } from "@/components/photo-stage";
 import { Reveal } from "@/components/reveal";
 import { pageMetadata } from "@/lib/metadata";
 import { meta, hero, details } from "@/content/contact";
@@ -9,6 +10,21 @@ export const metadata = pageMetadata({
   description: meta.description,
   path: "/contact/",
 });
+
+// The page's ground: the walk out to the reservoir under a midday sun, sharp
+// under the hero and out of focus under the channels. A white track and pale
+// water run straight through the middle of the frame, both clipped at 255
+// before any darkening reaches them, so it takes the most of the three and has
+// the least colour to lose.
+const plates: StagePlate[] = [
+  { src: hero.image, position: "50% 50%", priority: true, shade: { top: 84, mid: 69, base: 71, color: "var(--color-land-anchor)" } },
+  {
+    src: hero.image,
+    position: "50% 50%",
+    soft: true,
+    shade: { top: 52, mid: 62, base: 70, from: "22%", to: "62%", color: "var(--color-land-anchor)" },
+  },
+];
 
 // Brand marks matching the footer's set; lucide dropped its brand icons.
 const instagramIcon = (
@@ -76,21 +92,15 @@ function ChannelCard({
 export default function ContactPage() {
   return (
     <>
-      {/* The walk out to the reservoir under a midday sun: a white track and
-          pale water straight through the middle of the frame, both clipped at
-          255 before any darkening reaches them. It takes the most of the
-          three, and it is the one picture that has the least colour to lose.
-          A step deeper since the grade: matched to the set the frame keeps
-          more of its highlights than `resinHour`'s shoulder left it, and at
-          82/65/68 the lede measured 4.52 desktop and 4.48 mobile. */}
-      <PageHero
-        image={hero.image}
-        heading={hero.heading}
-        text={hero.text}
-        shade={{ top: 84, mid: 69, base: 71 }}
-      />
+      <PhotoStage plates={plates} />
+      <PageHero heading={hero.heading} text={hero.text} />
 
-      <section className="gold-field gold-field-chrome-bottom gold-floor px-4 py-20 md:py-28">
+      <section
+        data-index-section=""
+        data-stage-plate="1"
+        data-stage-strength="1"
+        className="relative px-4 py-20 md:py-28"
+      >
         <div className="mx-auto max-w-4xl">
           <Reveal className="text-center">
             <span aria-hidden="true" className="mx-auto block h-[1.25px] w-16 bg-amber" />

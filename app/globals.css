@@ -331,15 +331,39 @@ body {
    that frame's own shade is 70% at both ends, so the stage behind it now
    arrives at 52-62% and 65-70% instead of 52% and 36%, and the two sides of
    the dissolve meet closer than they did. */
+/* It is the same construction `.plate-shade` already is, so it is that class
+   with the stage's own numbers on it rather than a second gradient that has to
+   be kept in step by hand. A plate may override any of them inline — the
+   inner-page heroes do, because one number cannot serve three photographs. */
 @layer components {
   .stage-plate-shade {
-    background: linear-gradient(
-      to bottom,
-      color-mix(in srgb, var(--color-gold-anchor) 52%, transparent) 0%,
-      color-mix(in srgb, var(--color-gold-anchor) 62%, transparent) 22%,
-      color-mix(in srgb, var(--color-gold-anchor) 62%, transparent) 62%,
-      color-mix(in srgb, var(--color-gold-anchor) 70%, transparent) 100%
-    );
+    --shade-top: 52%;
+    --shade-mid: 62%;
+    --shade-mid-from: 22%;
+    --shade-mid-to: 62%;
+    --shade-bottom: 70%;
+  }
+
+  /* The same frame again, out of focus. It is what the inner pages stand on
+     below their heroes: the hero photograph does not end anywhere, it goes
+     soft, so there is no junction to soften because there is no junction. The
+     four hard cuts this replaces dropped mean row luminance by 47-79% in a
+     single row — the rule is that no horizontal line exists where one
+     background meets the next, and a cut that steep is the worst case of it.
+
+     Rasterized at a quarter of the frame and magnified back, like the gains
+     ramp: a blur is priced by the area it rasterizes and not by its radius, so
+     5px here is 20px on the screen at a sixteenth of the cost. */
+  .stage-plate-soft {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 25%;
+    height: 25%;
+    scale: 4;
+    transform-origin: 0 0;
+    filter: blur(5px) brightness(0.6);
+    will-change: transform;
   }
 }
 

@@ -1,8 +1,10 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type CSSProperties } from "react";
 import { cubicBezier } from "framer-motion";
 import { ResponsiveImage } from "@/components/responsive-image";
+import { imagePreload } from "@/lib/images";
+import { cn } from "@/lib/utils";
 
 const easeInOutCubic = cubicBezier(0.65, 0, 0.35, 1);
 
@@ -20,6 +22,22 @@ export interface StagePlate {
   src: string;
   /** object-position for the cover crop. */
   position?: string;
+  /** The same frame again, out of focus — the ground a reading page stands on. */
+  soft?: boolean;
+  /** This plate is the page's LCP: preloaded, eager, never lazy. */
+  priority?: boolean;
+  /** Overrides the shared stage darkening, in percent, and the dark it is
+   *  made of. One number cannot serve three photographs, and one *colour*
+   *  cannot either: a darkening only darkens what shares its hue, so a
+   *  yellow-green frame takes `land-anchor` where a sky takes `sky-anchor`. */
+  shade?: {
+    top: number;
+    mid: number;
+    base: number;
+    from?: string;
+    to?: string;
+    color?: string;
+  };
 }
 
 interface StageFrame {
@@ -189,15 +207,31 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
     };
   }, [plates]);
 
+  // The LCP plate is preloaded: the scanner cannot see an image inside a
+  // component, and this layer is the first photograph the page paints.
+  const lcp = plates.find((p) => p.priority);
+  const preload = lcp ? imagePreload(lcp.src, "100vw") : null;
+
   return (
     <div
       ref={rootRef}
       aria-hidden="true"
       className="photo-stage pointer-events-none fixed inset-0"
     >
-      {plates.map((plate) => (
+      {preload && (
+        <link
+          rel="preload"
+          as="image"
+          href={preload.href}
+          imageSrcSet={preload.imageSrcSet}
+          imageSizes={preload.imageSizes}
+          type={preload.type}
+          fetchPriority="high"
+        />
+      )}
+      {plates.map((plate, i) => (
         <div
-          key={plate.src}
+          key={`${plate.src}-${i}`}
           data-plate-layer=""
           className="stage-plate absolute inset-0"
           style={{ opacity: 0 }}
@@ -206,20 +240,42 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
             data-plate-image=""
             className="stage-plate-frame absolute inset-0"
           >
-            <ResponsiveImage
-              src={plate.src}
-              alt=""
-              fill
-              sizes="100vw"
-              style={{ objectPosition: plate.position }}
-            />
+            {/* A soft plate is rasterized at a quarter of the frame and
+                magnified back: a blur is priced by the area it rasterizes and
+                not by its radius, so the radius is quartered with it. */}
+            <div className={cn(plate.soft && "stage-plate-soft")}>
+              <ResponsiveImage
+                src={plate.src}
+                alt=""
+                fill
+                priority={plate.priority}
+                sizes="100vw"
+                style={{ objectPosition: plate.position }}
+              />
+            </div>
           </div>
           {/* The plate's own darkening, and the whole of it: one shape on
               every plate, carrying the picture where the chrome crosses it and
               releasing it through the whole middle. Because it rides inside
               the plate it fades with it — there is no scrim, veil or wash
               anywhere else on the page. */}
-          <div className="stage-plate-shade absolute inset-0" />
+          <div
+            className="plate-shade stage-plate-shade absolute inset-0"
+            style={
+              plate.shade
+                ? ({
+                    ...(plate.shade.color
+                      ? { "--shade-color": plate.shade.color }
+                      : null),
+                    "--shade-top": `${plate.shade.top}%`,
+                    "--shade-mid": `${plate.shade.mid}%`,
+                    "--shade-bottom": `${plate.shade.base}%`,
+                    "--shade-mid-from": plate.shade.from ?? "30%",
+                    "--shade-mid-to": plate.shade.to ?? "78%",
+                  } as CSSProperties)
+                : undefined
+            }
+          />
         </div>
       ))}
     </div>
