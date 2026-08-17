@@ -453,17 +453,26 @@ export default function HomePage() {
           </div>
 
           <div className="relative w-full px-6 py-20 md:w-[46%] md:px-12 md:py-24">
-            <Reveal className="text-center">
+            <Reveal>
               <span
                 aria-hidden="true"
-                className="mx-auto block h-[1.25px] w-16 bg-amber"
+                className="block h-[1.25px] w-16 bg-amber"
               />
               <h2 className="mt-3 type-heading font-display font-semibold tracking-[-0.025em]">
                 {gain.title}
               </h2>
+              {/* The rule under the heading, at 62% of the text column — the
+                  one mark Grand Canyon puts between a heading and what hangs
+                  off it. It is a rule, not a divider: it stops well short of
+                  the column's edge so it reads as underlining the words rather
+                  than as a border. */}
+              <span
+                aria-hidden="true"
+                className="mt-6 block h-px w-[62%] bg-hairline"
+              />
             </Reveal>
 
-            <div className="mt-6 md:mt-10">
+            <div className="mt-2 md:mt-4">
               <GainTrail items={gain.items} />
             </div>
           </div>

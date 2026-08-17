@@ -663,6 +663,42 @@ body {
     --gain-fade: 1;
     filter: blur(1.5px) brightness(0.86);
   }
+  /* The four gains as an ordered list. Numerals are pseudo-content, like the
+     panels' — the site's visible text is frozen and these are marks. They sit
+     in their own column so every line hangs off one left edge, and a hairline
+     runs between the rows: the reference puts rules and numbers here and
+     nothing else, which is the opposite of the trail with its glow and its
+     nodes that this section used to draw. */
+  .gain-list {
+    counter-reset: gain;
+  }
+  .gain-row {
+    counter-increment: gain;
+    padding-left: 3.25rem;
+  }
+  .gain-row + .gain-row {
+    border-top: 1px solid var(--color-hairline);
+  }
+  .gain-row::before {
+    content: counter(gain, decimal-leading-zero);
+    position: absolute;
+    left: 0;
+    top: 1.6rem;
+    font-family: var(--font-sans);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    color: var(--color-amber);
+  }
+  @media (min-width: 768px) {
+    .gain-row {
+      padding-left: 4rem;
+    }
+    .gain-row::before {
+      top: 2.15rem;
+    }
+  }
+
   /* The ramp ends at 52% of the frame on desktop, where the words occupy the
      left 46% of it. A phone has no room for a column beside a picture, so the
      ramp there is spent across the whole width instead and the words sit in
