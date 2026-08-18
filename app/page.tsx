@@ -19,25 +19,68 @@ import { hero, whatWeDo, gain } from "@/content/home";
 // into a different one.
 const gainImage = "/images/pt/IMG_4619-valley.jpg";
 
-// The three photographs the page stands on, and the only grounds below the
-// hero. Every plate takes the same darkening, and none carries a filter: a
-// per-image correction on the way to the screen is a second grade, and the
-// grade is the one place tone is decided now.
+// The three photographs the page stands on, and the only grounds below the hero.
+// They are listed in the order the reader meets them. Every plate takes the
+// same darkening, and none carries a filter: a per-image correction on the way
+// to the screen is a second grade, and the grade is the one place tone is
+// decided now.
 //
 // A plate is either the whole photograph or it is nothing: 1.00 or 0.00, and
 // no value in between is held anywhere on the page. The ledger reading down
-// from the hero is loud, quiet, loud, quiet, loud, quiet, and the only numbers
-// between the two are the crossfades themselves. At 0.16–0.18 — or at 0.90 —
-// a picture is neither a picture nor a clean ground; it is a haze with shapes
-// in it, which is what every zone below used to render.
+// from the hero is loud, loud, quiet, loud, quiet, loud, quiet, and the only
+// numbers between the two are the crossfades themselves. At 0.16–0.18 — or at
+// 0.90 — a picture is neither a picture nor a clean ground; it is a haze with
+// shapes in it, which is what every zone below used to render.
+//
+// `IMG_4739-lane` used to stand here as the panels' ground, held at nothing by
+// every marker that named it: the browser fetched `IMG_4739-lane-1600.avif` on
+// every visit to the home page and never painted a pixel of it. It is gone,
+// and it could not have taken the screen it was nearest to. The frame is a
+// village street and its two crops fail the same rule from opposite ends — the
+// whole plate carries overhead power cable across the sky, and the crop that
+// removes the cable lands on railings, a satellite dish, a letterbox and a
+// parked car.
 const plates: StagePlate[] = [
-  // The clearing, and the loud passage between the two offer panels: the road
-  // between the stone walls under flat overcast light. The clearing holds it
-  // at nothing and the passage is the one place it comes up to full strength.
+  // "What we do": the group walking the track above the reservoir. It is the
+  // hero's second slide, so it is already on the wire — the stage and the
+  // slideshow ask for the same `sizes`, resolve to the same variant and share
+  // one request — and it is the only frame available to this screen that
+  // breaks none of §2. Uncropped, it shows 84.8% of its own original in a
+  // 16:10 window against the 60% floor; the road shows 46.9% before its
+  // fencing is even counted, and the lane cannot clear a cable or a railing at
+  // any crop.
+  //
+  // It is also the only one that is a picture of the sentence under it. "We
+  // work with young people in Cyprus and across Europe" stands on young people
+  // walking in Europe, where a landscape would have said nothing about what
+  // this organization does — §3's rule about the object beside a programme
+  // section, applied to a ground.
+  //
+  // It carries its own darkening, and it needs to. The stage's shared numbers
+  // (52/62/70) were set for an overcast road; this is a sunny frame with open
+  // sky above a reservoir, and on the shared shade the lead measured 2.50 and
+  // the ledger labels 2.58–3.08 against a 4.5 floor. At 74/82/82, held from
+  // 14% to 86% so the ramp covers everything from the heading down to the
+  // labels at 71% of the frame, the worst element on either viewport is 5.11.
+  // The dark is `sky-anchor` rather than the shared `gold-anchor`: sky and
+  // water own this frame's chroma, and a green-black over blue does not lower
+  // it, it turns it. At equal strength the two are within 0.01 of each other on
+  // contrast, so the choice costs nothing and buys the hue.
+  {
+    src: "/images/hero-1.jpg",
+    position: "50% 50%",
+    shade: { top: 74, mid: 82, base: 82, from: "14%", to: "86%", color: "var(--color-sky-anchor)" },
+  },
+  // The join between the two panels: the road between the stone walls under
+  // flat overcast light, crossed rather than stopped on. It used to carry a
+  // screen of its own, and that is what made its top-left fencing a problem —
+  // §8 flagged it because the passage put it in front of the reader longer
+  // than anything else on the page. Here it is on full for about a third of a
+  // screen of scroll and gone, which is the shortest hold on the page rather
+  // than the longest. The pan stays bottom-anchored: a 16:10 window shows 854
+  // of this frame's 1020 rows and the fencing crosses rows 107 to 507, so no
+  // pan clears it and this one clears the most of it.
   { src: "/images/pt/IMG_4582-road.jpg", position: "45% 100%" },
-  // The panels' ground. They now carry their own photographs as objects, so
-  // this plate is held at nothing under them.
-  { src: "/images/pt/IMG_4739-lane.jpg", position: "50% 50%" },
   // The gains and the closing: the valley, the same frame the gains section
   // lays edge to edge over it — so the finale is that picture arriving at full
   // strength out of its own defocused copy.
@@ -48,28 +91,14 @@ const plates: StagePlate[] = [
 // this one preload covers both.
 const heroPreload = imagePreload(hero.slides[0], "100vw");
 
-// The passage between the panels carries the closing sentence of the panel
-// above it, and the split is made here rather than in /content because the
-// string does not move: the passage sits immediately after the first panel in
-// the markup, so lifting the panel's last sentence out of its paragraph and
-// standing it on the photograph leaves the page's visible text, read top to
-// bottom, character for character what it was. Every other frozen line is a
-// screen or more away from the passage in that order and could not be given to
-// it at all. The heading and the body below it are the two halves of that one
-// sentence — they rejoin across the tag boundary, which is where the parity
-// check collapses whitespace.
-const panels = whatWeDo.cards.map((card, i) => {
-  if (i !== 0) return { ...card, handoff: null };
-  const sentences = card.text.split(/(?<=\.) /);
-  const last = sentences[sentences.length - 1];
-  const cut = last.indexOf(" recognizing");
-  return {
-    ...card,
-    text: sentences.slice(0, -1).join(" "),
-    handoff: { heading: last.slice(0, cut), body: last.slice(cut + 1) },
-  };
-});
-
+// The panel's last sentence used to be lifted out of its paragraph and stood
+// on a screen of its own between the two panels. It is back where it was
+// written. On its own it read as a fragment that had lost its paragraph — one
+// sentence spending a screen and a half of scroll, with a wordless screen at
+// either end of it — and the paragraph it left behind was a sentence short.
+// Nothing moved in the document either time: the split was a re-wrapping of
+// the same characters in the same order, which is the only kind of move the
+// parity check allows, and undoing it is the same operation backwards.
 export default function HomePage() {
   return (
     <>
@@ -157,12 +186,43 @@ export default function HomePage() {
               rising wave with internal order on the clock: the rule draws and
               the text column lifts, the heading surfaces out of its clipped
               line a beat in, and the ledger rows land last, left to right. */}
-          {/* The clearing stands on the page's stage: the road between the
-              stone walls, so the world the hero opened on carries on under the
-              heading instead of ending at a seam. The plate's own darkening is
-              what makes the type readable — the pools that used to sit under
-              each block are gone. */}
+          {/* The clearing stands on a photograph now, and that is the whole of
+              this zone's change. It was the one screen on the site made of flat
+              colour with no image on it — the page opened on strong pictures
+              and then dropped into a plain one, which broke the run at the
+              first place the reader stops to read. The mechanism was never the
+              problem: the rule draws, the heading surfaces out of its clipped
+              line, the lead rises under it and the ledger lands last, all on
+              the clock. It was a mechanism with nothing behind it.
+
+              The village at blue hour comes up under all of it. The three
+              markers below are the ramp: nothing while the hero is leaving,
+              full by the time the heading is read, and held there through the
+              whole zone. The rise lands under the hero card's own dissolving
+              foot, so the two pictures hand over the way that foot was built to
+              let them. The plate's own darkening is what makes the type
+              readable — the pools that used to sit under each block are gone,
+              and this plate carries its own numbers because one darkening
+              cannot serve an overcast road and a blue hour. */}
           <div className="relative" data-index-section="">
+            <span
+              aria-hidden="true"
+              data-stage-plate="0"
+              data-stage-strength="0"
+              className="absolute inset-x-0 top-[10svh] h-0"
+            />
+            <span
+              aria-hidden="true"
+              data-stage-plate="0"
+              data-stage-strength="1"
+              className="absolute inset-x-0 top-[32svh] h-0"
+            />
+            <span
+              aria-hidden="true"
+              data-stage-plate="0"
+              data-stage-strength="1"
+              className="absolute inset-x-0 bottom-0 h-0"
+            />
             {/* The clearing takes a whole screen and stands its words in the
                 middle of it. It used to open flush against the hero's foot,
                 which put the heading and the ledger in the bottom quarter of
@@ -173,11 +233,7 @@ export default function HomePage() {
               fireMargin="-30%"
               className="relative mx-auto flex min-h-svh max-w-6xl flex-col justify-center px-4 xl:max-w-[min(84rem,92vw)]"
             >
-              <div
-                data-stage-plate="0"
-                data-stage-strength="0"
-                className="relative md:grid md:grid-cols-12 md:items-start md:gap-x-12 xl:gap-x-20"
-              >
+              <div className="relative md:grid md:grid-cols-12 md:items-start md:gap-x-12 xl:gap-x-20">
                 <div className="relative md:col-span-6 md:self-center">
                   <div className="stage-lift relative">
                     <span
@@ -210,11 +266,7 @@ export default function HomePage() {
                   numeral/label baseline alone. The rows are the wave's last
                   beats, and each counter still starts its 700ms count only
                   when it crosses into view — the ledger writes itself. */}
-              <div
-                data-stage-plate="0"
-                data-stage-strength="0"
-                className="relative mt-2 md:mt-12"
-              >
+              <div className="relative mt-2 md:mt-12">
                 <div className="relative grid md:grid-cols-3 md:divide-x md:divide-hairline">
                   {whatWeDo.stats.map((stat, i) => (
                     <div
@@ -230,19 +282,11 @@ export default function HomePage() {
             </StageScene>
           </div>
 
-          {/* The breathing zone that used to swell here is held at nothing, and
-              the page's geometry is why. A zone is keyed at its own middle, so
-              the window this marker has to work in runs from the ledger's key
-              to the point where the first panel's words are on screen: 416px
-              at 1440×900, 444px at 390×844 — under half a screen either side
-              of a peak. A picture that arrives and leaves inside a quarter of
-              a viewport is a flash, not a breath, and the only way to buy the
-              room is to open an empty stretch of page. The stage is a fixed
-              layer, so scrolling an empty stretch moves nothing on screen at
-              all: that is the stall this phase exists to avoid, and it costs
-              more than the swell is worth. The marker stays, at nothing, so
-              the ground is held down through the whole reading passage rather
-              than drifting up toward the panels. */}
+          {/* The lane goes out under the gap between the ledger and the first
+              panel, so the panel opens on the clean dark its own composition
+              needs: one lit picture in an unlit room, with nothing behind it.
+              The marker sits on the clearing's own last row rather than lower
+              down, or the fall would start under the ledger's last line. */}
           <div
             aria-hidden="true"
             data-stage-plate="0"
@@ -250,111 +294,51 @@ export default function HomePage() {
             className="h-0"
           />
 
-          {/* The panels open onto the same ground the stats close on — the
-              stage simply goes quiet under them — so this margin is a beat of
-              breathing, not a gap between two surfaces. */}
+          {/* The panels open onto the dark the stats hand over to — the stage
+              goes quiet under them — so this margin is a beat of breathing,
+              not a gap between two surfaces. */}
           <div className="mt-10 md:mt-24">
-            {panels.map((card, i) => (
+            {whatWeDo.cards.map((card, i) => (
               <Fragment key={card.title}>
-                {/* The loud passage between the two panels, and the one screen
-                    on this page where words stand on a photograph at its own
-                    full strength. Two quiet zones in a row is the one thing the
-                    rhythm forbids: the road between the stone walls comes up
-                    here, so the reader crosses a picture between the two
-                    readings instead of one long dark stretch. It is the plate
-                    the page already fetches for the clearing and had never
-                    actually shown.
+                {/* The join between the two panels: the road comes up across
+                    the boundary and goes down again, and it is given no height
+                    of its own at all.
 
-                    Full strength, not 0.9. The ground on this page is either a
-                    photograph or it is nothing — 1.00 or 0.00 and no value in
-                    between held anywhere.
+                    Two quiet zones in a row is the one thing the rhythm
+                    forbids, and a screen is the expensive way to fix it. This
+                    used to be 1.4 viewports of page carrying one sentence, with
+                    a wordless screen at each end where the reader scrolled and
+                    nothing on the glass changed but the ground. The road is
+                    still crossed between the two readings — it is simply
+                    crossed rather than stopped on, which is also what its
+                    top-left fencing needed: the frame is now in front of the
+                    reader for the shortest time on the page instead of the
+                    longest.
 
-                    It used to cross with nothing to read on it, 0.98 of a
-                    viewport of picture and no words, which is a stall inside
-                    the letter of the rule. It carries the sentence the panel
-                    above it ends on now: the promise the panel spends five
-                    lines earning, standing on the road at the size of a
-                    statement. Nothing was written for it and nothing moved on
-                    the page — see `panels` above for why this is the only
-                    string on the page that could be given to this screen.
+                    Both markers sit within a sixth of a screen of the boundary,
+                    so the plate is full across the join and back at nothing
+                    before either panel's prose reaches its reading position.
+                    The panels' own markers — a quiet key on each one's first
+                    and last frame — are what the ramps run from, so the two
+                    ends need nothing declared here. Full strength, not 0.9: the
+                    ground on this page is either a photograph or it is nothing.
 
-                    The four markers place the two ramps and the plateau under
-                    it: quiet, up, hold, down, quiet. A zone is keyed half a
-                    window above its own middle, so left to the defaults the
-                    crossfade would start under the words still leaving the
-                    panel above and finish under the words already arriving
-                    below — measured that way the second panel's title came in
-                    over a 0.8 plate at 2.45 against a 3.0 floor. Each ramp is
-                    0.18 of a viewport and holds under 0.35 of the picture for
-                    as long as either panel's prose is on the screen; the plate
-                    is at or above 0.9 for 0.87 of a viewport on desktop and
-                    0.80 on a phone. The two viewports carry different offsets
-                    because their prose sits at different heights in the
-                    frame. */}
+                    No screen loses its words to it. At the peak the panel above
+                    is still leaving the top of the window and the panel below
+                    is already entering the foot, so there is no scroll position
+                    across the join with an empty glass. */}
                 {i > 0 && (
-                  <div
-                    data-stage-plate="0"
-                    data-stage-strength="1"
-                    className="relative flex h-[124svh] items-center justify-center px-6 md:h-[143svh]"
-                  >
+                  <div aria-hidden="true" className="relative h-0">
                     <span
-                      aria-hidden="true"
-                      data-stage-plate="0"
-                      data-stage-strength="0"
-                      className="absolute inset-x-0 top-0 h-0 md:top-[21svh]"
-                    />
-                    <span
-                      aria-hidden="true"
-                      data-stage-plate="0"
+                      data-stage-plate="1"
                       data-stage-strength="1"
-                      className="absolute inset-x-0 top-[16svh] h-0 md:top-[39svh]"
+                      className="absolute inset-x-0 top-[-15svh] h-0"
                     />
                     <span
-                      aria-hidden="true"
-                      data-stage-plate="0"
+                      data-stage-plate="1"
                       data-stage-strength="1"
-                      className="absolute inset-x-0 top-[89svh] h-0 md:top-[118svh]"
+                      className="absolute inset-x-0 top-[15svh] h-0"
                     />
-                    <span
-                      aria-hidden="true"
-                      data-stage-plate="0"
-                      data-stage-strength="0"
-                      className="absolute inset-x-0 top-[105svh] h-0 md:top-[136svh]"
-                    />
-                    {/* On the clock, once, like every other entrance on the
-                        page: the rule draws, the statement surfaces out of its
-                        clipped line, the qualifier rises under it. The two are
-                        one sentence and they read as one — the second is the
-                        first one's last clause, at the body step, so the break
-                        between them is a change of weight rather than a new
-                        thought. Neither is a heading element: this is a
-                        sentence carried on from the paragraph above, and
-                        marking a clause as a heading would tell a screen
-                        reader something that is not true. */}
-                    {panels[i - 1].handoff && (
-                      <StageScene className="relative max-w-[46rem] text-center">
-                        <span
-                          aria-hidden="true"
-                          className="stage-rule mx-auto block h-[1.25px] w-16 bg-amber"
-                        />
-                        <div className="stage-mask mt-5">
-                          <p
-                            className="stage-mask-rise type-heading font-display font-semibold tracking-[-0.025em]"
-                            style={{ transitionDelay: "80ms" }}
-                          >
-                            {panels[i - 1].handoff!.heading}
-                          </p>
-                        </div>
-                        <div
-                          className="stage-rise"
-                          style={{ transitionDelay: "250ms" }}
-                        >
-                          <p className="mx-auto mt-4 max-w-[44ch] text-[clamp(1rem,1.3vw,1.16rem)] leading-[1.66] text-ink">
-                            {panels[i - 1].handoff!.body}
-                          </p>
-                        </div>
-                      </StageScene>
-                    )}
                   </div>
                 )}
                 <OfferPanel

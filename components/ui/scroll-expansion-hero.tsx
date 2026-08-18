@@ -457,10 +457,25 @@ const ScrollExpandMedia = ({
                     transparent nav crosses the picture at full expansion, and
                     strong again at the base, where the intro stands. Full
                     width, top to bottom, inside the plate — the local pool
-                    that used to sit under the intro's block is gone. */}
+                    that used to sit under the intro's block is gone.
+
+                    The base runs to 94% from 36% of the card, and it has to,
+                    because this ramp is inside the foot mask and is multiplied
+                    by it. While the card stopped short of the window the intro
+                    sat at mask alpha 0.4 falling to 0.02 — standing on the dark
+                    floor with the photograph almost entirely dissolved away
+                    behind it. Full bleed, the same words sit at 0.9 falling to
+                    0.2, which is the picture itself, and on a phone the lede
+                    measured 3.16 against a 4.5 floor over the second slide.
+                    Deepening the ramp is self-limiting for the same reason it
+                    was needed: where the mask has taken the picture it takes
+                    the darkening with it, so the number is large without the
+                    frame going dark. Worst slide now 4.96, and the four run
+                    5.54/4.96/5.61/6.50 where they ran 4.31/4.17/5.56/5.28
+                    before the card ever reached the window's edges. */}
                 <div
                   aria-hidden="true"
-                  className="plate-shade pointer-events-none absolute inset-0 [--shade-bottom:78%] [--shade-mid:16%] [--shade-mid-from:22%] [--shade-mid-to:46%] [--shade-top:34%]"
+                  className="plate-shade pointer-events-none absolute inset-0 [--shade-bottom:94%] [--shade-mid:16%] [--shade-mid-from:22%] [--shade-mid-to:36%] [--shade-top:34%]"
                 />
               </div>
             </div>

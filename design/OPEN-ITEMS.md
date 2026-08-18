@@ -10,30 +10,6 @@ follows is what still stops it reading as award-level.
 
 ---
 
-## C · The wordless passage and "What we do"
-
-These are one problem, not two.
-
-**C1 · "What we do" is still bare.**
-It is type on flat dark with no photograph and nothing else. The site opens with
-strong pictures and then drops into a plain screen — it breaks the run. This
-zone needs a photograph at full strength, or a composition of its own.
-
-**C2 · The Youthpass line is in the wrong place.**
-"Receive a Youthpass certificate recognizing your learning." now sits alone in
-the passage between the two panels. As a sentence it does not carry a screen —
-it reads as a fragment that lost its paragraph.
-
-The *mechanism* is good: a heading arriving over a full-strength photograph,
-clock-entered, heading first then body. Keep the mechanism. Apply it where it
-has something to say — "What we do" is the obvious candidate, and it solves C1
-at the same time.
-
-Constraint: the text is frozen and `verify:text` compares document order, not a
-set. Any move has to keep the flattened string byte-identical.
-
----
-
 ## D · Photography
 
 **D1 · The crops are taking the wrong part of the frame.**

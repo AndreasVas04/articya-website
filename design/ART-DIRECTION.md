@@ -118,9 +118,13 @@ together — move one and re-measure the other two.
 currently under-weighted. It needs more presence in the composition. It must not
 get a box.
 
-**What we do** — the weakest zone. Currently type alone with large empty space
-above and below. It needs an image or a piece of motion carrying it, and it needs
-its vertical space tightened.
+**What we do** — was the weakest zone: type alone on flat dark, the one screen
+on the site made of plain colour. It stands on `hero-1` at full strength now —
+the group walking the track above the reservoir, the hero's own second slide, so
+the picture costs no extra request. The clock entrance it already had did not
+change; it only had nothing behind it. The plate carries its own darkening at
+74/82/82 on `sky-anchor`, because the shared stage numbers were set for an
+overcast road and this frame is a sunny one.
 
 **Youth Exchanges / Training Courses** — the object photograph must show young
 people on an Erasmus+ activity. `AboutImage1` (the group with the Cyprus and
@@ -147,7 +151,8 @@ scrolls only ~325px; it does not read as a page at all.
 | IMG_4585 | group on a path above the valley | home hero — settled |
 | IMG_4619 | valley under open sky | strongest open frame; needs its bottom-right cable corner cropped |
 | IMG_4582 | road between stone walls, overcast | quiet ground, wide |
-| IMG_4739 | village at blue hour, cobbled lane | atmosphere |
+| IMG_4739 | village at blue hour, cobbled lane | **off the site.** Both crops fail §2 from opposite ends: the whole frame carries overhead power cable across the sky, and the crop that removes the cable lands on railings, a satellite dish, a letterbox and a parked car. It sat on home as a plate held at nothing and was fetched on every visit |
+| hero-1 | the group walking the track above the reservoir | home hero slide 2, and the ground under "What we do" — the one frame in use that breaks none of §2, and uncropped it shows 84.8% of its original in a 16:10 window |
 | IMG_4735 | cattle on a road at blue hour | character; cables cross the upper half — crop to the lower two thirds |
 | IMG_4721 | cattle under oaks | texture only, never behind a heading |
 | IMG_4599 | forest path, moss | the set's one hard-midday frame; graded to match the others |
@@ -216,13 +221,16 @@ one viewport, scrolled through. Home lost 1800px at 1440×900 and 1531px at
 struck out with the rest. Reading down: loud, quiet, loud, quiet, loud, quiet.
 Numbers in `REFERENCE-LANGUAGE.md` §F1.
 
-**The road passage carries words.** It was 0.98 of a viewport of photograph with
-nothing to read on it. It now carries the sentence the panel above it ends on —
-"Receive a Youthpass certificate recognizing your learning." — as a statement at
-3.5% of the viewport width with its own last clause under it. Nothing was
-written and nothing moved in the document: text can only be given to a zone
-adjacent to it in the source, because parity compares each page as one ordered
-string. That constraint decides every future move of this kind.
+**The road passage is gone and its sentence is back in its paragraph.** Giving
+it the panel's last line was the right shape on the wrong content: one sentence
+spending 1.4 viewports, with a wordless screen at each end — 15 scroll positions
+on desktop and 9 on a phone where the glass carried no words at all. The screen
+is deleted, "Receive a Youthpass certificate recognizing your learning." is the
+fifth sentence of Youth Exchanges again, and the road now crosses the join
+between the two panels at full strength for 0.36 of a viewport with no height of
+its own. Home went from 7.27 viewports to 5.84. Nothing moved in the document
+either way: the split was a re-wrapping of the same characters in the same
+order, which is still the only kind of move parity allows.
 
 **The hero is split.** The poster is painted twice with the h1 between the
 copies — the reference set's "type inside the depth" (§6) — the front copy
@@ -238,12 +246,14 @@ What is still open:
 
 - **The lede, "What you gain", the closing** — §4 above. Under-designed, and the
   panels' geometry is now the only part of home that is settled.
-- **Fencing in the road frame.** `IMG_4582-road` carries a chain-link fence in
-  its top-left corner, and the passage is now a screen the reader stops and
-  reads on, so it is in the frame the longest of anything on the page. It breaks
-  the second photography rule in §2. The crop is already 56% of the original
-  area, under the 60% floor, so this cannot be cropped out — it needs a
-  different frame or a different pan.
+- **Fencing in the road frame.** `IMG_4582-road` carries a chain-link fence
+  across rows 107–507 of its 1020, and a 16:10 window shows 854 of them, so no
+  pan clears it; the bottom-anchored one in use clears the most. The crop is
+  56% of the original and a 16:10 window shows 46.9% of it, under the 60% floor.
+  Both are still true. What changed is the exposure: the frame is crossed at the
+  panels' join for 0.36 of a viewport instead of holding a screen the reader
+  stops and reads on, so it is now the shortest hold on the page rather than the
+  longest. It still needs a different frame to close.
 - **The home h1 under reduced motion.** The hero renders expanded, so the
   headline and the label sit at opacity 0. Pre-existing, still open.
 - **Real-device confirmation.** Everything above is measured in a headless
