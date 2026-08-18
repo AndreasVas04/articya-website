@@ -18,8 +18,9 @@ const FADE: CSSProperties = { opacity: 0 };
 const DRAW: CSSProperties = { scale: "0 1" };
 
 // How wide the photograph renders, so the browser fetches that width and no
-// more: the 29% column on desktop, a stacked block below it.
-const PHOTO_SIZES = "(min-width: 768px) 29vw, 72vw";
+// more: the column plus the outer margin it now runs into on desktop, the
+// whole screen below that.
+const PHOTO_SIZES = "(min-width: 768px) 41vw, 100vw";
 
 // The eyebrow label, one per panel, in the order the panels appear. Like the
 // numerals it is pseudo-content and never enters the DOM — the site's visible
@@ -193,7 +194,16 @@ export function OfferPanel({
               </p>
             </div>
 
-            <div className="offer-panel-photo relative" style={enter(1, LIFT)}>
+            {/* The picture takes the wipe instead of the lift: it is the one
+                element in the panel that is not text, and §E2's bottom-to-top
+                uncover is what makes it arrive rather than appear. The class
+                carries the clip; `enter` still owns when. */}
+            <div
+              className={cn(
+                "offer-panel-photo relative",
+                active && (entered ? "offer-panel-wipe-in" : "offer-panel-wipe")
+              )}
+            >
               <ResponsiveImage
                 src={image}
                 alt=""

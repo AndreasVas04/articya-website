@@ -472,22 +472,70 @@ body {
      reference frame is the picture and nothing else. It starts 12% of the
      section above the text block's top edge: the two columns are aligned to
      one line and this margin lifts the picture off it, which is what stops
-     the pair reading as a row of a grid. The width cap is the height rule
-     turned around — 86% of the section, at 3:4 — so on a window wide enough
-     for the column to outgrow it the picture stops instead of overrunning the
-     frame. Below about a 2.2:1 window the column is the narrower of the two
-     and the cap never binds. */
+     the pair reading as a row of a grid.
+   *
+   * The window cuts it. Its inner edge is the column-4 line and does not move
+   * — 17/32/10 and the gutter to the text are exactly as measured — and its
+   * outer edge runs to the edge of the screen, so the width is the picture's
+   * own 29% plus the 12% margin that was outside it: 41vw.
+   *
+   * That margin was buying nothing, and the old width is why these panels
+   * read as plain. `min(100%, 64.5svh)` was written to hold the picture at
+   * §A2's 86% of section height, but 64.5svh only binds on a window wider
+   * than about 2.2:1 — at every normal ratio the 29% column was the smaller
+   * number and decided instead. Measured at 1440x900 the frame came out
+   * 417x556, which is 62% of the section, and a 3:4 picture with margin on
+   * all four sides sitting in a full-viewport section is §3's own rejected
+   * item: large empty bands above and below the content. At 41vw the same
+   * frame is 590x787 — 87.5% — and the band is gone.
+   *
+   * The cap is now 69svh, which is the same rule turned around at 92% rather
+   * than 86%: on a 16:9 or wider window 41vw would stand the picture taller
+   * than the section, so there the cap binds and the frame stops a little
+   * short of the edge instead of overrunning the screen. At 16:10 and taller
+   * it is flush. */
   .offer-panel-photo {
-    width: 72%;
-    max-width: 320px;
+    width: calc(100% + 2rem);
+    margin-inline: -1rem;
     aspect-ratio: 3 / 4;
   }
   @media (min-width: 768px) {
     .offer-panel-photo {
-      width: min(100%, 64.5svh);
-      max-width: none;
+      width: min(41vw, 69svh);
+      margin-inline: 0;
       margin-top: -12svh;
     }
+    /* The picture overflows its own column outward, so it has to be packed
+       against the column's inner edge — the side the text is on. Stretch
+       would fight the width; the default start edge is right for the panel
+       whose picture is on the right, and the mirrored panel needs the other
+       one. */
+    .offer-panel-grid > .offer-panel-photo {
+      justify-self: start;
+    }
+    .offer-panel-grid-flip > .offer-panel-photo {
+      justify-self: end;
+    }
+  }
+
+  /* §E2's vertical wipe, and the picture is the only thing on the site that
+     takes it: the frame uncovers itself from the bottom rather than fading
+     up. It is a photograph arriving, not text — text on this page is on the
+     clock and forbidden the scrollbar, and this is on the same clock as the
+     words beside it, one beat behind them.
+
+     The timing rides the arriving class, never the element and never the
+     hidden one, and that is what keeps the entrance one-way: the exported
+     HTML carries no clip at all, the hidden clip lands in a single frame at
+     mount with no transition in scope to animate it, and the run back out is
+     the only move that is timed. */
+  .offer-panel-wipe {
+    clip-path: inset(100% 0 0 0);
+  }
+  .offer-panel-wipe-in {
+    clip-path: inset(0 0 0 0);
+    transition: clip-path 900ms cubic-bezier(0.76, 0, 0.24, 1);
+    transition-delay: 90ms;
   }
 
   /* The eyebrow row: numeral, rule, label, left to right on one line, sitting
