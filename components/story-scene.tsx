@@ -11,13 +11,14 @@ import { cn } from "@/lib/utils";
 // still finds them settled where they belong. The travel is the individual
 // `translate`/`scale` properties, never `transform`.
 const ENTER_EASE = "cubic-bezier(0.16, 1, 0.3, 1)";
+const LIFT: CSSProperties = { opacity: 0, translate: "0 40px" };
 const RISE: CSSProperties = { translate: "0 40px" };
 const FADE: CSSProperties = { opacity: 0 };
 const DRAW: CSSProperties = { scale: "0 1" };
 
-// The column plus the outer margin on desktop, the whole screen below that —
-// the same measurement the offer panels fetch at.
-const PHOTO_SIZES = "(min-width: 768px) 41vw, 100vw";
+// The 29% column on desktop, a stacked block below it — the same measurement
+// the offer panels fetch at.
+const PHOTO_SIZES = "(min-width: 768px) 29vw, 72vw";
 
 interface SceneImage {
   src: string;
@@ -89,13 +90,8 @@ export function StoryScene({ groups, image, flip = false }: StorySceneProps) {
     return hidden;
   };
 
-  const active = mounted && !reducedMotion;
-
   return (
-    // overflow-x clipped, not `overflow-clip`: the photograph now runs to the
-    // window's outer edge and a classic scrollbar takes a few pixels of `vw`
-    // with it, and the -12svh lift is vertical overflow that has to survive.
-    <section data-index-section="" className="relative overflow-x-clip">
+    <section data-index-section="" className="relative">
       <div className="relative flex min-h-svh w-full items-center px-4 py-16 md:px-0 md:py-0">
         <div
           className={cn(
@@ -129,14 +125,7 @@ export function StoryScene({ groups, image, flip = false }: StorySceneProps) {
             </p>
           </div>
 
-          {/* The wipe, on the same clock as the panels' — these scenes are the
-              offer panel's composition and take its arrival with it. */}
-          <div
-            className={cn(
-              "offer-panel-photo relative",
-              active && (entered ? "offer-panel-wipe-in" : "offer-panel-wipe")
-            )}
-          >
+          <div className="offer-panel-photo relative" style={enter(1, LIFT)}>
             <ResponsiveImage
               src={image.src}
               alt={image.alt}
