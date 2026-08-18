@@ -39,20 +39,38 @@ interface GalleryFinaleProps {
   images: GalleryImage[];
 }
 
-// Per-tile placement, mobile first with md: overrides. The mosaic is a
-// three-row grid around the center tile: the side tiles share the middle
-// row's height, the top and bottom rows interlock one long tile with one
-// small one, and every edge sits on a uniform gap (2vw/1.5vh mobile,
-// 1.5vw/2vh desktop). The center tile is sized so that at full scale it
-// finishes slightly past 100vw/100vh and its rounded corners land offscreen.
+// The wall. Seven photographs in three bands that tile the window exactly —
+// 100vw across and 100vh down, with no gap between any two of them and no
+// ground left showing anywhere.
+//
+// It used to be a scatter: seven tiles of seven different sizes floating on
+// dark with a uniform gap around each and a dark margin around the whole
+// group. Seven objects arranged on a field. The complaint that this page is
+// "arranged, not composed" is that gap — an object with air around it reads as
+// placed, and seven of them read as a pile. Filling the frame is what turns
+// them into one thing: there is no ground to be placed on, so the composition
+// is not *in* the window, it *is* the window.
+//
+// Offsets are from the window's centre, which is where each tile's flex parent
+// puts it. Reading the three bands:
+//   top     60vw + 40vw, 30vh tall, meeting at x = +10vw
+//   middle  25vw + 50vw + 25vw, 40vh tall
+//   bottom  40vw + 60vw, 30vh tall, meeting at x = -10vw
+// The wide tile is on the left at the top and on the right at the bottom, so
+// the two long edges cross the frame in opposite directions and the wall has
+// the interlock the scatter had. The centre tile is the one the zoom takes
+// past full bleed, and it arrives last, in the place the words stood.
+//
+// The bands are the same at both viewports. A wall does not need a breakpoint:
+// it is measured in fractions of the window, and the window is what it fills.
 const TILES = [
-  "h-[26vh] w-[52vw] md:h-[26vh] md:w-[26vw]",
-  "-top-[22.5vh] -left-[11vw] h-[16vh] w-[74vw] md:-top-[25vh] md:-left-[10.25vw] md:h-[20vh] md:w-[46.5vw]",
-  "-left-[38vw] h-[26vh] w-[20vw] md:-left-[24vw] md:h-[26vh] md:w-[19vw]",
-  "left-[38vw] h-[26vh] w-[20vw] md:left-[24vw] md:h-[26vh] md:w-[19vw]",
-  "top-[22.5vh] left-[11vw] h-[16vh] w-[74vw] md:top-[25vh] md:left-[10.25vw] md:h-[20vh] md:w-[46.5vw]",
-  "top-[22.5vh] -left-[38vw] h-[16vh] w-[20vw] md:top-[25vh] md:-left-[24vw] md:h-[20vh] md:w-[19vw]",
-  "-top-[22.5vh] left-[38vw] h-[16vh] w-[20vw] md:-top-[25vh] md:left-[24vw] md:h-[20vh] md:w-[19vw]",
+  "h-[40vh] w-[50vw]",
+  "-top-[35vh] -left-[20vw] h-[30vh] w-[60vw]",
+  "-left-[37.5vw] h-[40vh] w-[25vw]",
+  "left-[37.5vw] h-[40vh] w-[25vw]",
+  "top-[35vh] left-[20vw] h-[30vh] w-[60vw]",
+  "top-[35vh] -left-[30vw] h-[30vh] w-[40vw]",
+  "-top-[35vh] left-[30vw] h-[30vh] w-[40vw]",
 ];
 
 const TARGET_SCALES = [4, 5, 6, 5, 6, 8, 9];
@@ -190,7 +208,10 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
             {groups.join(" ")}
           </p>
         </div>
-        <div className="grid grid-cols-2 gap-1 p-1 md:grid-cols-3 md:gap-2 md:p-2">
+        {/* The resting state is the wall too: no gap, no padding, the frame
+            filled. It used to carry a 4px gutter and a 4px surround, which is
+            the scatter's own reading at rest. */}
+        <div className="grid grid-cols-2 md:grid-cols-3">
           {images.slice(0, TILES.length).map(({ src, alt }, index) => (
             <ResponsiveImage
               key={src}
