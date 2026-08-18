@@ -130,7 +130,12 @@ overcast road and this frame is a sunny one.
 people on an Erasmus+ activity. `AboutImage1` (the group with the Cyprus and
 Portugal flags) and `AboutImage2` (the circle of chairs outside the mountain
 cabin) are the right subjects. A landscape portrait beside these headings says
-nothing.
+nothing. The window cuts the frame now: the inner edge is the column-4 line and
+the outer edge runs off the screen, 41vw rather than the column's 29%, which is
+what finally puts the picture at §A2's 86% of the section instead of 62%. The
+five tracks, the 3:4, the −12svh lift and the numeral on the eyebrow row are
+untouched — the outer margin is the only thing that was spent. About's three
+story scenes share the classes and take it with them.
 
 **What you gain** — four lines currently sit stacked with no composition. It
 needs structure: a rule, an order, an arrival, something that makes it a designed

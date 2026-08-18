@@ -30,24 +30,57 @@ That is a photography problem, not a code problem.
 
 ---
 
-## E · Composition — the main work
+**D4 · The panels' object frames carry their own clutter.**
+`AboutImage2` has a television aerial on the cabin roof at top left. It was
+always there; the frame is now 41% of the viewport instead of 29%, so it is
+larger on the screen than it was. Nothing was cropped to cause it and nothing
+can be cropped to remove it — same class as D1, and the same answer.
 
-**E1 · The Contact page is the standard now.**
-Splitting one photograph, hard seam, the invitation and the channels on the
-defocused half — that broke the flat, boring page that was there before and it
-is the best composition on the site.
+---
 
-**E2 · Bring that level of invention to the rest.**
-Not the same device repeated. The same *ambition*, drawn from the reference set:
+## E · Composition — closed
 
-- **About** — currently a mosaic of tiles. It should be composed, not arranged.
-- **Youth Exchanges** and **Training Courses** — the alternating panels are
-  correct as geometry, but they are the plainest expression of that geometry.
-  Play with them the way Contact was played with.
+**E1 · Contact was the standard.** Unchanged.
 
-The reference screenshots in `design/refs/` are the vocabulary: one photograph
-treated two ways, type bound into the picture's depth, an organic edge instead
-of a rectangle, a title that becomes a label, a hard seam used deliberately.
+**E2 · Landed.** Two compositions, one each:
 
-Every one of these must still clear §2 of `ART-DIRECTION.md` and must not
-reintroduce anything from §3.
+- **The panels, and About's three story scenes with them** — the window cuts
+  the photograph. The picture's inner edge stays on the column-4 line and its
+  outer edge runs off the screen; 41vw against the old 29%, which is the first
+  time the frame has actually reached §A2's 86% of section height. It arrives
+  on §E2's vertical wipe. See the commit for the measurements.
+- **About's finale** — the scatter became a wall: seven photographs tiling the
+  window exactly, no gap and no ground showing, measured at 100% coverage.
+
+Neither used the split again. What is still unspent from `design/refs/`: the
+organic mask on a frame other than the home hero, the title that becomes a
+label, and type inside the depth on an inner page. §A of
+`REFERENCE-LANGUAGE.md` rules the last of those out for the panels
+specifically — the heading and the picture are in different columns by
+construction — so it belongs to a full-bleed frame if it is ever built.
+
+---
+
+## F · Found while building E
+
+**F1 · The About finale's timeline runs past the document.**
+`GalleryFinale` measures itself with `useScroll` over `["start end", "end
+start"]`, which spans `sectionHeight + viewport` — 2880px at 1440×900. The
+document's own maximum scroll reaches only **0.739** of that (0.725 on mobile),
+so the last quarter of the choreography is unreachable at every viewport. The
+zoom is written to finish at 0.745 and therefore never quite finishes, and the
+wordless tail after the closing paragraph dissolves is what is left of the
+reachable range: **0.82vh desktop / 0.83vh mobile**, against §2's 1.0vh ceiling.
+
+It is inside the rule and it is pre-existing — identical before and after the
+wall — so it was not tuned blind. Fixing it properly means making the declared
+travel equal the reachable travel, which moves the pin, the gather, the settle
+and the zoom together and needs its own verification pass.
+
+**F2 · The entrance handover on mobile home is 140px.**
+Two stretches on a phone (140px and 80px) where one panel's paragraph has left
+the top of the window and the next panel's heading is on screen but still at
+opacity 0, waiting for its own in-view trigger. It grew from nothing when the
+mobile frame went from 374px to 520px tall. `REFERENCE-LANGUAGE.md` §F2 records
+225px mobile as the figure this page has carried before, so it is inside the
+site's own norm, and 0.17vh is far inside §2's 1.0.
