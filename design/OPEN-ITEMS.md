@@ -63,19 +63,38 @@ construction — so it belongs to a full-bleed frame if it is ever built.
 
 ## F · Found while building E
 
-**F1 · The About finale's timeline runs past the document.**
-`GalleryFinale` measures itself with `useScroll` over `["start end", "end
-start"]`, which spans `sectionHeight + viewport` — 2880px at 1440×900. The
-document's own maximum scroll reaches only **0.739** of that (0.725 on mobile),
-so the last quarter of the choreography is unreachable at every viewport. The
-zoom is written to finish at 0.745 and therefore never quite finishes, and the
-wordless tail after the closing paragraph dissolves is what is left of the
-reachable range: **0.82vh desktop / 0.83vh mobile**, against §2's 1.0vh ceiling.
+**F1 · The About finale's timeline ran past the document — closed.**
+`GalleryFinale` measured itself over `["start end", "end start"]`, which spans
+`sectionHeight + viewport` — 2880px at 1440×900. The document's maximum scroll
+reached only **0.739** of it (0.725 on mobile), so the last quarter of the
+choreography was unreachable at every viewport, and the pin released at 0.688
+while the zoom was still written to run to 0.745 — the frame was sliding away
+underneath a photograph that was still growing.
 
-It is inside the rule and it is pre-existing — identical before and after the
-wall — so it was not tuned blind. Fixing it properly means making the declared
-travel equal the reachable travel, which moves the pin, the gather, the settle
-and the zoom together and needs its own verification pass.
+The end of the offset is now `end end`: the section's bottom edge reaching the
+bottom of the window, which is the exact frame the sticky child unpins on.
+Declared travel is the section's own height, 1980px desktop / 1688px mobile,
+and the reachable range is **1.075 / 1.087** of it — the whole timeline plus
+the footer's 148px as the exit. The pin engages at 0.455 / 0.500 and releases
+at 1.000. The gather, the handover, the settle and the zoom were rewritten
+against that split; the wordless tail measures **0.830vh desktop / 0.820vh
+mobile** against §2's 1.0vh ceiling, where it was 0.82 / 0.83.
+
+**The zoom's end also stopped outrunning the source.** The centre tile is
+50vw × 40vh and was scaled ×4, which paints it 2880 CSS px wide at 1440 while
+`sizes="100vw"` fetched a 1600px variant — 1.80× upscale at the end of the
+zoom, 2.85× on a phone, which is the softness that was visible. The tile now
+declares the width it is actually painted at and the run stops at 2.6×, where
+the photograph covers the window with 2% of bleed and no more. Measured at four
+points through the zoom the rendered-to-intrinsic ratio is 0.375 / 0.464 /
+0.885 / **0.975** desktop and 0.336 / 0.418 / 0.793 / **0.873** mobile.
+
+What is left, measured and accepted: the six ring tiles cross 1.0 in flight for
+**113px of scroll** (p 0.815–0.872 desktop), peaking at 2.02 on the last sliver
+of a tile leaving the frame. Holding them under 1.0 to the moment they clear
+needs the 1536/2560 rung of six photographs at once — several MB on one page —
+for frames that are 60–80% off-screen and travelling at the fastest part of the
+run. Not bought.
 
 **F2 · The entrance handover on mobile home is 140px.**
 Two stretches on a phone (140px and 80px) where one panel's paragraph has left

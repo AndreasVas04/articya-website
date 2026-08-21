@@ -73,7 +73,27 @@ const TILES = [
   "-top-[35vh] left-[30vw] h-[30vh] w-[40vw]",
 ];
 
-const TARGET_SCALES = [4, 5, 6, 5, 6, 8, 9];
+// Where the zoom stops. The centre tile is 50vw × 40vh, so it covers the
+// window at 2.5× and every fraction past that is scale spent on a frame that
+// is already full — nothing to see as composition, and softness to see as
+// resolution. 2.6 leaves 2% of bleed at the head and foot and no more. The
+// other six are the set the wall has always had, taken down by the same factor
+// (k = 1.6/3), so each tile's scale against the centre's is unchanged: the ring
+// breaks apart on exactly the path it did before, and only the end of the run
+// moves.
+const TARGET_SCALES = [2.6, 3.13, 3.67, 3.13, 3.67, 4.73, 5.27];
+
+// How wide each photograph is actually painted, which is not how wide its box
+// is: the zoom scales the box, and object-cover scales the picture again
+// wherever the frame's aspect and the box's disagree. The centre tile is the
+// one that survives to the end, so it declares its own painted width — 130vw
+// on desktop. On a phone the tile is portrait and the frame is landscape, so
+// the picture is cropped hard on the sides and its *height* sets the sample
+// rate; the declaration has to carry that overscale, which is what the third
+// figure is. Both are read off the frame in place — a frame of a different
+// aspect moves them.
+const CENTER_SIZES = "(min-width: 768px) 130vw, 340vw";
+const RING_SIZES = "(min-width: 768px) 55vw, 80vw";
 
 // While the words are on screen each outer tile holds this offset from its
 // mosaic slot (x in vw, y in vh) — gathered loosely around the paragraph,
@@ -121,14 +141,26 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
   const [compact, setCompact] = useState(false);
   const [entered, setEntered] = useState(false);
 
-  // One travel-based timeline (section top at viewport bottom → section
-  // bottom at viewport top), so the words are already arriving while the
-  // last scene releases and the frame is never empty. The pin engages at
-  // ~0.19 desktop / 0.25 mobile and releases at ~0.82 / 0.75; the zoom
-  // completes just before release and holds full-bleed for a beat.
+  // One travel-based timeline, and it now ends where the held frame does. It
+  // used to run to "end start" — the section's bottom edge reaching the top of
+  // the window — which is a scroll position this document cannot reach: only
+  // the footer stands below the finale, so the page ran out at 0.739 of the
+  // declared 2880px at 1440×900 (0.725 of 2532 on a phone) and the last
+  // quarter of the choreography was unreachable at every viewport. "end end"
+  // ends on the section's bottom edge reaching the *bottom* of the window,
+  // which is the exact frame the sticky child unpins on. Every value from 0 to
+  // 1 is reachable now, 1 is the release, and the ~148px of footer under it is
+  // the exit.
+  //
+  // The section still opens at the bottom of the window, so the words are
+  // already arriving while the last scene releases and the frame is never
+  // empty. The pin engages at 0.455 desktop / 0.500 mobile — one viewport of
+  // travel over a 220svh / 200svh section — and releases at 1.0. Everything
+  // below is written against that split: the ring assembles while the section
+  // rises, and the handover, the settle and the zoom all play inside the pin.
   const { scrollYProgress: stage } = useScroll({
     target: container,
-    offset: ["start end", "end start"],
+    offset: ["start end", "end end"],
   });
 
   // Text: the groups complete on their own clock shortly after the words
@@ -136,7 +168,7 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
   // ring closes. That handoff stays scroll-linked — it is the mosaic's beat,
   // not the words' — and on compact screens the words dissolve completely
   // before the ring starts moving, so the closing tiles never cross live text.
-  const [fadeFrom, fadeTo] = compact ? [0.4, 0.46] : [0.42, 0.5];
+  const [fadeFrom, fadeTo] = compact ? [0.6, 0.68] : [0.62, 0.7];
   const textOut = useTransform(
     () => 1 - stageWindow(stage.get(), fadeFrom, fadeTo)
   );
@@ -223,7 +255,7 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
               // narrower value here picks a smaller variant that is replaced
               // before it is ever displayed — one download of each photo
               // instead of two.
-              sizes={index === 0 ? "100vw" : "(min-width: 768px) 55vw, 80vw"}
+              sizes={index === 0 ? CENTER_SIZES : RING_SIZES}
               className={cn(
                 "h-full w-full object-cover",
                 index === 0
@@ -240,11 +272,9 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
   return (
     <section
       ref={container}
-      // The sticky child pins for this height less one viewport. At 300/440
-      // that was 2.0 and 3.4 viewports of held frame, against a 1.2 ceiling,
-      // and the last third of it carried no words at all. The choreography is
-      // written in fractions of the pin, so it plays unchanged, faster against
-      // the scroll.
+      // The sticky child pins for this height less one viewport: 1.2 viewports
+      // of held frame on desktop, 1.0 on a phone, against §G's 1.2 ceiling. At
+      // 300/440 it was 2.0 and 3.4, and the last third carried no words at all.
       className="relative h-[200vh] md:h-[220vh]"
     >
       <div
@@ -310,19 +340,24 @@ function FinaleTile({
   // Outer tiles rise staggered into their gathered offsets while the words
   // complete; the ring settles into the mosaic as the words hand over, the
   // center tile arrives where they stood, and the zoom takes the center
-  // tile past full-bleed. Compact screens sequence the handoff strictly —
+  // tile out to full-bleed. Compact screens sequence the handoff strictly —
   // the ring holds until the words have fully dissolved and the center tile
   // waits for the settle — and the band tiles above the words rise in from
   // above so their entrance also stays clear of the text.
   const center = index === 0;
   const inStart = center
     ? compact
-      ? 0.465
-      : 0.44
-    : 0.1 + (index - 1) * 0.015;
-  const inEnd = inStart + (center ? 0.08 : 0.1);
+      ? 0.69
+      : 0.64
+    : 0.14 + (index - 1) * 0.02;
+  const inEnd = inStart + (center ? 0.09 : 0.15);
   const [gatherX, gatherY] = (compact ? GATHER_COMPACT : GATHER)[index];
-  const [settleFrom, settleTo] = compact ? [0.46, 0.545] : [0.42, 0.54];
+  const [settleFrom, settleTo] = compact ? [0.68, 0.76] : [0.62, 0.76];
+  // The zoom is the last beat of the pin, not the first beat of the exit. It
+  // finishes with 99px desktop / 67px mobile of held frame still to come, and
+  // the footer's own 148px after that, so the full-bleed frame is stood on
+  // rather than passed through.
+  const [zoomFrom, zoomTo] = compact ? [0.79, 0.96] : [0.77, 0.95];
   const riseDirection = compact && gatherY < 0 ? -1 : 1;
 
   const opacity = useTransform(() => stageWindow(stage.get(), inStart, inEnd));
@@ -338,7 +373,7 @@ function FinaleTile({
   });
   const scale = useTransform(
     () =>
-      1 + (TARGET_SCALES[index] - 1) * stageWindow(stage.get(), 0.55, 0.745)
+      1 + (TARGET_SCALES[index] - 1) * stageWindow(stage.get(), zoomFrom, zoomTo)
   );
 
   return (
@@ -355,7 +390,7 @@ function FinaleTile({
           src={src}
           alt={alt}
           fill
-          sizes={index === 0 ? "100vw" : "(min-width: 768px) 55vw, 80vw"}
+          sizes={index === 0 ? CENTER_SIZES : RING_SIZES}
           className="object-cover"
         />
       </div>
