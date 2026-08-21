@@ -32,25 +32,35 @@ That is a photography problem, not a code problem.
 
 **D4 · The panels' object frames carry their own clutter.**
 `AboutImage2` has a television aerial on the cabin roof at top left. It was
-always there; the frame is now 41% of the viewport instead of 29%, so it is
-larger on the screen than it was. Nothing was cropped to cause it and nothing
-can be cropped to remove it — same class as D1, and the same answer.
+always there. It grew when the frame went to 41% of the viewport and shrank
+back with the revert to 29%, so it is the size it always was; nothing was
+cropped to cause it and nothing can be cropped to remove it — same class as D1,
+and the same answer. Worth knowing before the panels are widened again.
 
 ---
 
-## E · Composition — closed
+## E · Composition
 
-**E1 · Contact was the standard.** Unchanged.
+**E1 · Contact was the standard.** Its geometry is unchanged. Its photograph is
+not: `hero-1` stood on four zones across the site and this page gave up one of
+them — the register in §5 of `ART-DIRECTION.md` is the map.
 
-**E2 · Landed.** Two compositions, one each:
+**E2 · One landed, one reopened:**
 
-- **The panels, and About's three story scenes with them** — the window cuts
-  the photograph. The picture's inner edge stays on the column-4 line and its
-  outer edge runs off the screen; 41vw against the old 29%, which is the first
-  time the frame has actually reached §A2's 86% of section height. It arrives
-  on §E2's vertical wipe. See the commit for the measurements.
-- **About's finale** — the scatter became a wall: seven photographs tiling the
-  window exactly, no gap and no ground showing, measured at 100% coverage.
+- **About's finale** — landed. The scatter became a wall: seven photographs
+  tiling the window exactly, no gap and no ground showing, measured at 100%
+  coverage.
+- **The panels, and About's three story scenes with them** — **reopened.**
+  `c61f320` widened the frame to 41vw and let the window cut its outer edge, on
+  the strength of `REFERENCE-LANGUAGE.md` §A2's *86% of section height*. That
+  number was measured on 43.5vw-tall sections and does not transfer to
+  full-viewport ones; at 41vw the photograph fills the screen and reads as the
+  section's background, which is the one thing §A6 gives this section a solid
+  dark ground to prevent. Reverted at `f95f35e`; §A2 is rewritten to the
+  constraint that actually holds and §8 of `ART-DIRECTION.md` records the
+  misreading. The frame is back at 29vw — 61.9% of the section at 1440×900 —
+  and what to do about the panels reading as plain is an open design decision,
+  not a number to look up.
 
 Neither used the split again. What is still unspent from `design/refs/`: the
 organic mask on a frame other than the home hero, the title that becomes a

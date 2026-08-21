@@ -257,6 +257,31 @@ The contrast sweep is clean: 188 text elements over four pages, both viewports,
 worst pixel per element across every scroll position, none below its floor. The
 old 2.22/1.78 headline defect is closed — 5.27/5.27 desktop, 5.34/6.28 mobile.
 
+**A measured number from a reference is not a rule until the geometry it was
+measured in is written down beside it.** `REFERENCE-LANGUAGE.md` §A2 carried
+*the panel photograph is 86% of the section height*, read off MNTN and correct
+there. MNTN's alternating sections are 43.5vw tall, so 86% of one is 37.4vw —
+the same frame its 29% column gives at 3:4, two numbers for one picture. Ours
+are a full viewport, where 86% is 86vh: at 1440×900 a photograph 787px tall in
+a 900px window, 1.4× the frame the column gives, touching the top and bottom of
+the screen.
+
+`c61f320` followed the document exactly and widened the frame to 41vw so it
+reached 87.4% of the section, with the window cutting its outer edge. Every
+step of that was sound against what §A2 said, and the result read as *less*
+design work rather than more: a photograph that fills the screen is a
+background, and the section already has one — §A6's solid dark, which is the
+alternation the whole pattern exists for. It was reverted at `f95f35e` and §A2
+is rewritten to state the constraint that actually holds instead of the
+proportion that happened to hold on MNTN — the photograph is an object with
+ground on all four sides, sized from the *window's width*, never from the
+section's height.
+
+The general form, for the next number taken off a screenshot: record what the
+number was a fraction *of*, and check whether that thing is the same size here.
+Where it is not, carry the ratio the reference's own composition implies, not
+the percentage its markup happened to use.
+
 What is still open:
 
 - **The lede, "What you gain", the closing** — §4 above. Under-designed, and the

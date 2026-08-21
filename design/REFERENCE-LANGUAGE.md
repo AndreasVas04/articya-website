@@ -47,19 +47,75 @@ alternation is worth more than one occlusion.
 
 ### A2. The photograph
 
+**The photograph in an alternating section is an object standing on ground. It
+is not the section's background.** That sentence is the rule; every number
+below is a way of holding it.
+
+An object is something the eye takes in whole, with floor visible around it. A
+background is something the frame runs out of. The moment a photograph reaches
+an edge of the window it has stopped being the first and become the second —
+and this section already has a background: §A6, solid dark, no photograph
+behind it at all. Two grounds in one section is one too many, and the one that
+loses is the picture, because a picture that fills the screen has nothing left
+to be *placed* against.
+
 | | value |
 |---|---|
 | Aspect ratio | **3:4 portrait** |
-| Height | **86%** of section height |
-| Vertical offset | starts **~12% ABOVE** the text block's top edge |
-| Border | **none** |
-| Outline / ring | **none** |
-| Drop shadow | **none** |
-| Corner radius | **0** |
+| Width | **29% of the viewport width** — this is the measurement that governs |
+| Height | whatever the width and the ratio give: **38.7% of the viewport width** |
+| Vertical offset | starts **~12% of a viewport ABOVE** the text block's top edge |
+| Border / ring / shadow / radius | **none**, all four |
 
-The vertical offset is critical and currently missing from ArtiCYa. The
-photograph is not aligned to the text — it enters the section earlier and
-breaks the horizontal band. This is what stops the layout reading as a grid.
+**The frame is measured against the window, never against the section.** That
+is the part that has to survive being copied into a layout with different
+proportions, and it is the part that was lost. Write the size as a fraction of
+the section's height and the same rule produces a different picture in every
+section it is used in; write it as a fraction of the viewport's width and it
+produces the same picture everywhere, because the window is what the reader is
+looking at and the section is only how far they have to scroll.
+
+**The test, at any section height.** At the scroll position where the frame
+comes to rest, both must hold:
+
+1. **Ground on all four sides.** Unbroken section ground between every edge of
+   the photograph and every edge of the window.
+2. **Not more than two thirds of the window's height.** Past that the ground
+   above and below stops reading as floor and starts reading as a band, which
+   is §3's own rejected item.
+
+The width rule produces both on its own at any normal window ratio — the second
+is how you check the first is still the one in charge. If either fails, the
+photograph has become a ground and the composition is a full-bleed one, which
+is a different section with different rules.
+
+**Where 86% came from, and why it does not transfer.** This table used to read
+*Height — 86% of section height*. That number is real and it was measured off
+MNTN correctly. It does not survive the journey, because **MNTN's alternating
+sections are 43.5vw tall and ArtiCYa's are a full viewport**. On MNTN, 86% of
+43.5vw is 37.4vw, which is the same frame the 29% column gives at 3:4 — the two
+numbers describe one picture and either can be used. On a full-viewport section
+86% is 86vh: at 1440×900 a photograph 787px tall in a 900px window, 1.4× the
+frame the column gives, touching the top and bottom of the screen. Read as a
+target, the height rule builds the background this section is not allowed to
+have. See §8 of `ART-DIRECTION.md`.
+
+It survives as a **ceiling** and nothing else — the case where the window is
+wide enough that a 29% column would stand the picture taller than its own
+section. That is what `min(100%, 64.5svh)` in `globals.css` is: the same 86%
+turned around at 3:4, binding only above about a 2.2:1 window and idle below
+it, where the column is the smaller number and decides.
+
+**As built**, and the numbers to check against: at 1440×900 the frame is
+**29.0vw × 61.9vh** — 417.6 × 556.8 — which is 61.9% of the section, with
+20.5% of the section as ground above it and 17.6% below. On a phone the layout
+stacks and the frame is 66.1vw × 40.7vh, 38–40% of its section. Both clear the
+test at both viewports.
+
+The vertical offset is the other half of the composition and is separate from
+all of the above: the photograph is not aligned to the text — it enters the
+section earlier and breaks the horizontal band. That is what stops the pair
+reading as a row of a grid.
 
 ### A3. The ghosted numeral
 
