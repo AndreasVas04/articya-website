@@ -41,14 +41,18 @@ const gainImage = "/images/pt/IMG_4619-valley.jpg";
 // removes the cable lands on railings, a satellite dish, a letterbox and a
 // parked car.
 const plates: StagePlate[] = [
-  // "What we do": the group walking the track above the reservoir. It is the
-  // hero's second slide, so it is already on the wire — the stage and the
-  // slideshow ask for the same `sizes`, resolve to the same variant and share
-  // one request — and it is the only frame available to this screen that
-  // breaks none of §2. Uncropped, it shows 84.8% of its own original in a
-  // 16:10 window against the 60% floor; the road shows 46.9% before its
-  // fencing is even counted, and the lane cannot clear a cable or a railing at
-  // any crop.
+  // "What we do": the group walking the track above the reservoir, and the
+  // only frame available to this screen that breaks none of §2. Uncropped, it
+  // shows 84.8% of its own original in a 16:10 window against the 60% floor;
+  // the road shows 46.9% before its fencing is even counted, and the lane
+  // cannot clear a cable or a railing at any crop.
+  //
+  // It used to be the hero's second slide as well, one zone above this one,
+  // and the two shared a request for it. A photograph does not appear twice on
+  // a page and least of all in two zones crossed one after the other, so the
+  // slide gave way rather than this: the argument below is for this screen and
+  // for no other, where a slide in a rotation of four could be any frame of
+  // young people outdoors.
   //
   // It is also the only one that is a picture of the sentence under it. "We
   // work with young people in Cyprus and across Europe" stands on young people

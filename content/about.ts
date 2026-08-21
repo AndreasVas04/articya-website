@@ -5,8 +5,8 @@ export const meta = {
 };
 
 export const hero = {
-  // The oak, the two cattle and the village beyond. hero-3 is not lost with
-  // it — it still holds its tile in the gallery below.
+  // The oak, the two cattle and the village beyond, and it appears nowhere
+  // else on the site.
   image: "/images/pt/IMG_4721.jpg",
   heading: "About ArtiCYa",
   text: "A Cyprus-based organization committed to non-formal education, creativity, and social inclusion through Erasmus+ programmes.",
@@ -61,15 +61,24 @@ export const closing = {
   ],
 };
 
+// The wall, in tile order. The first entry is the centre tile — the one the
+// zoom carries out to full bleed — and the six after it are the ring, reading
+// as the slots are laid out in `gallery-finale.tsx`.
+//
+// Four of the seven changed when the site stopped printing the same picture
+// twice. `home-training` was here *and* on the third scene a screen above, the
+// nearest thing on the site to a repeat; `hero-2` was here and on the home hero
+// and the FAQ hero, three times. What replaced them was chosen by the shape of
+// the slot as much as by the picture: the two 25vw slots are near-square on a
+// desktop and a narrow upright on a phone, so they take portrait frames, and
+// the two 60vw slots are 3.2:1, which is where the one ultra-wide frame in the
+// set belongs. `hero-3` was in a 25vw slot showing 13.5% of itself on a phone
+// and is now in a 60vw one showing 43.1%.
 export const gallery = [
   {
     src: "/images/hero-1.jpg",
     alt: "Participants hiking along a lakeside mountain trail",
   },
-  // The two Portugal frames the offer panels handed back when those panels
-  // took the organization's own photographs. They land on the tiles the two
-  // About scenes above already own, so the mosaic stops printing the same two
-  // pictures twice.
   {
     src: "/images/pt/IMG_4735-road.jpg",
     alt: "Two cattle on the road into the village",
@@ -79,14 +88,17 @@ export const gallery = [
     alt: "The hillside above the valley in hard midday sun",
   },
   {
+    src: "/images/pt/IMG_4585.jpg",
+    alt: "The group on the path above the valley",
+  },
+  {
     src: "/images/hero-3.jpg",
     alt: "Participants talking on mossy rocks in the forest",
   },
   {
-    src: "/images/home-training.jpg",
-    alt: "A team-building game during a training course",
+    src: "/images/pt/IMG_4619-valley.jpg",
+    alt: "The valley under open sky, the ridge running the width of it",
   },
-  { src: "/images/hero-2.jpg", alt: "The group walking a shaded forest road" },
   {
     src: "/images/home-youth.jpg",
     alt: "Hands joined by a rope web during a group exercise",

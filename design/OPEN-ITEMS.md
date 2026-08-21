@@ -90,11 +90,13 @@ points through the zoom the rendered-to-intrinsic ratio is 0.375 / 0.464 /
 0.885 / **0.975** desktop and 0.336 / 0.418 / 0.793 / **0.873** mobile.
 
 What is left, measured and accepted: the six ring tiles cross 1.0 in flight for
-**113px of scroll** (p 0.815–0.872 desktop), peaking at 2.02 on the last sliver
-of a tile leaving the frame. Holding them under 1.0 to the moment they clear
-needs the 1536/2560 rung of six photographs at once — several MB on one page —
-for frames that are 60–80% off-screen and travelling at the fastest part of the
-run. Not bought.
+**118px of scroll desktop** (p 0.815–0.875) and **84px mobile** (p 0.835–0.885),
+peaking at 2.02 and 1.98 on the last sliver of a tile leaving the frame. The
+resting wall is clean at both viewports — worst 0.844 desktop, 0.847 mobile.
+Holding the fly-out under 1.0 to the moment each tile clears needs the
+1536/2560 rung of six photographs at once — several MB on one page — for frames
+that are 60–80% off-screen and travelling at the fastest part of the run. Not
+bought.
 
 **F2 · The entrance handover on mobile home is 140px.**
 Two stretches on a phone (140px and 80px) where one panel's paragraph has left

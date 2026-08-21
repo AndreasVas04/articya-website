@@ -5,9 +5,14 @@ export const meta = {
 };
 
 export const hero = {
+  // `hero-1` used to be the second slide. It is the ground under "What we do"
+  // a screen below, and a photograph does not appear twice on a page, least of
+  // all in two zones the reader crosses one after the other. `home-youth` takes
+  // the slot: the organization's own frame, young people mid-activity, and 3:4
+  // like the poster it follows.
   slides: [
     "/images/pt/IMG_4585.jpg",
-    "/images/hero-1.jpg",
+    "/images/home-youth.jpg",
     "/images/hero-2.jpg",
     "/images/hero-3.jpg",
   ],

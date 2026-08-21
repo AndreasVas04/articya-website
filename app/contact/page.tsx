@@ -11,13 +11,25 @@ export const metadata = pageMetadata({
   path: "/contact/",
 });
 
-// The page's ground: the walk out to the reservoir under a midday sun, sharp
-// under the hero and out of focus under the channels. A white track and pale
-// water run straight through the middle of the frame, both clipped at 255
-// before any darkening reaches them, so it takes the most of the three and has
-// the least colour to lose.
+// The page's ground: the two cattle on the road into the village at blue hour,
+// sharp under the hero and out of focus under the channels. It replaces the
+// walk out to the reservoir, which was this page's hero and also the ground
+// under "What we do" and the finale's centre tile — three zones on one
+// photograph.
+//
+// Both numbers moved with the frame and both were measured. The darkening was
+// 84/69/71, set for a sunlit track whose highlights clip at 255; a blue-hour
+// frame arrives most of the way down on its own, and on those numbers the lede
+// measured 7.26 desktop / 7.31 mobile against a 4.5 floor — a full stop of
+// darkening spent on nothing. At 68/55/57 it measures 5.01 / 5.04 and the
+// picture keeps 54% more luminance and 31% more chroma.
+//
+// The dark is `sky-anchor` rather than `land-anchor`, and that is the larger of
+// the two. This frame's own hue is −142.5°; the warm anchor took the composite
+// to +80.3° — it does not darken a blue hour, it turns it — where the sky's own
+// dark lands at −146.6°, 4.1° off, and leaves 11.56 of chroma against 6.57.
 const plates: StagePlate[] = [
-  { src: hero.image, position: "50% 50%", priority: true, shade: { top: 84, mid: 69, base: 71, color: "var(--color-land-anchor)" } },
+  { src: hero.image, position: "50% 50%", priority: true, shade: { top: 68, mid: 55, base: 57, color: "var(--color-sky-anchor)" } },
   // The split: the same frame, defocused to the left of a hard seam at 48%
   // and sharp to its right, with the invitation and the three channels
   // standing on the soft side. One frame of the reference set's density, on
@@ -26,7 +38,7 @@ const plates: StagePlate[] = [
     src: hero.image,
     position: "50% 50%",
     split: 48,
-    shade: { top: 52, mid: 62, base: 70, from: "22%", to: "62%", color: "var(--color-land-anchor)" },
+    shade: { top: 52, mid: 62, base: 70, from: "22%", to: "62%", color: "var(--color-sky-anchor)" },
   },
 ];
 

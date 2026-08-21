@@ -93,7 +93,13 @@ const TARGET_SCALES = [2.6, 3.13, 3.67, 3.13, 3.67, 4.73, 5.27];
 // figure is. Both are read off the frame in place — a frame of a different
 // aspect moves them.
 const CENTER_SIZES = "(min-width: 768px) 130vw, 340vw";
-const RING_SIZES = "(min-width: 768px) 55vw, 80vw";
+// The ring's own declaration has the same overscale in it, and it is a phone
+// problem: every compact tile is upright and the widest frame in the set is
+// 2.14:1, so cover crops it to a fifth of its width and the height sets the
+// sample rate. 80vw picked the 384px rung and painted that frame at 1.89× —
+// visible in the resting wall, before the zoom is anywhere near it. 140vw
+// covers the widest frame in the widest slot and costs one rung.
+const RING_SIZES = "(min-width: 768px) 55vw, 140vw";
 
 // While the words are on screen each outer tile holds this offset from its
 // mosaic slot (x in vw, y in vh) — gathered loosely around the paragraph,

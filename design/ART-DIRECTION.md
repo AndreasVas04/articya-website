@@ -151,18 +151,28 @@ scrolls only ~325px; it does not read as a page at all.
 
 ## 5 · Photographs
 
-| File | Subject | Use |
+**A photograph appears once per page, twice at most across the site, and never
+in two zones the reader crosses one after the other.** Thirteen frames carry
+twenty-two placements: nine appear twice, four once. A frame painted sharp and
+again out of focus as the same page's ground — every inner page — is one
+placement, not two; so is the home hero's poster and its own first slide.
+
+| File | Subject | Where it is |
 |---|---|---|
-| IMG_4585 | group on a path above the valley | home hero — settled |
-| IMG_4619 | valley under open sky | strongest open frame; needs its bottom-right cable corner cropped |
-| IMG_4582 | road between stone walls, overcast | quiet ground, wide |
-| IMG_4739 | village at blue hour, cobbled lane | **off the site.** Both crops fail §2 from opposite ends: the whole frame carries overhead power cable across the sky, and the crop that removes the cable lands on railings, a satellite dish, a letterbox and a parked car. It sat on home as a plate held at nothing and was fetched on every visit |
-| hero-1 | the group walking the track above the reservoir | home hero slide 2, and the ground under "What we do" — the one frame in use that breaks none of §2, and uncropped it shows 84.8% of its original in a 16:10 window |
-| IMG_4735 | cattle on a road at blue hour | character; cables cross the upper half — crop to the lower two thirds |
-| IMG_4721 | cattle under oaks | texture only, never behind a heading |
-| IMG_4599 | forest path, moss | the set's one hard-midday frame; graded to match the others |
-| AboutImage1 | five young people, Cypriot food, Cyprus + Portugal flags | Youth Exchanges |
-| AboutImage2 | twenty young people in a circle outside a cabin | Training Courses |
+| IMG_4585 | group on a path above the valley | home hero, poster and first slide — settled; About's finale, the upper-right slot |
+| IMG_4619 | valley under open sky | as `-valley`: home's "What you gain" and the closing it dissolves into; About's finale, lower-left slot. Strongest open frame; its bottom-right cable corner is cropped |
+| IMG_4582 | road between stone walls, overcast | as `-road`: home only, crossed at the panels' join. Fencing across rows 107–507 — see §8 |
+| IMG_4739 | village at blue hour, cobbled lane | **off the site.** Both crops fail §2 from opposite ends: the whole frame carries overhead power cable across the sky, and the crop that removes the cable lands on railings, a satellite dish, a letterbox and a parked car |
+| hero-1 | the group walking the track above the reservoir | the ground under "What we do", and About's finale centre tile. It kept these two of the four it used to hold: uncropped it shows 84.8% of itself in a 16:10 window, it is a picture of the sentence it stands under, and at 1.356:1 it is the only frame in the set that clears §G's floor in the centre tile on a desktop without collapsing on a phone |
+| IMG_4735 | cattle on a road at blue hour | as `-road`: the Contact ground, and About's finale, upper-left slot. Cables cross the upper half; the crop takes the lower two thirds |
+| IMG_4721 | cattle under oaks | the About ground, and nowhere else. It carries the h1 there, against this table's older "never behind a heading" — the heading clears its floor at 5.41, so the note is recorded rather than enforced |
+| IMG_4599 | forest path, moss | About's finale, upper-left upright slot. The set's one hard-midday frame; graded to match the others. At 1:2.19 it is the only frame that suits an upright slot on a phone |
+| hero-2 | the group walking a shaded forest road | home hero, third slide; the FAQ ground |
+| hero-3 | participants talking on mossy rocks | home hero, fourth slide; About's finale, lower-right wide slot. At 2.14:1 it belongs in a 3.2:1 slot and nowhere else — in an upright one it showed 13.5% of itself on a phone |
+| home-training | a team-building game during a training course | About's third scene, and nowhere else |
+| home-youth | hands joined by a rope web | home hero, second slide; About's finale, upper-right wide slot |
+| AboutImage1 | five young people, Cypriot food, Cyprus + Portugal flags | Youth Exchanges panel on home; About's first scene |
+| AboutImage2 | twenty young people in a circle outside a cabin | Training Courses panel on home; About's second scene |
 
 `IMG_4564` is excluded. The stock interiors — `About.jpg`, `Contact.jpg`,
 `FAQ.jpg`, `home-hero.jpg` — are retired.
