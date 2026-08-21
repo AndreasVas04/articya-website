@@ -1,117 +1,110 @@
 # OPEN-ITEMS.md
 
-Review notes taken against the build at `a54c1d5`. Ordered by how they will be
-worked, not by how they were noticed. `ART-DIRECTION.md` still owns intent and
-the rejected list; this file is the live punch list and gets emptied as items
-land.
+Live punch list. `ART-DIRECTION.md` owns intent and the rejected list;
+`REFERENCE-LANGUAGE.md` owns measured composition. This file gets emptied as
+items land.
 
-The direction is right now. The previous round moved the site a long way. What
-follows is what still stops it reading as award-level.
+Round one (A, B, C) is done. What follows is the second review, taken against
+the build after the photograph reassignment.
 
----
-
-## D · Photography
-
-**D1 · The crops are taking the wrong part of the frame.**
-The passage photograph shows mostly road surface when the same picture has a far
-better landscape higher up. The About page has the same problem. The crop logic
-is optimising for area and cable-avoidance and is landing on the dull half of
-several frames.
-
-**D2 · Some frames in the About mosaic do not stand on their own.**
-Several tiles are cut so that no complete or attractive scene is visible. A tile
-should be a picture, not a fragment of one. The strongest images on the page are
-the ones that show a whole view — those are the standard.
-
-**D3 · Known material limit.**
-A 3:4 portrait frame used full-bleed in a 16:10 window can never show more than
-47% of its area. About and FAQ need landscape sources to clear the 60% floor.
-That is a photography problem, not a code problem.
+The bar has not moved: this should read as an award-level site. Every item below
+is judged against that, not against "is it acceptable".
 
 ---
 
-**D4 · The panels' object frames carry their own clutter.**
-`AboutImage2` has a television aerial on the cabin roof at top left. It was
-always there. It grew when the frame went to 41% of the viewport and shrank
-back with the revert to 29%, so it is the size it always was; nothing was
-cropped to cause it and nothing can be cropped to remove it — same class as D1,
-and the same answer. Worth knowing before the panels are widened again.
+## Order of work
+
+Four phases, in this order. Photography first, because bad material makes every
+composition look worse — and because several complaints below are the same
+defect seen in different places.
+
+1. **Photography** — quality, selection, and how frames are cut
+2. **Transitions** — how one screen becomes the next
+3. **Titles** — the inner-page headings
+4. **About** — the page that still reads as arranged rather than composed
 
 ---
 
-## E · Composition
+## 1 · Photography
 
-**E1 · Contact was the standard.** Its geometry is unchanged. Its photograph is
-not: `hero-1` stood on four zones across the site and this page gave up one of
-them — the register in §5 of `ART-DIRECTION.md` is the map.
+**1.1 · The rope macro comes out of the home hero.**
+The close-up of hands and rope is the first slide a visitor sees. It is a
+fragment, not a picture, and it says nothing about the organisation. Delete it
+from the slideshow. Three slides remain.
 
-**E2 · One landed, one reopened:**
+**1.2 · Two of the three remaining slides have lost quality.**
+Only one reads as a full-resolution photograph. The other two look as though a
+filter has been applied and the detail has gone. Find the cause — grade, variant
+selection, upscale, or compression — and fix it. Every photograph on the site
+must render at the highest quality its source can give.
 
-- **About's finale** — landed. The scatter became a wall: seven photographs
-  tiling the window exactly, no gap and no ground showing, measured at 100%
-  coverage.
-- **The panels, and About's three story scenes with them** — **reopened.**
-  `c61f320` widened the frame to 41vw and let the window cut its outer edge, on
-  the strength of `REFERENCE-LANGUAGE.md` §A2's *86% of section height*. That
-  number was measured on 43.5vw-tall sections and does not transfer to
-  full-viewport ones; at 41vw the photograph fills the screen and reads as the
-  section's background, which is the one thing §A6 gives this section a solid
-  dark ground to prevent. Reverted at `f95f35e`; §A2 is rewritten to the
-  constraint that actually holds and §8 of `ART-DIRECTION.md` records the
-  misreading. The frame is back at 29vw — 61.9% of the section at 1440×900 —
-  and what to do about the panels reading as plain is an open design decision,
-  not a number to look up.
+**1.3 · No frame may cut its subject.**
+The About hero cuts through the cattle. This is the same defect as the passage
+showing road surface instead of landscape: the crop is chosen by area and
+clutter-avoidance and lands badly. A crop must contain a complete subject, not a
+slice of one.
 
-Neither used the split again. What is still unspent from `design/refs/`: the
-organic mask on a frame other than the home hero, the title that becomes a
-label, and type inside the depth on an inner page. §A of
-`REFERENCE-LANGUAGE.md` rules the last of those out for the panels
-specifically — the heading and the picture are in different columns by
-construction — so it belongs to a full-bleed frame if it is ever built.
+**1.4 · The About finale's tile selection is wrong.**
+Three of its frames do not stand on their own: one is mostly empty sky, one is a
+single tree, and one is the rope macro again — which also breaks the set, since
+every other tile is landscape or people. Replace them.
 
 ---
 
-## F · Found while building E
+## 2 · Transitions
 
-**F1 · The About finale's timeline ran past the document — closed.**
-`GalleryFinale` measured itself over `["start end", "end start"]`, which spans
-`sectionHeight + viewport` — 2880px at 1440×900. The document's maximum scroll
-reached only **0.739** of it (0.725 on mobile), so the last quarter of the
-choreography was unreachable at every viewport, and the pin released at 0.688
-while the zoom was still written to run to 0.745 — the frame was sliding away
-underneath a photograph that was still growing.
+The individual screens are much better. What joins them is not.
 
-The end of the offset is now `end end`: the section's bottom edge reaching the
-bottom of the window, which is the exact frame the sticky child unpins on.
-Declared travel is the section's own height, 1980px desktop / 1688px mobile,
-and the reachable range is **1.075 / 1.087** of it — the whole timeline plus
-the footer's 148px as the exit. The pin engages at 0.455 / 0.500 and releases
-at 1.000. The gather, the handover, the settle and the zoom were rewritten
-against that split; the wordless tail measures **0.830vh desktop / 0.820vh
-mobile** against §2's 1.0vh ceiling, where it was 0.82 / 0.83.
+**2.1 · The opening move.**
+The hero's transition into the lede should arrive more naturally. It currently
+reads as a mechanism rather than a movement.
 
-**The zoom's end also stopped outrunning the source.** The centre tile is
-50vw × 40vh and was scaled ×4, which paints it 2880 CSS px wide at 1440 while
-`sizes="100vw"` fetched a 1600px variant — 1.80× upscale at the end of the
-zoom, 2.85× on a phone, which is the softness that was visible. The tile now
-declares the width it is actually painted at and the run stops at 2.6×, where
-the photograph covers the window with 2% of bleed and no more. Measured at four
-points through the zoom the rendered-to-intrinsic ratio is 0.375 / 0.464 /
-0.885 / **0.975** desktop and 0.336 / 0.418 / 0.793 / **0.873** mobile.
+**2.2 · "What we do" takes too long to show its picture.**
+Scrolling into that zone, the screen is flat green first and the photograph
+arrives late. The ground should not be visible on its own before the picture
+that belongs to it.
 
-What is left, measured and accepted: the six ring tiles cross 1.0 in flight for
-**118px of scroll desktop** (p 0.815–0.875) and **84px mobile** (p 0.835–0.885),
-peaking at 2.02 and 1.98 on the last sliver of a tile leaving the frame. The
-resting wall is clean at both viewports — worst 0.844 desktop, 0.847 mobile.
-Holding the fly-out under 1.0 to the moment each tile clears needs the
-1536/2560 rung of six photographs at once — several MB on one page — for frames
-that are 60–80% off-screen and travelling at the fastest part of the run. Not
-bought.
+**2.3 · The road at the panels' join arrives oddly.**
+It appears mid-scroll in a way that reads as a jump rather than an arrival.
 
-**F2 · The entrance handover on mobile home is 140px.**
-Two stretches on a phone (140px and 80px) where one panel's paragraph has left
-the top of the window and the next panel's heading is on screen but still at
-opacity 0, waiting for its own in-view trigger. It grew from nothing when the
-mobile frame went from 374px to 520px tall. `REFERENCE-LANGUAGE.md` §F2 records
-225px mobile as the figure this page has carried before, so it is inside the
-site's own norm, and 0.17vh is far inside §2's 1.0.
+**2.4 · The handover into the panels reads as the picture leaving.**
+Going into Youth Exchanges or Training Courses, the photograph departs and flat
+green returns. The polarised ledger is right — the panels should be quiet — but
+entering that quiet should be a dissolve, not a departure.
+
+---
+
+## 3 · Titles
+
+**3.1 · Contact and About headings are too large.**
+The FAQ heading was brought down and is now correct. Match Contact and About to
+it.
+
+---
+
+## 4 · About
+
+**4.1 · The page needs a photographic ground that moves.**
+It should feel as though the reader is travelling through it, the way the
+reference set does. At the moment each scene is a separate arrangement.
+
+**4.2 · `ART-DIRECTION.md §6` applies here in full.**
+One photograph treated two ways, type bound into the picture's depth, an organic
+edge, a title that becomes a label, a deliberate seam. That is the standard for
+this page.
+
+---
+
+## Carried, not yet solved
+
+- **`REFERENCE-LANGUAGE.md §A2`** was corrected after `c61f320` widened the panel
+  photograph until it filled the screen. The panels are reopened and awaiting a
+  design decision — the geometry underneath them is sound and must not be
+  discarded.
+- **Landscape sources.** A 3:4 portrait frame full-bleed in a 16:10 window can
+  never show more than 47% of its area. About and FAQ need landscape photographs
+  to clear the 60% floor. Photography, not code.
+- **The chain-link fence** is still in the road frame, on the screen where the
+  reader stops to read. Only a different photograph closes it.
+- **No device testing.** Nothing since the dark world landed has been confirmed
+  on a real phone.
