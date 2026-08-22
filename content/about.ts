@@ -78,10 +78,19 @@ export const gallery = [
   {
     src: "/images/hero-1.jpg",
     alt: "Participants hiking along a lakeside mountain trail",
+    // A 2:1 slot over a 1.356 frame keeps 67.8% of its height, and centred
+    // that band cut the two nearest walkers at the thigh. Anchored to the
+    // foot of the frame they stand on the ground they are walking on.
+    position: "50% 100%",
   },
   {
     src: "/images/pt/IMG_4735-road.jpg",
     alt: "Two cattle on the road into the village",
+    // The widest slot on the wall is 3.2:1 and this frame is 1.125, so the
+    // tile keeps 35.2% of its height — centred, a band across both animals'
+    // backs with their legs outside it. Low on the frame it is one whole
+    // animal on the road with the village behind her.
+    position: "50% 80%",
   },
   {
     src: "/images/pt/IMG_4599.jpg",

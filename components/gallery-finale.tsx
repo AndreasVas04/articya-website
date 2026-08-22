@@ -31,6 +31,11 @@ const DRAW: CSSProperties = { scale: "0 1" };
 interface GalleryImage {
   src: string;
   alt: string;
+  /** Where the tile's window sits on the frame. A slot's aspect is fixed by
+   *  the wall, so this is the only thing that decides whether the tile holds a
+   *  whole subject or a slice of one — centred, the cattle lost their legs to
+   *  the bottom edge and the walkers lost theirs. Defaults to centred. */
+  position?: string;
 }
 
 interface GalleryFinaleProps {
@@ -264,11 +269,12 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
             filled. It used to carry a 4px gutter and a 4px surround, which is
             the scatter's own reading at rest. */}
         <div className="grid grid-cols-2 md:grid-cols-3">
-          {images.slice(0, TILES.length).map(({ src, alt }, index) => (
+          {images.slice(0, TILES.length).map(({ src, alt, position }, index) => (
             <ResponsiveImage
               key={src}
               src={src}
               alt={alt}
+              style={{ objectPosition: position }}
               // The same `sizes` the pinned tiles below declare, not the ones
               // this grid's own layout implies. The server renders this grid
               // and the mounted component swaps to the pinned tiles, so a
@@ -329,13 +335,14 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
           </div>
         </motion.div>
 
-        {images.slice(0, TILES.length).map(({ src, alt }, index) => (
+        {images.slice(0, TILES.length).map(({ src, alt, position }, index) => (
           <FinaleTile
             key={src}
             stage={stage}
             index={index}
             src={src}
             alt={alt}
+            position={position}
             compact={compact}
           />
         ))}
@@ -349,12 +356,14 @@ function FinaleTile({
   index,
   src,
   alt,
+  position,
   compact,
 }: {
   stage: ReturnType<typeof useScroll>["scrollYProgress"];
   index: number;
   src: string;
   alt: string;
+  position?: string;
   compact: boolean;
 }) {
   // Outer tiles rise staggered into their gathered offsets while the words
@@ -411,6 +420,7 @@ function FinaleTile({
           alt={alt}
           fill
           sizes={tileSizes(src, index)}
+          style={{ objectPosition: position }}
           className="object-cover"
         />
       </div>

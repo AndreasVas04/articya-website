@@ -88,7 +88,16 @@ const plates: StagePlate[] = [
   // The gains and the closing: the valley, the same frame the gains section
   // lays edge to edge over it — so the finale is that picture arriving at full
   // strength out of its own defocused copy.
-  { src: gainImage, position: "50% 70%" },
+  //
+  // The crop is the gains frame's own, and it has to be, or the two are not
+  // the same picture at all: `.gain-photo` takes the lower part of the frame
+  // at 88% and this plate was taking the middle at 70%. A 16:10 window keeps
+  // 61.1% of this frame's height and the ridge is the last third of it, so at
+  // 70% the band ran 27.2%–88.3% and the plate was open sky with a strip of
+  // hills along the bottom — no subject in it at all, and the crossfade into
+  // the gains was a pan as well as a focus pull. At 88% both layers show the
+  // ridge running the width of the frame with the village under it.
+  { src: gainImage, position: "50% 88%" },
 ];
 
 // The first hero slide is the LCP; the backdrop reuses the same variant, so
