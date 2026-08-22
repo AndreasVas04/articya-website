@@ -65,15 +65,29 @@ export const closing = {
 // zoom carries out to full bleed — and the six after it are the ring, reading
 // as the slots are laid out in `gallery-finale.tsx`.
 //
-// Four of the seven changed when the site stopped printing the same picture
-// twice. `home-training` was here *and* on the third scene a screen above, the
-// nearest thing on the site to a repeat; `hero-2` was here and on the home hero
-// and the FAQ hero, three times. What replaced them was chosen by the shape of
-// the slot as much as by the picture: the two 25vw slots are near-square on a
-// desktop and a narrow upright on a phone, so they take portrait frames, and
-// the two 60vw slots are 3.2:1, which is where the one ultra-wide frame in the
-// set belongs. `hero-3` was in a 25vw slot showing 13.5% of itself on a phone
-// and is now in a 60vw one showing 43.1%.
+// Every tile has to stand on its own, because at rest they are seven equal
+// pictures with no ground between them and nothing to subordinate one to
+// another. Three did not. The rope macro was a fragment and the only tile that
+// was neither a landscape nor people, so it broke the set as well; the valley
+// in a 2.13:1 slot was open sky and nothing else, no subject in the rectangle
+// at all; and the wooded bank, centred in a near-square slot, was one trunk.
+//
+// Slots are assigned by aspect first, because a slot cannot be resized and a
+// frame put in the wrong one loses most of itself: the two 25vw slots are 1:1
+// on a desktop and 1:3.5 on a phone and take the portrait frames, the two 60vw
+// slots are 3.2:1 and take the two panoramas, and the two 40vw slots are
+// 2.13:1. `IMG_4585` moved out of an upright slot into one of those, where its
+// valley reads as the panorama it is (35.2% of the frame on a desktop, 82.1%
+// on a phone), and `IMG_4735-road` came the other way.
+//
+// One slot has no photograph. The set holds thirteen usable frames, this page
+// needs eleven distinct ones — a ground, three scenes and seven tiles — and
+// after the three above come out, ten qualify. `IMG_4599` is the tenth and it
+// stays under protest: re-cut low it is a mossy bank running away under the
+// trees rather than a single trunk, which is a place, but it is the weakest
+// tile on the wall and only new photography closes it. The alternative was
+// `IMG_4582-road`, and that is worse on both counts — the chain-link fence no
+// pan clears, and a tile of road surface.
 export const gallery = [
   {
     src: "/images/hero-1.jpg",
@@ -84,32 +98,50 @@ export const gallery = [
     position: "50% 100%",
   },
   {
-    src: "/images/pt/IMG_4735-road.jpg",
-    alt: "Two cattle on the road into the village",
-    // The widest slot on the wall is 3.2:1 and this frame is 1.125, so the
-    // tile keeps 35.2% of its height — centred, a band across both animals'
-    // backs with their legs outside it. Low on the frame it is one whole
-    // animal on the road with the village behind her.
-    position: "50% 80%",
+    src: "/images/pt/IMG_4619-ridge.jpg",
+    alt: "The village in the valley under the ridge at evening",
+    // 2.535:1, and the widest slot is 3.2:1, so it keeps 79.3% of its height —
+    // the best fit of anything in the set for this slot. Centred is right: the
+    // ridge runs the width of the frame and the village sits under it.
   },
   {
     src: "/images/pt/IMG_4599.jpg",
-    alt: "The hillside above the valley in hard midday sun",
+    alt: "A moss-covered wall running away under the trees",
+    // The set's one ultra-portrait frame at 1:2.19, so it takes the upright
+    // slot — 63.1% of itself on a phone, more than any other frame manages
+    // there. Low on the frame, where the wall is: centred, the slot lands on
+    // the trunks and the tile has no subject.
+    position: "50% 80%",
   },
   {
-    src: "/images/pt/IMG_4585.jpg",
-    alt: "The group on the path above the valley",
+    src: "/images/hero-2.jpg",
+    alt: "The group walking a shaded forest road",
+    // The other upright slot, and the crop is chosen around this frame's
+    // overhead cable: it enters the top-left corner and runs down to a pole at
+    // a third of the width. A desktop slot keeps 75% of the height and takes
+    // it off the top; a phone keeps 38.5% of the width and takes it off the
+    // left. 62% 100% is the one pair that clears the cable at both and still
+    // holds whole walkers on the road.
+    position: "62% 100%",
   },
   {
     src: "/images/hero-3.jpg",
     alt: "Participants talking on mossy rocks in the forest",
   },
   {
-    src: "/images/pt/IMG_4619-valley.jpg",
-    alt: "The valley under open sky, the ridge running the width of it",
+    src: "/images/pt/IMG_4735-road.jpg",
+    alt: "Cattle on the road into the village",
+    // 2.13:1 over a 1.125 frame keeps 52.7% of the height. Low, so the near
+    // animal is whole from her horns to her hooves; centred, the band ran
+    // across both animals' backs and left their legs outside it.
+    position: "50% 80%",
   },
   {
-    src: "/images/home-youth.jpg",
-    alt: "Hands joined by a rope web during a group exercise",
+    src: "/images/pt/IMG_4585.jpg",
+    alt: "The group on the path above the valley",
+    // A 2.13:1 band of a 3:4 frame, so where the band sits is the whole
+    // composition. At 35% it is the village, the terraces and the far
+    // mountains with the walkers on the path below them.
+    position: "50% 35%",
   },
 ];

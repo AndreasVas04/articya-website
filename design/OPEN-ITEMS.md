@@ -25,29 +25,35 @@ defect seen in different places.
 
 ---
 
-## 1 · Photography
+## 1 · Photography — done, with two carried
 
-**1.1 · The rope macro comes out of the home hero.**
-The close-up of hands and rope is the first slide a visitor sees. It is a
-fragment, not a picture, and it says nothing about the organisation. Delete it
-from the slideshow. Three slides remain.
+**1.1 · The rope macro comes out of the home hero.** Done. `home-youth` is off
+the slideshow and off the site; three slides remain, at 4.5s each.
 
-**1.2 · Two of the three remaining slides have lost quality.**
-Only one reads as a full-resolution photograph. The other two look as though a
-filter has been applied and the detail has gone. Find the cause — grade, variant
-selection, upscale, or compression — and fix it. Every photograph on the site
-must render at the highest quality its source can give.
+**1.2 · Two of the three remaining slides have lost quality.** Done, and the
+cause was neither the grade nor the encoder. Every full-bleed frame declared
+`sizes="100vw"`, but `object-fit: cover` paints a frame wider than its box
+wherever the frame is proportionally the wider of the two, so the browser was
+magnifying a variant chosen for the box: the ultra-wide slide was painted at
+1928px from a 1600px file on a desktop and at 1808px from a 640px file on a
+phone. `coverSizes()` declares the painted width; nothing on the site now
+exceeds 1.0 rendered-to-intrinsic at either viewport.
 
-**1.3 · No frame may cut its subject.**
-The About hero cuts through the cattle. This is the same defect as the passage
-showing road surface instead of landscape: the crop is chosen by area and
-clutter-avoidance and lands badly. A crop must contain a complete subject, not a
-slice of one.
+What is not fixable in code is the sources. `hero-2` is 1536×2048 and `hero-3`
+is 2560×1195 — 3.1 MP each, against `IMG_4585`'s 48 MP — so on a retina desktop
+the two of them land at 1.875 and 1.506 where the third is at 1.125. That is
+the whole of "two of three look softer". Measured: the grade costs `hero-2` 5%
+in bytes and nothing measurable in high-frequency detail.
 
-**1.4 · The About finale's tile selection is wrong.**
-Three of its frames do not stand on their own: one is mostly empty sky, one is a
-single tree, and one is the rope macro again — which also breaks the set, since
-every other tile is landscape or people. Replace them.
+**1.3 · No frame may cut its subject.** Done for three of four. About's ground,
+home's third plate and the finale's centre and widest tiles are recomposed on
+whole subjects. `IMG_4582-road` at the panels' join is the fourth and it cannot
+be fixed by panning — see *Carried* below.
+
+**1.4 · The About finale's tile selection is wrong.** Two of the three
+replaced, and the third is why the *Carried* list has a new entry: the usable
+set is one photograph short of this page. `ART-DIRECTION.md` §8 carries the
+arithmetic.
 
 ---
 
@@ -104,7 +110,17 @@ this page.
 - **Landscape sources.** A 3:4 portrait frame full-bleed in a 16:10 window can
   never show more than 47% of its area. About and FAQ need landscape photographs
   to clear the 60% floor. Photography, not code.
-- **The chain-link fence** is still in the road frame, on the screen where the
-  reader stops to read. Only a different photograph closes it.
+- **The set is one frame short.** Thirteen usable photographs; the About page
+  alone needs eleven distinct ones. After the three tiles that did not stand on
+  their own came out, ten qualified. `hero-2` therefore takes a third placement
+  and `IMG_4599` stays on the wall re-cut rather than replaced. Photography.
+- **The chain-link fence** is still in the road frame. It is crossed rather
+  than stopped on now, but it is also why that frame holds no complete subject
+  at either viewport: every pan that reaches the landscape reaches the fence,
+  and the pan that clears the most of it is road surface. Only a different
+  photograph closes it.
+- **Overhead cable in `hero-2`**, visible on the home hero's second slide and
+  on the FAQ ground. The About tile is cropped clear of it; those two cannot
+  be, since both are the whole frame full-bleed.
 - **No device testing.** Nothing since the dark world landed has been confirmed
   on a real phone.

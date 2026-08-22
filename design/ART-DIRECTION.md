@@ -152,27 +152,33 @@ scrolls only ~325px; it does not read as a page at all.
 ## 5 · Photographs
 
 **A photograph appears once per page, twice at most across the site, and never
-in two zones the reader crosses one after the other.** Thirteen frames carry
-twenty-two placements: nine appear twice, four once. A frame painted sharp and
-again out of focus as the same page's ground — every inner page — is one
-placement, not two; so is the home hero's poster and its own first slide.
+in two zones the reader crosses one after the other.** Twelve frames carry
+twenty-one placements: one appears three times, eight twice, three once. A
+frame painted sharp and again out of focus as the same page's ground — every
+inner page — is one placement, not two; so is the home hero's poster and its
+own first slide.
 
 | File | Subject | Where it is |
 |---|---|---|
-| IMG_4585 | group on a path above the valley | home hero, poster and first slide — settled; About's finale, the upper-right slot |
-| IMG_4619 | valley under open sky | as `-valley`: home's "What you gain" and the closing it dissolves into; About's finale, lower-left slot. Strongest open frame; its bottom-right cable corner is cropped |
-| IMG_4582 | road between stone walls, overcast | as `-road`: home only, crossed at the panels' join. Fencing across rows 107–507 — see §8 |
+| IMG_4585 | group on a path above the valley | home hero, poster and first slide — settled; About's finale, the lower-right 2.13:1 slot, cropped at 35% to the village and the far mountains |
+| IMG_4619 | valley under open sky | as `-valley`: home's "What you gain" and the closing it dissolves into; as `-ridge`, a sub-rectangle of that crop with the sky off the top: About's finale, the upper-left 3.2:1 slot. Its bottom-right cable corner is cropped out of both |
+| IMG_4582 | road between stone walls, overcast | as `-road`: home only, crossed at the panels' join. Fencing across rows 107–507, and no window on it holds a complete subject — see §8 |
 | IMG_4739 | village at blue hour, cobbled lane | **off the site.** Both crops fail §2 from opposite ends: the whole frame carries overhead power cable across the sky, and the crop that removes the cable lands on railings, a satellite dish, a letterbox and a parked car |
-| hero-1 | the group walking the track above the reservoir | the ground under "What we do", and About's finale centre tile. It kept these two of the four it used to hold: uncropped it shows 84.8% of itself in a 16:10 window, it is a picture of the sentence it stands under, and at 1.356:1 it is the only frame in the set that clears §G's floor in the centre tile on a desktop without collapsing on a phone |
-| IMG_4735 | cattle on a road at blue hour | as `-road`: the Contact ground, and About's finale, upper-left slot. Cables cross the upper half; the crop takes the lower two thirds |
-| IMG_4721 | cattle under oaks | the About ground, and nowhere else. It carries the h1 there, against this table's older "never behind a heading" — the heading clears its floor at 5.41, so the note is recorded rather than enforced |
-| IMG_4599 | forest path, moss | About's finale, upper-left upright slot. The set's one hard-midday frame; graded to match the others. At 1:2.19 it is the only frame that suits an upright slot on a phone |
-| hero-2 | the group walking a shaded forest road | home hero, third slide; the FAQ ground |
-| hero-3 | participants talking on mossy rocks | home hero, fourth slide; About's finale, lower-right wide slot. At 2.14:1 it belongs in a 3.2:1 slot and nowhere else — in an upright one it showed 13.5% of itself on a phone |
+| hero-1 | the group walking the track above the reservoir | the ground under "What we do", and About's finale centre tile, anchored to the foot of the frame so the walkers keep their legs. Uncropped it shows 84.8% of itself in a 16:10 window, it is a picture of the sentence it stands under, and at 1.356:1 it is the only frame in the set that clears §G's floor in the centre tile on a desktop without collapsing on a phone |
+| IMG_4735 | cattle on a road at blue hour | as `-road`: the Contact ground, and About's finale, the lower-left 2.13:1 slot at 80% — one whole animal rather than a band across two of them. Cables cross the upper half; the published crop takes the lower two thirds |
+| IMG_4721 | cattle under oaks | the About ground, and nowhere else. Cropped at `0% 70%`, which is the one pair that holds the near animal whole in a landscape window and in a portrait one. It carries the h1 there, against this table's older "never behind a heading" — the heading clears its floor at 5.33, so the note is recorded rather than enforced |
+| IMG_4599 | moss-covered wall under trees | About's finale, the left upright slot, cropped low to the wall. The set's one hard-midday frame; graded to match the others. At 1:2.19 it is the only frame that suits an upright slot on a phone — and it is on the wall because the set runs one frame short of the page, not because it earns the slot. See §8 |
+| hero-2 | the group walking a shaded forest road | home hero, second slide; the FAQ ground; About's finale, the right upright slot. **The one frame at three placements**, and it is there because nothing else is left — see §8 |
+| hero-3 | participants talking on mossy rocks | home hero, third slide; About's finale, the lower-right 3.2:1 slot. At 2.14:1 it belongs in a wide slot and nowhere else — in an upright one it showed 13.5% of itself on a phone |
 | home-training | a team-building game during a training course | About's third scene, and nowhere else |
-| home-youth | hands joined by a rope web | home hero, second slide; About's finale, upper-right wide slot |
 | AboutImage1 | five young people, Cypriot food, Cyprus + Portugal flags | Youth Exchanges panel on home; About's first scene |
 | AboutImage2 | twenty young people in a circle outside a cabin | Training Courses panel on home; About's second scene |
+
+`home-youth` — hands joined by a rope web — is **off the site**. It was the
+home hero's second slide and a finale tile, and it is a macro in both: no
+place, no horizon, and at the hero's full-window size a close-up of forearms
+reads as a texture. It was also the only tile on the wall that was neither a
+landscape nor people.
 
 `IMG_4564` is excluded. The stock interiors — `About.jpg`, `Contact.jpg`,
 `FAQ.jpg`, `home-hero.jpg` — are retired.
@@ -282,10 +288,24 @@ number was a fraction *of*, and check whether that thing is the same size here.
 Where it is not, carry the ratio the reference's own composition implies, not
 the percentage its markup happened to use.
 
+**The set is one photograph short of the site.** Thirteen frames are usable —
+fourteen less `IMG_4739`, which no crop clears. The About page alone needs
+eleven distinct ones: a ground, three scene objects and seven tiles. Taking out
+the three tiles that did not stand on their own leaves ten. So one slot on the
+wall has no photograph for it, and two compromises pay for that: `hero-2` takes
+a third placement against this section's own two-at-most rule, and `IMG_4599`
+stays on the wall re-cut rather than replaced. Both are photography, not code —
+the wall's geometry is sound and shrinking it would cost the interlock the
+whole composition is built on.
+
 What is still open:
 
 - **The lede, "What you gain", the closing** — §4 above. Under-designed, and the
   panels' geometry is now the only part of home that is settled.
+- **Overhead cable in `hero-2`.** It enters the top-left corner and runs down to
+  a pole a third of the way across. The About tile is cropped clear of it; the
+  home hero slide and the FAQ ground are not, and at both viewports it is
+  visible against the canopy. §2, and only a different frame closes it.
 - **Fencing in the road frame.** `IMG_4582-road` carries a chain-link fence
   across rows 107–507 of its 1020, and a 16:10 window shows 854 of them, so no
   pan clears it; the bottom-anchored one in use clears the most. The crop is

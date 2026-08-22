@@ -84,6 +84,20 @@ const CROPS = {
     width: 0.7,
     height: 0.895,
   },
+  // The same valley, cut for a wide slot: the village in the bowl under the
+  // ridge, with the sky off the top. `-valley` keeps the sky because it is a
+  // ground a whole screen stands on; in a 3.2:1 tile that same frame is sky
+  // and nothing else — 30.6% of its height, and the ridge is the last third of
+  // it. This is a strict sub-rectangle of `-valley`, which is what clears it
+  // of the corner cable bundle: same left edge, same width, and its foot is
+  // `-valley`'s foot.
+  "/images/pt/IMG_4619-ridge.jpg": {
+    file: "pt/IMG_4619.jpg",
+    left: 0,
+    top: 0.55,
+    width: 0.7,
+    height: 0.345,
+  },
   // The two cattle on the road, the village behind. The pole and its cables own
   // the whole upper third of this frame; the lower two thirds are the picture.
   "/images/pt/IMG_4735-road.jpg": {
