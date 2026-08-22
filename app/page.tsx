@@ -9,7 +9,7 @@ import { PhotoStage, type StagePlate } from "@/components/photo-stage";
 import { ResponsiveImage } from "@/components/responsive-image";
 import { SectionIndex } from "@/components/edge-furniture";
 import { ButtonLink } from "@/components/ui/button";
-import { imagePreload } from "@/lib/images";
+import { coverSizes, FULL_VIEWPORT, imagePreload } from "@/lib/images";
 import { hero, whatWeDo, gain } from "@/content/home";
 
 // The photograph "What you gain" is built on, sharp at one end and defocused
@@ -92,8 +92,17 @@ const plates: StagePlate[] = [
 ];
 
 // The first hero slide is the LCP; the backdrop reuses the same variant, so
-// this one preload covers both.
-const heroPreload = imagePreload(hero.slides[0], "100vw");
+// this one preload covers both — which only holds while the preload and the
+// markup declare the same `sizes`, so both read it from the same call.
+const heroSizes = coverSizes(hero.slides[0], FULL_VIEWPORT);
+const heroPreload = imagePreload(hero.slides[0], heroSizes);
+
+// The gains frame runs edge to edge in a full-viewport section, sharp under
+// one end and defocused under the other. Every copy of it declares this: the
+// soft ones are rasterized at a quarter of the frame, but they are the same
+// photograph at the same crop, so sharing the sharp one's declaration keeps
+// the whole stack on a single download.
+const gainSizes = coverSizes(gainImage, FULL_VIEWPORT);
 
 // The panel's last sentence used to be lifted out of its paragraph and stood
 // on a screen of its own between the two panels. It is back where it was
@@ -397,7 +406,7 @@ export default function HomePage() {
               src={gainImage}
               alt=""
               fill
-              sizes="100vw"
+              sizes={gainSizes}
               className="gain-photo"
             />
             {/* Softest last, and that is load-bearing. Each copy is opaque out
@@ -416,7 +425,7 @@ export default function HomePage() {
                     src={gainImage}
                     alt=""
                     fill
-                    sizes="100vw"
+                    sizes={gainSizes}
                     className="gain-photo"
                   />
                 </div>

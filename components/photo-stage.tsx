@@ -3,7 +3,7 @@
 import { useEffect, useRef, type CSSProperties } from "react";
 import { cubicBezier } from "framer-motion";
 import { ResponsiveImage } from "@/components/responsive-image";
-import { imagePreload } from "@/lib/images";
+import { coverSizes, FULL_VIEWPORT, imagePreload } from "@/lib/images";
 import { cn } from "@/lib/utils";
 
 const easeInOutCubic = cubicBezier(0.65, 0, 0.35, 1);
@@ -219,9 +219,14 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
   }, [plates]);
 
   // The LCP plate is preloaded: the scanner cannot see an image inside a
-  // component, and this layer is the first photograph the page paints.
+  // component, and this layer is the first photograph the page paints. The
+  // preload has to carry the same `sizes` the layer declares, or the two
+  // resolve to different rungs of the ladder and the page downloads the
+  // photograph twice.
   const lcp = plates.find((p) => p.priority);
-  const preload = lcp ? imagePreload(lcp.src, "100vw") : null;
+  const preload = lcp
+    ? imagePreload(lcp.src, coverSizes(lcp.src, FULL_VIEWPORT))
+    : null;
 
   return (
     <div
@@ -240,7 +245,14 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
           fetchPriority="high"
         />
       )}
-      {plates.map((plate, i) => (
+      {plates.map((plate, i) => {
+        // One declaration per plate, shared by every copy of it. A soft copy
+        // is rasterized at a quarter of the frame and would fetch a quarter
+        // rung on its own — but it is the same photograph at the same crop, so
+        // asking for the sharp one's width costs nothing (one URL, one
+        // download) where asking for its own costs a second request.
+        const sizes = coverSizes(plate.src, FULL_VIEWPORT);
+        return (
         <div
           key={`${plate.src}-${i}`}
           data-plate-layer=""
@@ -260,7 +272,7 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
                 alt=""
                 fill
                 priority={plate.priority}
-                sizes="100vw"
+                sizes={sizes}
                 style={{ objectPosition: plate.position }}
               />
             </div>
@@ -275,7 +287,7 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
                       src={plate.src}
                       alt=""
                       fill
-                      sizes="100vw"
+                      sizes={sizes}
                       style={{ objectPosition: plate.position }}
                     />
                   </div>
@@ -312,7 +324,8 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
             }
           />
         </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

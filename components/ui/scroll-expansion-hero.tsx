@@ -10,6 +10,7 @@ import {
 } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { ResponsiveImage } from "@/components/responsive-image";
+import { coverSizes, FULL_VIEWPORT } from "@/lib/images";
 import { cn, withBasePath } from "@/lib/utils";
 
 // useLayoutEffect on the client, useEffect on the server: the effect it runs
@@ -43,6 +44,14 @@ const ScrollExpandMedia = ({
   children,
 }: ScrollExpandMediaProps) => {
   const reducedMotion = useReducedMotion();
+  // Expanded, the card is the window on both axes, so every frame in this
+  // section is cover-fitted to the whole viewport. The declaration is per
+  // frame because the overscale is: a 3:4 poster is painted at the window's
+  // own width on a desktop and half again on a phone, and the 2.14:1 slide is
+  // painted a third wider than the window on a desktop and four times wider
+  // than a phone's. `100vw` on all of them fetched the phone's rung for a
+  // picture the phone paints at 1808px.
+  const posterSizes = coverSizes(bgImageSrc, FULL_VIEWPORT);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [showContent, setShowContent] = useState(false);
   const [mediaFullyExpanded, setMediaFullyExpanded] = useState(false);
@@ -340,7 +349,7 @@ const ScrollExpandMedia = ({
             alt=""
             fill
             priority
-            sizes="100vw"
+            sizes={posterSizes}
             className="hero-poster object-cover saturate-[1.06] sepia-[0.08]"
             style={{ objectPosition: "50% var(--hero-poster-y)" }}
           />
@@ -417,7 +426,7 @@ const ScrollExpandMedia = ({
                     alt=""
                     fill
                     priority
-                    sizes="100vw"
+                    sizes={coverSizes(slides[0], FULL_VIEWPORT)}
                     className="rounded-[inherit] object-cover saturate-[1.06] sepia-[0.08]"
                   />
                 ) : (
@@ -441,7 +450,7 @@ const ScrollExpandMedia = ({
                         alt=""
                         fill
                         priority={i === 0}
-                        sizes="100vw"
+                        sizes={coverSizes(src, FULL_VIEWPORT)}
                         className="rounded-[inherit] object-cover saturate-[1.06] sepia-[0.08]"
                       />
                     </motion.div>
@@ -652,7 +661,7 @@ const ScrollExpandMedia = ({
             alt=""
             fill
             priority
-            sizes="100vw"
+            sizes={posterSizes}
             className="hero-poster object-cover saturate-[1.06] sepia-[0.08]"
             style={{ objectPosition: "50% var(--hero-poster-y)" }}
           />

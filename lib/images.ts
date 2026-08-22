@@ -68,6 +68,54 @@ export function resolveImage(src: string): ResolvedImage | null {
   };
 }
 
+// The two viewports every `sizes` ladder on this site is written against, and
+// the breakpoint between them. They are reference frames, not assumptions
+// about the reader's screen: `sizes` can only branch on a media query, so a
+// box whose proportions depend on the window has to be measured somewhere.
+const REFERENCE_WIDE: readonly [number, number] = [1440, 900];
+const REFERENCE_COMPACT: readonly [number, number] = [390, 844];
+const BREAKPOINT = "(min-width: 768px)";
+
+/** A box on the page, in fractions of the viewport. */
+export interface SizeBox {
+  vw: number;
+  vh: number;
+}
+
+export const FULL_VIEWPORT: SizeBox = { vw: 1, vh: 1 };
+
+// How wide a cover-fitted photograph is actually *painted*, which is not how
+// wide its box is. `object-fit: cover` scales the frame until it covers both
+// axes: where the frame is proportionally wider than the box, it is fitted by
+// its height and painted wider than the box, with the sides cropped off. A
+// `sizes` of the box width therefore under-declares the picture by exactly
+// that ratio, and the browser fetches a variant it then has to magnify — the
+// ultra-wide slide asked for 100vw in a 16:10 window and was painted at
+// 134vw, and the same frame in a phone's portrait window at 464vw.
+//
+// This returns the painted width instead, so the fetched variant is never
+// smaller than the pixels the screen needs. It is the box that is declared
+// per breakpoint; the overscale comes from the frame's own aspect in the
+// manifest, so each photograph gets its own number from the same call.
+export function coverSizes(
+  src: string,
+  wide: SizeBox,
+  compact: SizeBox = wide
+): string {
+  const entry = data.images[src];
+  const painted = (box: SizeBox, viewport: readonly [number, number]) => {
+    if (!entry) return box.vw * 100;
+    const boxAspect = (box.vw * viewport[0]) / (box.vh * viewport[1]);
+    const overscale = Math.max(1, entry.width / entry.height / boxAspect);
+    // Up to the next tenth of a vw: rounding down would land the declaration
+    // under the painted width, which is the defect this exists to close.
+    return Math.ceil(box.vw * overscale * 1000) / 10;
+  };
+  const w = painted(wide, REFERENCE_WIDE);
+  const c = painted(compact, REFERENCE_COMPACT);
+  return w === c ? `${w}vw` : `${BREAKPOINT} ${w}vw, ${c}vw`;
+}
+
 /** Preload attributes for an LCP image, targeting the best modern format the
  *  manifest carries (AVIF where present). Rendered as a <link rel="preload">
  *  so the image starts downloading before the markup is parsed. */

@@ -9,6 +9,7 @@ import {
   useTransform,
 } from "framer-motion";
 import { ResponsiveImage } from "@/components/responsive-image";
+import { coverSizes, type SizeBox } from "@/lib/images";
 import { cn } from "@/lib/utils";
 
 const easeInOutCubic = cubicBezier(0.65, 0, 0.35, 1);
@@ -83,23 +84,36 @@ const TILES = [
 // moves.
 const TARGET_SCALES = [2.6, 3.13, 3.67, 3.13, 3.67, 4.73, 5.27];
 
-// How wide each photograph is actually painted, which is not how wide its box
-// is: the zoom scales the box, and object-cover scales the picture again
-// wherever the frame's aspect and the box's disagree. The centre tile is the
-// one that survives to the end, so it declares its own painted width — 130vw
-// on desktop. On a phone the tile is portrait and the frame is landscape, so
-// the picture is cropped hard on the sides and its *height* sets the sample
-// rate; the declaration has to carry that overscale, which is what the third
-// figure is. Both are read off the frame in place — a frame of a different
-// aspect moves them.
-const CENTER_SIZES = "(min-width: 768px) 130vw, 340vw";
-// The ring's own declaration has the same overscale in it, and it is a phone
-// problem: every compact tile is upright and the widest frame in the set is
-// 2.14:1, so cover crops it to a fifth of its width and the height sets the
-// sample rate. 80vw picked the 384px rung and painted that frame at 1.89× —
-// visible in the resting wall, before the zoom is anywhere near it. 140vw
-// covers the widest frame in the widest slot and costs one rung.
-const RING_SIZES = "(min-width: 768px) 55vw, 140vw";
+// Each tile's box, in fractions of the viewport, matching TILES above. It is
+// what `coverSizes` measures the painted width against: the box scales with
+// the window, and object-cover scales the picture again wherever the frame's
+// aspect and the box's disagree, so the two together decide how many pixels
+// the tile actually paints.
+//
+// It used to be two hand-computed strings for fourteen frames — one for the
+// centre tile, one for all six of the ring — carrying the overscale of the
+// widest frame in the widest slot so the worst case was covered and every
+// other tile over-fetched. Per tile and per frame, each one asks for the width
+// it paints and no more.
+const TILE_BOXES: SizeBox[] = [
+  { vw: 0.5, vh: 0.4 },
+  { vw: 0.6, vh: 0.3 },
+  { vw: 0.25, vh: 0.4 },
+  { vw: 0.25, vh: 0.4 },
+  { vw: 0.6, vh: 0.3 },
+  { vw: 0.4, vh: 0.3 },
+  { vw: 0.4, vh: 0.3 },
+];
+
+// The centre tile is the one the zoom carries out past full bleed, so it is
+// measured at the size it ends on rather than the size it rests at: 2.6× the
+// box on both axes.
+const CENTER_ZOOM = 2.6;
+const tileSizes = (src: string, index: number) => {
+  const box = TILE_BOXES[index];
+  const scale = index === 0 ? CENTER_ZOOM : 1;
+  return coverSizes(src, { vw: box.vw * scale, vh: box.vh * scale });
+};
 
 // While the words are on screen each outer tile holds this offset from its
 // mosaic slot (x in vw, y in vh) — gathered loosely around the paragraph,
@@ -261,7 +275,7 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
               // narrower value here picks a smaller variant that is replaced
               // before it is ever displayed — one download of each photo
               // instead of two.
-              sizes={index === 0 ? CENTER_SIZES : RING_SIZES}
+              sizes={tileSizes(src, index)}
               className={cn(
                 "h-full w-full object-cover",
                 index === 0
@@ -396,7 +410,7 @@ function FinaleTile({
           src={src}
           alt={alt}
           fill
-          sizes={index === 0 ? CENTER_SIZES : RING_SIZES}
+          sizes={tileSizes(src, index)}
           className="object-cover"
         />
       </div>
