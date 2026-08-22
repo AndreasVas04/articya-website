@@ -470,9 +470,10 @@ const ScrollExpandMedia = ({
                     Deepening the ramp is self-limiting for the same reason it
                     was needed: where the mask has taken the picture it takes
                     the darkening with it, so the number is large without the
-                    frame going dark. Worst slide now 4.96, and the four run
-                    5.54/4.96/5.61/6.50 where they ran 4.31/4.17/5.56/5.28
-                    before the card ever reached the window's edges. */}
+                    frame going dark. The rotation is three frames now and they
+                    run 5.54/5.61/6.50; the slide that came out was the 4.96
+                    and the worst of them, so the floor on this card rose with
+                    it. */}
                 <div
                   aria-hidden="true"
                   className="plate-shade pointer-events-none absolute inset-0 [--shade-bottom:94%] [--shade-mid:16%] [--shade-mid-from:22%] [--shade-mid-to:36%] [--shade-top:34%]"

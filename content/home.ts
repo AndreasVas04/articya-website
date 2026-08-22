@@ -5,14 +5,17 @@ export const meta = {
 };
 
 export const hero = {
-  // `hero-1` used to be the second slide. It is the ground under "What we do"
-  // a screen below, and a photograph does not appear twice on a page, least of
-  // all in two zones the reader crosses one after the other. `home-youth` takes
-  // the slot: the organization's own frame, young people mid-activity, and 3:4
-  // like the poster it follows.
+  // Three slides, and the rotation is the first thing a visitor sees, so each
+  // one has to be a picture rather than a detail. `hero-1` came out because it
+  // is the ground under "What we do" a screen below and a photograph does not
+  // appear twice on a page. `home-youth` came out because it is a macro: hands
+  // and a rope filling the frame, no place and no horizon, and the expanded
+  // card is the whole window — at that size a close-up of forearms reads as a
+  // texture the page opened on. What is left is three frames of the same
+  // subject at the same distance: a group above a valley, a group on a forest
+  // road, a group at rest in the woods.
   slides: [
     "/images/pt/IMG_4585.jpg",
-    "/images/home-youth.jpg",
     "/images/hero-2.jpg",
     "/images/hero-3.jpg",
   ],
