@@ -499,8 +499,21 @@ export default function HomePage() {
                 toward `sky-anchor` — the sky owns this frame's chroma (its own
                 hue is −109.5°/−98.4°, the green-black's is 152.5°), so the
                 default took it 28° off its hue at this strength where the
-                sky's own dark takes it 4.4°. */}
-            <div className="plate-shade pointer-events-none absolute inset-0 [--shade-bottom:70%] [--shade-color:var(--color-sky-anchor)] [--shade-mid:44%] [--shade-mid-from:20%] [--shade-mid-to:60%] [--shade-top:70%]" />
+                sky's own dark takes it 4.4°.
+
+                The base is 84 and not 70, and one line is the whole reason.
+                The four gains stand between 44% and 71% of this frame, so the
+                first three are in the flat 44% band and the last one is in the
+                fall toward the base — and the last one is also the only place
+                on the site that has never cleared 4.5, at 4.47 since before
+                Section 1. It is not the darkening that is thin there; it is
+                the picture, which is the bright valley floor by that row. The
+                fall from 60% now reaches 84 instead of 70, which puts the line
+                at 4.69 and leaves the other three untouched, because they are
+                above the stop it moves. The base itself is inside
+                `--gain-end`'s dissolve, so nothing new is painted at the
+                frame's bottom edge. */}
+            <div className="plate-shade pointer-events-none absolute inset-0 [--shade-bottom:84%] [--shade-color:var(--color-sky-anchor)] [--shade-mid:44%] [--shade-mid-from:20%] [--shade-mid-to:60%] [--shade-top:70%]" />
           </div>
 
           <div className="relative w-full px-6 py-20 md:w-[46%] md:px-12 md:py-24">
