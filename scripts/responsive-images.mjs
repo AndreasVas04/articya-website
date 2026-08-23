@@ -33,8 +33,40 @@ const MANIFEST = path.join(OUT, "manifest.json");
 // 1152 is the phone rung: a 393px viewport at DPR 3 asks for 1120 device px
 // for a 95vw image, and without a step between 1024 and 1366 it takes the
 // 1366 and throws a third of the pixels away.
-const LADDER = [384, 640, 768, 1024, 1152, 1366, 1600, 1920, 2560];
+const LADDER = [384, 640, 768, 1024, 1152, 1366, 1600, 1920, 2560, 2880];
 const MAX_WIDTH = 2560;
+
+// One rung above the cap, and only the frames that are painted edge to edge
+// may reach it. 2560 was 320px short of a retina desktop — 1440 CSS at DPR 2
+// is 2880 device px — so every full-bleed Portugal frame was magnified 1.13
+// over the variant it fetched while sitting at 0.19–0.71 against its own 27 to
+// 49 MP source. The pixels existed; the ladder had no rung that reached them.
+//
+// 2880 is the requirement and not a round number above it. 3200 was declined
+// in Section 1 on an LCP argument and the argument still holds at the measured
+// bytes: the home hero's AVIF is 1120KB at 2560, 1367KB at 2880 and 1629KB at
+// 3200, so the rung that closes the defect costs 247KB and the one that
+// overshoots it by 320px costs 509KB. The hero declares 103vw for its own push
+// and therefore asks for 2966 — 1.030 over this rung at the peak of a
+// transient, and 1.000 at rest, which is what the table measures.
+//
+// `sizes` is what keeps it off everything else: no tile, panel or scene object
+// declares a width that resolves above 2048 at any viewport, so the rung is
+// emitted for these frames and fetched only where the window is the box. The
+// three small heroes are here because they *are* full-bleed placements; their
+// masters are at or under 2560, so the filter below never gives them the rung
+// and no `sizes` string ever could.
+const BLEED_WIDTH = 2880;
+const FULL_BLEED = new Set([
+  "/images/pt/IMG_4585.jpg", // home hero: the poster and its first slide
+  "/images/pt/IMG_4619-valley.jpg", // home: "What you gain" and the closing
+  "/images/pt/IMG_4582-road.jpg", // home: the panels' join
+  "/images/pt/IMG_4721.jpg", // the About ground
+  "/images/pt/IMG_4735-road.jpg", // the Contact ground
+  "/images/hero-1.jpg", // the ground under "What we do" — 2048, source-capped
+  "/images/hero-2.jpg", // the FAQ ground and hero slide 2 — 1536, source-capped
+  "/images/hero-3.jpg", // hero slide 3 — 2560, source-capped
+]);
 
 // Frames published as a crop of an original rather than as the whole picture.
 // A power line crossing a sky cannot be masked out of a photograph and cannot
@@ -148,6 +180,7 @@ const displayDims = (w, h, o) => (o >= 5 && o <= 8 ? { w: h, h: w } : { w, h });
 // config forces a rebuild.
 function signature() {
   const parts = [`v${CONFIG_VERSION}`, `strength${productionStrength}`, `ladder${LADDER.join(",")}`,
+    `cap${MAX_WIDTH}/${BLEED_WIDTH}`, `bleed${[...FULL_BLEED].sort().join(",")}`,
     `fmt${FORMATS.map((f) => f.ext).join(",")}`, `crops${JSON.stringify(CROPS)}`];
   for (const f of ["scripts/responsive-images.mjs", "scripts/grade-photos.mjs"]) {
     parts.push(`${f}:${fs.statSync(path.join(ROOT, f)).mtimeMs}`);
@@ -213,10 +246,11 @@ async function run() {
       const dispW = region ? region.width : fullW;
       const dispH = region ? region.height : fullH;
 
-      const widths = LADDER.filter((w) => w <= Math.min(dispW, MAX_WIDTH));
-      if (widths.length === 0 || widths[widths.length - 1] < Math.min(dispW, MAX_WIDTH)) {
+      const cap = Math.min(dispW, FULL_BLEED.has(key) ? BLEED_WIDTH : MAX_WIDTH);
+      const widths = LADDER.filter((w) => w <= cap);
+      if (widths.length === 0 || widths[widths.length - 1] < cap) {
         // Always offer the exact display cap so the largest screens are covered.
-        widths.push(Math.min(dispW, MAX_WIDTH));
+        widths.push(cap);
       }
 
       for (const w of widths) {

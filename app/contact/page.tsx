@@ -29,7 +29,13 @@ export const metadata = pageMetadata({
 // to +80.3° — it does not darken a blue hour, it turns it — where the sky's own
 // dark lands at −146.6°, 4.1° off, and leaves 11.56 of chroma against 6.57.
 const plates: StagePlate[] = [
-  { src: hero.image, position: "50% 50%", priority: true, shade: { top: 68, mid: 55, base: 57, color: "var(--color-sky-anchor)" } },
+  // The mid is 58 and not 55, and the ladder's new rung is why. This ground is
+  // `IMG_4735-road` full-bleed, so it moved from the 2560 variant to the 2880
+  // one, and a sharper frame has brighter specks in it for a glyph stem to
+  // land on: the invitation's worst glyph-core pixel went 4.50 -> 4.40, under
+  // its floor. Three points of plate strength put it at 4.75. Nothing else on
+  // this page changed.
+  { src: hero.image, position: "50% 50%", priority: true, shade: { top: 68, mid: 58, base: 57, color: "var(--color-sky-anchor)" } },
   // The split: the same frame, defocused to the left of a hard seam at 48%
   // and sharp to its right, with the invitation and the three channels
   // standing on the soft side. One frame of the reference set's density, on
