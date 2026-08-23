@@ -236,29 +236,221 @@ three untouched because they sit above the stop it moves. **4.48 → 4.69**, and
 it clears 4.5 for the first time. The base itself is inside `--gain-end`'s
 dissolve, so nothing new is painted at the frame's bottom edge.
 
-**2.9 · The centre zoom is back.** Only the centre tile scales; the six of the
-ring hold at **1.000** at every frame, and the old move's largest factors were
-on the outer tiles, which is what made the wall arrive small and swell.
+**2.9 · The centre zoom is back at 1.39.** Rejected on sight, and the reason is
+a rule rather than a taste. At 1.39 the tile covered **38.6% of the window** —
+69.5vw × 55.6vh, 1000.8 × 500.4 at 1440×900 and 271.0 × 469.3 at 390×844. That
+is large enough to overlap the six tiles around it and small enough that they
+still show past it, so it read as a hard-edged rectangle laid on other
+rectangles: the collage this project rejected at the start. 2.60 filled the
+window, hid every other tile and read as one photograph taking the screen, and
+that is the beat.
 
-The amplitude is read off the source, not chosen. `hero-1` is a 2048px master,
-the tile paints 720 CSS px at 1440×900 and 457.9 at 390×844, and at DPR 2 and
-DPR 3 that is **0.703 and 0.671** of the source at rest. A peak of 0.98 against
-the source allows **1.394** on a desktop and **1.461** on a phone, so the
-smaller governs both: **1.39**. Measured at the peak: **0.98 against source and
-0.98 against the fetched variant** at 1440×900 DPR 2, **0.93 and 0.99** at
-390×844 DPR 3. It asks 2002 and 1909 device px of `hero-1`'s own top rung of
-2048, so the 2560 cap never comes into it and §2.7's new rung is not involved.
+**A scaling frame either reaches full window coverage or does not scale at
+all.** Partial coverage makes the frame an object sitting on other objects.
+This is the same polarisation as plate strength, at the level of coverage, and
+it is written into `DESIGN-SYSTEM.md` beside the interpolation rule. Its first
+consequence is that reading the amplitude off the source — as §2.9 did — lands
+in the forbidden band by construction: a factor that cannot be paid for at
+ratio ≤ 1.0 must not be spent at all. §2.13 and §2.14 replace it.
 
-At peak the tile is **69.5vw × 55.6vh — 38.6% of the window** at both
-viewports, against 20% at rest: 1000.8 × 500.4 px at 1440×900 and 271.0 × 469.3
-at 390×844. It does not fill the screen. 2.60 did, and 2048px cannot pay for
-it; the factor is a little over half the old one and the travel is a quarter of
-it. The rise runs from where the assembly ends to the release — **119px** at
-1440×900 (stage 0.94 → 1.00) and **118px** at 390×844 (0.93 → 1.00), the same
-travel at both, which is why the fractions differ. `useScroll` clamps at 1, so
-the peak is held while the sticky child unpins and the wall slides up into the
-footer. `sizes` declares the peak, not the slot, and the centre tile is painted
-last of the seven so it comes forward over the ring.
+**2.13 · Swap the centre and upper-right photographs.** Done.
+
+The centre slot could not pay for coverage while `hero-1` stood in it. At 2.60
+the tile is painted 1872 CSS px wide at 1440×900, and against a 2048px master
+that is **1.83 at DPR 2 and 2.74 at DPR 3** — restoring the factor without
+changing the photograph restores the blur. The two slots are close in aspect,
+centre 50×40 (**2.000**) and upper-right 40×30 (**2.133**), so neither frame
+changes shape moving between them:
+
+  centre       ← `IMG_4585`  (6048×8064)
+  upper-right  ← `hero-1`    (2048×1510)
+
+**The crop audit, at both ends of the travel and both viewports.** The visible
+rectangle is the box at rest and the *window* at full coverage, because the
+sticky frame clips the grown tile; both are measured, not assumed.
+
+| | window on the frame | share of the frame | whole subject |
+|---|---|---|---|
+| centre, 1440×900, rest | cols 0–100%, rows 21.9–59.4% | 37.5% | yes |
+| centre, 1440×900, full coverage | cols 11.5–88.5%, rows 22.6–58.7% | 27.7% | yes |
+| centre, 390×844, rest | cols 20.7–97.7%, rows 0–100% | 77.0% | yes |
+| centre, 390×844, full coverage | cols 29.6–88.8%, rows 1.9–98.1% | 57.0% | yes |
+| upper-R, 1440×900 | cols 0–100%, rows 36.4–100% | 63.6% | yes |
+| upper-R, 390×844 | cols 27.3–72.7%, rows 0–100% | 45.4% | yes |
+
+On a desktop the centre tile's subject is the valley — the village, the
+terraces, the tree, the wall and the far mountains, complete at both ends, and
+the four walkers are below the band at every scale. `object-position`'s x does
+nothing there at any scale: a 3:4 frame is narrower than this slot at every
+size of it, so it is fitted by width and painted exactly as wide as its box.
+
+**On a phone x is the whole of what the tile shows**, and it is what the audit
+turned on. The frame is the wider of the two there, so it is fitted by height
+and the full height of it is in the picture at every scale — the walkers cannot
+be avoided. They stand at **2.0–9.4%, 12.2–19.2%, 22.6–26.2% and 32.1–35.7%**
+of the frame's width. The window narrows by 7.7% on each side as the tile
+grows, and no gap between two walkers is that wide, so **one of them is crossed
+on the way whatever the number is**; what the number decides is whether either
+*end* cuts a body. `50%` fails: it lands the full-coverage edge on 19.2%, which
+is the second walker's trailing hand. **`90%` clears both** — the edge sits at
+20.9% at rest, 1.5% past the second walker, and at 29.6% at full coverage, 3.4%
+past the third and 2.5% short of the fourth.
+
+`hero-1`'s new slot is 4.2 points tighter on a desktop (63.6% against 67.8%)
+and 2.8 points wider on a phone (45.4% against 42.6%). It keeps `50% 100%`:
+anchored to the foot of the frame the two nearest walkers stand on the ground
+they are walking on, which is what that number was chosen for.
+
+**The two-placements rule is unchanged by the swap.** `IMG_4585` stays at two —
+the home hero (poster and first slide count as one) and this wall. `hero-1`
+stays at two — the ground under "What we do" and this wall. `hero-2` is still
+the one frame at three, for the reason §8 carries, and nothing here touches it.
+
+Two findings, neither introduced here. A **lattice pylon and its wires** stand
+at cols 91.5–92.3%, rows 43.9–49.1% of `IMG_4585` — 4 CSS px wide against the
+dark treeline. It is already on the home hero and was already on this wall's
+desktop tile; the new crop keeps it at rest and **loses it at full coverage**,
+which is the better of the two states. And `hero-1`'s own right edge cuts a
+head in the original frame; the upper-right slot shows the full width of it, as
+the centre slot did.
+
+**2.14 · Full coverage restored.** Done, at **2.60** — the value the wall had
+before the resolution argument took it away.
+
+The slot is 50vw × 40vh, so the threshold is 2.5 and the **height** sets it:
+50 × 2.6 = 130vw and 40 × 2.6 = 104vh, and the window is covered with 15% off
+each side and 2% off the top and foot. Measured off the tile's own rect,
+**coverage at peak is 100.00% at both viewports**, against 38.64% at 1.39.
+
+Reaching the threshold is not holding it. Scale crosses 2.5 three quarters of
+the way through the eased rise — **stage 0.945 desktop, 0.938 mobile** — so the
+window is wholly one photograph for the last **108px / 104px** of the pin and
+on through the release. A factor of exactly 2.5 would have touched full
+coverage on the last frame and never held it.
+
+**The rise runs 455.4px at 1440×900 and 438.9px at 390×844 — 0.506 and 0.520 of
+a viewport**, against §2.10's half-viewport floor, and none of it is new pin.
+It starts at stage 0.77 / 0.74, while the ring is still landing: the last of
+the six settles at 0.92 / 0.94 and the growing tile covers them as they arrive.
+That overlap is the only place the travel could have come from, the pin being
+at §G's 1.2-viewport ceiling. **Only the centre tile scales; the six of the
+ring hold at 1.000 at every frame** — the complaint that made the wall arrive
+small and swell is not reopened.
+
+The centre tile's own arrival moved with it. It used to fade in over
+0.82–0.94, which left **0.12 of the section between the words leaving and the
+tile appearing** with the centre slot showing bare page ground. It now runs
+from the frame the paragraph is gone on to the frame the scale begins on —
+**0.70–0.77 desktop, 0.68–0.74 mobile** — so nothing scales while it is
+part-transparent and it still crosses no live text. Bare page floor across the
+rise, sampled as floor-coloured pixels:
+
+| stage | 0.77 | 0.80 | 0.85 | 0.90 | 0.94 | 1.00 |
+|---|---|---|---|---|---|---|
+| 1440×900 before | 11.08% | 9.18% | 9.57% | 8.28% | 7.48% | 8.35% |
+| 1440×900 after | 11.33% | 9.40% | 7.09% | 7.06% | 7.71% | 8.43% |
+| 390×844 before | 18.89% | 16.90% | 13.46% | 9.65% | 5.70% | 6.64% |
+| 390×844 after | **15.11%** | **12.80%** | **6.91%** | **4.08%** | **3.68%** | **4.42%** |
+
+The residual 4–8% at full coverage is the detector, not the page: the window is
+one photograph by the tile's own rect, and what it is counting is that
+photograph's own shadow under the ferns and the oak.
+
+**The stall is unchanged.** Scanned frame by frame across the whole pinned
+section at one sampling step, the longest run with no visible change is **0px
+at 1440×900 (20px steps) and 14px at 390×844 (14px steps)** — one step, the
+same as before, and inside the 20px §2.5 left.
+
+**Ratio at every frame of the rise**, painted device px against the fetched
+variant and against the graded source. Nothing exceeds 1.0 anywhere on it:
+
+| stage | 0.77 | 0.80 | 0.84 | 0.88 | 0.90 | 0.92 | 0.94 | 0.96 | 0.98 | 1.00 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| **1440×900 DPR 2** — painted CSS | 720 | 738 | 854 | 1222 | 1497 | 1680 | 1781 | 1837 | 1864 | **1872** |
+| vs fetched (3840) | 0.375 | 0.384 | 0.445 | 0.637 | 0.780 | 0.875 | 0.928 | 0.957 | 0.971 | **0.975** |
+| vs source (6048) | 0.238 | 0.244 | 0.282 | 0.404 | 0.495 | 0.556 | 0.589 | 0.608 | 0.616 | **0.619** |
+| coverage | 20.0% | 21.0% | 28.2% | 57.6% | 83.2% | 93.3% | 98.9% | 100% | 100% | **100%** |
+
+| stage | 0.74 | 0.78 | 0.82 | 0.86 | 0.88 | 0.90 | 0.92 | 0.94 | 0.98 | 1.00 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| **390×844 DPR 3** — painted CSS | 253 | 262 | 302 | 413 | 498 | 567 | 609 | 634 | 656 | **658** |
+| vs fetched (2560) | 0.296 | 0.307 | 0.353 | 0.484 | 0.583 | 0.664 | 0.714 | 0.743 | 0.768 | **0.771** |
+| vs source (6048) | 0.125 | 0.130 | 0.150 | 0.205 | 0.247 | 0.281 | 0.302 | 0.315 | 0.325 | **0.326** |
+| coverage | 20.0% | 21.5% | 28.4% | 53.3% | 77.4% | 89.6% | 96.3% | 100% | 100% | **100%** |
+
+**The rung, and why it is published under a key of its own.** At full coverage
+the tile asks **3744 device px** at 1440×900 DPR 2, which is 864 above §2.7's
+bleed cap, so it needs a rung at **3840**. It cannot simply be added to
+`IMG_4585`'s ladder: a browser takes the first rung at or above what `sizes`
+asks for, and the **home hero asks 2966 of this same photograph**, so a 3840
+rung in that srcset would land on the home LCP and take it from 1367KB to
+2169KB. `scripts/responsive-images.mjs` therefore emits it under
+`/images/pt/IMG_4585.jpg#wall` — same graded pixels, same file basename, so
+only the extra width is written, **one file per format at 2169 / 3449 / 4473KB**.
+
+Confirmed on the built output rather than argued: the string `-3840.` appears
+**5 times in `/about/`'s markup and 0 times on `/`, `/contact/` and `/faq/`**,
+and the home hero's preload and all three of its `<source>` srcsets still stop
+at 2880. Measured end to end, every image file each page actually fetches:
+
+| | before | after |
+|---|---|---|
+| `/` at 1440×900 DPR 2 | 4564KB | **4564KB** |
+| `/` at 390×844 DPR 3 | 4295KB | **4295KB** |
+| `/about/` at 1440×900 DPR 2 | 3217KB | 4896KB (+1679, +52%) |
+| `/about/` at 390×844 DPR 3 | 2453KB | 3312KB (+859, +35%) |
+
+**Home does not move by a byte.** What /about pays is spent on a lazy image
+that is the last thing on the page: its LCP is still `IMG_4721-2880` at 1260KB,
+unchanged, and the wall's centre tile is fetched after three scene photographs
+have already been crossed. The deploy grows 137MB → 147MB of variants.
+
+One cost is worth recording. `sizes` declares the peak rather than the slot,
+which is what stops the pinned tile from downloading twice — so a **reduced
+motion** visitor on a DPR 2 desktop, who never gets the pinned tile at all,
+fetches the 3840 rung for a static 1440px grid cell. The alternative is a
+second download for everyone else, since the resting grid is the exported HTML
+and what replaces it is the thing that needs the pixels. This is not new; 2.60
+only makes it dearer.
+
+**What this cost against the ratchet, and it is §2.13's bill rather than
+§2.14's.** The full sweep was re-run on a clean production build: 93 elements
+over four pages, both viewports, 186 measurements, worst glyph-core pixel per
+element across every scroll position. **Three moved, all of them by more than
+0.01, all three the desktop nav on `/about`:**
+
+| element | `3749c92` | before | after | floor |
+|---|---|---|---|---|
+| `a` FAQ | 7.38 | 7.08 | **6.58** | 4.5 |
+| `a` Contact | 6.31 | 6.31 | **6.18** | 4.5 |
+| `a` Home | 6.88 | 6.88 | **6.86** | 4.5 |
+
+Nothing else on the site changed by a hundredth, no floor is breached, and the
+one element below its floor anywhere is FAQ's opening paragraph on mobile at
+**4.39**, which is below it at `3749c92` too.
+
+All three worst pixels now land at **y4200 on `/about`** — stage 0.758, before
+the rise begins and with nothing scaled — so this is the swap and not the
+coverage. The cause is §2.7's finding again, on a different frame: with the
+nav blanked and the ground under it measured directly, the right third of the
+header band goes from a **maximum luminance of 71 to 84** as `hero-1` takes the
+upper-right slot. Its sunlit water has brighter specks in it than the valley
+did, and a glyph stem lands on one.
+
+**It cannot be bought back inside this change, and that is the finding.**
+Contrast is repaired by lowering the photograph's strength in the zone; the
+zone here is the fixed header, what carries it is `.chrome-shade`, and that
+class is frozen. The tile is already anchored to the foot of its frame, which
+is the darkest band the slot can take — every other `object-position` puts
+*more* sky under the bar. The only remaining lever is a different photograph in
+the upper-right slot, which is the swap itself.
+
+So §2.8's ratchet is breached in three places and the work was completed rather
+than stopped, because stopping leaves 1.39 on the page and 1.39 is the thing
+that was rejected. The three are 1.68 to 2.36 above their floors. They join the
+thirty-eight already recorded below, and they belong to the same decision the
+reference set defers: whether the ratchet is measured against `3749c92` or
+re-based on the build that §2.7's resolution produced.
 
 ---
 
@@ -293,8 +485,10 @@ A point inside it, and there is no frame anywhere in the section where the
 words are up and the wall is standing. The paragraph holds full opacity to
 **stage 0.620, y3928** at 1440×900 and **stage 0.600, y3556** at 390×844, and
 is fully gone at **0.700 / y4086** and **0.680 / y3691**. The ring does not
-land until 0.92 / 0.94 and the centre tile not until 0.94 / 0.96 — a third of
-the section after the words have left.
+land until 0.92 / 0.94 — a third of the section after the words have left.
+(The centre tile's own arrival was 0.94 / 0.96 when this was written; §2.14
+moved it to 0.77 / 0.74, which is why the phone's bare ground through the same
+range fell by 3 to 6 points.)
 
 *How much of each side tile is on screen.* The 25vw × 40vh tiles are the second
 and third, gathered at ±14vw on a desktop and ±24vw on a phone.
@@ -384,8 +578,10 @@ does not render at that viewport (the desktop nav collapses to a menu).
 
 **Where the site stands against it now.** One element is below its floor and it
 is below it at `3749c92` too: FAQ's opening paragraph on mobile, **4.39**
-against 4.5, untouched by any of this work and by everything since. Thirty-eight
-elements sit under their reference value. Nineteen of those predate this pass —
+against 4.5, untouched by any of this work and by everything since. **Forty**
+elements sit under their reference value — thirty-eight of those listed below
+plus `/about`'s `a` Contact and `a` Home, which §2.13 took under for the first
+time. Nineteen of the thirty-eight predate this pass —
 they are the transitions work, where the panels' prose moved from the dark floor
 onto the road (13.51 → 8.35) and "Youth Exchanges" with it (12.04 → 8.05). The
 other nineteen are §2.7's, all on the desktop viewport and all on the five

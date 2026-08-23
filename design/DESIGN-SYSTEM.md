@@ -745,6 +745,38 @@ fix a table.
 - Nothing autoplays on loop except the globe's slow rotation and the lamp
   glow, both of which stop under reduced motion.
 
+**Two fixed states and a boundary between them — never a value interpolated
+from both.** Interpolating one state's numbers toward another's manufactures a
+third that belongs to neither, and the travel *holds* it: the hero's six
+darkening stops read 62.97 / 40.97 / 51.05 / 15.01 / 49.98 at progress 0.6, one
+flat veil over the whole picture for a fifth of the expansion. What crosses
+between two grounds is a **boundary** — 40% of the window deep, with no line in
+it to trace — so every row of every frame carries one state or the other and
+neither is ever diluted. This is the polarised ledger (`REFERENCE-LANGUAGE.md`
+§F1) stated as a mechanism rather than as a table of values.
+
+**A scaling frame either reaches full window coverage or does not scale at
+all.** Partial coverage makes the frame an object sitting on other objects. At
+1.39 the About wall's centre tile covered 38.6% of the window: large enough to
+overlap the six tiles around it, small enough that they still showed past it,
+so it read as a hard-edged rectangle laid on other rectangles — which is the
+collage this site rejected at the start. **This is the same polarisation as
+plate strength, at the level of coverage**, and it makes the amplitude a
+threshold rather than a taste question: the slot decides the number, and the
+tighter of the two axes decides it. A 50vw × 40vh slot needs 2.5 and the height
+is what sets it.
+
+Two consequences follow, and both bit before the rule was written down.
+
+- **A factor that cannot be paid for at ratio ≤ 1.0 must not be spent at all.**
+  Reading the amplitude off the source — the largest factor a 2048px master can
+  cover — lands in the forbidden band by construction. The answer is a
+  photograph with the pixels, or no scale.
+- **Reaching coverage is not holding it.** At exactly the threshold the window
+  is covered on one frame and uncovered on the next, which is a coincidence
+  rather than a beat. 2.60 crosses at three quarters of the eased rise and
+  holds full coverage to the release.
+
 **Signature entrances play on the clock, not the scrollbar.** The page's two
 set-piece moments — the hero's first-load title card and the "What we do"
 stage entrance — are time-based and once per load. An earlier pass scrubbed
