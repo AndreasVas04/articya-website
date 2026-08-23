@@ -79,15 +79,34 @@ const TILES = [
   "-top-[35vh] left-[30vw] h-[30vh] w-[40vw]",
 ];
 
-// Where the zoom stops. The centre tile is 50vw × 40vh, so it covers the
-// window at 2.5× and every fraction past that is scale spent on a frame that
-// is already full — nothing to see as composition, and softness to see as
-// resolution. 2.6 leaves 2% of bleed at the head and foot and no more. The
-// other six are the set the wall has always had, taken down by the same factor
-// (k = 1.6/3), so each tile's scale against the centre's is unchanged: the ring
-// breaks apart on exactly the path it did before, and only the end of the run
-// moves.
-const TARGET_SCALES = [2.6, 3.13, 3.67, 3.13, 3.67, 4.73, 5.27];
+// The zoom is gone, and nothing in this section is scaled at any frame. It ran
+// the seven tiles out to 2.60, 3.13, 3.67, 3.13, 3.67, 4.73 and 5.27 across
+// stage 0.77–0.95, and measured against the pixels that exist rather than
+// against the rung that was fetched it could not be paid for:
+//
+//   tile 6 is a 576 × 270 box that reached 3036 CSS px, which is 9107 device
+//   px at DPR 3 out of a 6048 px master — 1.51× the source, and 4.74× the
+//   1920 rung its resting `sizes` asked for. That is the blur.
+//
+// No `sizes` string closes it. A declaration made at the peak asks for 9107
+// and the ladder stops at 2560, so the gap against the source survives every
+// fix available in code, and the rule is the one §2.5 states: reduce the
+// amplitude, not the resting size.
+//
+// The centre tile is the reason the whole move had to go rather than shrink.
+// At 2.60 it is a full-bleed placement, and it holds `hero-1` — 2048px, one of
+// the three 3.1 MP frames that are disqualified from full bleed permanently.
+// Capped at what the source can pay for it reaches 1.42 at DPR 2, which covers
+// 71% of the window and nothing at all at DPR 3; a frame that is meant to fill
+// the screen and stops short of it is not a quieter version of the move, it is
+// a broken one. So the wall itself is the ending — which is what it was built
+// to be: seven photographs tiling the window exactly, with no ground left
+// showing anywhere.
+//
+// What the zoom's 0.18 of travel buys instead is the assembly. The ring keeps
+// landing to the end of the pin rather than finishing at 0.76 and then
+// magnifying for a fifth of the section, and the centre tile arrives last, in
+// the place the words stood.
 
 // Each tile's box, in fractions of the viewport, matching TILES above. It is
 // what `coverSizes` measures the painted width against: the box scales with
@@ -110,15 +129,14 @@ const TILE_BOXES: SizeBox[] = [
   { vw: 0.4, vh: 0.3 },
 ];
 
-// The centre tile is the one the zoom carries out past full bleed, so it is
-// measured at the size it ends on rather than the size it rests at: 2.6× the
-// box on both axes.
-const CENTER_ZOOM = 2.6;
-const tileSizes = (src: string, index: number) => {
-  const box = TILE_BOXES[index];
-  const scale = index === 0 ? CENTER_ZOOM : 1;
-  return coverSizes(src, { vw: box.vw * scale, vh: box.vh * scale });
-};
+// Declared at the largest size the tile ever reaches, which is now its own
+// slot: nothing here is scaled at any frame of the entrance. The centre tile
+// used to carry a 2.6 factor here because the zoom took it there, and the
+// other six were declared at their resting boxes while the same zoom took them
+// to between 3.1 and 5.3 — which is the error `coverSizes()` closed for the
+// full-bleed frames in 1.2, made again on a transient instead of on a fit.
+const tileSizes = (src: string, index: number) =>
+  coverSizes(src, TILE_BOXES[index]);
 
 // While the words are on screen each outer tile holds this offset from its
 // mosaic slot (x in vw, y in vh) — gathered loosely around the paragraph,
@@ -366,27 +384,31 @@ function FinaleTile({
   position?: string;
   compact: boolean;
 }) {
-  // Outer tiles rise staggered into their gathered offsets while the words
-  // complete; the ring settles into the mosaic as the words hand over, the
-  // center tile arrives where they stood, and the zoom takes the center
-  // tile out to full-bleed. Compact screens sequence the handoff strictly —
-  // the ring holds until the words have fully dissolved and the center tile
-  // waits for the settle — and the band tiles above the words rise in from
-  // above so their entrance also stays clear of the text.
+  // The ring arrives at its gathered offsets while the words complete, then
+  // closes into the mosaic one tile at a time, and the centre tile lands last
+  // in the place the words stood. Every window below is stated as a fraction
+  // of the section's own travel; nothing is scaled at any of them.
+  //
+  // The six ring tiles used to be in place by 0.39 and settled by 0.76, which
+  // left 0.455–0.616 with nothing moving at all — 320px of pin on a desktop
+  // and 168px on a phone where the reader scrolled and the glass did not
+  // change. Staggering the arrivals 0.07 apart runs them to 0.65 and closes
+  // that; spreading the settle to 0.92 spends the travel the zoom used to.
+  //
+  // Compact screens keep the strict sequence they had: the ring does not begin
+  // to close until the words have fully dissolved at 0.68, so a moving tile
+  // never crosses live text on the viewport that has no room to spare.
   const center = index === 0;
-  const inStart = center
-    ? compact
-      ? 0.69
-      : 0.64
-    : 0.14 + (index - 1) * 0.02;
-  const inEnd = inStart + (center ? 0.09 : 0.15);
+  const inStart = center ? (compact ? 0.84 : 0.82) : 0.14 + (index - 1) * 0.07;
+  const inEnd = inStart + (center ? 0.12 : 0.16);
   const [gatherX, gatherY] = (compact ? GATHER_COMPACT : GATHER)[index];
-  const [settleFrom, settleTo] = compact ? [0.68, 0.76] : [0.62, 0.76];
-  // The zoom is the last beat of the pin, not the first beat of the exit. It
-  // finishes with 99px desktop / 67px mobile of held frame still to come, and
-  // the footer's own 148px after that, so the full-bleed frame is stood on
-  // rather than passed through.
-  const [zoomFrom, zoomTo] = compact ? [0.79, 0.96] : [0.77, 0.95];
+  // Staggered per tile, so the ring closes as a sequence rather than as one
+  // move. The last of the six lands at 0.92 desktop / 0.94 mobile, which
+  // leaves the completed wall standing for 99px and 67px before the pin
+  // releases — the same held frame the zoom used to end on, and the footer's
+  // 148px after it.
+  const settleFrom = (compact ? 0.68 : 0.6) + (index - 1) * (compact ? 0.028 : 0.036);
+  const settleTo = settleFrom + (compact ? 0.12 : 0.14);
   const riseDirection = compact && gatherY < 0 ? -1 : 1;
 
   const opacity = useTransform(() => stageWindow(stage.get(), inStart, inEnd));
@@ -400,14 +422,10 @@ function FinaleTile({
     const settle = 1 - stageWindow(stage.get(), settleFrom, settleTo);
     return `${gatherY * settle + rise}vh`;
   });
-  const scale = useTransform(
-    () =>
-      1 + (TARGET_SCALES[index] - 1) * stageWindow(stage.get(), zoomFrom, zoomTo)
-  );
 
   return (
     <motion.div
-      style={{ x, y, scale, opacity }}
+      style={{ x, y, opacity }}
       className="absolute top-0 flex h-full w-full items-center justify-center"
     >
       <div
