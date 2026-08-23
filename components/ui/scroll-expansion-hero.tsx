@@ -59,46 +59,110 @@ const POSTER_LEAVES = 0.92;
 const posterOpacity = (progress: number) =>
   1 - clamp01((progress - POSTER_LEAVES) / (1 - POSTER_LEAVES));
 
-// The darkening travels from the poster's ramp to the gallery card's, and it
-// travels on the *window* rather than inside the card: every `.plate-shade` in
-// this section reads these, so at no progress is there a rectangle of one
-// darkening sitting inside another. That rectangle is most of what made the
-// opening read as a box.
+// The section has two darkenings, and it crosses between them on the *window*
+// rather than inside the card: every `.plate-shade` in this section is one of
+// this pair, computed over the same rectangle, so at no progress is there a
+// rectangle of one darkening sitting inside another. That rectangle is most of
+// what made the opening read as a box.
+//
+// The poster's ramp carries the headline on open sky; the card's carries the
+// nav across the top and the intro at the foot. The poster's is untouched —
+// the headline's measured 5.27 / 5.34 is this ramp — and the card's differs
+// from it in one number.
+//
+// **The card's top was 34.** That is the middle register: at 0.34 the picture
+// under it reads at 0.66, which is neither a photograph nor a ground, and
+// against `IMG_4585`'s sky it painted a washed band across the whole upper
+// third of the resting hero. Measured, the top third's mean luminance ran 86
+// at the poster and 168 there. `.chrome-shade` carries the nav on its own
+// (86% falling to nothing over 130px), so the number could have gone either
+// way; it goes up rather than down because §2.8's ratchet forbids lowering any
+// measured value and the nav stands on this. 78 is a hood — the picture at
+// 0.22, a ground — and it clears 0.75 with room.
+const POSTER_SHADE = { top: 92, mid: 66, base: 8, from: 8, to: 64 };
+const CARD_SHADE = { top: 78, mid: 16, base: 94, from: 22, to: 36 };
+
+// How the crossing is made, and this is the whole of §2.6. Interpolating the
+// two sets of numbers put the *frame* in the middle register even where its
+// endpoints were out of it: at progress 0.6 the six read 63 / 41 / 51, so
+// every row of the window was between 41% and 63% at once — one flat veil over
+// the whole picture, the exact state the polarised ledger exists to forbid,
+// held for a fifth of the expansion.
+//
+// So nothing is interpolated. The two ramps are fixed and what travels is a
+// boundary, which is the mechanism `PhotoStage` already carries for the same
+// reason: the card's ramp wells up from the foot of the window and the
+// poster's withdraws upward and leaves through the top, over a 40%-deep
+// gradient with no line in it to trace. Every row of every frame is one ramp
+// or the other, and the top stop is 92 falling to 78 — inside the upper pole
+// at every frame, never in 0.04–0.75.
 //
 // It runs 0.35 -> 0.85 and not from zero, and the window is the argument: the
 // headline is gone by 0.35 and the intro does not arrive until 1.00, so the
-// travel plays over the one stretch of the expansion with no text on the glass
-// at all. Below 0.35 the frame is the poster's own ramp to the number, which
-// is where the headline's measured 5.27 / 5.34 comes from; at 0.85 it is the
-// card's, which is what the intro was measured on.
-const POSTER_SHADE = { top: 92, mid: 66, base: 8, from: 8, to: 64 };
-const CARD_SHADE = { top: 34, mid: 16, base: 94, from: 22, to: 36 };
+// crossing plays over the one stretch of the expansion with no text on the
+// glass at all.
+const SHADE_FEATHER = 40;
 
-const heroShade = (progress: number): CSSProperties => {
+const shadeLayers = (progress: number) => {
   const t = clamp01((progress - 0.35) / 0.5);
-  const at = (a: number, b: number) => `${(a + (b - a) * t).toFixed(2)}%`;
-  return {
-    "--hero-shade-top": at(POSTER_SHADE.top, CARD_SHADE.top),
-    "--hero-shade-mid": at(POSTER_SHADE.mid, CARD_SHADE.mid),
-    "--hero-shade-bottom": at(POSTER_SHADE.base, CARD_SHADE.base),
-    "--hero-shade-from": at(POSTER_SHADE.from, CARD_SHADE.from),
-    "--hero-shade-to": at(POSTER_SHADE.to, CARD_SHADE.to),
-    // Sky owns the poster's chroma and the land owns the card's, so the dark
-    // the ramp is made of travels with the numbers rather than switching.
-    "--hero-shade-color": `color-mix(in srgb, var(--color-sky-anchor) ${(
-      (1 - t) * 100
-    ).toFixed(1)}%, var(--color-gold-anchor))`,
-  } as CSSProperties;
+  // 140 -> -40, so the boundary starts a feather below the foot and ends a
+  // feather above the head: both ends are a clean single state.
+  const edge = 140 - 180 * t;
+  const solid = (edge - SHADE_FEATHER).toFixed(2);
+  const clear = edge.toFixed(2);
+  // Neither end carries a mask at all. A fully-opaque mask is not free — it
+  // pushes the layer through its own compositing pass, and the rounding that
+  // costs is visible in the measurement: the headline's worst glyph pixel went
+  // 5.27 -> 5.21 with a no-op mask on it. Both ends must be pixel-identical to
+  // what they were, because §2.8's ratchet is measured on them.
+  return [
+    {
+      key: "poster",
+      shade: POSTER_SHADE,
+      // Sky owns this frame's chroma: a green-black over open blue turns it
+      // rather than lowering it — 43.6° of hue and half the chroma, against
+      // 0.5° for the same stops on the sky's own dark.
+      color: "var(--color-sky-anchor)",
+      mask: t > 0 ? `linear-gradient(to bottom, #000 ${solid}%, transparent ${clear}%)` : undefined,
+      show: t < 1,
+    },
+    {
+      key: "card",
+      shade: CARD_SHADE,
+      color: "var(--color-gold-anchor)",
+      mask: t < 1 ? `linear-gradient(to bottom, transparent ${solid}%, #000 ${clear}%)` : undefined,
+      show: t > 0,
+    },
+  ];
 };
 
-// Every `.plate-shade` in the hero reads the section's travelling ramp instead
-// of declaring one of its own. A `.plate-shade` sets the six values on itself,
-// so an inherited value would lose to the class — these have to be restated as
-// utilities to win.
-const SHADE_VARS =
-  "[--shade-bottom:var(--hero-shade-bottom)] [--shade-color:var(--hero-shade-color)] " +
-  "[--shade-mid:var(--hero-shade-mid)] [--shade-mid-from:var(--hero-shade-from)] " +
-  "[--shade-mid-to:var(--hero-shade-to)] [--shade-top:var(--hero-shade-top)]";
+// A `.plate-shade` sets the six values on itself, so an inherited value would
+// lose to the class; inline style is the one declaration that beats it.
+const HeroShade = ({ progress }: { progress: number }) => (
+  <>
+    {shadeLayers(progress).map(({ key, shade, color, mask, show }) =>
+      show ? (
+        <div
+          key={key}
+          aria-hidden="true"
+          className="plate-shade pointer-events-none absolute inset-0"
+          style={
+            {
+              "--shade-color": color,
+              "--shade-top": `${shade.top}%`,
+              "--shade-mid": `${shade.mid}%`,
+              "--shade-bottom": `${shade.base}%`,
+              "--shade-mid-from": `${shade.from}%`,
+              "--shade-mid-to": `${shade.to}%`,
+              maskImage: mask,
+              WebkitMaskImage: mask,
+            } as CSSProperties
+          }
+        />
+      ) : null
+    )}
+  </>
+);
 
 interface ScrollExpandMediaProps {
   slides: string[];
@@ -412,7 +476,6 @@ const ScrollExpandMedia = ({
           the card's own dissolving foot and the two pictures hand over. */}
       <section
         className="gold-field gold-field-chrome-top gold-field-open-bottom hero-drop-scope hero-plate relative isolate flex min-h-[100dvh] flex-col items-center justify-start overflow-hidden"
-        style={heroShade(progress)}
       >
         <motion.div
           className="absolute inset-0 z-0"
@@ -466,10 +529,7 @@ const ScrollExpandMedia = ({
               frame or the card is a rectangle of one darkening inside
               another. Below progress 0.35 they are exactly the values that
               used to be written here. */}
-          <div
-            aria-hidden="true"
-            className={cn("plate-shade pointer-events-none absolute inset-0", SHADE_VARS)}
-          />
+          <HeroShade progress={progress} />
         </motion.div>
 
         <div className="relative z-10 mx-auto flex w-full flex-col items-center">
@@ -617,13 +677,7 @@ const ScrollExpandMedia = ({
                     there is no edge where one ends. It settles on the values
                     written here by progress 0.85, which is where the intro was
                     measured. */}
-                  <div
-                    aria-hidden="true"
-                    className={cn(
-                      "plate-shade pointer-events-none absolute inset-0",
-                      SHADE_VARS
-                    )}
-                  />
+                  <HeroShade progress={progress} />
                 </div>
               </div>
             </div>
@@ -803,10 +857,7 @@ const ScrollExpandMedia = ({
             className="hero-poster object-cover saturate-[1.06] sepia-[0.08]"
             style={{ objectPosition: "50% var(--hero-poster-y)" }}
           />
-          <div
-            aria-hidden="true"
-            className={cn("plate-shade pointer-events-none absolute inset-0", SHADE_VARS)}
-          />
+          <HeroShade progress={progress} />
         </motion.div>
       </section>
     </div>
