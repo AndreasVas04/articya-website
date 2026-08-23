@@ -85,7 +85,7 @@ const plates: StagePlate[] = [
   // than the longest. The pan stays bottom-anchored: a 16:10 window shows 854
   // of this frame's 1020 rows and the fencing crosses rows 107 to 507, so no
   // pan clears it and this one clears the most of it.
-  { src: "/images/pt/IMG_4582-road.jpg", position: "45% 100%" },
+  { src: "/images/pt/IMG_4582-road.jpg", position: "45% 100%", wipe: true },
   // The gains and the closing: the valley, the same frame the gains section
   // lays edge to edge over it — so the finale is that picture arriving at full
   // strength out of its own defocused copy.
@@ -361,12 +361,20 @@ export default function HomePage() {
                     longest.
 
                     Both markers sit within a sixth of a screen of the boundary,
-                    so the plate is full across the join and back at nothing
-                    before either panel's prose reaches its reading position.
-                    The panels' own markers — a quiet key on each one's first
-                    and last frame — are what the ramps run from, so the two
+                    so the plate is full across the join, and each panel's own
+                    quiet key at 60% is what the ramps run from — so the two
                     ends need nothing declared here. Full strength, not 0.9: the
                     ground on this page is either a photograph or it is nothing.
+
+                    Measured at 1440x900 the pass is now 225px of rise, 270px
+                    held full and 315px of fall — 0.25, 0.30 and 0.35 of a
+                    viewport; at 390x844, 231 / 253 / 334, which is 0.27, 0.30
+                    and 0.40. The rise was 90px, a tenth of a viewport and
+                    inside a single notch of a wheel, which is the whole of why
+                    the road read as a cut rather than as an arrival. It rises
+                    as a wipe, so the road comes up into the frame from the foot
+                    of the window rather than the whole picture brightening at
+                    once out of the floor.
 
                     No screen loses its words to it. At the peak the panel above
                     is still leaving the top of the window and the panel below

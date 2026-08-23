@@ -126,22 +126,31 @@ export function OfferPanel({
       data-stage-strength="0"
       className="relative"
     >
-      {/* The ground is held down across the whole panel rather than only at
-          its middle. A zone is keyed half a viewport above its own centre, so
-          the section's own marker alone lets the climb toward the loud passage
-          below start while the words are still being read; these two put a
-          quiet key on the panel's first and last frame. */}
+      {/* One quiet key past the panel's own, and where it sits is what decides
+          how long every ramp on this stretch is allowed to be. A zone is keyed
+          half a viewport above its own middle, so a marker at 60% of the panel
+          keys 90px past the section's own.
+
+          There used to be two, at 25% and 75%. They held the ground down
+          across the whole panel, and they are what compressed the road into a
+          jump: the quiet key at 75% of the first panel keyed 90px before the
+          road's own full key, so the entire arrival ran in a tenth of a
+          viewport — one notch of a wheel. Taking the 25% one out is what gives
+          the clearing's ground a fall with a span at all; both of its keys sat
+          at the same scroll position before, and this marker was the next
+          frame after them.
+
+          Holding the ground down for the whole panel is no longer what keeps
+          the prose off it, because the ground wipes rather than fades: the
+          picture wells up from the foot of the window while the words are
+          still in the middle of it, and it is only underneath them once they
+          are leaving through the top — which is where the plate's own 62%
+          release was measured. */}
       <div
         aria-hidden="true"
         data-stage-plate="1"
         data-stage-strength="0"
-        className="absolute inset-x-0 top-1/4 h-0"
-      />
-      <div
-        aria-hidden="true"
-        data-stage-plate="1"
-        data-stage-strength="0"
-        className="absolute inset-x-0 top-3/4 h-0"
+        className="absolute inset-x-0 top-[60%] h-0"
       />
       <div className="relative">
         <div className="relative flex min-h-svh w-full items-center px-4 py-16 md:px-0 md:py-0">
