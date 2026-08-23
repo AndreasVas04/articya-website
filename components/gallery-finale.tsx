@@ -93,33 +93,58 @@ const TILES = [
 // the outer tiles carried the *largest* factors, so the wall arrived small and
 // swelled, which is the opposite of a wall.
 //
-// The centre tile is the one that keeps the beat, and its amplitude is not
-// chosen — it is read off its own source. `hero-1` is a 2048px master and the
-// tile paints 720 CSS px at 1440×900 and 457.9 at 390×844, which at DPR 2 and
-// DPR 3 is 0.703 and 0.671 of the source at rest. Holding the peak at 0.98
-// against the source allows 1.394 on a desktop and 1.461 on a phone; the
-// smaller of the two governs both, so the factor is 1.39 and the peak lands at
-// 0.977 and 0.932. It asks for 2002 and 1909 device px against `hero-1`'s own
-// top rung of 2048, so the 2560 cap never comes into it.
+// The centre tile is the one that keeps the beat, and the only question its
+// amplitude answers is whether the window ends up covered. **A scaling frame
+// either reaches full window coverage or does not scale at all.** A factor of
+// 1.39 took this tile to 69.5vw × 55.6vh — 38.6% of the window — which is
+// large enough to overlap the six around it and small enough that they still
+// show past it, so it read as a hard-edged rectangle laid on other rectangles.
+// That is the collage this site rejected at the start, and it is the same
+// polarisation the plate strengths already run on, one level up: the number in
+// between is the one that must not be held.
 //
-// What that buys is a tile 69.5vw × 55.6vh — 38.6% of the window against 20%
-// at rest, at both viewports. It is not the old ending, where one photograph
-// filled the screen; 2048px cannot pay for that and no `sizes` string invents
-// the pixels. It is one frame stepping forward out of a finished wall.
-const CENTER_PEAK = 1.39;
+// The slot is 50vw × 40vh, so coverage is a threshold and the height sets it —
+// 40 × 2.5 = 100. Anything at or under 2.5 is not an ending. **2.60** is the
+// value the wall had before the resolution argument took it away, and it is
+// restored: 130vw × 104vh, the window covered with 15% off each side and 2%
+// off the top and foot, reached at stage 0.94 and held from there through the
+// release.
+//
+// What it costs is one rung. At 2.60 the tile is painted 1872 CSS px wide at
+// 1440×900 — 3744 device px at DPR 2 — against a ladder that stopped at 2880,
+// which is exactly why the factor was cut rather than paid for: `hero-1` is a
+// 2048px master and no rung can invent pixels it does not have. `IMG_4585` is
+// 6048, and `scripts/responsive-images.mjs` publishes a 3840 rung for the one
+// key this tile fetches. Measured at full coverage: **0.975 against the fetched
+// variant and 0.619 against the source** at 1440×900 DPR 2, **0.772 and 0.327**
+// at 390×844 DPR 3.
+const CENTER_PEAK = 2.6;
 
-// The rise starts where the assembly ends and runs to the release, which is
-// 119px at 1440×900 and 118px at 390×844 — the same travel at both, which is
-// why the two fractions differ: the section is 220svh on a desktop and 200svh
-// on a phone, so an equal fraction would have given the phone a third less.
-// Desktop starts exactly on the centre tile's own arrival; the phone starts
-// 0.03 inside it, which is what the shorter section costs.
+// A travel of 1.6 needs a rise to spend it on. This one runs **455px at
+// 1440×900 and 439px at 390×844 — 0.506 and 0.520 of a viewport**, against the
+// half a viewport an overlapping move has to have; the fractions differ because
+// the section is 220svh on a desktop and 200svh on a phone. None of it is new
+// pin: the rise starts while the ring is still landing (the last of the six
+// settles at 0.92 / 0.94) and the growing tile covers them as they arrive,
+// which is the only place the travel could have come from. The stall inside the
+// pin stays where §2.5 left it.
 //
-// Nothing is held back for a peak frame. `useScroll` clamps at 1, so the tile
-// stays at 1.39 while the sticky child unpins and the wall slides up into the
-// footer's 148px — the hold is after the pin, not inside it.
+// Full coverage is reached before the end rather than at it. Scale crosses 2.5
+// three quarters of the way through the eased rise — stage 0.945 on a desktop
+// and 0.938 on a phone — so the window is wholly one photograph for the last
+// 108px / 104px of the pin and on through the release, where `useScroll` clamps
+// at 1 and the wall slides up into the footer's 148px. A factor of exactly 2.5
+// would have touched full coverage on the last frame and never held it.
 const zoomWindow = (compact: boolean): [number, number] =>
-  compact ? [0.93, 1] : [0.94, 1];
+  compact ? [0.74, 1] : [0.77, 1];
+
+// The words' handover, and with it the frame the centre tile is allowed to
+// start on. The tile arrives in the place the words stood, so its fade begins
+// exactly where theirs ends: a photograph rising under live text would take the
+// contrast with it, and the gap between the two used to be 0.12 of the section
+// with the centre slot showing bare page ground.
+const textWindow = (compact: boolean): [number, number] =>
+  compact ? [0.6, 0.68] : [0.62, 0.7];
 
 // Each tile's box, in fractions of the viewport, matching TILES above. It is
 // what `coverSizes` measures the painted width against: the box scales with
@@ -136,7 +161,7 @@ const zoomWindow = (compact: boolean): [number, number] =>
 // The centre tile's box is its *peak*, not its slot, because that is the
 // widest it is ever painted. Scaling both axes by one factor leaves the box's
 // aspect alone, so the frame's overscale is unchanged and only the declared
-// width moves — 50vw → 69.5vw on a desktop, 117.4 → 163.2 on a phone.
+// width moves — 50vw → 130vw on a desktop, 65 → 169 on a phone.
 const TILE_BOXES: SizeBox[] = [
   { vw: 0.5 * CENTER_PEAK, vh: 0.4 * CENTER_PEAK },
   { vw: 0.6, vh: 0.3 },
@@ -228,7 +253,7 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
   // ring closes. That handoff stays scroll-linked — it is the mosaic's beat,
   // not the words' — and on compact screens the words dissolve completely
   // before the ring starts moving, so the closing tiles never cross live text.
-  const [fadeFrom, fadeTo] = compact ? [0.6, 0.68] : [0.62, 0.7];
+  const [fadeFrom, fadeTo] = textWindow(compact);
   const textOut = useTransform(
     () => 1 - stageWindow(stage.get(), fadeFrom, fadeTo)
   );
@@ -418,16 +443,24 @@ function FinaleTile({
   //
   // The centre tile alone carries the closing zoom, layered on the end of all
   // of this; the six of the ring hold at 1.000 at every frame.
+  //
+  // Its own arrival now fills the whole of the gap between the words leaving
+  // and the rise starting, rather than sitting inside it: it fades from the
+  // frame the paragraph is gone on to the frame the scale begins on, 0.70–0.77
+  // on a desktop and 0.68–0.74 on a phone, so nothing scales while it is
+  // part-transparent and the centre slot is never bare ground with a settled
+  // wall around it.
   const center = index === 0;
-  const inStart = center ? (compact ? 0.84 : 0.82) : 0.14 + (index - 1) * 0.07;
-  const inEnd = inStart + (center ? 0.12 : 0.16);
+  const [zoomFrom, zoomTo] = zoomWindow(compact);
+  const inStart = center ? textWindow(compact)[1] : 0.14 + (index - 1) * 0.07;
+  const inEnd = center ? zoomFrom : inStart + 0.16;
   const [gatherX, gatherY] = (compact ? GATHER_COMPACT : GATHER)[index];
   // Staggered per tile, so the ring closes as a sequence rather than as one
-  // move. The last of the six lands at 0.92 desktop / 0.94 mobile and the
-  // centre tile is opaque at 0.94 / 0.96, which on a desktop is exactly where
-  // the closing zoom begins. On a phone the zoom starts 0.03 earlier, so the
-  // last of the ring and the last of the centre tile's fade run into the
-  // first 50px of it.
+  // move. The last of the six lands at 0.92 desktop / 0.94 mobile, which is
+  // inside the rise: the six settle into their slots while the centre tile is
+  // already growing over them, and each is covered as it arrives. That overlap
+  // is the only place half a viewport of rise could have come from — the
+  // alternative was more pin, and the pin is at §G's ceiling.
   const settleFrom = (compact ? 0.68 : 0.6) + (index - 1) * (compact ? 0.028 : 0.036);
   const settleTo = settleFrom + (compact ? 0.12 : 0.14);
   const riseDirection = compact && gatherY < 0 ? -1 : 1;
@@ -445,7 +478,6 @@ function FinaleTile({
   });
   // The wrapper is the window and the centre tile is centred in it, so scaling
   // the wrapper and scaling the tile about its own middle are the same move.
-  const [zoomFrom, zoomTo] = zoomWindow(compact);
   const scale = useTransform(() =>
     center
       ? 1 + (CENTER_PEAK - 1) * stageWindow(stage.get(), zoomFrom, zoomTo)
@@ -456,10 +488,10 @@ function FinaleTile({
     <motion.div
       style={{ x, y, opacity, scale }}
       // The centre tile is painted last of the seven so that it comes forward
-      // over the ring rather than behind it. At rest the wall tiles the window
-      // exactly and nothing overlaps, so this changes no frame before the
-      // zoom; the words above it are gone by 0.70 and it is transparent until
-      // 0.82, so it crosses nothing live either.
+      // over the ring rather than behind it. Before the rise the wall tiles the
+      // window exactly and nothing overlaps, so this changes no frame there;
+      // and the tile is transparent until the words are gone, so it crosses
+      // nothing live either.
       className={cn(
         "absolute top-0 flex h-full w-full items-center justify-center",
         center && "z-20"

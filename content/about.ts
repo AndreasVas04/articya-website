@@ -101,7 +101,10 @@ export const closing = {
 // pan clears, and a tile of road surface.
 export const gallery = [
   {
-    src: "/images/pt/IMG_4585.jpg",
+    // The key carries a fragment because this one placement fetches a rung
+    // above the ladder's cap; `scripts/responsive-images.mjs` carries why that
+    // rung cannot live on the photograph's own srcset.
+    src: "/images/pt/IMG_4585.jpg#wall",
     alt: "The group on the path above the valley",
     // The horizontal number is a phone decision and nothing else. On a desktop
     // this 3:4 frame is narrower than its slot at every scale, so it is fitted

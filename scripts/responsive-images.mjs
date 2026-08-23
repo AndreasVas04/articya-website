@@ -68,6 +68,24 @@ const FULL_BLEED = new Set([
   "/images/hero-3.jpg", // hero slide 3 — 2560, source-capped
 ]);
 
+// One placement on the site is scaled past the window — the About wall's centre
+// tile, which reaches 130vw at full coverage and is therefore painted 1872 CSS
+// px wide at 1440×900, 3744 device px at DPR 2. That is 864 above the bleed
+// cap, and the rung cannot simply be added to the photograph's own ladder: a
+// browser takes the first rung at or above what `sizes` asks for, and the home
+// hero asks 2966 of this same frame, so a 3840 rung in that srcset would land
+// on the home LCP and take it from 1367KB to 2169KB.
+//
+// So the rung is published under a key of its own. Same graded pixels and the
+// same file basename, so only the extra width is written — one file per format,
+// 2169/3449/4473KB — and only the srcset built from this key lists it. The page
+// that fetches it is /about/, the tile is the last thing on it and is not the
+// LCP, and it lazy-loads: 802KB of AVIF over the 2880 rung, spent below three
+// scene photographs, against a home LCP that does not move at all.
+const SCALED = {
+  "/images/pt/IMG_4585.jpg": { key: "/images/pt/IMG_4585.jpg#wall", width: 3840 },
+};
+
 // Frames published as a crop of an original rather than as the whole picture.
 // A power line crossing a sky cannot be masked out of a photograph and cannot
 // be cropped out with `object-position` either — a portrait source in a phone's
@@ -181,7 +199,8 @@ const displayDims = (w, h, o) => (o >= 5 && o <= 8 ? { w: h, h: w } : { w, h });
 function signature() {
   const parts = [`v${CONFIG_VERSION}`, `strength${productionStrength}`, `ladder${LADDER.join(",")}`,
     `cap${MAX_WIDTH}/${BLEED_WIDTH}`, `bleed${[...FULL_BLEED].sort().join(",")}`,
-    `fmt${FORMATS.map((f) => f.ext).join(",")}`, `crops${JSON.stringify(CROPS)}`];
+    `fmt${FORMATS.map((f) => f.ext).join(",")}`, `crops${JSON.stringify(CROPS)}`,
+    `scaled${JSON.stringify(SCALED)}`];
   for (const f of ["scripts/responsive-images.mjs", "scripts/grade-photos.mjs"]) {
     parts.push(`${f}:${fs.statSync(path.join(ROOT, f)).mtimeMs}`);
   }
@@ -253,7 +272,13 @@ async function run() {
         widths.push(cap);
       }
 
-      for (const w of widths) {
+      const scaled = SCALED[key];
+      if (scaled && scaled.width > dispW) {
+        throw new Error(`Scaled rung ${scaled.width} exceeds "${key}"'s ${dispW}px source`);
+      }
+      const emitted = scaled ? [...widths, scaled.width] : widths;
+
+      for (const w of emitted) {
         for (const fmt of FORMATS) {
           let pipe = sharp(oriented.data, {
             raw: { width: fullW, height: fullH, channels: 3 },
@@ -274,7 +299,11 @@ async function run() {
         widths,
         formats: FORMATS.map((f) => f.ext),
       };
-      console.log(`  ${base.padEnd(22)} ${dispW}x${dispH}  ${widths.length} widths`);
+      if (scaled) images[scaled.key] = { ...images[key], widths: emitted };
+      console.log(
+        `  ${base.padEnd(22)} ${dispW}x${dispH}  ${widths.length} widths` +
+          (scaled ? ` (+${scaled.width} for ${scaled.key})` : "")
+      );
     }
   }
 
