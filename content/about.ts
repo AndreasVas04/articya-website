@@ -80,6 +80,17 @@ export const closing = {
 // valley reads as the panorama it is (35.2% of the frame on a desktop, 82.1%
 // on a phone), and `IMG_4735-road` came the other way.
 //
+// The centre and the upper-right frames then swapped, and that was a
+// resolution decision rather than a compositional one. The centre tile is the
+// one that grows to fill the window, which paints it 1872 CSS px wide at
+// 1440×900 — 3744 device px at DPR 2 — and `hero-1` is a 2048px master, so
+// holding it at 1.0 against its own source capped the growth at 1.39 and left
+// the tile covering 38.6% of the screen: large enough to overlap its
+// neighbours and small enough that they still showed around it. The two slots
+// are 2.00:1 and 2.13:1, close enough that neither frame changes shape moving
+// between them, and `IMG_4585` is a 6048px master with the headroom to be
+// painted at full coverage.
+//
 // One slot has no photograph. The set holds thirteen usable frames, this page
 // needs eleven distinct ones — a ground, three scenes and seven tiles — and
 // after the three above come out, ten qualify. `IMG_4599` is the tenth and it
@@ -90,12 +101,28 @@ export const closing = {
 // pan clears, and a tile of road surface.
 export const gallery = [
   {
-    src: "/images/hero-1.jpg",
-    alt: "Participants hiking along a lakeside mountain trail",
-    // A 2:1 slot over a 1.356 frame keeps 67.8% of its height, and centred
-    // that band cut the two nearest walkers at the thigh. Anchored to the
-    // foot of the frame they stand on the ground they are walking on.
-    position: "50% 100%",
+    src: "/images/pt/IMG_4585.jpg",
+    alt: "The group on the path above the valley",
+    // The horizontal number is a phone decision and nothing else. On a desktop
+    // this 3:4 frame is narrower than its slot at every scale, so it is fitted
+    // by width and painted exactly as wide as its box: the window sees the
+    // whole width of it at rest and the middle 80% at full coverage, and
+    // `object-position`'s x does nothing at either end. On a phone the frame is
+    // the wider of the two and is fitted by height, so x is the whole of what
+    // the tile shows — 77.0% of the frame's width at rest, 61.6% at full
+    // coverage, and the same 7.7% coming off each side as it grows.
+    //
+    // Four walkers are on the path, at 2.0–9.4%, 12.2–19.0%, 22.6–26.2% and
+    // 32.1–35.7% of the frame's width, and the phone shows the full height of
+    // the frame at every scale, so they are in the picture whichever band is
+    // taken. The left edge travels 7.7% as the tile grows and no gap between
+    // two of them is that wide, so one walker is crossed on the way whatever
+    // this number is; what it decides is whether either *end* of the travel
+    // cuts a body. 50% does: it lands the full-coverage edge on 19.2%, which
+    // is the second walker's trailing hand. 90% puts the edge at 20.9% at rest
+    // and 28.6% at full coverage — 1.7% clear of the second walker below and
+    // 2.4% clear of the third above, both ends whole.
+    position: "90% 35%",
   },
   {
     src: "/images/pt/IMG_4619-ridge.jpg",
@@ -137,11 +164,14 @@ export const gallery = [
     position: "50% 80%",
   },
   {
-    src: "/images/pt/IMG_4585.jpg",
-    alt: "The group on the path above the valley",
-    // A 2.13:1 band of a 3:4 frame, so where the band sits is the whole
-    // composition. At 35% it is the village, the terraces and the far
-    // mountains with the walkers on the path below them.
-    position: "50% 35%",
+    src: "/images/hero-1.jpg",
+    alt: "Participants hiking along a lakeside mountain trail",
+    // A 2.13:1 slot over a 1.356 frame keeps 63.6% of its height, and centred
+    // that band cut the two nearest walkers at the thigh. Anchored to the foot
+    // of the frame they stand on the ground they are walking on. The slot is
+    // 4.2 points tighter than the centre one this frame came out of and 2.8
+    // points wider on a phone (45.4% of the frame against 42.6%), so nothing
+    // it held before is lost here.
+    position: "50% 100%",
   },
 ];
