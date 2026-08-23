@@ -73,6 +73,7 @@ const plates: StagePlate[] = [
   {
     src: "/images/hero-1.jpg",
     position: "50% 50%",
+    wipe: true,
     shade: { top: 74, mid: 82, base: 82, from: "14%", to: "86%", color: "var(--color-sky-anchor)" },
   },
   // The join between the two panels: the road between the stone walls under
@@ -230,17 +231,36 @@ export default function HomePage() {
               and this plate carries its own numbers because one darkening
               cannot serve an overcast road and a blue hour. */}
           <div className="relative" data-index-section="">
+            {/* The picture rises as the floor appears, not half a screen after
+                it. A zone is keyed half a viewport above its own middle, so
+                these two put the plate at nothing on the frame where the hero
+                still fills the window and full 0.62 of a viewport later — the
+                rise runs from scroll 0 to 558px at 1440x900 and to 523px at
+                390x844.
+
+                It used to start at 10svh of this section and finish at 32svh,
+                which keys at 540 and 738: the hero's foot clears the bottom of
+                the window at scroll 0, so 540px of scroll — 0.60 of a viewport
+                at both sizes — passed with the incoming ground bare, and the
+                clearing's own clock entrance fired and finished inside it. The
+                complaint is that exact stretch.
+
+                Starting at zero is only possible because the plate wipes: it
+                wells up from the foot of the window rather than fading up
+                across the whole of it, so the strip the hero has uncovered is
+                photograph from the first pixel of it, and the frame is never
+                the picture at half strength. */}
             <span
               aria-hidden="true"
               data-stage-plate="0"
               data-stage-strength="0"
-              className="absolute inset-x-0 top-[10svh] h-0"
+              className="absolute inset-x-0 -top-[50svh] h-0"
             />
             <span
               aria-hidden="true"
               data-stage-plate="0"
               data-stage-strength="1"
-              className="absolute inset-x-0 top-[32svh] h-0"
+              className="absolute inset-x-0 top-[12svh] h-0"
             />
             <span
               aria-hidden="true"

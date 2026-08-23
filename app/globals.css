@@ -318,6 +318,17 @@ body {
 .photo-stage {
   z-index: 0;
 }
+/* A wiping plate is masked by a gradient the size of the window, written per
+   frame by the layer itself. Stated here rather than left to the initial
+   value: a mask image defaults to repeating, and a gradient whose stops run
+   past the box — which every frame of the wipe's two ends does — would tile
+   its own overflow back into the frame. */
+.stage-plate {
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+}
 /* The image inside a plate. Only the picture is scaled on arrival; the plate's
    own darkening stays anchored to the window, or the ramps that meet the
    chrome would slide as the plate settled. */

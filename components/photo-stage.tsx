@@ -12,6 +12,33 @@ const easeInOutCubic = cubicBezier(0.65, 0, 0.35, 1);
 // image never reads as moving on its own — it settles as it takes the stage.
 const ARRIVE_SCALE = 0.07;
 
+// How deep the wipe's ramp is, as a fraction of the window. A photograph that
+// has to get from being the whole ground to being no ground at all cannot do
+// it by fading: at 0.5 the frame is a picture at half strength over the floor,
+// which is the grey-green haze with shapes in it that the polarised ledger
+// exists to forbid, and it is forbidden at every intermediate frame of a
+// transition and not only at the ends.
+//
+// A full-bleed luminance wipe is the one move that gets between the two
+// without ever painting it. Every row of the window is either the photograph
+// or the floor; what travels is the boundary, and at 40% of the window the
+// boundary is a gradient deep enough that there is no line anywhere in it to
+// trace. At the midpoint the frame reads 30% picture, 40% ramp, 30% floor.
+const WIPE_FEATHER = 0.4;
+
+// The incoming state always enters from the foot of the window, because that
+// is the edge the reader is scrolling new page in from. For a plate on its way
+// up the incoming state is the photograph, so the picture wells up from the
+// bottom; for one on its way out the incoming state is what stands behind it,
+// so the picture withdraws upward and leaves through the top. Same ramp, same
+// direction of travel, opposite gradients.
+const wipeMask = (strength: number, rising: boolean) => {
+  const front = strength * (1 + WIPE_FEATHER);
+  const solid = ((front - WIPE_FEATHER) * 100).toFixed(2);
+  const clear = (front * 100).toFixed(2);
+  return `linear-gradient(to ${rising ? "top" : "bottom"}, #000 ${solid}%, transparent ${clear}%)`;
+};
+
 // A plate carries no per-image correction. The saturation and brightness
 // hooks that used to sit here were a second grade running on every paint, and
 // a filter chain has only saturation, hue and level to give — it cannot reach
@@ -31,6 +58,14 @@ export interface StagePlate {
   split?: number;
   /** This plate is the page's LCP: preloaded, eager, never lazy. */
   priority?: boolean;
+  /** Arrive and leave as a full-bleed luminance wipe rather than as a fade,
+   *  so no frame of the transition holds the picture at a strength between
+   *  0.05 and 0.74. A plate wants this wherever its own ramp is the thing the
+   *  reader is looking at; the gains frame lays its own edge-to-edge copy of
+   *  its photograph over the stage, so that plate's ramp is never seen and it
+   *  keeps the fade. Assumes one rise and one fall, which is what every plate
+   *  on this page has. */
+  wipe?: boolean;
   /** Overrides the shared stage darkening, in percent, and the dark it is
    *  made of. One number cannot serve three photographs, and one *colour*
    *  cannot either: a darkening only darkens what shares its hue, so a
@@ -111,10 +146,22 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
 
       for (let i = 0; i < layers.length; i += 1) {
         const value = a.values[i] + (b.values[i] - a.values[i]) * t;
-        layers[i].style.opacity = value.toFixed(4);
+        const arrival = arrivals[i];
+
+        // Under reduced motion the wipe gives way to the fade it replaced. The
+        // crossfade stays because it carries no travel to be sensitive to; a
+        // moving boundary is travel, and this is the one place on the page
+        // where the haze is the cheaper of the two costs.
+        if (plates[i].wipe && !still) {
+          layers[i].style.opacity = value > 0.0001 ? "1" : "0";
+          const mask = wipeMask(value, !arrival || scroll <= arrival.to);
+          layers[i].style.maskImage = mask;
+          layers[i].style.setProperty("-webkit-mask-image", mask);
+        } else {
+          layers[i].style.opacity = value.toFixed(4);
+        }
 
         if (still) continue;
-        const arrival = arrivals[i];
         if (!arrival) continue;
         const reach = arrival.to - arrival.from;
         const settled =
