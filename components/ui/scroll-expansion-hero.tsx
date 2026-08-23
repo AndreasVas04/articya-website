@@ -10,7 +10,7 @@ import {
 } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { ResponsiveImage } from "@/components/responsive-image";
-import { coverSizes, FULL_VIEWPORT } from "@/lib/images";
+import { coverSizes, HERO_PUSH, HERO_VIEWPORT } from "@/lib/images";
 import { cn, withBasePath } from "@/lib/utils";
 
 // useLayoutEffect on the client, useEffect on the server: the effect it runs
@@ -27,6 +27,78 @@ const EXPAND_KEYS = ["ArrowDown", "PageDown", "End", " "];
 // skyline, in the frame's 3:4 box. It is a mask rather than a picture, so it
 // carries no pixels of its own — see the plate that uses it below.
 const POSTER_RIDGE = "/images/pt/IMG_4585-ridge.svg";
+
+const clamp01 = (n: number) => Math.min(Math.max(n, 0), 1);
+
+// The whole section breathes forward and settles back as the card opens: one
+// number, read by the poster, by the copy masked to the land and by the window
+// inside the card, so the three can never fall out of register at any frame.
+// It is 1.000 at both ends, so neither the collapsed opening nor the resting
+// hero is moved by it, and 1.030 at the middle — 43px of width at 1440, which
+// is the shared vector the two plates cross on. The poster used to carry no
+// transform at any frame of the expansion, so the eye had nothing to follow
+// and the growth read as a mechanism working rather than as space opening.
+const heroPush = (progress: number) => 1 + HERO_PUSH * Math.sin(Math.PI * progress);
+
+// The poster holds at full strength until the card covers the window, and only
+// then leaves. It used to run `1 - progress`, which was right while the card
+// held a differently-framed picture and is wrong now that it holds the same
+// one: two partly-transparent copies of one photograph composite brighter than
+// one, so the card's own box showed as a lighter rectangle standing on the
+// poster for the whole of the growth. Inside the card the picture's weight is
+// `a_card + (1 - a_card)*a_poster` and outside it is `a_poster`, and those are
+// only equal where `a_poster` is 1.
+//
+// The card covers the window at progress 0.912 on a desktop and 0.873 on a
+// phone (width 300 + 1250p against 1440; height 400 + 568.75p against 900).
+// 0.92 clears both, and across the 0.08 of progress that is left the poster is
+// behind an opaque full-bleed frame, so its own fade is never seen — what it
+// buys is the resting state, where the card's dissolving foot has to open onto
+// the floor rather than onto a second copy of its own picture.
+const POSTER_LEAVES = 0.92;
+const posterOpacity = (progress: number) =>
+  1 - clamp01((progress - POSTER_LEAVES) / (1 - POSTER_LEAVES));
+
+// The darkening travels from the poster's ramp to the gallery card's, and it
+// travels on the *window* rather than inside the card: every `.plate-shade` in
+// this section reads these, so at no progress is there a rectangle of one
+// darkening sitting inside another. That rectangle is most of what made the
+// opening read as a box.
+//
+// It runs 0.35 -> 0.85 and not from zero, and the window is the argument: the
+// headline is gone by 0.35 and the intro does not arrive until 1.00, so the
+// travel plays over the one stretch of the expansion with no text on the glass
+// at all. Below 0.35 the frame is the poster's own ramp to the number, which
+// is where the headline's measured 5.27 / 5.34 comes from; at 0.85 it is the
+// card's, which is what the intro was measured on.
+const POSTER_SHADE = { top: 92, mid: 66, base: 8, from: 8, to: 64 };
+const CARD_SHADE = { top: 34, mid: 16, base: 94, from: 22, to: 36 };
+
+const heroShade = (progress: number): CSSProperties => {
+  const t = clamp01((progress - 0.35) / 0.5);
+  const at = (a: number, b: number) => `${(a + (b - a) * t).toFixed(2)}%`;
+  return {
+    "--hero-shade-top": at(POSTER_SHADE.top, CARD_SHADE.top),
+    "--hero-shade-mid": at(POSTER_SHADE.mid, CARD_SHADE.mid),
+    "--hero-shade-bottom": at(POSTER_SHADE.base, CARD_SHADE.base),
+    "--hero-shade-from": at(POSTER_SHADE.from, CARD_SHADE.from),
+    "--hero-shade-to": at(POSTER_SHADE.to, CARD_SHADE.to),
+    // Sky owns the poster's chroma and the land owns the card's, so the dark
+    // the ramp is made of travels with the numbers rather than switching.
+    "--hero-shade-color": `color-mix(in srgb, var(--color-sky-anchor) ${(
+      (1 - t) * 100
+    ).toFixed(1)}%, var(--color-gold-anchor))`,
+  } as CSSProperties;
+};
+
+// Every `.plate-shade` in the hero reads the section's travelling ramp instead
+// of declaring one of its own. A `.plate-shade` sets the six values on itself,
+// so an inherited value would lose to the class — these have to be restated as
+// utilities to win.
+const SHADE_VARS =
+  "[--shade-bottom:var(--hero-shade-bottom)] [--shade-color:var(--hero-shade-color)] " +
+  "[--shade-mid:var(--hero-shade-mid)] [--shade-mid-from:var(--hero-shade-from)] " +
+  "[--shade-mid-to:var(--hero-shade-to)] [--shade-top:var(--hero-shade-top)]";
 
 interface ScrollExpandMediaProps {
   slides: string[];
@@ -51,7 +123,7 @@ const ScrollExpandMedia = ({
   // painted a third wider than the window on a desktop and four times wider
   // than a phone's. `100vw` on all of them fetched the phone's rung for a
   // picture the phone paints at 1808px.
-  const posterSizes = coverSizes(bgImageSrc, FULL_VIEWPORT);
+  const posterSizes = coverSizes(bgImageSrc, HERO_VIEWPORT);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [showContent, setShowContent] = useState(false);
   const [mediaFullyExpanded, setMediaFullyExpanded] = useState(false);
@@ -287,6 +359,23 @@ const ScrollExpandMedia = ({
   // becomes the gallery rather than floating a second picture over it.
   const cardOpacity = Math.min(Math.max((progress - 0.02) / 0.28, 0), 1);
 
+  // The card holds the poster's own frame for the whole opening. The slideshow
+  // clock is untouched and keeps running underneath; what is re-based is which
+  // slide the card *shows*, so its first visible change lands after full bleed
+  // rather than in the middle of the expansion. Measured before this: at wheel
+  // 1050 — three quarters of the way open — the card was already on the third
+  // slide, so the picture changed identity while the frame was still growing.
+  const slideOrigin = useRef<number | null>(null);
+  useEffect(() => {
+    if (mediaFullyExpanded && slideOrigin.current === null) {
+      slideOrigin.current = activeSlide;
+    }
+  }, [mediaFullyExpanded, activeSlide]);
+  const shownSlide =
+    mediaFullyExpanded && slideOrigin.current !== null
+      ? (activeSlide - slideOrigin.current + slides.length) % slides.length
+      : 0;
+
   // The poster title hands off to the expanded state instead of being cut. As
   // the card grows the headline settles up and fades over the first third of
   // the expansion, so the opening *becomes* the gallery. The old split-and-
@@ -296,16 +385,12 @@ const ScrollExpandMedia = ({
   const titleOpacity = 1 - titleExit;
   const titleShift = -titleExit * (isMobile ? 30 : 40);
 
-  // The card's legibility wash while the poster headline is still crossing the
-  // growing frame. It used to bottom out at 0.15 and hold there — a 15% gold
-  // veil over the whole photograph for as long as the card was open, on top of
-  // the intro's own lift and the foot dissolve. The headline has finished its
-  // handoff by 0.35, so past that the wash has nothing left to carry and runs
-  // to zero instead: at full expansion the picture is the grade and nothing
-  // else, and the intro's block-anchored pool carries the dark ink on its own.
-  const overlayOpacity =
-    progress < 0.35 ? 0.75 : 0.75 * (1 - (progress - 0.35) / 0.65);
-
+  // The gold-wash veil that used to sit inside the card is gone. It held 0.75
+  // over the whole card while the headline crossed it, and because it stopped
+  // at the card's edges it was a lighter rectangle standing on the poster —
+  // the single loudest reason a growing frame read as a box. What carries the
+  // headline is the section's own travelling ramp, which has no edges at all,
+  // and below 0.35 that ramp is the poster's ramp to the number.
   const firstWord = title ? title.split(" ")[0] : "";
   const restOfTitle = title ? title.split(" ").slice(1).join(" ") : "";
 
@@ -325,11 +410,14 @@ const ScrollExpandMedia = ({
           anchor to meet, and an opaque ramp ending on the hero's last row is a
           ruled line straight across the page. Open, the stage runs up under
           the card's own dissolving foot and the two pictures hand over. */}
-      <section className="gold-field gold-field-chrome-top gold-field-open-bottom hero-drop-scope hero-plate relative isolate flex min-h-[100dvh] flex-col items-center justify-start overflow-hidden">
+      <section
+        className="gold-field gold-field-chrome-top gold-field-open-bottom hero-drop-scope hero-plate relative isolate flex min-h-[100dvh] flex-col items-center justify-start overflow-hidden"
+        style={heroShade(progress)}
+      >
         <motion.div
           className="absolute inset-0 z-0"
           initial={false}
-          animate={{ opacity: 1 - progress }}
+          animate={{ opacity: posterOpacity(progress), scale: heroPush(progress) }}
           transition={{ duration: 0.2, ease: EASE_IN_OUT_CUBIC }}
         >
           {/* The backdrop is the collapsed opening's presence: the graded
@@ -371,10 +459,16 @@ const ScrollExpandMedia = ({
               The mid holds from 8%, which is inside the header's own height at
               both viewports — so the top ramp lives entirely under the bar and
               the picture emerges below the chrome already flat, with no step
-              on the join. */}
+              on the join.
+
+              The six numbers are the section's now rather than this layer's,
+              because the card's copy of them has to be the same six at every
+              frame or the card is a rectangle of one darkening inside
+              another. Below progress 0.35 they are exactly the values that
+              used to be written here. */}
           <div
             aria-hidden="true"
-            className="plate-shade pointer-events-none absolute inset-0 [--shade-bottom:8%] [--shade-color:var(--color-sky-anchor)] [--shade-mid:66%] [--shade-mid-from:8%] [--shade-mid-to:64%] [--shade-top:92%]"
+            className={cn("plate-shade pointer-events-none absolute inset-0", SHADE_VARS)}
           />
         </motion.div>
 
@@ -385,7 +479,12 @@ const ScrollExpandMedia = ({
               now, so there is no gold under it to spend and the drop is gone
               with it — held, it would have put 72px of the old band straight
               back at the top of the screen. */}
-          <div className="relative flex h-[100dvh] w-full flex-col items-center justify-center">
+          {/* `hero-window-scope` makes this the size container the card's own
+              window layer measures itself against. It is the window's box
+              exactly — the section's content width, so a classic scrollbar
+              cannot push it out of register with the poster the way `100vw`
+              would. */}
+          <div className="hero-window-scope relative flex h-[100dvh] w-full flex-col items-center justify-center">
             {/* The gallery card — hidden while the opening is the full-bleed
                 poster, cross-dissolved in as it grows so it never reads as a
                 second picture floating over the first.
@@ -405,12 +504,10 @@ const ScrollExpandMedia = ({
                 maxWidth: "100%",
                 maxHeight: "100%",
                 opacity: cardOpacity,
-                // The card's own shadow, off the deepest ground rather than
-                // off `ink` — ink is the page's cream now, and a 14% cream
-                // spread at 50px would ring the card in light instead of
-                // seating it.
-                boxShadow:
-                  "0 0 50px color-mix(in srgb, var(--color-gold-anchor) 55%, transparent)",
+                // No shadow. A 50px spread of `gold-anchor` at 55% around a
+                // growing frame is a halo drawn on the picture behind it, and
+                // it is the second half of what made the opening read as a box
+                // — the first half being the hairline ring below.
               }}
             >
               {/* Square corners, deliberately: expanded, this frame is as wide
@@ -419,49 +516,76 @@ const ScrollExpandMedia = ({
                   corner's arc re-emerges mid-curve below the chrome and reads
                   as cut; straight lines die under the bar cleanly. `isolate`
                   keeps the grain's blend inside the frame. */}
-              <div className="hero-frame hero-foot-arc relative isolate h-full w-full overflow-hidden ring-1 ring-hairline">
-                {restingState ? (
-                  <ResponsiveImage
-                    src={slides[0]}
-                    alt=""
-                    fill
-                    priority
-                    sizes={coverSizes(slides[0], FULL_VIEWPORT)}
-                    className="rounded-[inherit] object-cover saturate-[1.06] sepia-[0.08]"
-                  />
-                ) : (
-                  slides.map((src, i) => (
-                    // Each slide crosses in by uncovering rather than a plain
-                    // fade: the incoming frame eases from slightly in (scale
-                    // 1.05 → 1) as it rises to full opacity, so the change
-                    // reads as one photograph settling forward into the next.
-                    <motion.div
-                      key={src}
-                      className="absolute inset-0 origin-center rounded-[inherit]"
-                      initial={false}
-                      animate={{
-                        opacity: activeSlide === i ? 1 : 0,
-                        scale: activeSlide === i ? 1 : 1.05,
-                      }}
-                      transition={{ duration: 0.7, ease: EASE_IN_OUT_CUBIC }}
-                    >
-                      <ResponsiveImage
-                        src={src}
-                        alt=""
-                        fill
-                        priority={i === 0}
-                        sizes={coverSizes(src, FULL_VIEWPORT)}
-                        className="rounded-[inherit] object-cover saturate-[1.06] sepia-[0.08]"
-                      />
-                    </motion.div>
-                  ))
-                )}
-                <motion.div
-                  className="absolute inset-0 rounded-[inherit] bg-gold-wash"
-                  initial={false}
-                  animate={{ opacity: overlayOpacity }}
-                  transition={{ duration: 0.2, ease: EASE_IN_OUT_CUBIC }}
-                />
+              {/* No ring. `ring-1 ring-hairline` drew a cream hairline around
+                  every frame of the growth, which at 300x400 in the middle of
+                  a full-bleed photograph is the outline of a box. Expanded it
+                  lands on the first and last column of the window and reads as
+                  a viewport artifact, which is the same argument that took the
+                  gold frame off this card. */}
+              <div className="hero-frame hero-foot-arc relative isolate h-full w-full overflow-hidden">
+                {/* The card is a window onto the poster, not a small copy of
+                    it. Everything inside is painted at the window's own size
+                    and centred on the window, so the growing frame uncovers
+                    the picture already behind it instead of showing a second,
+                    differently-framed one: at 300x400 a 3:4 box cover-fits the
+                    whole of a 3:4 photograph while the window shows a wide
+                    slice of it, which is why one frame read as two pictures.
+                    Matching `object-position` alone could not close that —
+                    the field of view is set by the box's aspect, and the box
+                    is what changes.
+
+                    It carries the section's push, so the window inside the
+                    card and the poster outside it travel as one. */}
+                <div
+                  className="hero-window"
+                  style={{ scale: heroPush(progress) }}
+                >
+                  {restingState ? (
+                    <ResponsiveImage
+                      src={slides[0]}
+                      alt=""
+                      fill
+                      priority
+                      sizes={coverSizes(slides[0], HERO_VIEWPORT)}
+                      className="object-cover saturate-[1.06] sepia-[0.08]"
+                      style={{ objectPosition: "50% var(--hero-poster-y)" }}
+                    />
+                  ) : (
+                    slides.map((src, i) => (
+                      // Each slide crosses in by uncovering rather than a plain
+                      // fade: the incoming frame eases from slightly in (scale
+                      // 1.05 → 1) as it rises to full opacity, so the change
+                      // reads as one photograph settling forward into the next.
+                      <motion.div
+                        key={src}
+                        className="absolute inset-0 origin-center"
+                        initial={false}
+                        animate={{
+                          opacity: shownSlide === i ? 1 : 0,
+                          scale: shownSlide === i ? 1 : 1.05,
+                        }}
+                        transition={{ duration: 0.7, ease: EASE_IN_OUT_CUBIC }}
+                      >
+                        <ResponsiveImage
+                          src={src}
+                          alt=""
+                          fill
+                          priority={i === 0}
+                          sizes={coverSizes(src, HERO_VIEWPORT)}
+                          className="object-cover saturate-[1.06] sepia-[0.08]"
+                          // The first slide is the poster's own photograph, so
+                          // it takes the poster's own registration and keeps
+                          // it: one placement, one crop. The other two are
+                          // different frames and stay centred.
+                          style={
+                            i === 0
+                              ? { objectPosition: "50% var(--hero-poster-y)" }
+                              : undefined
+                          }
+                        />
+                      </motion.div>
+                    ))
+                  )}
                 {/* The card's own darkening: strong at the top, where the
                     transparent nav crosses the picture at full expansion, and
                     strong again at the base, where the intro stands. Full
@@ -482,11 +606,25 @@ const ScrollExpandMedia = ({
                     frame going dark. The rotation is three frames now and they
                     run 5.54/5.61/6.50; the slide that came out was the 4.96
                     and the worst of them, so the floor on this card rose with
-                    it. */}
-                <div
-                  aria-hidden="true"
-                  className="plate-shade pointer-events-none absolute inset-0 [--shade-bottom:94%] [--shade-mid:16%] [--shade-mid-from:22%] [--shade-mid-to:36%] [--shade-top:34%]"
-                />
+                    it.
+
+                    It is inside the window layer rather than inside the card,
+                    and it reads the section's travelling six rather than
+                    declaring its own. Those two together are what stop the
+                    growing frame reading as a box: the card's ramp is computed
+                    over the same rectangle as the poster's and out of the same
+                    numbers, so at every progress the two are one gradient and
+                    there is no edge where one ends. It settles on the values
+                    written here by progress 0.85, which is where the intro was
+                    measured. */}
+                  <div
+                    aria-hidden="true"
+                    className={cn(
+                      "plate-shade pointer-events-none absolute inset-0",
+                      SHADE_VARS
+                    )}
+                  />
+                </div>
               </div>
             </div>
 
@@ -653,7 +791,7 @@ const ScrollExpandMedia = ({
             } as CSSProperties
           }
           initial={false}
-          animate={{ opacity: titleOpacity }}
+          animate={{ opacity: titleOpacity, scale: heroPush(progress) }}
           transition={{ duration: 0.2, ease: EASE_IN_OUT_CUBIC }}
         >
           <ResponsiveImage
@@ -667,7 +805,7 @@ const ScrollExpandMedia = ({
           />
           <div
             aria-hidden="true"
-            className="plate-shade pointer-events-none absolute inset-0 [--shade-bottom:8%] [--shade-color:var(--color-sky-anchor)] [--shade-mid:66%] [--shade-mid-from:8%] [--shade-mid-to:64%] [--shade-top:92%]"
+            className={cn("plate-shade pointer-events-none absolute inset-0", SHADE_VARS)}
           />
         </motion.div>
       </section>

@@ -9,7 +9,7 @@ import { PhotoStage, type StagePlate } from "@/components/photo-stage";
 import { ResponsiveImage } from "@/components/responsive-image";
 import { SectionIndex } from "@/components/edge-furniture";
 import { ButtonLink } from "@/components/ui/button";
-import { coverSizes, FULL_VIEWPORT, imagePreload } from "@/lib/images";
+import { coverSizes, FULL_VIEWPORT, HERO_VIEWPORT, imagePreload } from "@/lib/images";
 import { hero, whatWeDo, gain } from "@/content/home";
 
 // The photograph "What you gain" is built on, sharp at one end and defocused
@@ -102,8 +102,11 @@ const plates: StagePlate[] = [
 
 // The first hero slide is the LCP; the backdrop reuses the same variant, so
 // this one preload covers both — which only holds while the preload and the
-// markup declare the same `sizes`, so both read it from the same call.
-const heroSizes = coverSizes(hero.slides[0], FULL_VIEWPORT);
+// markup declare the same `sizes`, so both read it from the same box. That box
+// is the window plus the hero's own push, not the window: the section breathes
+// 3% forward and back as the card opens, and a declaration made at the window
+// would land under the width the frame is painted at through the middle of it.
+const heroSizes = coverSizes(hero.slides[0], HERO_VIEWPORT);
 const heroPreload = imagePreload(hero.slides[0], heroSizes);
 
 // The gains frame runs edge to edge in a full-viewport section, sharp under

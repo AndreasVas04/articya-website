@@ -989,6 +989,24 @@ body {
        ridge cleared the words entirely and the split had nothing to show. */
     --hero-poster-y: 33%;
   }
+  /* The card is a window onto the poster rather than a small copy of it, so
+     what sits inside it is painted at the window's own size and centred on the
+     window; the card's box only clips. `cq` units and not `vw`/`vh`: the size
+     container is the hero's own stage, which is the section's content width,
+     and a classic scrollbar makes `100vw` wider than that — 15px of drift
+     against the poster the whole point of this layer is to stay registered
+     with. */
+  .hero-window-scope {
+    container-type: size;
+  }
+  .hero-window {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    translate: -50% -50%;
+    width: 100cqw;
+    height: 100cqh;
+  }
   .hero-ridge {
     -webkit-mask-image: var(--ridge-mask);
     mask-image: var(--ridge-mask);
