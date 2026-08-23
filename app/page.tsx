@@ -327,17 +327,32 @@ export default function HomePage() {
             </StageScene>
           </div>
 
-          {/* The lane goes out under the gap between the ledger and the first
-              panel, so the panel opens on the clean dark its own composition
-              needs: one lit picture in an unlit room, with nothing behind it.
-              The marker sits on the clearing's own last row rather than lower
-              down, or the fall would start under the ledger's last line. */}
-          <div
-            aria-hidden="true"
-            data-stage-plate="0"
-            data-stage-strength="0"
-            className="h-0"
-          />
+          {/* The marker that used to stand here is gone, and it was a bug
+              rather than a decision. It declared plate 0 at nothing and sat at
+              document row 1800 — the same row as the clearing's own last
+              marker, which declares it full. A zone is keyed at its middle less
+              half a viewport, so both keyed at 1350 at 1440x900 and at 1266 at
+              390x844, and `PhotoStage` computes the blend as
+              `(scroll - a) / (b - a)`: with the two keys equal the span is
+              zero, the ratio is forced to 1 and the layer changes in a single
+              frame. Measured across that one 20px step, 81.3% of the window's
+              pixels changed on a desktop and 87.9% on a phone — the largest
+              step anywhere on the site, and the whole of why entering the
+              panels read as the photograph being switched off.
+
+              With it deleted the fall runs from the clearing's own full key to
+              the first panel's quiet key: 1350 to 1896, which is 546px and
+              0.607 of a viewport; 1266 to 1753 on a phone, 487px and 0.577.
+              And it runs the right way round. The ledger's last row leaves the
+              top of the window at 1640 / 1511, so the ground is still a
+              photograph for 256px / 242px after the numerals have gone —
+              where before it went out 290px / 245px while they were still
+              being read.
+
+              It goes out as a wipe, so the picture withdraws upward through
+              the frame and the panels' dark comes up from the foot of the
+              window to meet them, rather than the whole photograph dimming to
+              a haze across the middle of the fall. */}
 
           {/* The panels open onto the dark the stats hand over to — the stage
               goes quiet under them — so this margin is a beat of breathing,
