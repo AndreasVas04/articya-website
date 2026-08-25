@@ -636,21 +636,98 @@ it**: headless has no browser chrome, so both resolve `100svh == 100lvh ==
 Measured: `.photo-stage` is 664×390 at a 664 window and 750×390 at a 750 window
 in both. The defect is legible in the declaration, not in the emulator.
 
+**2.18 · The headline stays in the depth and the skyline goes back to its
+feet.** Done, and it is one number.
+
+The headline is still between the two copies of the poster and the land still
+runs in front of it — the treatment is untouched. What changed is the law the
+block is placed by. The skyline is a fraction of the window and the type is that
+fraction *plus* 110.6px of fixed stack, so the offset that holds the two
+together is `a·H − b`, not a percentage:
+
+**`top: max(calc(41.75% − 154px), 5rem)`**, replacing `top: 23.5%`, below `md`
+only.
+
+**41.75%** is the mask's own fraction, measured at three heights within 0.0002.
+**154px** is the 110.6px stack plus the **43.5px** clearance 390×844 was tuned
+on — the clearance that lands the crossing at 0.93 of the ink. **5rem** is a
+floor that binds below a 560px window, where the expression would put the label
+under the fixed 65px header; at 553 it leaves the crossing at 0.967 of the ink,
+which is still the feet. Desktop keeps `15%`: above 768px the mask is fitted by
+*width* and the law there is a different one.
+
+Measured — the share of `"are ArtiCYa"`'s ink the land covers, and where in the
+ink it crosses, WebKit / Chromium:
+
+| window | before | after | crossing, after |
+|---|---|---|---|
+| 375×553 | **100% / 100%** — the line was gone | 7.0% / 6.7% | 0.967 |
+| 390×664 | **89.3% / 89.4%** | **1.5% / 1.3%** | grazes below 0.5-coverage |
+| 390×750 | 47.3% / 43.5% | 3.2% / 2.0% | grazes |
+| 390×844 | 2.5% / 1.8% | **2.5% / 1.8%** | unchanged |
+| 1440×900 | 5.5% / 5.1% | **5.5% / 5.1%** | 0.97 / 0.979, unchanged |
+
+`"We"` is untouched at every height in both engines, before and after: **0%**.
+The depth still reads — the land crosses the ink at every viewport, at 1.3–7.0%,
+which is the band 390×844 and 1440×900 have always shipped.
+
+**Contrast, A/B in one page** so the build, the engine and the scroll state are
+held and `top` is the only variable, with the slideshow pinned to slide 1 and an
+adaptive glyph threshold (a flat 300 discards four fifths of the label's pixels
+once `.chrome-shade` compresses ink and ground, and then reports the surviving
+best ones as a *rise*):
+
+| | headline 1 | headline 2 | label | lede |
+|---|---|---|---|---|
+| 390×844 wk | 5.42 → **5.42** | 5.98 → **5.98** | 5.88 → **5.88** | 5.14 → **5.14** |
+| 390×844 ch | 5.28 → **5.28** | 5.79 → **5.79** | 5.81 → **5.81** | 5.05 → **5.05** |
+| 1440×900 wk | 5.37 → **5.37** | 5.33 → **5.33** | 5.90 → **5.90** | 9.80 → **9.80** |
+| 1440×900 ch | 5.27 → **5.27** | 5.21 → **5.21** | 5.75 → **5.75** | 9.80 → **9.80** |
+| 390×750 wk | 5.41 → 5.38 | 5.79 → 5.42 | 5.88 → 5.80 | 4.80 → 4.80 |
+| 390×750 ch | 5.27 → 5.27 | 5.78 → 5.35 | 5.81 → 5.73 | 4.65 → 4.65 |
+| 390×664 wk | 5.41 → 5.47 | 6.06 → 5.38 | 5.89 → 5.97 | 3.61 → 3.61 |
+| 390×664 ch | 5.27 → 5.38 | 5.87 → 5.30 | 5.81 → 5.81 | 3.78 → 3.78 |
+| 375×553 wk | 5.44 → 5.52 | — → 5.38 | 5.90 → 7.60 | 3.16 → 3.16 |
+| 375×553 ch | 5.35 → 5.39 | — → 5.29 | 5.82 → 7.40 | 3.26 → 3.26 |
+
+**Every reference-set viewport is Δ0.00 on every element**, so §2.8's ratchet —
+which is measured at 390×844 and 1440×900 — is not touched at all.
+
+**The 0.37–0.68 on the second line at the other heights is a population change,
+not a contrast change, and the distinction is the whole point.** The old 6.06 at
+390×664 was scored over **7 156** glyph pixels, because the land was covering
+the other 30 000; the pixels that survived were the ones on the calm sky above
+it. Scored over the whole line — **37 439** pixels, the population the reader
+actually sees — the worst is 5.38. Nothing was darkened; the hidden four fifths
+came back. It clears its 3.0 floor by 2.38, and 375×553 goes from *unmeasurable*
+to 5.38 / 5.29. The label's 5.90 → 7.60 at 553 is real and in the same
+direction: cream ink over a ground the chrome band darkens reads better, not
+worse.
+
+Nothing else moved. The block is absolutely positioned, so it cannot change
+flow: **document height and all twelve Section 2 keys are identical** at 664,
+750 and 844 in both engines, worst rendered-against-fetched holds at 0.80, and
+there is no horizontal overflow at any height. `verify:text` passes on all four.
+
 **2.20 · The hero lede is under its floor at both chrome states — new, and not
 introduced here.** Found by the same run and left alone, because repairing it
 means retuning `CARD_SHADE`, which is the hero's visual treatment measured
 against the whole reference set, and that is an item of its own.
 
 Glyph cores on the rendered composite, worst pixel, `ink` on the card's own
-bottom darkening, both engines:
+bottom darkening. Swept over all three slides, because the lede stands on
+whichever frame is up and the rotation is 4.5s — the worst of the three is the
+number, and it is slide 1 or 2 at every viewport:
 
-| window | WebKit | Chromium | floor |
-|---|---|---|---|
-| 390×844 — the design height | 5.12 | 5.17 | 4.5 |
-| 390×750 — bar collapsed | 5.22 | 5.05 | 4.5 |
-| 390×664 — bar showing | **4.02** | **3.91** | 4.5 |
-| 375×553 — SE | **2.85** | **3.09** | 4.5 |
-| 1440×900 | 9.05 | 9.05 | 4.5 |
+| window | slide 1 | slide 2 | slide 3 | worst wk / ch | floor |
+|---|---|---|---|---|---|
+| 390×844 — the design height | 5.14 | 5.09 | 8.60 | 5.09 / 5.05 | 4.5 |
+| 390×750 — bar collapsed | 4.80 | 5.03 | 5.41 | 4.80 / 4.65 | 4.5 |
+| 390×664 — bar showing | 3.61 | 3.78 | 4.62 | **3.61 / 3.78** | 4.5 |
+| 375×553 — SE | 3.16 | 3.13 | 3.67 | **3.13 / 3.08** | 4.5 |
+| 1440×900 | 9.80 | 9.05 | 11.69 | 9.05 / 9.05 | 4.5 |
+
+(WebKit's column shown; Chromium is within 0.18 at every cell.)
 
 It is A's mechanism a third time. `.hero-intro` is `bottom-0` with `pt-5 pb-16`
 and a **fixed 251px height**, while the card's darkening runs to 94% from 36%

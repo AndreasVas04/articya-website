@@ -777,6 +777,42 @@ Two consequences follow, and both bit before the rule was written down.
   rather than a beat. 2.60 crosses at three quarters of the eased rise and
   holds full coverage to the release.
 
+**Type may sit inside the photograph's depth, but never inside a layer whose
+mask or clip boundary travels. Where a boundary travels, type composites against
+it, not within it. Verify by rendering the type at the boundary's midpoint, not
+only at the ends of its travel.**
+
+A boundary travels in two ways and only one of them looks like motion. The hero
+carries both, and it was the still one that broke.
+
+*The moving boundary is the easy case, and it is already clean.* §2.6's shade
+crossing runs progress 0.35 → 0.85, and the headline reaches opacity 0 at
+exactly 0.35 — measured, the headline's glyph population is 205 pixels at
+progress 0.297 and 0 by 0.35. The two clocks meet on one number. That is now a
+requirement rather than a coincidence: **if the headline's exit is ever
+lengthened, the crossing's start moves with it.**
+
+*The still boundary is the one that bit.* A mask sitting at a fixed place in the
+frame still travels relative to the type whenever the two are registered to
+different coordinate systems, and the reader is the one who moves them — by
+being on a different screen. The hero's land silhouette is `mask-size: cover` on
+a 3000×4000 mask, which a phone fits by height at every window it can show, so
+its skyline holds a constant **0.4175 of the window**. The headline's second
+line sat at `23.5%` of the same window *plus a 110.6px stack* of label, strike,
+margin and first line, every pixel of it fixed. The clearance between them is
+therefore `0.1825·H − 110.6`, and it collapses as the window shortens: 43.5px at
+390×844 — the feet, which is the treatment — 26.4 at 750, **10.6 at 664, where
+89% of the line is behind the land**, and negative at 553, where all of it is.
+390×844 is the phone's screen; Safari's chrome means a page never gets it.
+
+So the rule has a second half, and it is the one that has to be checked:
+**a boundary expressed as a fraction of the window and type positioned partly in
+px are two clocks, and they only agree at the height they were tuned on.** Where
+type composites against a boundary, the offset that places it is `a·H − b`, not
+a percentage and not a pixel count — the fraction is the boundary's own and the
+constant is the px the type carries. Verify at the shortest window the device
+can produce, not at its screen size.
+
 **Signature entrances play on the clock, not the scrollbar.** The page's two
 set-piece moments — the hero's first-load title card and the "What we do"
 stage entrance — are time-based and once per load. An earlier pass scrubbed

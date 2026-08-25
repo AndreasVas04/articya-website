@@ -692,6 +692,33 @@ const ScrollExpandMedia = ({
                 of them can move the picture under the words, and the other
                 moves the words down the frame instead.
 
+                On a phone the offset is `a·H − b` and it has to be. `cover`
+                fits the land mask by its height at every window a phone can
+                show, so the skyline sits at a fixed **fraction** of the window
+                — 0.4175, measured within 0.0002 at 664, 700 and 844. What
+                stands between this block's top and the second line's box is
+                **110.6px of pure px** — the label, its strike, `gap-3`, `mb-6`,
+                the first line's 51.1px and `gap-1` — one number at every
+                window. A flat `23.5%` therefore holds the relationship at
+                exactly one height: the clearance runs `0.1825·H − 110.6`, which
+                is 43.5px at 844 and 10.6 at 664, and the ink of "are ArtiCYa"
+                occupies rows 5.1 to 46.4 of its 51.1px box. Measured, the
+                skyline crossed at 0.93 of the ink at 844 — the feet, as
+                designed — at 0.55 at 750, at 0.20 at 664, and above the box
+                entirely at 553, where the whole line was behind the land. 844
+                is the iPhone's screen and Safari never gives a page its screen.
+
+                `41.75% − 154px` is the same relationship at every height: the
+                fraction is the mask's own and the 154 is the 110.6 stack plus
+                the 43.5 clearance 844 was tuned on. It resolves to 198.4 at 844
+                against the 198.34 this replaces, so the design viewport and
+                everything measured on it do not move. The `5rem` floor binds
+                below 560px of window, where the expression would put the label
+                under the fixed 65px header; at 553 it leaves the crossing at
+                0.85 of the ink, which is still the feet. Desktop keeps `15%` —
+                above 768px the mask is fitted by *width* and the law is a
+                different one.
+
                 It hands off to the expanded state rather than being cut: the
                 group settles up and fades over the first third of the expansion
                 (`titleOpacity`/`titleShift`), on the same clock that grows the
@@ -701,7 +728,7 @@ const ScrollExpandMedia = ({
                 fight. */}
             {(title || hintLabel) && (
               <div
-                className="pointer-events-none absolute inset-x-0 top-[23.5%] z-10 flex flex-col items-center px-4 md:top-[15%]"
+                className="pointer-events-none absolute inset-x-0 top-[max(calc(41.75%-154px),5rem)] z-10 flex flex-col items-center px-4 md:top-[15%]"
                 style={{
                   opacity: titleOpacity,
                   transform: `translateY(${titleShift}px)`,
