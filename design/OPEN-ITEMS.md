@@ -452,6 +452,214 @@ thirty-eight already recorded below, and they belong to the same decision the
 reference set defers: whether the ratchet is measured against `3749c92` or
 re-based on the build that §2.7's resolution produced.
 
+**2.17 · The real-device pass — three defects, one mechanism, and it is not the
+engine.** Diagnosis only; nothing was changed by this item.
+
+Run on `playwright-core`'s WebKit (26.5, build 2336) and on Chromium, against
+the same production export, with an identical harness: 390 wide at DPR 3 at the
+**small** chrome state (664), the **large** one (750) and the 844 every prior
+measurement in this project used; 375×553 for an iPhone SE; 1440×900 at DPR 2
+as the desktop control.
+
+**The negative control, first, because it governs all three.** Every number
+below lands within 0.4 of a percentage point and 0.4 of a pixel between the two
+engines at the same viewport. **Not one of the three is an engine difference.**
+What separates them is viewport *height*: 390×844 is the iPhone's screen, and
+Safari never gives a page its screen — with the URL bar showing the page has
+**664**, with it collapsed **750**. Every measurement this project has ever
+taken was at a height the device cannot produce.
+
+**A · The headline's second line is cut through its glyphs — and it is the land
+silhouette, not §2.6's boundary.**
+
+The layer in front of the headline is `.hero-ridge`: the poster again, masked to
+the frame's own land at `mask-size: cover`, `mask-position: 50% 33%`, a
+3000×4000 mask in a 390×H box. At every height a phone can show, `cover` fits
+that mask **by its height**, so its skyline sits at a *constant fraction of the
+window*: measured 352.3px at 844, 292.3 at 700, 277.3 at 664 — **0.4174 /
+0.4176 / 0.4176**, and identical across the two engines to 0.3px.
+
+The headline is not on that law. Its block is `top-[23.5%]` of the same box, and
+between the block's top and the second line's own box sits a stack that is
+**pure px**: the label, its 1.25px strike, `gap-3`, `mb-6`, the first line's
+51.1px and `gap-1`. Measured at the three heights it is **110.56 / 110.55 /
+110.56px** — one number, at every window.
+
+So the clearance between the skyline and the second line is `0.1825·H − 110.6`,
+which is not a constant. The line box is 51.1px and its ink runs from 5.1 to
+46.4 inside it:
+
+| window | clearance | where the skyline crosses the ink | line 2 covered (wk / ch) | line 2's visible glyph cores |
+|---|---|---|---|---|
+| 844 — the screen | 43.5px | 0.93, the feet, as designed | 2.5% / 1.8% | 36 455 |
+| 750 — bar collapsed | 26.4px | 0.55 | 47.3% / 43.5% | 22 830 |
+| 700 | 17.2px | 0.39 | 70.7% / 69.9% | — |
+| 664 — bar showing | 10.6px | **0.20** | **89.3% / 89.4%** | 6 037 |
+| 553 — SE, bar showing | **−9.7px** | above the box entirely | **100% / 100%** | **0** |
+
+`"We"` is never touched — **0% at every viewport in both engines** — which is
+the whole of *"We renders whole, are ArtiCYa fades away partway down the
+letterforms"*. With the layer disabled the second line renders whole: 38 675
+glyph pixels against the 38 671 it has when the layer is present but has not yet
+been asked to paint. And the coverage *releases* as the card opens — 89.3% at
+progress 0, 72.1% at 0.10, 43.5% at 0.20, nothing by 0.30 — because the block
+carries `titleShift` up past a skyline that does not move, which is *"only
+becomes whole after the animation finishes"*.
+
+The treatment reads as designed only above **H ≈ 827px** (the crossing inside
+the bottom 15% of the ink) and clears the ink entirely only above **860px**. No
+iPhone in portrait, with Safari's chrome, is ever above either.
+
+**Both named hypotheses are falsified, and the numbers are here so neither is
+tested twice.**
+
+- *§2.6's travelling boundary.* It runs progress 0.35 → 0.85. `titleOpacity`
+  reaches exactly 0 at 0.35 and the first frame carrying a mask at all is above
+  it, so the boundary never crosses a painted glyph. Measured at 390×664: the
+  headline's glyph population is **205 pixels at progress 0.297 and 0 by 0.35**,
+  in both engines. The two clocks meet exactly and by construction; §2.18's rule
+  is what turns that from a coincidence into a requirement.
+- *The prefixed fallback on a different subtree.* `.hero-ridge` resolves
+  `mask-image` and `-webkit-mask-image` to the same `url(…)`, `mask-size` and
+  `-webkit-mask-size` both to `cover`, `mask-position` and
+  `-webkit-mask-position` both to `50% 33%`, `mask-mode: match-source`,
+  `mask-clip: border-box` — the same eleven values in both engines. **No
+  descendant of `.hero-ridge` carries a mask declaration at any frame where the
+  headline is painted**, so there is no subtree for the two rules to disagree
+  about.
+- *`container-type: size` with `cqw`/`cqh`.* `.hero-window-scope` computes
+  `container-type: size` in both engines and `.hero-window` computes to exactly
+  **390×664, 390×750 and 390×844** in both. No drift at any height.
+
+**B · The vertical space. Measured, not changed — see the note under §2.19.**
+
+**No section on the home page carries vertical padding at any viewport**, with
+one exception: the closing section, at **64/96px** on a phone and 96/128 on a
+desktop. The space is built from px *inside* the sections, and those numbers do
+not move with the window — each offer panel's inner block is `py-16` and its
+grid adds `pt-4rem`, so **128px stands at the head of each panel and 64 at its
+foot at every window height**; the gains frame's block is `py-20`; the hero's
+intro band is `pt-5 pb-16`.
+
+Dead rows per section at 390×844, counting a row live if it carries a glyph or
+an object photograph, and excluding the fixed stage — the stage is behind every
+row of the page, so counting it makes the measure say nothing:
+
+| section | top | height | padding | dead | head run | foot run |
+|---|---|---|---|---|---|---|
+| hero | 0 | 844 | 0 / 0 | 0.0% | 0 | 0 |
+| What we do | 844 | 2700 | 0 / 0 | 47.3% | 258 | 0 |
+| Youth Exchanges | 1728 | 895 | 0 / 0 | 37.3% | 164 | 62 |
+| Training Courses | 2623 | 921 | 0 / 0 | 36.7% | 166 | 0 |
+| What you gain | 3544 | 844 | 0 / 0 | 0.0% | 0 | 0 |
+| Closing | 4388 | 395 | 64 / 96 | 67.1% | 67 | 109 |
+
+Every run longer than a quarter of the window, both chrome states:
+
+| the run | 390×844 | 390×664 |
+|---|---|---|
+| ledger → first panel | 844–1102, 258px, 0.31 vh | 665–832, 167px, 0.25 vh |
+| panel 1's last line → panel 2's first | 1490–1892, **402px, 0.48 vh** | 1189–1532, **343px, 0.52 vh** |
+| panel 2's head | 2561–2789, 228px, 0.27 vh | 2200–2428, 228px, 0.34 vh |
+| closing → footer | 4674–4931, 257px, 0.30 vh | 4134–4392, 258px, 0.39 vh |
+
+**It is A's mechanism again.** In absolute px the phone has *less* dead space
+than the desktop — 996 of 4392 at 664 against 1329 of 5254 at 1440×900 — and as
+a share of a screen it has more: **1.50 screens of gap at 664, 1.36 at 844, 1.47
+at 1440×900**. The gaps are px and the window is not. Both engines agree within
+8px on every run.
+
+**Every Section 2 transition key, in scroll px.** Recomputed exactly as
+`PhotoStage` keys them — a zone owns the stage when its own middle is at the
+middle of the window, `zoneTop + zoneHeight/2 − innerHeight/2` — with the run-up
+frame at −332 / −375 / −422, which is negative at all three heights and
+therefore never inserted:
+
+| key | plate | strength | 390×664 | 390×750 | 390×844 |
+|---|---|---|---|---|---|
+| the clearing starts to rise | 0 | 0 | 0 | 0 | 0 |
+| the clearing is full | 0 | 1 | 412 | 465 | 523 |
+| the ledger holds it | 0 | 1 | 996 | 1125 | 1266 |
+| panel 1 takes the frame | 1 | 0 | 1483 | 1612 | 1753 |
+| panel 1 quiet | 1 | 0 | 1573 | 1702 | 1843 |
+| the road rises | 1 | 1 | 1831 | 1947 | 2074 |
+| the road falls | 1 | 1 | 2030 | 2172 | 2327 |
+| panel 2 takes the frame | 1 | 0 | 2391 | 2520 | 2661 |
+| panel 2 quiet | 1 | 0 | 2484 | 2613 | 2753 |
+| the gains ground quiet | 1 | 0 | 2852 | 2981 | 3122 |
+| the gains ground full | 2 | 1 | 3184 | 3356 | 3544 |
+| the closing | 1 | 0 | 3714 | 3929 | 4164 |
+
+A key is a sum of everything above it, so **a change of Δ px anywhere displaces
+every key at or below it by Δ**, and the four transitions §2.2–§2.5 tuned are
+keyed off these twelve numbers. That is why B is not touched here.
+
+There is a second reason, and it is new. The hero is `dvh` and everything under
+it is `svh`, so on the device the document grows by the difference between the
+two chrome states as the toolbar animates — **86px** — while `innerHeight` grows
+by the same amount, which moves every key below the hero by **+43px mid-gesture**
+and re-runs `PhotoStage`'s `ResizeObserver` while it does. Any B work has to
+settle that first or it will be tuning against a number that moves.
+
+**C · The photographs are larger than the screen. It is the unit.**
+
+*Not a transient.* Every plate is written the literal string `scale(1)` — read
+off the inline style the layer writes, not off a computed matrix — at its own
+arrival key and at every scroll past it, at all three window heights, in both
+engines. The peak is exactly 1.07 and the last sample before the key is
+1.0004–1.0021. The slide cross-in: the slide on show computes `transform: none`;
+the two that are not on show hold 1.05 at opacity 0. **Nothing leaves residue in
+WebKit.**
+
+*Not a resolution failure.* Worst rendered-against-fetched anywhere on home at
+DPR 3 is **0.80** — `hero-2` at the 1536 rung. Nothing exceeds 1.0.
+
+*It is the unit, and the home page states its height three ways, one of which
+states nothing at all:*
+
+| what | declaration | what it means on the device |
+|---|---|---|
+| hero `<section>`, and the card's size container | `min-h-[100dvh]` / `h-[100dvh]` | tracks the visible viewport |
+| "What we do", both offer panels, the gains frame | `min-h-svh` | the small viewport, constant |
+| **the photographic stage — every photograph below the hero** | **`fixed inset-0`, no unit at all** | **the layout viewport, which iOS holds at the *large* height** |
+
+A fixed box resolves against the initial containing block, and iOS keeps that at
+the large viewport while the visual viewport shrinks under the URL bar. So the
+stage is **750px tall while the reader sees 664 — 86px, 13% of its height, below
+the fold**, and the `stage-plate-shade`'s bottom hold, which is anchored to the
+bottom of the *window*, goes off the bottom with it. At the peak of an arrival
+the same layer is 802.5px against 664 — **21%**.
+
+**Neither engine can show this and that is the finding rather than a gap in
+it**: headless has no browser chrome, so both resolve `100svh == 100lvh ==
+100dvh == innerHeight` and both put `fixed; inset: 0` at exactly `innerHeight`.
+Measured: `.photo-stage` is 664×390 at a 664 window and 750×390 at a 750 window
+in both. The defect is legible in the declaration, not in the emulator.
+
+**2.20 · The hero lede is under its floor at both chrome states — new, and not
+introduced here.** Found by the same run and left alone, because repairing it
+means retuning `CARD_SHADE`, which is the hero's visual treatment measured
+against the whole reference set, and that is an item of its own.
+
+Glyph cores on the rendered composite, worst pixel, `ink` on the card's own
+bottom darkening, both engines:
+
+| window | WebKit | Chromium | floor |
+|---|---|---|---|
+| 390×844 — the design height | 5.12 | 5.17 | 4.5 |
+| 390×750 — bar collapsed | 5.22 | 5.05 | 4.5 |
+| 390×664 — bar showing | **4.02** | **3.91** | 4.5 |
+| 375×553 — SE | **2.85** | **3.09** | 4.5 |
+| 1440×900 | 9.05 | 9.05 | 4.5 |
+
+It is A's mechanism a third time. `.hero-intro` is `bottom-0` with `pt-5 pb-16`
+and a **fixed 251px height**, while the card's darkening runs to 94% from 36%
+*of the card*, which is `dvh`. At 844 the block's top lands at 70% of the card
+and takes the ramp near its end; at 664 it lands at **62%**, where the ramp has
+not gone as far, and at 553 at 55%. A px block inside a vh ramp, exactly as the
+headline is a px stack inside a vh mask. The lede also sits below its `3749c92`
+mobile reference of 5.71 at the design height, which predates this run.
+
 ---
 
 ## 3 · Titles
