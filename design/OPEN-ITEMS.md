@@ -709,6 +709,52 @@ flow: **document height and all twelve Section 2 keys are identical** at 664,
 750 and 844 in both engines, worst rendered-against-fetched holds at 0.80, and
 there is no horizontal overflow at any height. `verify:text` passes on all four.
 
+**2.19 · The ground now names the viewport instead of inheriting it.** Done.
+**The cause was the unit, not the transient** — §2.17 excluded the transient by
+measurement first: every plate is written the literal string `scale(1)` at its
+arrival key and at every scroll past it, in both engines at all three heights,
+and the worst rendered-against-fetched anywhere on home is 0.80.
+
+`PhotoStage`'s layer goes from `fixed inset-0` to **`fixed inset-x-0 top-0
+h-[100dvh]`**. `inset-0` gives a fixed box no height of its own, so it resolves
+against the initial containing block, which a phone holds at the large viewport.
+`svh` would have corrected the small state and broken the large one, leaving a
+band of floor under the picture once the bar collapsed. `dvh` is the viewport as
+it currently is, and it is what the hero already used — so the two layers whose
+job is to cover the window now name the same thing, while the content sections
+keep `svh` and go on fitting inside the smallest of them. The rule is written
+into `DESIGN-SYSTEM.md` under **The stage**.
+
+It applies on all four pages; `PhotoStage` is the ground everywhere.
+
+**Confirmed after, both engines, at 390×664, 390×750 and 390×844:**
+
+- **No Section 2 transition key shifted.** All twelve identical at all three
+  heights, and the document heights with them — 4392 / 4650 / 4931.
+- **No rendered/intrinsic ratio moved above 1.0.** Worst on home holds at
+  **0.80**, `hero-2` at the 1536 rung, unchanged. No horizontal overflow.
+- **Every arrival still settles on `scale(1)` exactly**, read off the inline
+  string, at the key and at +40, +200 and +800px past it.
+- The computed height is `innerHeight` at every viewport, which is the check
+  `CLAUDE.md` requires whenever a utility and `globals.css` both touch a box:
+  `.photo-stage` is unlayered and declares only `z-index`, so there is nothing
+  for the new utility to lose to. WebKit resolves `100dvh` at an 844 window to
+  **843.984375** — a 1/64px quantisation, and a bottom-row scan shows it as a ±1
+  channel resample of the photograph, not a row of exposed floor. 664, 750 and
+  1440×900 are byte-identical.
+
+**What this cannot prove, and it is the honest half of the item.** Neither
+engine has browser chrome, so neither can produce the state the defect lives in:
+both resolve `svh`, `lvh`, `dvh` and an inherited fixed box to the same number.
+The correction is legible in the declaration and verified to move nothing; **that
+the photograph now fits at both chrome states has to be confirmed on the phone.**
+
+One thing this pass did not touch and the next one should look at: About's
+finale frame is `sticky top-0 h-svh`, which is the same mismatch the other way
+round — sized to the small viewport, it will leave a band of floor below the
+wall once the bar collapses. It is inside the wall geometry §2.5 froze, so it is
+recorded rather than changed.
+
 **2.20 · The hero lede is under its floor at both chrome states — new, and not
 introduced here.** Found by the same run and left alone, because repairing it
 means retuning `CARD_SHADE`, which is the hero's visual treatment measured

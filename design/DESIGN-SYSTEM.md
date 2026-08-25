@@ -1367,6 +1367,34 @@ the panels' prose used to spend part of every pin under AA.
 **Document height is unchanged to the pixel** — 7743 at 1440×900 and 5887 at
 390×844, before and after. Nothing here is in flow.
 
+**A ground is `dvh`; content is `svh`. A ground may never be left to inherit
+its height.** The stage used to be `fixed inset-0`, which is a fixed box with no
+height of its own, and a fixed box resolves against the initial containing
+block — which a phone browser holds at the *large* viewport while the visible
+one shrinks under the URL bar. So the layer that carries every photograph below
+the hero was painted **86px taller than the screen at 390 wide** whenever the
+bar was showing, 13% of its height below the fold and 21% at the peak of an
+arrival, taking the shade's bottom hold — anchored to the bottom of the
+*window* — off the bottom with it.
+
+The three units are not interchangeable and each one is right for exactly one
+job. **`svh` is what content answers to**: sized to the smallest viewport, a
+block always fits at both chrome states, which is why every section on the home
+page keeps it. **`lvh` is what a box with no declaration silently gets**, and it
+is right for nothing here. **`dvh` is the viewport as it currently is**, which
+is the only correct answer for something whose job is to cover the window — so
+the hero, which already had it, and the stage, which now does. The two layers
+that must cover name the same thing; the sections that must fit name the other.
+
+No emulator can show the difference: headless has no browser chrome, so `svh`,
+`lvh`, `dvh` and an inherited fixed box all resolve to `innerHeight`. This is
+therefore a correction that no measurement moves, and it was verified that way —
+every Section 2 key, every document height, every rendered-against-fetched ratio
+and every arrival scale identical in both engines at 664, 750 and 844. The one
+number that is not identical is WebKit's own: it resolves `100dvh` at an 844
+window to **843.984375**, a 1/64px quantisation, which the bottom-row scan shows
+as a ±1 channel resample of the photograph and not as a row of exposed floor.
+
 ## Do / Don't
 
 **Do**

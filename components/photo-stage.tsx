@@ -275,11 +275,27 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
     ? imagePreload(lcp.src, coverSizes(lcp.src, FULL_VIEWPORT))
     : null;
 
+  // `h-[100dvh]` rather than `inset-0`, and the unit is the whole of it. A
+  // fixed box with no height of its own resolves against the initial
+  // containing block, and a phone browser holds that at the *large* viewport
+  // while the visible one shrinks under the URL bar — so this layer, which is
+  // every photograph below the hero, was painted 86px taller than the screen
+  // at 390 wide whenever the bar was showing, 13% of its height below the fold,
+  // and the shade's bottom hold went off the bottom with it. `svh` would fix
+  // that and break the other state, leaving a band of floor under the picture
+  // once the bar collapsed. `dvh` is the viewport as it currently is, which is
+  // what a ground has to be; it is also what the hero already uses, so the two
+  // layers that have to cover the window now name the same thing while the
+  // content sections keep `svh` and go on fitting inside the smallest of them.
+  //
+  // No emulator can show the difference — headless has no browser chrome, so
+  // `svh`, `lvh`, `dvh` and the fixed box all resolve to `innerHeight` — which
+  // is why this is a change no measurement moves.
   return (
     <div
       ref={rootRef}
       aria-hidden="true"
-      className="photo-stage pointer-events-none fixed inset-0"
+      className="photo-stage pointer-events-none fixed inset-x-0 top-0 h-[100dvh]"
     >
       {preload && (
         <link
