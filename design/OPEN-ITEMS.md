@@ -783,6 +783,113 @@ not gone as far, and at 553 at 55%. A px block inside a vh ramp, exactly as the
 headline is a px stack inside a vh mask. The lede also sits below its `3749c92`
 mobile reference of 5.71 at the design height, which predates this run.
 
+**2.20 · Done — and the ramp is registered to the block, not to the card.**
+
+**The measurement that decided the shape.** The lede's worst glyph pixel sits
+**191–203px above the card's foot at every height and on every one of the three
+slides**. It is one number because `.hero-intro` is `bottom-0` with a fixed
+251px height, so the top row of its paragraph is a constant distance from the
+bottom of the frame. What carried it ran `to 94% from 36% *of the card*`, and
+the card is the viewport — so that row sat at 65.8% of the darkening at 844 and
+at **51.0% at 553**. A px block inside a vh ramp, which is §2.17's mechanism a
+fourth time and §2.18's correction on a different layer.
+
+It is also the unit the layer *above* it already used. The card's foot dissolve
+is `--hero-foot: 280px` and `--hero-foot-arc: 340px`, both measured up from the
+base, and the shade is multiplied by them. The mask was on px and the ramp it
+multiplies was on a fraction.
+
+**The change is three of the six.** Top stays **78** and mid stays **16** —
+neither the hood the nav stands on nor the flat band the photograph lives in
+moves:
+
+    from  22%  ->  max(48px, min(22%, calc(100% - 580px)))
+    to    36%  ->  max(48px, calc(100% - 580px))
+    base  94%  ->  100%
+
+`calc(100% − 580px)` is the whole of it: the fall is anchored to the foot, so
+the value under the lede's top row is the same number at 553 as at 844. The
+`max(48px, …)` is what keeps the four stops in order on a card too short to
+hold both ends — below a 628px window the fall wants to start above the hood,
+and floored at 48px the hood still resolves inside the fixed header's own 65px,
+so the top stop is 78 at **every** height rather than collapsing. The base goes
+to 100 and costs nothing that is painted: those rows are inside `--hero-foot`'s
+dissolve, where the picture has already gone to the floor. That is §2.8's
+argument for the gains base, on the other frame.
+
+**Measured, worst glyph-core pixel, swept over all three slides**, WebKit /
+Chromium — the lede stands on whichever frame is up and the rotation is 4.5s,
+so the worst of the three is the number:
+
+| window | before | after | floor |
+|---|---|---|---|
+| 375×553 — SE | **3.13 / 3.09** | **5.30 / 5.27** | 4.5 |
+| 390×664 — bar showing | **3.61 / 3.78** | **5.77 / 5.96** | 4.5 |
+| 390×750 — bar collapsed | 4.80 / 4.65 | **6.45 / 6.43** | 4.5 |
+| 390×844 — the screen | 5.09 / 5.05 | **6.18 / 6.08** | 4.5 |
+| 1440×900 | 9.05 / 9.05 | **9.61 / 9.53** | 4.5 |
+
+Per slide after, WebKit: 5.38 / 5.30 / 6.01 at 553, 5.77 / 5.99 / 6.95 at 664,
+6.45 / 6.73 / 7.04 at 750, 6.20 / 6.18 / 9.43 at 844. **Every cell at every
+height is a rise**, and the two lowest — the two the item was opened for — clear
+the floor by 0.77 and 1.27.
+
+**The full sweep, and it is the cleanest result this file has recorded.** 93
+elements over four pages, both reference viewports, 186 measurements, same
+instrument as `3749c92`. **Three moved. All three rose. Nothing fell by a
+hundredth anywhere on the site:**
+
+| element | before | after | reference |
+|---|---|---|---|
+| `p` A youth organization… — mobile | 5.60 | **6.77** | 5.71 |
+| `p` A youth organization… — desktop | 8.87 | **9.40** | 8.95 |
+| `a` About — desktop `/` | 8.07 | 8.10 | 8.12 |
+
+So the hero lede **clears its `3749c92` reference at both viewports for the
+first time** — it was under it at the design height before this run, which
+§2.20 recorded when it opened the item — and the standing count of elements
+below the reference goes 69 → 67. There is nothing to classify against the
+three-branch ratchet, because nothing fell. The one element below its floor
+anywhere is still FAQ's opening paragraph on mobile at **4.46**, which is below
+it at `3749c92` too.
+
+(The sweep's mobile lede figure and the table above it differ because the
+instruments differ: the sweep is the ratchet's, unchanged since `3749c92`, and
+it takes whichever slide is up; the table pins each slide and reports the worst
+of three. Both are recorded and neither is adjusted.)
+
+**What it cost the photograph**, mean luminance of six bands of the expanded
+card, slide 1, DPR 2 — this is the honest price and it lands where the defect
+was:
+
+| window | 0–15% | 15–35% | 35–55% | 55–70% | 70–85% | 85–100% |
+|---|---|---|---|---|---|---|
+| 375×553 | **+12.1** | −22.6 | −21.0 | −11.2 | −5.7 | −0.4 |
+| 390×664 | **+11.7** | −16.9 | −19.2 | −11.3 | −7.3 | −0.6 |
+| 390×750 | 0 | −8.0 | −12.6 | −8.1 | −6.7 | −0.7 |
+| 390×844 | 0 | −0.9 | −5.3 | −4.3 | −5.0 | −0.7 |
+| 1440×900 | 0 | 0 | −1.6 | −1.7 | −1.1 | −0.2 |
+
+The design height and the desktop are all but untouched — the two viewports the
+ramp already fitted pay one to five points out of ninety — and the short
+windows, which were the failing ones, pay for their own repair. The **top band
+gets brighter** at 553 and 664, because the hood now ends at 84px and 48px
+instead of 146px and 122px: more photograph under the chrome, not less.
+
+**The polarisation holds, and it holds by construction.** Nothing about the
+crossing changed — it is still two fixed ramps with a boundary travelling
+between them over `0.35 → 0.85`, and no value is interpolated at any frame. The
+two top stops are **92 → 78** exactly as §2.6 left them, at every height,
+because the 48px floor means the hood never collapses; row 0 composited with
+`.chrome-shade` is the same 0.969.
+
+**Two falls outside the reference set, recorded rather than hidden.** The
+wordmark stands on this ramp too, and where the hood shortens it loses ground:
+**10.72 → 8.27 at 553** and **10.96 → 9.92 at 664**. Both are
+composition-derived, both clear the 4.5 floor by 3.8 and 5.4, and neither
+viewport is in `3749c92`, which is measured at 390×844 and 1440×900 — where the
+wordmark is unmoved at 11.41 and 11.17.
+
 **2.21 · One basis for the document, and it is `svh`.** Done, and it is two
 changes rather than one — the unit mix was only half of what moved the keys.
 

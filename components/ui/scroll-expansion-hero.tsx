@@ -79,8 +79,42 @@ const posterOpacity = (progress: number) =>
 // way; it goes up rather than down because §2.8's ratchet forbids lowering any
 // measured value and the nav stands on this. 78 is a hood — the picture at
 // 0.22, a ground — and it clears 0.75 with room.
-const POSTER_SHADE = { top: 92, mid: 66, base: 8, from: 8, to: 64 };
-const CARD_SHADE = { top: 78, mid: 16, base: 94, from: 22, to: 36 };
+//
+// **The card's foot is registered to the block it carries, not to the card.**
+// `.hero-intro` is `bottom-0` with a fixed 251px height, so the lede's top row
+// — which is where its worst glyph pixel is, measured at **191-203px above the
+// card's foot at every height and on every slide** — is a constant distance
+// from the bottom of the frame. The ramp under it ran to 94% *from 36% of the
+// card*, and the card is the viewport: at 844 that put the row at 65.8% of the
+// darkening and at 553 at 51.0%, which is 5.09 against 3.13 on a 4.5 floor.
+// A px block inside a vh ramp, which is §2.18's mechanism a fourth time.
+//
+// The fall is therefore anchored to the foot in px — `calc(100% - 580px)` —
+// which is the one change that makes the value under that row the same number
+// at 553 as at 844. It is also the unit the layer above it already uses: the
+// card's foot dissolve is `--hero-foot: 280px` and `--hero-foot-arc: 340px`,
+// both measured up from the base, and the shade is multiplied by them. The two
+// were on different clocks.
+//
+// The `max(48px, ...)` is what keeps the stops in order on a card too short to
+// hold both ends. Below a 628px window the fall wants to start above the hood;
+// floored at 48px the hood still resolves inside the fixed header's own 65px,
+// so the top stays polarised at 78 — composited with `.chrome-shade` the
+// wordmark measures 8.27 at 553, against 4.5 — and the fall simply starts
+// there instead.
+//
+// The base goes 94 -> 100 and costs nothing that is painted: the bottom of the
+// card is inside `--hero-foot`'s dissolve, where the picture has already gone
+// to the floor, so the extra six points land on rows that are the floor
+// already. This is §2.8's argument for the gains base, on the other frame.
+const POSTER_SHADE = { top: 92, mid: 66, base: 8, from: "8%", to: "64%" };
+const CARD_SHADE = {
+  top: 78,
+  mid: 16,
+  base: 100,
+  from: "max(48px, min(22%, calc(100% - 580px)))",
+  to: "max(48px, calc(100% - 580px))",
+};
 
 // How the crossing is made, and this is the whole of §2.6. Interpolating the
 // two sets of numbers put the *frame* in the middle register even where its
@@ -152,8 +186,8 @@ const HeroShade = ({ progress }: { progress: number }) => (
               "--shade-top": `${shade.top}%`,
               "--shade-mid": `${shade.mid}%`,
               "--shade-bottom": `${shade.base}%`,
-              "--shade-mid-from": `${shade.from}%`,
-              "--shade-mid-to": `${shade.to}%`,
+              "--shade-mid-from": shade.from,
+              "--shade-mid-to": shade.to,
               maskImage: mask,
               WebkitMaskImage: mask,
             } as CSSProperties
