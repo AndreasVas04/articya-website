@@ -474,8 +474,22 @@ const ScrollExpandMedia = ({
           anchor to meet, and an opaque ramp ending on the hero's last row is a
           ruled line straight across the page. Open, the stage runs up under
           the card's own dissolving foot and the two pictures hand over. */}
+      {/* `svh`, not `dvh`, and it is the document that decides. This section is
+          in flow, so its height is the first term of every scroll offset below
+          it: at `dvh` it grew by the toolbar's own 86px as the bar animated,
+          which moved all twelve of the stage's keys mid-gesture. `svh` is the
+          one height a phone holds at both chrome states, so the page under the
+          hero stops sliding under the reader's finger.
+
+          It costs the hero nothing, because the state it is composed for is
+          the state `svh` names. The expansion holds the page at scroll 0 and
+          iOS only collapses the bar on a scroll the hero is preventing, so
+          every frame of the opening plays at the small viewport — which is
+          exactly what this now measures. Past the opening the hero's foot
+          becomes a fixed document row instead of one that moves by 86px
+          whenever the bar does. */}
       <section
-        className="gold-field gold-field-chrome-top gold-field-open-bottom hero-drop-scope hero-plate relative isolate flex min-h-[100dvh] flex-col items-center justify-start overflow-hidden"
+        className="gold-field gold-field-chrome-top gold-field-open-bottom hero-drop-scope hero-plate relative isolate flex min-h-svh flex-col items-center justify-start overflow-hidden"
       >
         <motion.div
           className="absolute inset-0 z-0"
@@ -544,7 +558,12 @@ const ScrollExpandMedia = ({
               exactly — the section's content width, so a classic scrollbar
               cannot push it out of register with the poster the way `100vw`
               would. */}
-          <div className="hero-window-scope relative flex h-[100dvh] w-full flex-col items-center justify-center">
+          {/* This box is what actually sets the section's height — it is the
+              section's only in-flow child with a height — so it takes the
+              same `svh` for the same reason. It is also the size container the
+              card's own window measures itself against, so the card, the
+              poster and the mask all stay registered to one number. */}
+          <div className="hero-window-scope relative flex h-svh w-full flex-col items-center justify-center">
             {/* The gallery card — hidden while the opening is the full-bleed
                 poster, cross-dissolved in as it grows so it never reads as a
                 second picture floating over the first.

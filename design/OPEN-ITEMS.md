@@ -783,6 +783,96 @@ not gone as far, and at 553 at 55%. A px block inside a vh ramp, exactly as the
 headline is a px stack inside a vh mask. The lede also sits below its `3749c92`
 mobile reference of 5.71 at the design height, which predates this run.
 
+**2.21 · One basis for the document, and it is `svh`.** Done, and it is two
+changes rather than one — the unit mix was only half of what moved the keys.
+
+**The basis.** *Everything in flow names `svh`.* The hero section, the hero's
+own stage box, every content section, every stage marker, the panels' bands:
+all of them are the small viewport, which is the one height a phone holds at
+both chrome states. **`dvh` survives on exactly two elements, and neither is in
+flow**: `PhotoStage`'s fixed layer and the About wall's pinned frame. Their job
+is to cover the window, they contribute to no document height and to no key,
+and `dvh` is the only unit that answers that job. `lvh` is what an undeclared
+box silently gets and is right for nothing.
+
+The hero was the one real question, because it is a ground *and* the first term
+of every scroll offset under it. It goes to `svh`, and the state it is composed
+for is the state `svh` names: the expansion holds the page at scroll 0, iOS
+only collapses the URL bar on a scroll the hero is preventing, so **every frame
+of the opening plays at 664 and 664 is what `svh` resolves to**. What changes is
+after the opening — the hero's foot becomes a fixed document row instead of one
+that moves by 86px whenever the bar does.
+
+**The second half, and without it the item does nothing.** A zone is keyed at
+`zoneTop + zoneHeight/2 − basis/2`. With every other term on `svh`, a basis of
+`innerHeight` puts the toolbar back into all twelve keys on its own: the
+document would hold still and the keys would still slide, by **−43** instead of
+**+43**. Same magnitude, opposite sign — the unit mix was never the whole
+mechanism. `PhotoStage` now reads its basis off a `100svh` probe, falling back
+to `innerHeight` where the unit is unknown. The cost is that with the bar
+collapsed a zone's middle sits 43px above the window's middle at its own key:
+7% of a 500px ramp, constant, against a key that used to move.
+
+**Measured, and the emulator can show this one.** No headless engine has
+browser chrome, so the state cannot be *rendered* — but it can be *built*: lay
+the document out at 664 while the window is 750, which is what iOS produces
+with the bar collapsed. Every `svh` quantity is pinned to 664 by hand; anything
+still on `dvh`, `lvh` or bare `vh` resolves at the window, exactly as the device
+resolves it. So a key that moves between the two runs is a quantity not on the
+basis.
+
+| | bar showing | bar collapsed | delta |
+|---|---|---|---|
+| before — twelve keys | 0 412 996 1483 1573 1831 2030 2391 2484 2852 3184 3714 | 43 455 1039 1526 1616 1874 2073 2434 2527 2895 3227 3757 | **+43, all twelve** |
+| before — document | 4392 | 4478 | +86 |
+| after — twelve keys | 0 412 996 1483 1573 1831 2030 2391 2484 2852 3184 3714 | *identical* | **0, all twelve** |
+| after — document | 4392 | 4392 | 0 |
+
+Identical in both engines. The +43 reproduces §2.17's arithmetic exactly and it
+is now zero.
+
+**The twelve keys, after, at the four heights** — and every one of them is
+identical to the value the same build gave before this change, in both engines,
+with the document heights (4056 / 4392 / 4650 / 4931) with them:
+
+| key | 375×553 | 390×664 | 390×750 | 390×844 |
+|---|---|---|---|---|
+| the clearing starts to rise | 0 | 0 | 0 | 0 |
+| the clearing is full | 343 | 412 | 465 | 523 |
+| the ledger holds it | 830 | 996 | 1125 | 1266 |
+| panel 1 takes the frame | 1323 | 1483 | 1612 | 1753 |
+| panel 1 quiet | 1414 | 1573 | 1702 | 1843 |
+| the road rises | 1693 | 1831 | 1947 | 2074 |
+| the road falls | 1859 | 2030 | 2172 | 2327 |
+| panel 2 takes the frame | 2230 | 2391 | 2520 | 2661 |
+| panel 2 quiet | 2321 | 2484 | 2613 | 2753 |
+| the gains ground quiet | 2683 | 2852 | 2981 | 3122 |
+| the gains ground full | 2960 | 3184 | 3356 | 3544 |
+| the closing | 3434 | 3714 | 3929 | 4164 |
+
+**Nothing else moved, and this was checked by pixels rather than argued.** Full
+screenshots of all four pages at seven scroll positions, at 375×553, 390×664,
+390×750 and 1440×900, before against after: **0.000% of pixels differ, worst
+channel sum 0, on every one of them.** Worst rendered-against-fetched holds at
+**0.815** on a phone and no horizontal overflow anywhere; every plate settles on
+`scale(1)` at the far end of the page. `verify:text` passes on all four.
+
+**What is not on the basis, and it is deliberate.** The About wall's tiles are
+sized in bare `vh`, which is `lvh` — so on a phone they are cut to the *large*
+viewport and stand 13% too tall in the small one, and the section's own
+`h-[200vh]` pin is 1500px at both chrome states. Neither moves a key, because
+`lvh` does not change when the bar does; the wall's geometry and the pin length
+are both frozen by this pass, and taking the tiles to `dvh` would resize the
+composition §2.5 signed off. It is the one place the single basis is not
+applied and it is recorded rather than changed.
+
+**A harness note, because it cost an hour.** The home hero re-pins the page to
+scroll 0 until it is fully expanded, so a `window.scrollTo` on that page is
+undone on the next frame and a sweep silently measures scroll 0 at every stop —
+every plate at opacity 0, every arrival scale stuck at its 1.07 start. The
+keyboard escape hatch releases it. Every harness in `design/refs`' history
+already did this; the check is now an assertion rather than a convention.
+
 ---
 
 ## 3 · Titles

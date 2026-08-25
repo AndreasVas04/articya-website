@@ -120,6 +120,26 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
     // The arrival scale is motion and does not.
     const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+    // The key basis, and it is deliberately not `innerHeight`. A zone is keyed
+    // at `zoneTop + zoneHeight/2 - basis/2`; everything else in that expression
+    // is now `svh` and therefore the same at both of a phone's chrome states,
+    // so a basis that tracked the visible viewport would put the toolbar back
+    // into every key on its own — the whole document would hold still and the
+    // twelve keys would still slide 43px as the bar animated under the
+    // reader's finger. The small viewport is the one height the device
+    // guarantees at every moment, so it is what the page is keyed by. The cost
+    // is that with the bar collapsed a zone's middle sits half the toolbar
+    // above the window's middle at its own key: 43px out of a 500px ramp,
+    // constant, and unnoticeable beside a key that moves.
+    const basisProbe = document.createElement("div");
+    basisProbe.style.cssText =
+      "position:absolute;top:0;left:0;width:0;height:100svh;visibility:hidden;pointer-events:none";
+    root.appendChild(basisProbe);
+    // `svh` on a browser that does not know it leaves the declaration dropped
+    // and the box at nothing, so the old basis is the fallback.
+    const keyBasis = () =>
+      basisProbe.getBoundingClientRect().height || window.innerHeight;
+
     let raf = 0;
     let frames: StageFrame[] = [];
     // Where each plate ramps up for the first time, so the settle plays on
@@ -202,9 +222,10 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
       // A zone owns the stage when its own middle is at the middle of the
       // window — the one scroll position where the reader is unambiguously
       // inside it, whether it is a short band or a pinned panel.
+      const basis = keyBasis();
       const keyed = zones
         .map((z) => ({
-          scroll: z.top + z.height / 2 - window.innerHeight / 2,
+          scroll: z.top + z.height / 2 - basis / 2,
           plate: z.plate,
           strength: z.strength,
         }))
@@ -230,7 +251,7 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
       // landed on the bottom of the ramp. FAQ's heading wrapped to a third line
       // and pushed its hero to 911px in a 900px window, which was the whole of
       // it — 11px of overflow, and the page opened on bare floor.
-      const runUp = Math.min(...zones.map((z) => z.top)) - window.innerHeight;
+      const runUp = Math.min(...zones.map((z) => z.top)) - basis;
       if (runUp > 0 && runUp < frames[0].scroll) {
         frames.unshift({ scroll: runUp, values: plates.map(() => 0) });
       }
@@ -261,6 +282,7 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", measure);
       observer.disconnect();
+      basisProbe.remove();
       if (raf) cancelAnimationFrame(raf);
     };
   }, [plates]);

@@ -363,9 +363,15 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
       // 300/440 it was 2.0 and 3.4, and the last third carried no words at all.
       className="relative h-[200vh] md:h-[220vh]"
     >
+      {/* The pinned frame's job is to cover the window, so it names `dvh` — the
+          same correction §2.19 made to the stage, recorded there and made here.
+          At `svh` it was sized to the smallest viewport and left a band of
+          floor under the wall as soon as the URL bar collapsed. It is sticky
+          inside a fixed-height section, so it sets no document height and
+          moves no key; only what it covers changes. */}
       <div
         key={compact ? "compact" : "wide"}
-        className="sticky top-0 h-svh overflow-hidden"
+        className="sticky top-0 h-[100dvh] overflow-hidden"
       >
         <motion.div
           className="absolute inset-0 z-10 flex items-center justify-center px-4"
