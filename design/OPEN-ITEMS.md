@@ -980,6 +980,101 @@ every plate at opacity 0, every arrival scale stuck at its 1.07 start. The
 keyboard escape hatch releases it. Every harness in `design/refs`' history
 already did this; the check is now an assertion rather than a convention.
 
+**2.23 · The offer panels on a phone — diagnosis, nothing changed.** Measured
+at 375×553, 390×664, 390×750 and 390×844 in both engines. **Every number below
+lands within 0.1px and 0.1 of a percentage point between WebKit and Chromium**,
+so none of it is an engine difference.
+
+**Where the photograph's height comes from.** `.offer-panel-photo` is
+`width: 72%; max-width: 320px; aspect-ratio: 3 / 4` below `md`. The width is
+72% of the block's content box — the window less the 32px of `px-4` — and the
+height follows from the ratio:
+
+    390 wide -> 0.72 x 358 = 257.8 -> **343.7px**
+    375 wide -> 0.72 x 343 = 247.0 -> **329.3px**
+
+The 320px cap never binds below a 476px window. So the first half of the
+hypothesis is **confirmed**: the height is a fixed length, derived from a width.
+
+**The second half is wrong, and it is wrong in the direction that matters.**
+The band it sits in is not expressed against the viewport either. `min-h-svh`
+on the panel's block **never binds on a phone**: the block measures **894.7px**
+(Youth Exchanges) and **921.3px** (Training Courses) at 390 wide, and it
+measures the same at 553, 600, 664, 700, 750 and 844. The declaration only
+takes over above a **950px** window. There is no viewport-relative quantity in
+a mobile offer panel at all — head, text, gap, photograph and foot are px and
+their sum is px. The panel is a **1.64 / 1.35 / 1.19 / 1.06-screen object** at
+553 / 664 / 750 / 844.
+
+**The negative control, both arms.**
+
+| hold | vary | photograph | block | what moves |
+|---|---|---|---|---|
+| width 390 | height 553 → 950 | **343.7px at every height** | **894.7px at every height** | nothing |
+| height 664 | width 320 → 430 | 276.5 → 314.9 → 329.3 → 343.7 → 366.7 → **382.1** | 880.6 → 917.8 | everything |
+
+**The overflow tracks width, not height.** Say it plainly: the object does not
+change when the window's height changes. What changes is how far out of the
+window it sticks — 317.7px of overflow at 553 falling to 0 at 950, with the
+photograph and the panel byte-identical throughout. The window is the only
+thing moving.
+
+**Rendered top and bottom of the photograph, as a share of the window**, framed
+the way the reader meets it — the panel's block starting at the top of the
+screen:
+
+| window | panel | photo top | photo bottom | overflow |
+|---|---|---|---|---|
+| 375×553 | Youth Exchanges | **100.1%** | 159.7% | **329.9px** |
+| 375×553 | Training Courses | **100.1%** | 159.7% | **329.9px** |
+| 390×664 | Youth Exchanges | 79.4% | 131.1% | 206.7px |
+| 390×664 | Training Courses | 83.4% | 135.1% | 233.3px |
+| 390×750 | Youth Exchanges | 70.3% | 116.1% | 120.7px |
+| 390×750 | Training Courses | 73.8% | 119.6% | 147.3px |
+| 390×844 | Youth Exchanges | 62.5% | 103.2% | 26.7px |
+| 390×844 | Training Courses | 65.6% | 106.3% | 53.3px |
+
+**At 553 the photograph starts below the fold** — its first row is at 100.1% of
+the window — so at the panel's own framing not one pixel of it is on screen. At
+844 it is 27–53px short of fitting, which is why this reads as *nearly right*
+at the height everything was measured on and as broken at every height the
+device produces.
+
+**The 128px head is the same class, and it is a constant.** 64px of the block's
+`py-16` plus 64px of `.offer-panel-grid`'s `padding-top: 4rem`, identical at
+every mobile width and every mobile height:
+
+| window | 375×553 | 390×664 | 390×750 | 390×844 |
+|---|---|---|---|---|
+| head as a share of the window | **23.1%** | **19.3%** | 17.1% | 15.2% |
+
+**The bands, at 390 wide**, head / text / gap / photograph / foot:
+**128 / 311.1 / 48 / 343.7 / 64 = 894.7** and **128 / 337.6 / 48 / 343.7 / 64 =
+921.3**. The two panels differ by 26.5px and it is the paragraph, which is
+frozen copy. **240px of the panel — 27% of it — is fixed padding and gap.**
+
+**A reader cannot hold the panel on one screen below 750.** From the text
+block's top row to the foot of the photograph is **755px at 553 (1.37
+screens)**, 743 / 769px at 664 (1.12 / 1.16), 743 / 769 at 750 (0.99 / 1.03)
+and 743 / 769 at 844 (0.88 / 0.91). It first fits at 750.
+
+**Desktop is not affected and the reason is worth recording.** `min-h-svh`
+binds at every desktop window tested and the overflow is 0 at 1280×900,
+1440×900, 1440×700 and 1920×900. The photograph there is
+`min(100%, 64.5svh)` of a 29% column, and the *column* binds on any window
+wider than about 2.22:1 — so on a desktop too the picture's height is derived
+from the window's **width**; the `svh` cap only takes over on a window shorter
+than 0.45× its width. The desktop head is larger in absolute terms (283.5 /
+252.6 / 134.6 / 159.8px) because `items-center` centres a short block in a tall
+one — that space is the centring, not padding.
+
+**The consequence 2.24 has to face, stated here so it is not discovered
+twice.** The panel's total height is a px constant, and it is 1.35 screens at
+664. Holding that total — which the keys require — means no band inside it can
+be made viewport-relative, because the bands sum to the total. The head can be
+made small and the picture large; the panel cannot be made to fit a screen
+without moving every key below it.
+
 ---
 
 ## 3 · Titles
