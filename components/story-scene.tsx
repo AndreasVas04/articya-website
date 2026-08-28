@@ -18,7 +18,7 @@ const DRAW: CSSProperties = { scale: "0 1" };
 
 // The 29% column on desktop, a stacked block below it — the same measurement
 // the offer panels fetch at.
-const PHOTO_SIZES = "(min-width: 768px) 29vw, 72vw";
+const PHOTO_SIZES = "(min-width: 768px) 29vw, calc(57vw + 78px)";
 
 interface SceneImage {
   src: string;
@@ -92,7 +92,11 @@ export function StoryScene({ groups, image, flip = false }: StorySceneProps) {
 
   return (
     <section data-index-section="" className="relative">
-      <div className="relative flex min-h-svh w-full items-center px-4 py-16 md:px-0 md:py-0">
+      {/* The scenes share the panels' bands, so they take the panels' head
+          with them: the grid's proportional `padding-top` is the whole of it
+          below `md`. The head's loss and the photograph's gain cancel here
+          too, so these sections measure what they measured before. */}
+      <div className="relative flex min-h-svh w-full items-center px-4 pb-16 md:px-0 md:py-0">
         <div
           className={cn(
             "offer-panel-grid relative w-full",

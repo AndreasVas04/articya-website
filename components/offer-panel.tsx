@@ -18,8 +18,12 @@ const FADE: CSSProperties = { opacity: 0 };
 const DRAW: CSSProperties = { scale: "0 1" };
 
 // How wide the photograph renders, so the browser fetches that width and no
-// more: the 29% column on desktop, a stacked block below it.
-const PHOTO_SIZES = "(min-width: 768px) 29vw, 72vw";
+// more: the 29% column on desktop, a stacked block below it. The stacked
+// declaration is the painted width written out — `calc(57% + 96px)` of a box
+// inset 16px each side is `57vw + 77.8px` — because a flat `72vw` now
+// under-declares it by up to five points and the browser would take a rung
+// below what it paints.
+const PHOTO_SIZES = "(min-width: 768px) 29vw, calc(57vw + 78px)";
 
 // The eyebrow label, one per panel, in the order the panels appear. Like the
 // numerals it is pseudo-content and never enters the DOM — the site's visible
@@ -153,7 +157,10 @@ export function OfferPanel({
         className="absolute inset-x-0 top-[60%] h-0"
       />
       <div className="relative">
-        <div className="relative flex min-h-svh w-full items-center px-4 py-16 md:px-0 md:py-0">
+        {/* No top padding below `md`. The head is one declaration now — the
+            grid's own proportional `padding-top` — rather than this 64px plus
+            that one; the foot keeps its 64. */}
+        <div className="relative flex min-h-svh w-full items-center px-4 pb-16 md:px-0 md:py-0">
           <div
             className={cn(
               "offer-panel-grid relative w-full",

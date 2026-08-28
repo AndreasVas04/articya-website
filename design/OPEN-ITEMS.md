@@ -1021,24 +1021,28 @@ thing moving.
 
 **Rendered top and bottom of the photograph, as a share of the window**, framed
 the way the reader meets it — the panel's block starting at the top of the
-screen:
+screen, and **measured after the panel's entrance has run out**. A rect
+includes transforms and `.offer-panel-photo` carries the entrance's
+`translate: 0 40px` until the block is crossed, so a reading taken at scroll 0
+puts every one of these 40px low:
 
-| window | panel | photo top | photo bottom | overflow |
-|---|---|---|---|---|
-| 375×553 | Youth Exchanges | **100.1%** | 159.7% | **329.9px** |
-| 375×553 | Training Courses | **100.1%** | 159.7% | **329.9px** |
-| 390×664 | Youth Exchanges | 79.4% | 131.1% | 206.7px |
-| 390×664 | Training Courses | 83.4% | 135.1% | 233.3px |
-| 390×750 | Youth Exchanges | 70.3% | 116.1% | 120.7px |
-| 390×750 | Training Courses | 73.8% | 119.6% | 147.3px |
-| 390×844 | Youth Exchanges | 62.5% | 103.2% | 26.7px |
-| 390×844 | Training Courses | 65.6% | 106.3% | 53.3px |
+| window | panel | photo top | photo bottom | overflow | centred overflow |
+|---|---|---|---|---|---|
+| 375×553 | Youth Exchanges | **92.9%** | 152.4% | **289.9px** | 112.9px |
+| 375×553 | Training Courses | **92.9%** | 152.4% | **289.9px** | 112.9px |
+| 390×664 | Youth Exchanges | 73.4% | 125.1% | 166.7px | 51.4px |
+| 390×664 | Training Courses | 77.4% | 129.1% | 193.3px | 64.6px |
+| 390×750 | Youth Exchanges | 64.9% | 110.8% | 80.7px | 8.4px |
+| 390×750 | Training Courses | 68.5% | 114.3% | 107.3px | 21.6px |
+| 390×844 | Youth Exchanges | 57.7% | 98.4% | **0** | 0 |
+| 390×844 | Training Courses | 60.9% | 101.6% | 13.3px | 0 |
 
-**At 553 the photograph starts below the fold** — its first row is at 100.1% of
-the window — so at the panel's own framing not one pixel of it is on screen. At
-844 it is 27–53px short of fitting, which is why this reads as *nearly right*
-at the height everything was measured on and as broken at every height the
-device produces.
+**At 844 the first panel fits and every shorter height fails**, by 81px at 750,
+167px at 664 and 290px at 553 — which is why this reads as right at the one
+height everything was measured on and as broken at every height the device
+produces. The photograph itself is never the thing that does not fit: at 329.3
+and 343.7px it is smaller than the shortest window by 224px. What does not fit
+is the panel.
 
 **The 128px head is the same class, and it is a constant.** 64px of the block's
 `py-16` plus 64px of `.offer-panel-grid`'s `padding-top: 4rem`, identical at
@@ -1074,6 +1078,107 @@ twice.** The panel's total height is a px constant, and it is 1.35 screens at
 be made viewport-relative, because the bands sum to the total. The head can be
 made small and the picture large; the panel cannot be made to fit a screen
 without moving every key below it.
+
+**2.24 · The head goes into the picture, and the total does not move.** Done.
+
+**The construction, and it is one identity.** A panel's total height is the
+first term of every key below it, so what one band gives up another has to take
+— exactly, at both device widths, or the shorter phone's panel comes out short
+and takes the twelve keys with it. The head is now a **proportion of the
+panel's own width**, which is the quantity everything else in a stacked panel
+is already derived from, and the picture takes what it gives up:
+
+    .offer-panel-grid   padding-top: 4rem      ->  20%
+    the block           px-4 py-16             ->  px-4 pb-16
+    .offer-panel-photo  width: 72%             ->  calc(57% + 96px)
+                        max-width: 320px       ->  349px
+
+At 3:4 a picture takes 4/3 of what it is given in width, so **96px of width is
+the 128px the head loses**, and the two cancel at every width by construction:
+71.6 against 400.1 at 390, 68.6 against 388.7 at 375. That is why the 96 is a
+length and not a share — the head's loss is a constant, and a pure percentage
+would gain a different number at each width and only cancel at one of them.
+
+**Measured. Nothing moved that was not meant to:**
+
+| | before | after |
+|---|---|---|
+| panel head | **128px** flat | **71.6px** at 390, 68.6 at 375 |
+| head as a share of the window, 553 / 664 / 750 / 844 | 23.1 / 19.3 / 17.1 / 15.2% | **12.4 / 10.8 / 9.5 / 8.5%** |
+| photograph, 390 wide | 257.8 × 343.7 | **300.0 × 400.1** |
+| photograph as a share of the window, 553 / 664 / 750 / 844 | 59.5 / 51.8 / 45.8 / 40.7% | **70.3 / 60.3 / 53.3 / 47.4%** |
+| panel block height, 553 / 664 / 750 / 844 | 906.9 / 894.7 / 921.3 / 894.7 | **identical** |
+| document height, four heights | 4056 / 4392 / 4650 / 4931 | **identical** |
+| all twelve keys, four heights, both engines | — | **identical** |
+| About's document and its three scene heights | 4360 / 4683 / 5223 / 5728 | **identical** |
+
+The head is cut by **44%** and the picture is **16% taller**; the panel, the
+document and every key are the same number they were. About's story scenes
+share these bands and the same identity holds there, so that page does not move
+either — checked, not assumed.
+
+**The crop does not move, so the whole-subject rule is untouched.**
+`aspect-ratio: 3 / 4` and the frame's `object-position` are unchanged; the
+picture is the same rectangle of the same photograph, painted larger. There is
+nothing to re-audit and nothing is cut through a person at 553 or anywhere
+else. Rendered-against-fetched rises **0.72–0.84 → 0.85–0.95** and stays under
+1.0 at every width, because `sizes` was rewritten to the painted width —
+`calc(57vw + 78px)`, which is what `calc(57% + 96px)` of a box inset 16px each
+side resolves to. A flat `72vw` would have under-declared it by five points and
+the browser would have taken a rung below what it paints.
+
+**What it does not fix, and the arithmetic is in §2.23.** The photograph's
+bottom edge is pinned by the frozen total and the 64px foot, so **the overflow
+at the panel's own framing is unchanged to the pixel** — 289.9 / 166.7 / 80.7 /
+0px at 553 / 664 / 750 / 844. The picture starts higher (92.9% → 82.1% of the
+window at 553, 73.4% → 64.9% at 664) and it is wholly visible on every screen
+the device makes, with 164 / 264 / 350 / 444px to spare. But the panel is still
+1.64 / 1.35 / 1.19 / 1.06 screens, and it cannot be less while its total is
+frozen. **That is the decision left for Andreas**: a panel that fits one screen
+costs the four transitions §2.2–§2.5 tuned, and this pass will not spend them
+without being told to.
+
+**Contrast, at all four heights.** **No element on the home page is below its
+floor at 375×553, 390×664, 390×750 or 390×844**, and none is on any page at
+1440×900. The panel prose the item names measures **5.99 / 5.47 / 4.89 / 5.28**
+at the four heights against the 5.07 §2.7 left at the design height, so it does
+not fall.
+
+**On the falls the sweep reports, and this is the more useful finding.** The
+element-relative sweep takes eight stops across each element's own traversal.
+Move an element 56px inside its section and those eight stops land at different
+absolute scrolls, so the ground under them changes and the *sampled* worst
+moves — without the *true* worst moving at all. Stepped at **5px** across the
+whole traversal instead, on both builds:
+
+| element | 8-stop sweep | true worst, 5px step | floor |
+|---|---|---|---|
+| `span` Open to educators… (the panel prose) | 5.76 → 5.28 | **4.66 → 4.62** | 4.5 |
+| `h3` Training Courses | 5.74 → 4.90 | **4.22 → 3.78** | 3.0 |
+| `span` No prior experience needed. @553 | 13.51 → 8.34 | **9.56 → 8.47** | 4.5 |
+| `span` ArtiCYa focuses particularly… (About) | 10.82 → 9.17 | **9.14 → 9.07** | 4.5 |
+| `span` actively supporting LGBTQ+… (About) | 10.12 → 8.60 | **8.60 → 8.60** | 4.5 |
+| `span` ArtiCYa places special emphasis… (About) | 9.39 → 8.60 | **8.60 → 8.70** | 4.5 |
+
+**All eight of About's reported falls are sampling, not ground** — the true
+worst is unmoved to a tenth. Two of home's are real and both are
+composition-derived: the text sits 56px higher in the panel, so it crosses the
+road passage at a brighter phase. Neither is near its floor.
+
+**The trade was searched rather than guessed.** The head and the picture move
+one pixel for one pixel, so the family is one number — the head's share A, with
+the picture at `(0.96 − A) × ¾ × width + 96px`. Measured at 5px on the panel
+prose: A = 0.20 gives 4.62, A = 0.24 gives 4.66, A = 0.28 gives 4.66. The
+deepest cut costs **0.04**, and the head at A = 0.28 would come out at 100px,
+which is a 22% cut nobody would see. A = 0.20 is taken for that reason and the
+table is here so the trade can be reversed on one number.
+
+**A note for the next sweep, and it belongs beside the ratchet.** A fall the
+element-relative sweep reports on an element that has *moved inside its
+section* has to be confirmed at fine resolution before it is treated as a
+regression — the instrument resamples. Five of the six checked above were
+sampling. This is the same class as the population branch: the measurement
+changed, the page did not.
 
 ---
 
