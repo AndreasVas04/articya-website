@@ -1180,6 +1180,108 @@ regression — the instrument resamples. Five of the six checked above were
 sampling. This is the same class as the population branch: the measurement
 changed, the page did not.
 
+**2.22 · The five transitions at the heights that exist — diagnosis, nothing
+retuned.** Scanned frame by frame at a 14px step across the whole of home and
+the whole of the About finale, at **390×664, 390×750 and 390×844**, on the
+build these items leave. Contact sheets, ten frames across each transition's
+own range, are in `design/refs/transitions/after-real/`. **The ranges are
+derived from the twelve keys at the height being shot**, not carried over from
+844 — a key is a different scroll offset at every height, and a fixed window
+would frame a different part of the move at each one.
+
+**A correction to the instrument first, because it changes the numbers.** The
+2.0-era probe reads a plate's `opacity`. Since the wipe landed that is binary
+by construction — `PhotoStage` writes `opacity: 1` for any strength above zero
+and puts the ramp in the layer's **mask** — so a plate's strength is recovered
+from the mask's own stops here (`s = clear / 140`). The same probe also read
+the finale tiles' ratio off the box rather than off the painted rectangle: a
+3:4 frame in a taller box is fitted by *height*, so it paints wider than its
+box, and that painted width is what §2.14's audit measured and what `sizes`
+declares. Corrected, the centre tile comes out at **0.771 at 390×844 DPR 3**,
+which is §2.14's number exactly.
+
+**A · the hero opening — does not degrade.** It is wheel-driven with `scrollY`
+pinned at 0, so its range is in wheel and is the same at every height:
+**0–1600**, full-bleed at 160, the land layer out at 400, the intro up at 1120,
+the card's cross-dissolve spanning 320 of wheel, **stall 0** at all three. Peak
+card 390px — the window — at all three.
+
+**B · the clearing's rise — does not degrade, and it is the only one of the
+five that cannot.** Key to key it runs scroll 0 to the clearing-full key:
+**412 / 465 / 523px = 0.620 of a viewport at every height**, because both ends
+are `svh`. The visible ramp (strength 0.02 → 0.98) is 294 / 336 / 364px. Stall
+0 everywhere.
+
+**C · the road — slows, and it slows away from the defect it was built to
+fix.** Key to key, rise / hold / fall:
+
+| window | rise | hold | fall |
+|---|---|---|---|
+| 390×664 | 258px — **0.389** | 199px — 0.300 | 361px — **0.544** |
+| 390×750 | 245px — 0.327 | 225px — 0.300 | 348px — 0.464 |
+| 390×844 | 231px — 0.274 | 253px — 0.300 | 334px — 0.396 |
+
+The **hold is exactly 0.300 of a viewport at every height** — the two markers
+are `±15svh` of a zero-height div, and 30svh is 0.300 of the window by
+construction. The rise and the fall are key-to-key spans that mix the panels'
+px against `svh` markers, so as a share of the screen they grow as the window
+shortens: the rise is **42% longer** at 664 than at 844 and the fall **37%
+longer**. §2.3's complaint was that the rise was 90px — a tenth of a viewport,
+inside one notch of a wheel. At 664 it is 258px and 0.389 of a viewport, which
+is further from that failure rather than nearer. Stall 0 at all three, and
+plate 0 and plate 1 are never both showing, so the ledger stays polarised.
+
+**D · the handover into the panels — this is the one that degrades.** The fall
+runs from the ledger's key to the first panel's key, and that distance is
+**487px at every height**, because both keys sit inside the panels' px-built
+block. As a share of the screen:
+
+| window | fall | share of the screen |
+|---|---|---|
+| 390×664 | 487px | **0.733** |
+| 390×750 | 487px | 0.649 |
+| 390×844 | 487px | 0.577 — the value it was signed off at |
+
+So the passage where the photograph withdraws through the top and the panels'
+dark comes up from the foot takes **nearly three quarters of a screen at 664**
+against the 0.577 §2.4 measured. Nothing about the move is wrong — the largest
+one-step change in plate strength is **0.082 per 14px step at all three
+heights**, so §2.4's 87.9%-of-the-window-in-one-step defect is closed
+everywhere, and the stall is 0. What is wrong is the pace, and the cause is
+§2.23's: the only span on this stretch that is not viewport-relative is the one
+the panels own.
+
+**E · the About wall — does not degrade, and at 664 it improves.** Peak scale
+**2.60**, the ring at **1.000**, and **coverage 100% at the peak**, at all three
+heights; full coverage is reached with 19–25% of the rise still to run. The
+centre tile's visible rise is 280 / 322 / 364px — 0.42 / 0.43 / 0.43 of a
+viewport, the same fraction at each. Stall **0 / 14 / 14px**, one sampling step.
+Rendered-against-fetched at DPR 3, per tile, worst frame:
+
+| tile | 390×664 | 390×750 | 390×844 |
+|---|---|---|---|
+| centre — `IMG_4585` at 2.60 | 0.607 | 0.685 | 0.771 |
+| upper-left — `IMG_4619-ridge` | 0.592 | 0.669 | 0.753 |
+| left upright — `IMG_4599` | 0.567 | 0.641 | 0.720 |
+| **right upright — `hero-2`** | 0.776 | 0.878 | **0.987** |
+| lower-right — `hero-3` | 0.667 | 0.753 | 0.847 |
+| lower-left — `IMG_4735-road` | 0.657 | 0.742 | 0.836 |
+| upper-right — `hero-1` | 0.703 | 0.794 | 0.894 |
+
+Every tile is sized in `vh`, so every one of them shrinks with the window and
+the whole wall gets *more* resolution at a shorter height, not less. **The
+finding here is at 844 rather than below it**: `hero-2` in the 97.5px upright
+slot paints at **0.987** of the variant it fetches — one percent under the
+ceiling, on the frame §8 already carries as the one at three placements.
+§2.14's audit measured the centre tile only, so this had not been seen. On the
+device it is the 750 column that binds, because the wall's `vh` is the *large*
+viewport at both chrome states (see §2.21), and there it is 0.878.
+
+**The damage list, in order.** **D** is the one that degrades: same 487px, 27%
+more of the screen at 664. **C** slows by 37–42% as a share of the screen, in
+the direction away from its own defect. **A**, **B** and **E** hold, and E
+improves. Nothing is retuned here.
+
 ---
 
 ## 3 · Titles
