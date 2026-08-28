@@ -1282,6 +1282,127 @@ more of the screen at 664. **C** slows by 37–42% as a share of the screen, in
 the direction away from its own defect. **A**, **B** and **E** hold, and E
 improves. Nothing is retuned here.
 
+**2.26 · Every Section 2 span is a share of the window.** Done, and it is the
+marker layout rather than the values: nine of the eleven spans hold one share
+at all four heights, and the two that cannot are named below with the reason.
+
+**What the keys used to be anchored to.** Twelve keys, three anchoring schemes.
+Three of them were already `svh` offsets inside the clearing. Four were a
+*section's own height*: a zone is keyed at its middle, so the panel's "takes
+the frame" key was half the panel, its "quiet" key was 60% of it, the gains
+key was half that section and the closing key was half of *its* — and on a
+phone a stacked panel's height is a stack of px and the closing's is 395px of
+padding and three blocks of type. Two more, the road's, were written in `svh`
+but anchored to the join, which is the panel above measured from its own top.
+
+So the eleven spans divided into five that held a constant share and six that
+did not. Measured before, at 553 / 664 / 750 / 844:
+
+| span | 553 | 664 | 750 | 844 | swing |
+|---|---|---|---|---|---|
+| the clearing's rise | 0.620 | 0.620 | 0.620 | 0.620 | — |
+| the ledger's hold | 0.881 | 0.880 | 0.880 | 0.880 | — |
+| **the handover into the panels** | **0.892** | **0.733** | **0.649** | **0.577** | **0.314** |
+| panel 1 take → quiet | 0.165 | 0.136 | 0.120 | 0.107 | 0.058 |
+| **the road's rise** | **0.505** | **0.389** | **0.327** | **0.274** | **0.231** |
+| the road's hold | 0.300 | 0.300 | 0.300 | 0.300 | — |
+| **the road's fall** | **0.671** | **0.544** | **0.464** | **0.396** | **0.275** |
+| panel 2 take → quiet | 0.165 | 0.140 | 0.124 | 0.109 | 0.056 |
+| **panel 2 quiet → the gains** | **0.655** | **0.554** | **0.491** | **0.437** | **0.217** |
+| the gains' rise | 0.501 | 0.500 | 0.500 | 0.500 | — |
+| the run out to the closing | 0.857 | 0.798 | 0.764 | 0.735 | 0.123 |
+
+**Every key is now declared, and declared in `svh` off the thing it belongs
+to.** The panel's four keys are `svh` offsets from the panel's own top row —
+`66svh` for the frame, `74svh` for quiet, and the road's own key inside the
+panel it starts in (`98svh` in the first, `30svh` in the second) rather than at
+the join. The gains and the closing carry a marker apiece instead of being
+keyed off their section's height. The clearing's third marker goes from
+`bottom-0` to `top-[100svh]`: the two resolve to the same row, because that
+block measures exactly a screen at all four heights, but one of them says so.
+The margin above the panels goes `mt-10` → `mt-[6svh]`, since it is the first
+term of the handover below it — 40px flat was 6.0% of a 664 screen and 4.7% of
+an 844 one, and `6svh` is 6.0% of both. Desktop takes `10svh`, 90px against the
+96 it replaces, inside a head the panel's own centring already makes 250px
+deep.
+
+**Two spans cannot be made a share, and it is worth stating exactly why.** A
+span that starts inside one panel and ends inside the next *is* the panel's own
+height, and no expression makes that a share of the window while it exceeds
+one. What can be chosen is which two spans carry it — and both of the two are
+**holds**, the road's full hold and the quiet run from the second panel to the
+gains. A hold is a still frame: its length changing with the window is not a
+change of pace. A ramp's length is exactly what pace means, and no ramp carries
+px now.
+
+**The values, re-picked at 664 and stated in both units before they were
+written.** The share is the declaration; the px are what it resolves to.
+
+| span | share | 553 | 664 | 750 | 844 | was, at 664 |
+|---|---|---|---|---|---|---|
+| the clearing's rise | 0.620 | 343 | 412 | 465 | 523 | 412 |
+| the ledger's hold | 0.880 | 487 | 584 | 660 | 743 | 584 |
+| the handover into the panels | **0.720** | 398 | 478 | 540 | 608 | 487 |
+| panel 1 take → quiet | **0.080** | 44 | 53 | 60 | 67 | 90 |
+| the road's rise | **0.240** | 133 | 160 | 180 | 203 | 258 |
+| the road's hold | *see below* | 530 | 443 | 385 | 321 | 199 |
+| the road's fall | **0.360** | 200 | 239 | 270 | 303 | 361 |
+| panel 2 take → quiet | **0.080** | 44 | 53 | 60 | 68 | 93 |
+| panel 2 quiet → the gains | *see below* | 497 | 430 | 366 | 297 | 368 |
+| the gains' rise | 0.500 | 277 | 332 | 375 | 422 | 332 |
+| the run out to the closing | **0.750** | 415 | 498 | 563 | 633 | 530 |
+
+Measured after: **every one of the nine declared spans holds its share to
+0.003 at all four heights and in both engines**, and the twelve keys are
+identical in WebKit and Chromium to within 1px. Document heights move by 7px or
+less — 4056 → 4049, 4392 → 4391, 4650 → 4655, 4931 → 4942.
+
+**Where each number came from.** The clearing's rise and the ledger's hold were
+already shares and were re-examined at 664 rather than re-chosen: §2.2 picked
+0.62 against *the strip the hero's foot has uncovered*, which is a share of the
+window at every height, so the original choice was already the right kind of
+number. The handover is **0.720**, which resolves to 478px at 664 against the
+487 it ran — the finding being that the px value was very nearly right at the
+height the device produces and wrong at the two ends of the range, so 844's
+0.577 was the mis-tuned number rather than the 487. The road keeps §2.3's
+shape, 0.25 / 0.30 / 0.35 on a desktop, at **0.240 / 0.320 / 0.360** — measured
+on the built page the desktop pass is now 216 / 288 / 324 against the 225 / 270
+/ 315 it was signed off at. The run out to the closing is **0.750**, the figure
+§2.14 recorded on a phone, against 0.857 at 553 and 0.735 at 844.
+
+**The desktop is on the same basis and this is the first time it has been.**
+All eleven spans at 1440×900: 0.62, 0.88, 0.76, 0.08, 0.24, 0.32, 0.36, 0.08,
+0.26, 0.50, 0.75. The handover is 0.76 rather than 0.72 because the desktop
+margin is `10svh`.
+
+**The constraint checks.** No ramp is over 1.0 viewport. Text entrances are
+untouched — nothing here is keyed to a clock. The stall is measured on the
+build §2.27 leaves, because the road's hold moves again there.
+
+**D's ground still outlasts the numerals, and there is a finding under it.**
+The ledger's last row leaves the top of the window, and the ground is still a
+photograph for that long after it:
+
+| | 553 | 664 | 750 | 844 | 1440×900 |
+|---|---|---|---|---|---|
+| before — px after the row leaves | 248 | 242 | 242 | 242 | 256 |
+| before — plate strength at the leave | 0.509 | 0.491 | 0.491 | 0.491 | 0.412 |
+| after — px | 153 | 233 | 295 | 363 | 394 |
+| after — plate strength at the leave | **0.227** | 0.463 | 0.626 | 0.738 | 0.695 |
+
+The relationship used to be constant and is now a function of the height, and
+the reason is §2.21's mechanism one level further down: **the row's leave point
+is a px constant measured from the fall's start.** The clearing's block is a
+screen tall with its content centred, so the last row's bottom sits half the
+*content's* height below the block's middle — and that content is a heading, a
+lede and three ledger rows, every one of them a fixed size. Measured, the row
+leaves 245–250px after the fall begins at every height. A fall expressed as a
+share therefore holds a different fraction of itself against that constant at
+each one. It is a real cost of the change and it lands at 553, where the plate
+is at 0.227 rather than 0.509 when the last numeral clears the top of the
+window. It is still a photograph and the numeral is still standing on it; what
+was bought is a fall that runs at one pace.
+
 ---
 
 ## 3 · Titles

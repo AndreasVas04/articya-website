@@ -123,39 +123,13 @@ export function OfferPanel({
   const groups = text.split(/(?<=\.) /);
 
   return (
-    <section
-      ref={ref}
-      data-index-section=""
-      data-stage-plate="1"
-      data-stage-strength="0"
-      className="relative"
-    >
-      {/* One quiet key past the panel's own, and where it sits is what decides
-          how long every ramp on this stretch is allowed to be. A zone is keyed
-          half a viewport above its own middle, so a marker at 60% of the panel
-          keys 90px past the section's own.
-
-          There used to be two, at 25% and 75%. They held the ground down
-          across the whole panel, and they are what compressed the road into a
-          jump: the quiet key at 75% of the first panel keyed 90px before the
-          road's own full key, so the entire arrival ran in a tenth of a
-          viewport — one notch of a wheel. Taking the 25% one out is what gives
-          the clearing's ground a fall with a span at all; both of its keys sat
-          at the same scroll position before, and this marker was the next
-          frame after them.
-
-          Holding the ground down for the whole panel is no longer what keeps
-          the prose off it, because the ground wipes rather than fades: the
-          picture wells up from the foot of the window while the words are
-          still in the middle of it, and it is only underneath them once they
-          are leaving through the top — which is where the plate's own 62%
-          release was measured. */}
-      <div
-        aria-hidden="true"
-        data-stage-plate="1"
-        data-stage-strength="0"
-        className="absolute inset-x-0 top-[60%] h-0"
-      />
+    <section ref={ref} data-index-section="" className="relative">
+      {/* The panel carries no stage key of its own. It used to carry two — the
+          section itself, which keys at its own middle, and a marker at 60% of
+          it — and both of those are the panel's height, which on a phone is a
+          stack of px. The page places all four keys for this stretch instead,
+          in `svh` off the panel's top row, so the spans they bound are shares
+          of the window rather than shares of a photograph's aspect ratio. */}
       <div className="relative">
         {/* No top padding below `md`. The head is one declaration now — the
             grid's own proportional `padding-top` — rather than this 64px plus

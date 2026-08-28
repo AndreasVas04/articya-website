@@ -1,4 +1,3 @@
-import { Fragment } from "react";
 import ScrollExpandMedia from "@/components/ui/scroll-expansion-hero";
 import { StatCounter } from "@/components/stat-counter";
 import { Reveal } from "@/components/reveal";
@@ -262,11 +261,16 @@ export default function HomePage() {
               data-stage-strength="1"
               className="absolute inset-x-0 top-[12svh] h-0"
             />
+            {/* `top-[100svh]`, not `bottom-0`. The two resolve to the same row
+                while this block is exactly a screen tall — measured, it is, at
+                553, 664, 750 and 844 — but one of them says so and the other
+                inherits it from whatever the content happens to measure. Every
+                key on this page is declared now. */}
             <span
               aria-hidden="true"
               data-stage-plate="0"
               data-stage-strength="1"
-              className="absolute inset-x-0 bottom-0 h-0"
+              className="absolute inset-x-0 top-[100svh] h-0"
             />
             {/* The clearing takes a whole screen and stands its words in the
                 middle of it. It used to open flush against the hero's foot,
@@ -356,59 +360,75 @@ export default function HomePage() {
 
           {/* The panels open onto the dark the stats hand over to — the stage
               goes quiet under them — so this margin is a beat of breathing,
-              not a gap between two surfaces. */}
-          <div className="mt-10 md:mt-24">
+              not a gap between two surfaces.
+
+              It is the first term of the handover below it, which is why it is
+              a share of the window rather than 40px. `mt-10` measured 40 at
+              every height, so the handover it opens was 6.0% of a 664 screen
+              and 4.7% of an 844 one; at `6svh` it is 6.0% of both. Desktop
+              takes 10svh — 90px against the 96 it replaces, inside a head the
+              panel's own centring already makes 250px deep. */}
+          <div className="mt-[6svh] md:mt-[10svh]">
             {whatWeDo.cards.map((card, i) => (
-              <Fragment key={card.title}>
-                {/* The join between the two panels: the road comes up across
-                    the boundary and goes down again, and it is given no height
-                    of its own at all.
+              <div key={card.title} className="relative">
+                {/* A panel's four keys, and every one of them is a share of
+                    the window measured from the panel's own top row. They used
+                    to be a mixture: the panel's `takes the frame` key was the
+                    section's own middle and its `quiet` key was 60% of the
+                    section, both of which are the panel's height — and a
+                    stacked panel's height is a stack of px. The road's two keys
+                    were the only ones written in `svh`, and they were anchored
+                    to the join, which is that same px height measured from the
+                    top of the panel above.
 
-                    Two quiet zones in a row is the one thing the rhythm
-                    forbids, and a screen is the expensive way to fix it. This
-                    used to be 1.4 viewports of page carrying one sentence, with
-                    a wordless screen at each end where the reader scrolled and
-                    nothing on the glass changed but the ground. The road is
-                    still crossed between the two readings — it is simply
-                    crossed rather than stopped on, which is also what its
-                    top-left fencing needed: the frame is now in front of the
-                    reader for the shortest time on the page instead of the
-                    longest.
+                    So of the eleven spans on this page, six changed length as a
+                    share of the screen and the worst of them changed by 0.31 of
+                    a viewport between 553 and 844. The handover into the panels
+                    ran 0.892 / 0.733 / 0.649 / 0.577 — one distance of 487px,
+                    doing a different amount of work at every height a phone can
+                    actually be.
 
-                    Both markers sit within a sixth of a screen of the boundary,
-                    so the plate is full across the join, and each panel's own
-                    quiet key at 60% is what the ramps run from — so the two
-                    ends need nothing declared here. Full strength, not 0.9: the
-                    ground on this page is either a photograph or it is nothing.
+                    Anchoring every key to the panel's top in `svh` fixes nine
+                    of the eleven outright. The two it cannot fix are the ones
+                    that start inside one panel and end inside the next, because
+                    the distance between those two points *is* the panel's own
+                    height — and while a panel is taller than the screen there
+                    is no expression that makes it a share of one. What can be
+                    chosen is which two spans carry it, and both of them are
+                    holds: the road's full hold, and the quiet run from the
+                    second panel to the gains. A hold is a still frame, so its
+                    length changing with the window is not a change of pace; a
+                    ramp's length is exactly what pace means.
 
-                    Measured at 1440x900 the pass is now 225px of rise, 270px
-                    held full and 315px of fall — 0.25, 0.30 and 0.35 of a
-                    viewport; at 390x844, 231 / 253 / 334, which is 0.27, 0.30
-                    and 0.40. The rise was 90px, a tenth of a viewport and
-                    inside a single notch of a wheel, which is the whole of why
-                    the road read as a cut rather than as an arrival. It rises
-                    as a wipe, so the road comes up into the frame from the foot
-                    of the window rather than the whole picture brightening at
-                    once out of the floor.
-
-                    No screen loses its words to it. At the peak the panel above
-                    is still leaving the top of the window and the panel below
-                    is already entering the foot, so there is no scroll position
-                    across the join with an empty glass. */}
-                {i > 0 && (
-                  <div aria-hidden="true" className="relative h-0">
-                    <span
-                      data-stage-plate="1"
-                      data-stage-strength="1"
-                      className="absolute inset-x-0 top-[-15svh] h-0"
-                    />
-                    <span
-                      data-stage-plate="1"
-                      data-stage-strength="1"
-                      className="absolute inset-x-0 top-[15svh] h-0"
-                    />
-                  </div>
-                )}
+                    The road still crosses the join. Its rise starts at 98% of
+                    the first panel and its fall ends at 30% of the second, so
+                    it is full from a fifth of a screen before the boundary to a
+                    fifth after it, and at the peak the panel above is still
+                    leaving the top of the window while the panel below is
+                    entering the foot. Full strength, not 0.9: the ground on
+                    this page is either a photograph or it is nothing. */}
+                <span
+                  aria-hidden="true"
+                  data-stage-plate="1"
+                  data-stage-strength="0"
+                  className="absolute inset-x-0 top-[66svh] h-0"
+                />
+                <span
+                  aria-hidden="true"
+                  data-stage-plate="1"
+                  data-stage-strength="0"
+                  className="absolute inset-x-0 top-[74svh] h-0"
+                />
+                <span
+                  aria-hidden="true"
+                  data-stage-plate="1"
+                  data-stage-strength="1"
+                  className={
+                    i === 0
+                      ? "absolute inset-x-0 top-[98svh] h-0"
+                      : "absolute inset-x-0 top-[30svh] h-0"
+                  }
+                />
                 <OfferPanel
                   title={card.title}
                   text={card.text}
@@ -416,7 +436,7 @@ export default function HomePage() {
                   index={i}
                   flip={i % 2 === 1}
                 />
-              </Fragment>
+              </div>
             ))}
           </div>
         </section>
@@ -446,10 +466,17 @@ export default function HomePage() {
 
         <section
           data-index-section=""
-          data-stage-plate="2"
-          data-stage-strength="1"
           className="gain-frame relative isolate flex min-h-svh items-center overflow-hidden text-ink"
         >
+          {/* Declared rather than inherited, like every other key on the page.
+              The section measures exactly a screen at all four heights, so this
+              lands where the section's own middle did — but it says so. */}
+          <span
+            aria-hidden="true"
+            data-stage-plate="2"
+            data-stage-strength="1"
+            className="absolute inset-x-0 top-[50svh] h-0"
+          />
           {/* One photograph, edge to edge, and it goes out of focus across
               itself: the sharp frame with four softer copies of the same frame
               masked over its left, each fading into the next. There is no
@@ -566,10 +593,20 @@ export default function HomePage() {
 
         <section
           data-index-section=""
-          data-stage-plate="1"
-          data-stage-strength="0"
           className="relative overflow-hidden px-4 pb-24 pt-16 text-ink md:pb-32 md:pt-24"
         >
+          {/* The ground's last key. The section's own middle put it half its
+              height in, and that height is 395px of padding and three blocks of
+              type — so the ground left over 0.857 of a screen at 553 and 0.735
+              at 844. At 25svh the run out of the valley is 0.750 of the window
+              at every height, which is the figure the move was signed off at on
+              a phone. */}
+          <span
+            aria-hidden="true"
+            data-stage-plate="1"
+            data-stage-strength="0"
+            className="absolute inset-x-0 top-[25svh] h-0"
+          />
           <Reveal className="mx-auto flex max-w-6xl flex-col items-center text-center">
             <p className="max-w-[44ch] text-[clamp(1rem,1.3vw,1.16rem)] leading-[1.66] text-ink">
               {gain.text}
