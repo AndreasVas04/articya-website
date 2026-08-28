@@ -1400,6 +1400,45 @@ ground beside it is one still travelling from its gathered offset.
 §2.8 makes the floor a ratchet: **no change may lower any measured glyph-core
 value below its value here.** If one requires it, report and stop.
 
+### The three branches — what a fall has to be before it counts as one
+
+A number going down is not by itself a regression. Three things can move it, and
+only the first is.
+
+**Composition-derived — strict.** The ground under the glyphs genuinely changed:
+a darkening was lowered, a photograph was brightened, a block was moved onto a
+lighter part of a scroll-linked plate. These are regressions and the ratchet
+holds against them.
+
+**Resolution-derived — permitted.** A sharper variant has brighter specks in it
+for a glyph stem to land on, so the worst *single* pixel finds one that a
+softer variant had averaged away. §2.7's nineteen falls are the case: the only
+ways to reverse them are to darken five photographs or to withhold the pixels
+the change exists to deliver. Permitted, and recorded.
+
+**Population-derived — not a regression.** The measured value changes because
+**more of the glyph is visible than before**, not because its ground changed.
+The evidence required is the **pixel count scored before and after**, and it has
+to be in the report. §2.18 is the template: the headline's second line measured
+6.06 at 390×664 over **7,156** glyph pixels, because the land silhouette was
+covering the other thirty thousand and the survivors were the ones on the calm
+sky above it. Scored over the whole line — **37,439** pixels, the population the
+reader actually sees — the worst is 5.38. Nothing was darkened; the hidden four
+fifths came back. A fall with a pixel count that grew like that is the
+measurement getting honest, and it is signed off as such.
+
+**A fourth thing, and it is the instrument rather than the page.** The sweep
+takes a fixed number of stops across each element's own traversal. Move an
+element inside its section and those stops land at different absolute scrolls,
+so the ground under them changes and the *sampled* worst moves while the *true*
+worst does not. **A fall reported on an element that has moved inside its
+section is not a finding until it is confirmed at fine resolution** — step the
+whole traversal at 5px on both builds and compare the minima. §2.24 checked six
+and five of them were the sampler: About's three scene paragraphs came out
+9.14 → 9.07, 8.60 → 8.60 and 8.60 → 8.70 where the eight-stop sweep had reported
+−1.65, −1.52 and −0.79. Two were real. Clip the measured rect to below the
+chrome ramp before believing any of it, or the number is the header.
+
 Method is the sweep in `ART-DIRECTION.md §7`'s terms — glyph cores on the
 rendered composite, worst pixel per element, swept across every element's own
 traversal at 1440×900 (desktop) and 390×844 (mobile), DPR 2, both ends of the

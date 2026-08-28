@@ -1244,6 +1244,58 @@ Rules, in order of precedence:
   second source. Everything else is pine and plaster, and every layer stays
   too faint to read as glow, shape, or blob (whisper-level; if a screenshot
   shows a hard edge, it is too strong).
+## Viewport heights
+
+**The mobile test heights are 553, 664 and 750.** 664 is what a 390-wide iPhone
+gives a page with Safari's URL bar showing and 750 with it collapsed; 553 is the
+iPhone SE with its chrome. **390×844 is the device's screen, not a viewport iOS
+Safari ever gives a page, and it is retired as a verification height.** It stays
+in this document for one reason only: the contrast reference set at `3749c92` is
+recorded at it, and a ratchet has to be measured against the thing it was
+written on. Everywhere else it is a number with nothing behind it.
+
+**Anything measured only at 844 is unmeasured.** Three defects were signed off
+at that height and were broken at every height the device produces — the
+headline behind the land silhouette, the hero lede under its floor, the offer
+panels overrunning the screen — and in each case the number at 844 was the only
+one that passed.
+
+**A px quantity registered inside a `vh` quantity holds its size while the ramp
+around it changes.** That is the whole mechanism behind all three. A mask fitted
+to the window sits at a constant *fraction* of it; a stack of labels, margins
+and line boxes above the type is a constant *number* of pixels; the clearance
+between them is `a·H − b`, which is only the value it was tuned on at one
+height. The same is true of a block anchored to the foot of a frame whose
+darkening runs from a percentage of that frame, and of a photograph whose height
+comes from its width sitting inside a section sized against the window.
+
+So: **every fixed offset inside a viewport-relative system is checked at the
+shortest height the device produces, not the tallest.** And where the two have
+to hold a relationship, the offset that places one against the other is `a·H −
+b` — the fraction is the viewport-relative thing's own and the constant is the
+px the other one carries. §2.18 and §2.20 are the two worked examples.
+
+**A height produced by an aspect ratio is a fixed length, because it is derived
+from a width.** `aspect-ratio: 3 / 4` on a box whose width is a share of the
+screen gives a height that does not move when the window's height moves — it is
+as fixed as a `px` and it must be counted as one. Measured on the offer panels:
+the photograph is **343.7px tall at 553, 600, 664, 700, 750 and 844**, and it
+changes only when the *width* changes. The corollary is that such a height can
+only be traded against another px quantity: a share of the width and a length
+scale differently, so a redistribution that has to hold a total at more than one
+device width needs the length on both sides of the trade.
+
+**One basis for the document, and it is `svh`.** Everything in flow — every
+section's height, every marker offset, every band inside a panel — names the
+small viewport, which is the one height a phone holds at both chrome states.
+`dvh` belongs to exactly two kinds of element, and neither is in flow: a fixed
+or sticky layer whose job is to cover the window. `lvh` is what an undeclared
+box silently gets and is right for nothing. The rule has a second half that is
+easy to miss: **anything that computes a scroll key must read the same basis**.
+A document laid out entirely in `svh` still slides under the reader's finger if
+its keys are computed against `innerHeight`, because half the toolbar's height
+goes straight into every one of them.
+
 ## The stage
 
 **The home page has one ground below the hero, and it is a photograph.** Every
@@ -1382,9 +1434,25 @@ job. **`svh` is what content answers to**: sized to the smallest viewport, a
 block always fits at both chrome states, which is why every section on the home
 page keeps it. **`lvh` is what a box with no declaration silently gets**, and it
 is right for nothing here. **`dvh` is the viewport as it currently is**, which
-is the only correct answer for something whose job is to cover the window — so
-the hero, which already had it, and the stage, which now does. The two layers
-that must cover name the same thing; the sections that must fit name the other.
+is the only correct answer for something whose job is to cover the window.
+
+**The hero went to `svh` with the rest of the document, and that is the
+amendment.** A ground and a document height are two different jobs, and the hero
+section was doing both: in flow it is the first term of every scroll offset
+below it, so at `dvh` it grew by the toolbar's own 86px as the bar animated and
+moved all twelve of the stage's keys mid-gesture. It costs the hero nothing,
+because the state it is composed for is the state `svh` names — the expansion
+holds the page at scroll 0, and iOS only collapses the bar on a scroll the hero
+is preventing. **`dvh` now belongs to exactly two elements, and neither is in
+flow**: `PhotoStage`'s fixed layer and the About wall's sticky frame.
+
+**And the key basis is `svh` too.** A zone is keyed at
+`zoneTop + zoneHeight/2 − basis/2`. With every other term on the small viewport,
+a basis of `innerHeight` puts the toolbar back into all twelve keys on its own —
+the document holds still and the keys still slide, by half the bar's height. The
+layer reads its basis off a `100svh` probe. The cost is that with the bar
+collapsed a zone's middle sits 43px above the window's middle at its own key:
+7% of a 500px ramp, constant, against a key that used to move.
 
 No emulator can show the difference: headless has no browser chrome, so `svh`,
 `lvh`, `dvh` and an inherited fixed box all resolve to `innerHeight`. This is
