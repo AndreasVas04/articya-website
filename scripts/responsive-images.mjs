@@ -50,12 +50,33 @@ const MAX_WIDTH = 2560;
 // and therefore asks for 2966 — 1.030 over this rung at the peak of a
 // transient, and 1.000 at rest, which is what the table measures.
 //
-// `sizes` is what keeps it off everything else: no tile, panel or scene object
-// declares a width that resolves above 2048 at any viewport, so the rung is
-// emitted for these frames and fetched only where the window is the box. The
-// three small heroes are here because they *are* full-bleed placements; their
-// masters are at or under 2560, so the filter below never gives them the rung
-// and no `sizes` string ever could.
+// What keeps the rung off everything else is the emit filter below, not
+// `sizes`. An earlier note here claimed that nothing on the site resolves
+// above 2048 at any viewport; that was never true and it is worth being exact
+// about, because a future session would otherwise size a ladder against it.
+//
+// A full-bleed placement declares the width it is *painted*, and a portrait
+// frame cover-fitted into a landscape window is fitted by its height and
+// painted wider than the window. So these placements resolve well past 2048 by
+// design: 2880 at 1440×900 DPR 2 for all of them, and on a phone at 390×844
+// DPR 3 they run 1900 (the About ground) to 5588 (hero slide 3, an ultra-wide
+// frame in a portrait window). Of the placements that are *not* full-bleed,
+// six of the seven About wall tiles peak at 1928 and every panel and scene
+// object at 835 — but the wall's centre tile reaches 3744, which is why SCALED
+// exists directly below. The 2048 sentence skipped over it.
+//
+// The true guarantee is narrower and the code enforces it: BLEED_WIDTH is
+// emitted only for frames in this set, and a width above it only under a
+// SCALED key of its own. A frame in this set that also appears somewhere small
+// — hero-2 is the FAQ ground and an About wall tile — is safe because the wall
+// tile's `sizes` asks for 768 and the browser takes the rung it asks for.
+//
+// The three small heroes are here because they *are* full-bleed placements.
+// Their masters have been under 2880, so the cap below has been giving them
+// their own source width instead of the rung — which is a resolution debt, not
+// a property of the ladder, and it disappears the moment a larger original is
+// ingested. `assertLadder` reports which members are still source-capped
+// rather than leaving that to a comment that goes stale.
 const BLEED_WIDTH = 2880;
 const FULL_BLEED = new Set([
   "/images/pt/IMG_4585.jpg", // home hero: the poster and its first slide
@@ -63,10 +84,53 @@ const FULL_BLEED = new Set([
   "/images/pt/IMG_4582-road.jpg", // home: the panels' join
   "/images/pt/IMG_4721.jpg", // the About ground
   "/images/pt/IMG_4735-road.jpg", // the Contact ground
-  "/images/hero-1.jpg", // the ground under "What we do" — 2048, source-capped
-  "/images/hero-2.jpg", // the FAQ ground and hero slide 2 — 1536, source-capped
-  "/images/hero-3.jpg", // hero slide 3 — 2560, source-capped
+  "/images/hero-1.jpg", // the ground under "What we do"
+  "/images/hero-2.jpg", // the FAQ ground and hero slide 2
+  "/images/hero-3.jpg", // hero slide 3
 ]);
+
+// What the two constants above actually promise, checked rather than asserted
+// in prose. The first two throw: they are invariants the ladder is built on.
+// The third only reports, because a source-capped full-bleed frame is a
+// photograph problem and the build must still produce the site.
+// Display width of every full-bleed frame, from metadata alone — no decode and
+// no grade, so the checks below can run before any encoding starts. A cropped
+// frame's width is its source's width times the crop's own fraction, which is
+// what `extract` will take.
+async function bleedWidths() {
+  const dims = new Map();
+  for (const key of FULL_BLEED) {
+    const crop = CROPS[key];
+    const file = crop ? crop.file : key.replace("/images/", "");
+    const { width, height, orientation = 1 } = await sharp(path.join(SRC, file)).metadata();
+    const disp = displayDims(width, height, orientation);
+    dims.set(key, Math.round(disp.w * (crop ? crop.width : 1)));
+  }
+  return dims;
+}
+
+function assertLadder(dims) {
+  for (let i = 1; i < LADDER.length; i++) {
+    if (LADDER[i] <= LADDER[i - 1]) {
+      throw new Error(`LADDER must ascend and not repeat: ${LADDER[i - 1]} then ${LADDER[i]}`);
+    }
+  }
+  if (LADDER[LADDER.length - 1] !== BLEED_WIDTH || !LADDER.includes(MAX_WIDTH)) {
+    throw new Error(`LADDER must end at BLEED_WIDTH (${BLEED_WIDTH}) and carry MAX_WIDTH (${MAX_WIDTH})`);
+  }
+  for (const [key, { width }] of Object.entries(SCALED)) {
+    if (width <= BLEED_WIDTH) {
+      throw new Error(`SCALED "${key}" at ${width} is not above BLEED_WIDTH; it belongs on the ladder`);
+    }
+  }
+  const short = [...FULL_BLEED].filter((k) => dims.get(k) < BLEED_WIDTH);
+  if (short.length) {
+    console.log(
+      `  full-bleed frames still under ${BLEED_WIDTH}px of source, capped at their own width: ` +
+        short.map((k) => `${path.basename(k)} ${dims.get(k)}`).join(", ")
+    );
+  }
+}
 
 // One placement on the site is scaled past the window — the About wall's centre
 // tile, which reaches 130vw at full coverage and is therefore painted 1872 CSS
@@ -212,6 +276,8 @@ function signature() {
 }
 
 async function run() {
+  assertLadder(await bleedWidths());
+
   const sig = signature();
   if (!force && fs.existsSync(MANIFEST)) {
     try {
