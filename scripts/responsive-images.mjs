@@ -33,7 +33,23 @@ const MANIFEST = path.join(OUT, "manifest.json");
 // 1152 is the phone rung: a 393px viewport at DPR 3 asks for 1120 device px
 // for a 95vw image, and without a step between 1024 and 1366 it takes the
 // 1366 and throws a third of the pixels away.
-const LADDER = [384, 640, 768, 1024, 1152, 1366, 1600, 1920, 2560, 2880];
+//
+// 1984 is the second phone rung, and it exists for the same reason one step
+// higher up. Resolved from the built markup at 390×844 DPR 3, three placements
+// land in a cluster just above 1920 — the About wall's centre tile at 1976,
+// the home hero's poster and first slide at 1956, and the wall's upper-left
+// 3.2:1 tile at 1928 — and with 2560 as the next rung all three fetched a file
+// 30% wider than the screen could show. The next demand above the cluster is
+// 2477 (the gains and closing ground on a phone), which is far enough clear to
+// stay on 2560; nothing at 1440×900 DPR 2 falls in the gap at all.
+//
+// 1984 rather than 1976 because every rung above 384 on this ladder is a
+// multiple of 64 (1366 excepted, and documented above), and 1984 is the first
+// one at or above the cluster's top. Adding a rung above 1920 cannot move
+// anything that currently takes 1920 — the browser takes the smallest rung at
+// or above what `sizes` asks for, and every 1920 fetch on the site asks for
+// 1728 or less on a desktop and 1900 on a phone.
+const LADDER = [384, 640, 768, 1024, 1152, 1366, 1600, 1920, 1984, 2560, 2880];
 const MAX_WIDTH = 2560;
 
 // One rung above the cap, and only the frames that are painted edge to edge
