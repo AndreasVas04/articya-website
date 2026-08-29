@@ -122,7 +122,7 @@ const UNGRADED = [
 // swap is meant to add pixels and change nothing else — so each was fitted to
 // reproduce the old master's own graded output rather than to reach the set
 // again from scratch. Mean dE2000 against that frame goes 2.99 -> 2.96 for
-// hero-2; hero-1 and hero-3 follow in their own commits.
+// hero-2 and 2.84 -> 2.67 for hero-1; hero-3 follows in its own commit.
 //
 // The residual is the floor, not slack in the fit: it is what separates two
 // renderings of one negative, and no combination of a gain, a gamma and a
@@ -149,7 +149,7 @@ const MATCH = {
   "pt/IMG_4599.jpg": { wb: [1, 1, 1.04], gamma: 1.25, lift: 0.008, satScale: 0.886 },
   // Open midday over the reservoir: already the closest of the seven, so the
   // trim is almost nothing.
-  "hero-1.jpg": { wb: [1.012, 1, 1.028], gamma: 1.013, lift: 0.006, satScale: 1.07 },
+  "hero-1.jpg": { wb: [1.009, 1, 1.044], gamma: 1.042, lift: 0.006, satScale: 1.008 },
   // The shaded forest road, and the one frame whose level moves: at L* 20.8 it
   // sat 14 points below anything in the set.
   "hero-2.jpg": { wb: [1.069, 1, 1.16], gamma: 0.727, lift: 0.006, satScale: 0.838, shoulder: 0.93 },
