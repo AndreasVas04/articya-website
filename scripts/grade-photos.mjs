@@ -21,11 +21,12 @@
 // banding cannot enter between the original and the shipped file.
 //
 // Encode policy: quality first, size second. No file ships below JPEG
-// quality 88; the payload budgets (home page ≤ 4.8 MB, full referenced set
-// ≤ 12.5 MB — both above the original payloads) are spent raising quality
-// further, cheapest files first. If even the floor cannot meet a budget,
-// the floor ships anyway and the overage is reported — quality is never
-// silently dropped. EXIF orientation flags are carried over untouched.
+// quality 88; the budgets (home page ≤ 7.5 MB, full referenced set ≤ 10 MB)
+// are spent raising quality further, cheapest files first. If even the floor
+// cannot meet a budget, the floor ships anyway and the overage is reported —
+// quality is never silently dropped. These budgets govern repository weight
+// rather than payload; see the note at BUDGETS. EXIF orientation flags are
+// carried over untouched.
 
 import fs from "node:fs";
 import path from "node:path";
@@ -114,6 +115,36 @@ const UNGRADED = [
 // blue gain's bound (1.16) and land 2-6 b* warm of the mean; the bound is the
 // point past which a correction stops being a trim and starts being a
 // different photograph.
+//
+// A frame is re-solved when its master is replaced by the full-resolution
+// original. The target was the frame that already ships —
+// these numbers had been solved onto the set and signed off there, and the
+// swap is meant to add pixels and change nothing else — so each was fitted to
+// reproduce the old master's own graded output rather than to reach the set
+// again from scratch. Mean dE2000 against that frame goes 2.99 -> 2.96 for
+// hero-2; hero-1 and hero-3 follow in their own commits.
+//
+// The residual is the floor, not slack in the fit: it is what separates two
+// renderings of one negative, and no combination of a gain, a gamma and a
+// saturation scale removes it.
+//
+// The black point stayed at 0.006. Solved free it wanted 0.009-0.011 and
+// returned 0.009 dE for it, which is a black point climbing for nothing, and
+// on a canopy frame that is the one move this pipeline treats as almost pure
+// cost.
+//
+// hero-2's shoulder is the one real finding of the swap, and it is not a
+// tuning choice. Its old master is not a plain downscale of the delivered
+// original: measured as a transfer curve between the two at a common width,
+// the two agree below code 100 and diverge steadily above it — 200 -> 195,
+// 224 -> 214, 255 -> 244. The old export had a roll-off baked into it. So the
+// fresh decode carries highlights the target never had, and put through the
+// old numbers it blows 1.67% of the frame where the master itself holds
+// 0.58%, which trips the clip guard outright. A 512px objective cannot see
+// that — half a percent of blown pixels is averaged away at that size — so
+// the shoulder is set by the guard rather than by the fit: bisected for the
+// highest value that passes, it lands at 0.934 with 0.61% blown against a
+// 0.78% cap, and costs 0.013 dE against no roll-off at all.
 const MATCH = {
   "pt/IMG_4599.jpg": { wb: [1, 1, 1.04], gamma: 1.25, lift: 0.008, satScale: 0.886 },
   // Open midday over the reservoir: already the closest of the seven, so the
@@ -121,7 +152,7 @@ const MATCH = {
   "hero-1.jpg": { wb: [1.012, 1, 1.028], gamma: 1.013, lift: 0.006, satScale: 1.07 },
   // The shaded forest road, and the one frame whose level moves: at L* 20.8 it
   // sat 14 points below anything in the set.
-  "hero-2.jpg": { wb: [1.064, 1, 1.16], gamma: 0.716, lift: 0.006, satScale: 0.88 },
+  "hero-2.jpg": { wb: [1.069, 1, 1.16], gamma: 0.727, lift: 0.006, satScale: 0.838, shoulder: 0.93 },
   "hero-3.jpg": { wb: [0.943, 1, 1.16], gamma: 0.981, lift: 0.006, satScale: 1.3 },
   // Mixed flash and ambient indoors — the brightest of the seven, held to the
   // set's own ceiling rather than pulled to its middle.
@@ -139,7 +170,12 @@ function matchParams(m) {
     wb: m.wb,
     lift: m.lift,
     gamma: m.gamma,
-    shoulder: 1, // no roll-off: a match must not reshape the highlights
+    // No roll-off by default: a match must not reshape the highlights it is
+    // handed. A frame may ask for one, and exactly one does — see hero-2. The
+    // rule holds where the source and the target carry the same range; where
+    // the source carries *more*, refusing the shoulder does not preserve the
+    // highlights, it clips them.
+    shoulder: m.shoulder ?? 1,
     contrast: 0,
     vibrance: 0,
     satScale: m.satScale,
@@ -914,7 +950,22 @@ function lumaStats(data, n) {
 const QUALITY_FLOOR = 88;
 const QUALITY_CAP = 95;
 const HOME_SET = new Set(["hero-1.jpg", "hero-2.jpg", "hero-3.jpg", "home-youth.jpg"]);
-const BUDGETS = { home: 4.8e6, all: 12.5e6 }; // bytes
+
+// Re-based, and what they govern has changed with them. These were payload
+// budgets, set against what a visitor downloaded when these files were the
+// files the site served. They are not that any more: `scripts/postexport.mjs`
+// drops every master from the published output, and the variant pipeline
+// builds from `_originals` through `gradeToRaw` rather than from these. So a
+// byte here costs repository weight and nothing else.
+//
+// The old numbers — home 4.8 MB, set 12.5 MB — were written when hero-1, 2 and
+// 3 were 3.1 MP each. At their full resolution the home set does not fit them
+// at the q88 floor, and defending a payload budget that no longer describes a
+// payload would have meant shipping worse masters for no one's benefit. These
+// are set a little above what the floor costs (6.78 and 8.89 MB), so the
+// allocator can still lift the smoothest files a step and the file that grows
+// without anyone asking is still caught.
+const BUDGETS = { home: 7.5e6, all: 10e6 }; // bytes
 
 async function allocateQualities(items, encodeAt) {
   const cache = new Map(); // "file@q" -> encoded buffer
