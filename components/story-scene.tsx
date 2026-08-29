@@ -16,9 +16,9 @@ const RISE: CSSProperties = { translate: "0 40px" };
 const FADE: CSSProperties = { opacity: 0 };
 const DRAW: CSSProperties = { scale: "0 1" };
 
-// The 29% column on desktop, a stacked block below it — the same measurement
-// the offer panels fetch at.
-const PHOTO_SIZES = "(min-width: 768px) 29vw, calc(57vw + 78px)";
+// The 29% column on desktop, 27svh of picture below it — the same measurement
+// the offer panels fetch at, declared in `vh` for the same reason.
+const PHOTO_SIZES = "(min-width: 768px) 29vw, 27vh";
 
 interface SceneImage {
   src: string;
@@ -92,11 +92,11 @@ export function StoryScene({ groups, image, flip = false }: StorySceneProps) {
 
   return (
     <section data-index-section="" className="relative">
-      {/* The scenes share the panels' bands, so they take the panels' head
-          with them: the grid's proportional `padding-top` is the whole of it
-          below `md`. The head's loss and the photograph's gain cancel here
-          too, so these sections measure what they measured before. */}
-      <div className="relative flex min-h-svh w-full items-center px-4 pb-16 md:px-0 md:py-0">
+      {/* The scenes share the panels' bands, so they take the panels' four
+          `svh` ones with them. Their paragraphs are shorter than the panels',
+          so `min-h-svh` binds here at every height a phone can be, 553
+          included, and each scene is exactly one screen. */}
+      <div className="relative flex min-h-svh w-full items-center px-4 pb-[3svh] md:px-0 md:py-0">
         <div
           className={cn(
             "offer-panel-grid relative w-full",

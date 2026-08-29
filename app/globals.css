@@ -437,26 +437,23 @@ body {
      centred in the frame below the chrome rather than in the whole frame —
      the header is fixed and carries no fill, so a row centred against the
      window's own middle lands the eyebrow level with the wordmark. */
-  /* The head is a proportion of the panel's own width, which is the one
-     quantity everything else in a stacked panel is derived from — the
-     photograph is a share of it and its height follows from 3:4. It used to be
-     `4rem` on top of the block's own `pt-16`, a flat 128px that stood at 15.2%
-     of the window at 844 and **23.1% at 553**, eating a larger share of every
-     shorter screen. It was also doing nothing it was written for: the 4rem is
-     a correction for centring a block against a window whose top 65px the
-     fixed header covers, and `min-h-svh` on the block never binds below a
-     950px window, so on a phone nothing is centred and the correction is
-     dead space.
+  /* Every band of a stacked panel is a share of the window. The head was 20%
+     of the panel's *width* — a length, because a width is not a height — so it
+     stood at 8.5% of an 844 screen and 12.4% of a 553 one, growing as a share
+     of every shorter phone. The gap was 3rem flat, which does the same thing
+     more quietly.
 
-     20% of the width is 71.6px at 390 and 68.6 at 375 — 10.8% of a 664 window
-     against 19.3%. The block's own top padding goes with it; what is left of
-     the head is this one declaration. */
+     3svh is 19.9px at 664 and 16.6 at 553, and it is the same 3% of both. The
+     head has nothing left to correct for: the 4rem it descends from was a
+     correction for centring a block against a window whose top 65px the fixed
+     header covers, and that centring only happens once the block fits the
+     screen — which, as of this pass, it does. */
   .offer-panel-grid {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 3rem;
-    padding-top: 20%;
+    gap: 3svh;
+    padding-top: 3svh;
   }
   @media (min-width: 768px) {
     .offer-panel-grid {
@@ -502,28 +499,30 @@ body {
      for the column to outgrow it the picture stops instead of overrunning the
      frame. Below about a 2.2:1 window the column is the narrower of the two
      and the cap never binds. */
-  /* The 96px is the head, transposed. A panel's total height is a scroll
-     offset — every Section 2 key below it is a sum of everything above — so
-     what the head gives up the picture has to take, exactly, at every width
-     the phone can be. At 3:4 a picture takes 4/3 of what it is given in width,
-     so 96px of width is the 128px the head loses, and the two cancel: 71.6
-     against 400.1 at 390, 68.6 against 388.7 at 375, and the panel measures
-     what it measured before to a tenth of a pixel at both.
+  /* The picture is sized against the window it has to fit inside, which is the
+     only quantity that answers the complaint. A height derived from a width is
+     a fixed length however it is written — `calc(57% + 96px)` at 3:4 gave
+     400.1px of picture at 553, 664, 750 and 844 alike — so the panel it sat in
+     could only fit one of those screens, and it fitted the one the device
+     never makes.
 
-     That is also why the `96px` is a length and not a share. The head's loss
-     is a constant and the picture's gain has to be the same constant; a pure
-     percentage would gain a different number at each width and the two would
-     only cancel at one of them — the shorter phone's panel would come out
-     10px short and take the twelve keys with it.
+     27svh of width is 36svh of picture. With the head, the gap and the foot at
+     3svh each, a panel is 0.45 of the window plus its paragraph, and the
+     paragraph is the whole of what is left: 337.6px of frozen copy at a
+     reading size that does not scale, which is 50.8% of a 664 screen. That is
+     the ceiling on this composition and it is why the picture is 179px wide at
+     664 rather than 300 — a stacked panel that shows the paragraph and the
+     whole photograph on one screen has half a screen to spend on the picture,
+     and at 3:4 half a screen of height is a little under half a screen of
+     width.
 
      The crop does not move. `aspect-ratio: 3 / 4` and the frame's
      `object-position` are untouched, so the picture is the same rectangle of
-     the same photograph, painted larger: 59.5% of the window at 553 becomes
-     70.8%, and it is wholly on screen at every height. The cap moves with the
-     width so it still binds at the same window it did. */
+     the same photograph, painted smaller — there is nothing to re-audit
+     against the whole-subject rule. */
   .offer-panel-photo {
-    width: calc(57% + 96px);
-    max-width: 349px;
+    width: 27svh;
+    max-width: 100%;
     aspect-ratio: 3 / 4;
   }
   @media (min-width: 768px) {

@@ -1296,6 +1296,37 @@ A document laid out entirely in `svh` still slides under the reader's finger if
 its keys are computed against `innerHeight`, because half the toolbar's height
 goes straight into every one of them.
 
+**A scroll key is declared, never inherited from a content height.** A zone is
+keyed at its own middle, so a marker that *is* a section keys at half whatever
+that section happens to measure — and on a phone a stacked section's height is
+a stack of px. Every key on the home page is now an `svh` offset from the top
+row of the thing it belongs to, written as a zero-height marker, and the spans
+between them are therefore shares of the window rather than shares of a
+photograph's aspect ratio. Six of the eleven used to change length as the
+window did; the worst changed by 0.31 of a viewport between 553 and 844.
+
+**Where a px residue cannot be removed, it goes in a hold, never in a ramp.** A
+span that starts inside one block and ends inside the next *is* that block's
+own height, so while the block is taller than the screen no expression makes
+that span a share of one. What is free to choose is *which* span carries it,
+and the answer is always a hold: a hold is a still frame, so its length
+changing with the window is not a change of pace, where a ramp's length is
+exactly what pace means. §2.26 is the worked example — the road's full hold and
+the quiet run out of the second panel carry it, and no ramp on the page carries
+px.
+
+**Frozen reading copy is the ceiling on any block that has to fit the screen.**
+Reading type does not scale with the viewport, so a paragraph is a fixed number
+of pixels — and the offer panels' longest is 337.6px, which is **50.8% of a 664
+screen**. Every other band of that block can be made a share of the window; the
+paragraph cannot, and what is left over after it is all the composition has to
+spend. That is why the panels' photograph is 179px wide at 664 and not 300: a
+stacked panel showing its paragraph and a whole 3:4 picture on one screen has
+half a screen of height for the picture, and half a screen of height at 3:4 is
+a little under half a screen of width. **Measure the copy first and design the
+rest of the block into the remainder** — the reverse order is how a block ends
+up fitting exactly one window, and never the window the device makes.
+
 ## The stage
 
 **The home page has one ground below the hero, and it is a photograph.** Every

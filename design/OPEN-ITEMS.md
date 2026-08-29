@@ -1403,6 +1403,243 @@ is at 0.227 rather than 0.509 when the last numeral clears the top of the
 window. It is still a photograph and the numeral is still standing on it; what
 was bought is a fall that runs at one pace.
 
+**Three of these keys moved again under §2.27, for a contrast reason, and that
+item carries the final table.**
+
+**2.27 · The panel is one screen and the photograph is whole in it.** Done, and
+the diagnosis first, because Andreas's complaint had two possible causes and
+only one of them was true.
+
+**The photograph is not clipped. It is below the fold.** Every ancestor of
+`.offer-panel-photo` that could cut it was walked and measured, at all four
+heights and in both engines, with the entrance's `translate: 0 40px` forced to
+its end state — a rect read before that entrance fires puts the picture 40px
+low, which is the trap §2.23 recorded and which this pass fell into once before
+catching it. **Nothing cuts the box at any height.** What was true is that with
+the panel's head at the top of the window the picture's foot ran past the
+bottom of it:
+
+| with the head at the window top | 553 | 664 | 750 | 844 |
+|---|---|---|---|---|
+| Youth Exchanges — past the fold | **289.9px** | **166.7px** | **80.7px** | 0 |
+| Training Courses — past the fold | **289.9px** | **193.3px** | **107.3px** | **13.3px** |
+
+Both engines agree to 0.1px, and the figures reproduce §2.24's to the pixel. So
+the fix is the panel's height, not a clip and not the crop.
+
+**Every band is now a share of the window, and the paragraph is the ceiling.**
+The head was 20% of the panel's *width* and the gap 3rem, the foot 64px, and
+the picture's height came from its width through `aspect-ratio` — four lengths
+in a box that had to fit a screen. They are `3svh` / `3svh` / `3svh` and a
+picture `27svh` wide, which at 3:4 is `36svh` tall. That is 0.45 of the window,
+and what fills the rest is the paragraph: **337.6px of frozen copy at a reading
+size that does not scale, 50.8% of a 664 screen.** The picture gets what is
+left, which is why it is 179px wide at 664 and not 300 — the arithmetic is
+forced, and it is the price of the requirement rather than a preference.
+
+**Measured, at 390 wide unless stated:**
+
+| | before | after |
+|---|---|---|
+| head | 71.6px flat | `3svh` — 16.6 / 19.9 / 22.5 / 25.3 |
+| head as a share of the window | 12.4 / 10.8 / 9.5 / 8.5% | **3.0% at all four** |
+| gap | 48px flat | `3svh` |
+| foot | 64px flat | `3svh` |
+| photograph | 300 × 400.1 at every height | **149.3×199.1 / 179.3×239 / 202.5×270 / 227.9×303.8** |
+| photograph as a share of the window | 70.3 / 60.3 / 53.3 / 47.4% | **36.0% at all four** |
+| panel block, 553 / 664 / 750 / 844 | 906.9 / 894.7–921.3 / 894.7–921.3 / 894.7–921.3 | **586.4 / 664 / 750 / 844** |
+| panel in screens | 1.64 / 1.35–1.39 / 1.19–1.23 / 1.06–1.09 | **1.06 / 1.00 / 1.00 / 1.00** |
+
+**`min-h-svh` binds on a phone for the first time.** The panel's content is
+636px at 664 against a 664 window, so the block is exactly a screen and the
+composition centres inside it with 14px above and below — which is what the
+head's original `4rem` was written to correct for and had never once done,
+because the block had never once fitted. At 553 the content is 586.4px and the
+screen is 553, so there the block is still its content.
+
+**The overflow after, with the head at the window top:**
+
+| | 553 | 664 | 750 | 844 |
+|---|---|---|---|---|
+| Youth Exchanges | **16.8px over** | 47px clear | 73.2 clear | 101.9 clear |
+| Training Courses | **16.8px over** | **33.7px clear** | 59.9 clear | 88.6 clear |
+
+So the whole photograph is on the screen with the head at the top at 664, 750
+and 844, and at 553 it is 16.8px short — 3% of that window, against the 289.9px
+it was. Identical in both engines to 0.1px.
+
+**The 3:4 aspect and the whole-subject rule are untouched.** `aspect-ratio: 3 /
+4` and the frame's `object-position` are unchanged, so the visible rectangle is
+the same rectangle of the same photograph, painted smaller. No band was
+re-cropped and nothing is cut through a person at 553 or anywhere else — there
+was nothing to re-audit, which is the same argument §2.24 made in the other
+direction.
+
+**No head space grows as a share of a shorter screen.** The head, the gap and
+the foot are 3.0% of the window at 553, 664, 750 and 844. Before, the head
+alone ran from 8.5% to 12.4% as the screen shortened.
+
+**The one thing this costs, stated plainly because it is a decision rather than
+a defect.** The old 71.6px head cleared the fixed header's 64px at every
+height; the new one does not at the two shortest. With the block's top row at
+the top of the window, measured on the built page:
+
+| | header | eyebrow | title | prose |
+|---|---|---|---|---|
+| before, 553 | 64 | 68.6 | 105.8 | 193.9 |
+| before, 664 / 750 / 844 | 64 | 71.6 | 108.8 | 196.9 |
+| after, 553 | 64 | **16.6** | **53.8** | 141.9 |
+| after, 664 | 64 | **47.0** | 84.2 | 172.3 |
+| after, 750 | 64 | 73.2 | 110.4 | 198.5 |
+| after, 844 | 64 | 101.9 | 139.1 | 227.2 |
+
+So at **664 the eyebrow row sits 17px inside the header's band** and the title
+clears it by 20; at **553 the eyebrow and the title's top row are both inside
+it**. At 750 and 844 everything clears. The eyebrow is a mark rather than a
+string — `aria-hidden` pseudo-content, outside the frozen copy and outside the
+contrast sweep — and the chrome carries no fill, only a darkening the cream ink
+reads better on. The page also passes every other block under that bar as it
+scrolls, and the clearing's own centred block does the same thing at 553.
+
+**The lever, priced, so it can be pulled on one number.** The eyebrow's row is
+the head plus half the block's centring slack, and the slack falls by half of
+whatever the head takes — so a pixel on the eyebrow costs two on the head, and
+the head can only take them from the picture, since the total is what has to
+stay inside a screen. Clearing 64px at 664 wants the head at **8svh** against
+3, which takes **34px off the picture's height and 14% off its width** — 179.3
+→ 153.8 at 664. It is not spent here: Andreas's constraint is that the head
+must not grow as a share of a shorter screen, and the item is the photograph.
+A `max(3svh, 68px)` floor would clear the bar at every height and would break
+that constraint exactly — 12.3% of a 553 screen against 8.1% of an 844 one.
+
+**The twelve keys, after, at all four heights** — identical in WebKit and
+Chromium to 1px:
+
+| key | 553 | 664 | 750 | 844 |
+|---|---|---|---|---|
+| the clearing starts to rise | 0 | 0 | 0 | 0 |
+| the clearing is full | 343 | 412 | 465 | 523 |
+| the ledger holds it | 830 | 996 | 1125 | 1266 |
+| panel 1 takes the frame | 1228 | 1474 | 1665 | 1874 |
+| panel 1 quiet | 1261 | 1514 | 1710 | 1924 |
+| the road rises | 1394 | 1673 | 1890 | 2127 |
+| the road falls | 1532 | 1799 | 2033 | 2287 |
+| panel 2 takes the frame | 1726 | 2032 | 2295 | 2583 |
+| panel 2 quiet | 1847 | 2178 | 2460 | 2768 |
+| the gains ground quiet | 2036 | 2364 | 2670 | 3005 |
+| the gains ground full | 2312 | 2696 | 3045 | 3427 |
+| the closing | 2727 | 3194 | 3608 | 4060 |
+
+**And the eleven spans, which is what §2.26 asked for.** Nine hold their share
+to 0.002 at all four heights; the two holds carry the panels' overflow at 553
+and only at 553:
+
+| span | share | 553 | 664 | 750 | 844 | swing |
+|---|---|---|---|---|---|---|
+| the clearing's rise | 0.620 | 343 | 412 | 465 | 523 | 0.001 |
+| the ledger's hold | 0.880 | 487 | 584 | 660 | 743 | 0.001 |
+| the handover into the panels | 0.720 | 398 | 478 | 540 | 608 | 0.001 |
+| panel 1 take → quiet | 0.060 | 33 | 40 | 45 | 50 | 0.001 |
+| the road's rise | 0.240 | 133 | 159 | 180 | 203 | 0.001 |
+| **the road's hold** | 0.190 | **138 — 0.250** | 126 | 143 | 160 | **0.060** |
+| the road's fall | 0.350 | 194 | 233 | 262 | 296 | 0.002 |
+| panel 2 take → quiet | 0.220 | 121 | 146 | 165 | 185 | 0.001 |
+| **panel 2 quiet → the gains** | 0.280 | **189 — 0.342** | 186 | 210 | 237 | **0.062** |
+| the gains' rise | 0.500 | 276 | 332 | 375 | 422 | 0.001 |
+| the run out to the closing | 0.750 | 415 | 498 | 563 | 633 | 0.001 |
+
+Document heights: **4056 → 3409, 4392 → 3903, 4650 → 4339, 4931 → 4814**, and
+the desktop 5254 → 5248. About's shorter scenes fit `min-h-svh` at *every*
+height including 553, so all three of its scenes are exactly one screen and its
+document goes 4360 → 3466, 4683 → 4132, 4941 → 4648, 5223 → 5212.
+
+**Three keys moved after §2.26 landed, and the reason is the finding of this
+pass.** §2.26 gave both panels the same first key at `66svh`, on the reading
+that "the panel takes the frame" is one thing. It is two. The first panel's key
+is where the *clearing's* photograph finishes leaving and it has to outlast the
+ledger's last numeral, so it is late. The second panel's key is where the *road*
+finishes leaving and it has to be gone before the panel's own prose is read, so
+it is early. Held at one number, the second panel's prose lost 0.26 to 0.63 of
+contrast on a desktop. Split — **66% on the first panel, 50% on the second**,
+with the road's own two markers moved to 96% and 15% to keep its shape — all
+three of those readings come back to the hundredth.
+
+**Contrast, and the instrument is half the story.** Two full sweeps: the
+canonical one at 1440×900 and 390×844 (186 measurements) and a second at 553,
+664 and 750 (257 measurements). **No element on any page at any of the five
+viewports is below its floor except FAQ's opening paragraph, which is below it
+on the before build too and below it at `3749c92`.** Nothing else breaches
+anything.
+
+The eight-stop sweep reports large falls that are not falls. It samples each
+element at fixed fractions of its own traversal, and this pass shortens the
+document by 300–650px, so every element lands at different absolute scrolls —
+the ground under the sampled frame changes while the element's own worst frame
+does not. Stepped at 6px across the whole traversal, on both builds:
+
+| element | viewport | before | after | floor |
+|---|---|---|---|---|
+| `span` Professional development… (panel 2) | 1440×900 | **4.34** | **4.34** | 4.5 |
+| `span` Focused on skill-building… (panel 2) | 1440×900 | 4.72 | 4.72 | 4.5 |
+| `span` Open to educators… (panel 2) | 1440×900 | 4.95 | 4.95 | 4.5 |
+| `span` Participate through workshops… (panel 1) | 1440×900 | **3.76** | **4.04** | 4.5 |
+| `span` International group experiences… (panel 1) | 1440×900 | **3.77** | **8.25** | 4.5 |
+| `p` Your adventure starts here. | 1440×900 | 4.19 | 4.27 | 3 |
+| `span` Open to educators… | 390×664 | 4.54 | 4.58 | 4.5 |
+| `span` Professional development… | 390×664 | 4.58 | 4.58 | 4.5 |
+| `span` Focused on skill-building… | 390×664 | 4.54 | 4.54 | 4.5 |
+| `p` Your adventure starts here. | 390×664 | 3.50 | 3.57 | 3 |
+| `p` Your adventure starts here. | 390×750 | 3.35 | 3.40 | 3 |
+
+**Not one of them falls.** Six are identical, five rise, and the two that rise
+most are the first panel's prose, which gains from the later handover key. So
+there is nothing to classify against the three-branch ratchet: no
+composition-derived fall, no resolution-derived fall, and the eight-stop
+sweep's apparent falls are the fourth thing — the instrument resampling a
+document that got shorter. The panel prose §2.7 left at 5.07 does not fall; at
+the sampler's own resolution it reads **5.81 / 5.37 / 5.33** at 553 / 664 / 750.
+
+**A pre-existing breach the canonical sweep has never caught, recorded and not
+fixed here.** At a 6px step, **five of the six desktop panel elements have a
+true worst under 5.0 and three of them were under the 4.5 floor on the build
+this pass started from** — 4.34, 3.76 and 3.77. The eight-stop sweep reports
+those same three at 5.38, 9.40 and 9.02, because its eight stops never once
+land where the road is strongest under them. After this pass two are still
+under: 4.34 and 4.04. **They are below the floor before and after, this pass
+does not deepen either, and repairing them is a plate-strength question on the
+road rather than a key position** — which makes it an item, not a line in this
+one. It belongs beside §2.8's standing conflict.
+
+**The rest of the verification.** `verify:text` **PASS on all four pages** —
+home 1303, about 1599, contact 277, faq 1993 characters, on a clean
+`rm -rf .next out` production build. Stall scanned frame by frame at one
+sampling step across the whole of home: **0px at 553, 664, 750 and 844** on all
+four of its transitions, and the About wall's is 12 / 0 / 14 / 14, one step,
+exactly where §2.22 left it. The wall is otherwise untouched — peak scale
+**2.60**, the ring at **1.000**, coverage **100%** at the peak with 19–25% of
+the rise still to run, at every height. Plate 0 and plate 1 are never both
+showing at any frame, so the polarised ledger holds; the largest one-step change
+in plate strength anywhere is **0.086**. No horizontal overflow at any
+viewport. Rendered-against-fetched on home improves — the panel photograph drops
+from the 1024 rung to 640 (844 takes 768) and paints at 0.70 / 0.84 / 0.95 /
+0.89 of what it fetches, and the worst figure anywhere on the page goes 0.9 →
+0.8 at 553 and 664. The desktop's 2.0 is `hero-2` full-bleed, the carried item,
+unchanged.
+
+**Contact sheets re-rendered** at 390×664 and 390×750 into
+`design/refs/transitions/after-real/`, all five transitions, ten frames each,
+every window derived from the twelve keys at the height being shot. They show
+the build both items leave rather than §2.26's intermediate — that state was
+superseded within the hour and shooting it twice would have recorded a page
+that never shipped.
+
+**What still requires the device.** Everything in §2.19's list, unchanged: no
+headless engine has browser chrome, so none of them can produce the state where
+`svh`, `lvh` and `dvh` differ. This pass is legible in the declarations and
+verified to hold at 553, 664, 750 and 844 in both engines, but **that the panel
+fits the phone at both chrome states, and that the photograph is whole in it,
+has to be confirmed on the phone.**
+
 ---
 
 ## 3 · Titles
@@ -1462,6 +1699,33 @@ the resting baseline runs **6.0% of the window at stage 0.55 falling to nothing
 by 0.88** at 1440×900, and **20.3% falling to nothing by 0.94** at 390×844.
 0.75–0.85 is the tail of that range, not a separate defect, and every tile with
 ground beside it is one still travelling from its gathered offset.
+
+**4.4 · The rebuild audits every slot, not the one that moves.** Carried from
+§2.22 and not fixed there, because the wall is being recomposed from the
+previews in `design/refs/wall/` and auditing the current composition is wasted
+work.
+
+**The finding.** `hero-2` in the right upright slot paints at **0.987 of the
+variant it fetches** at 390×844 DPR 3 — one percent under the ceiling, on the
+one frame `§8` already carries at three placements. It is not the tile that
+scales and it is not at peak; that is its number **at rest**. §2.14's audit
+measured the centre tile only, across the whole of its rise, and the six of the
+ring were dismissed in one line because they hold at 1.000 — but a tile that
+never scales still has a slot, and a slot that is a share of the window is a
+different number of pixels at every window. Every tile is sized in `vh`, which
+on a phone is the *large* viewport at both chrome states, so on the device it
+is the 750 column that binds and the number there is 0.878. The full set at
+390×844: centre 0.771, upper-left 0.753, left upright 0.720, **right upright
+0.987**, lower-right 0.847, lower-left 0.836, upper-right 0.894.
+
+**The requirement, written here so it is not forgotten.** The Section 4 build
+audits **every slot of the wall, at rest and at peak, at all four heights and
+at DPR 3** — rendered-against-fetched and rendered-against-source, per tile,
+per state. A single figure for "the wall" is not an audit of it, and neither is
+a figure for the tile that happens to move. The same rule applies to the
+pinned frame's own unit: it is `sticky top-0 h-svh`, sized to the small
+viewport, so it leaves a band of floor under the wall once the bar collapses —
+the mismatch §2.19 recorded and left inside the frozen geometry.
 
 ---
 

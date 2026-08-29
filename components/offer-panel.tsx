@@ -18,12 +18,12 @@ const FADE: CSSProperties = { opacity: 0 };
 const DRAW: CSSProperties = { scale: "0 1" };
 
 // How wide the photograph renders, so the browser fetches that width and no
-// more: the 29% column on desktop, a stacked block below it. The stacked
-// declaration is the painted width written out — `calc(57% + 96px)` of a box
-// inset 16px each side is `57vw + 77.8px` — because a flat `72vw` now
-// under-declares it by up to five points and the browser would take a rung
-// below what it paints.
-const PHOTO_SIZES = "(min-width: 768px) 29vw, calc(57vw + 78px)";
+// more: the 29% column on desktop, 27svh of picture below it. The stacked
+// declaration is `vh` rather than `svh` deliberately — `vh` is the large
+// viewport, so on a phone it is the painted width plus the toolbar's share and
+// never under it, and a declaration a hair over the paint is the safe side of
+// this line.
+const PHOTO_SIZES = "(min-width: 768px) 29vw, 27vh";
 
 // The eyebrow label, one per panel, in the order the panels appear. Like the
 // numerals it is pseudo-content and never enters the DOM — the site's visible
@@ -131,10 +131,13 @@ export function OfferPanel({
           in `svh` off the panel's top row, so the spans they bound are shares
           of the window rather than shares of a photograph's aspect ratio. */}
       <div className="relative">
-        {/* No top padding below `md`. The head is one declaration now — the
-            grid's own proportional `padding-top` — rather than this 64px plus
-            that one; the foot keeps its 64. */}
-        <div className="relative flex min-h-svh w-full items-center px-4 pb-16 md:px-0 md:py-0">
+        {/* The foot is the last px band to go. At 64 it was 9.6% of a 664
+            screen and 11.6% of a 553 one; at 3svh it is 3% of both, and it
+            matches the head and the gap. `min-h-svh` now binds on a phone at
+            664, 750 and 844 — the content is 636px at 664 — so the panel is
+            one screen and the block centres in it, which is what the head was
+            originally written to correct for. */}
+        <div className="relative flex min-h-svh w-full items-center px-4 pb-[3svh] md:px-0 md:py-0">
           <div
             className={cn(
               "offer-panel-grid relative w-full",

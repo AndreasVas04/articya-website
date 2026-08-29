@@ -400,24 +400,42 @@ export default function HomePage() {
                     length changing with the window is not a change of pace; a
                     ramp's length is exactly what pace means.
 
-                    The road still crosses the join. Its rise starts at 98% of
-                    the first panel and its fall ends at 30% of the second, so
-                    it is full from a fifth of a screen before the boundary to a
-                    fifth after it, and at the peak the panel above is still
+                    The road still crosses the join. Its rise starts at 96% of
+                    the first panel and its fall ends at 50% of the second, so
+                    it is full from just before the boundary to a sixth of a
+                    screen after it, and at the peak the panel above is still
                     leaving the top of the window while the panel below is
                     entering the foot. Full strength, not 0.9: the ground on
-                    this page is either a photograph or it is nothing. */}
+                    this page is either a photograph or it is nothing.
+
+                    **The two panels' first key is not the same number, and it
+                    was the mistake worth catching.** It reads like one key —
+                    "the panel takes the frame" — but the two are the ends of
+                    two different withdrawals. The first panel's is where the
+                    *clearing's* photograph finishes leaving, and it has to
+                    outlast the ledger's last numeral, so it is late: 66%. The
+                    second's is where the *road* finishes leaving, and it has to
+                    be gone before the panel's own prose is read, so it is
+                    early: 50%. Putting both at 66 cost the second panel's prose
+                    0.26 to 0.63 of contrast on a desktop, measured at a 6px
+                    step across the whole traversal — the eight-stop sweep never
+                    saw it, because the element does not move and only the
+                    ground's schedule under it does. */}
                 <span
                   aria-hidden="true"
                   data-stage-plate="1"
                   data-stage-strength="0"
-                  className="absolute inset-x-0 top-[66svh] h-0"
+                  className={
+                    i === 0
+                      ? "absolute inset-x-0 top-[66svh] h-0"
+                      : "absolute inset-x-0 top-[50svh] h-0"
+                  }
                 />
                 <span
                   aria-hidden="true"
                   data-stage-plate="1"
                   data-stage-strength="0"
-                  className="absolute inset-x-0 top-[74svh] h-0"
+                  className="absolute inset-x-0 top-[72svh] h-0"
                 />
                 <span
                   aria-hidden="true"
@@ -425,8 +443,8 @@ export default function HomePage() {
                   data-stage-strength="1"
                   className={
                     i === 0
-                      ? "absolute inset-x-0 top-[98svh] h-0"
-                      : "absolute inset-x-0 top-[30svh] h-0"
+                      ? "absolute inset-x-0 top-[96svh] h-0"
+                      : "absolute inset-x-0 top-[15svh] h-0"
                   }
                 />
                 <OfferPanel
