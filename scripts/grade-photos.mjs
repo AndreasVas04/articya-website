@@ -116,13 +116,13 @@ const UNGRADED = [
 // point past which a correction stops being a trim and starts being a
 // different photograph.
 //
-// A frame is re-solved when its master is replaced by the full-resolution
-// original. The target was the frame that already ships —
+// hero-1, hero-2 and hero-3 were re-solved when their masters were replaced by
+// the full-resolution originals. The target was the frame that already ships —
 // these numbers had been solved onto the set and signed off there, and the
 // swap is meant to add pixels and change nothing else — so each was fitted to
 // reproduce the old master's own graded output rather than to reach the set
-// again from scratch. Mean dE2000 against that frame goes 2.99 -> 2.96 for
-// hero-2 and 2.84 -> 2.67 for hero-1; hero-3 follows in its own commit.
+// again from scratch. Mean dE2000 against that frame goes 2.84 -> 2.67,
+// 2.99 -> 2.96 and 2.65 -> 2.08.
 //
 // The residual is the floor, not slack in the fit: it is what separates two
 // renderings of one negative, and no combination of a gain, a gamma and a
@@ -153,7 +153,7 @@ const MATCH = {
   // The shaded forest road, and the one frame whose level moves: at L* 20.8 it
   // sat 14 points below anything in the set.
   "hero-2.jpg": { wb: [1.069, 1, 1.16], gamma: 0.727, lift: 0.006, satScale: 0.838, shoulder: 0.93 },
-  "hero-3.jpg": { wb: [0.943, 1, 1.16], gamma: 0.981, lift: 0.006, satScale: 1.3 },
+  "hero-3.jpg": { wb: [0.936, 1, 1.16], gamma: 0.985, lift: 0.006, satScale: 1.065 },
   // Mixed flash and ambient indoors — the brightest of the seven, held to the
   // set's own ceiling rather than pulled to its middle.
   "AboutImage1.jpg": { wb: [0.946, 1, 1.059], gamma: 1.078, lift: 0.006, satScale: 1.039 },
