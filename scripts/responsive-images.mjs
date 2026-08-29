@@ -105,10 +105,6 @@ const FULL_BLEED = new Set([
   "/images/hero-3.jpg", // hero slide 3
 ]);
 
-// What the two constants above actually promise, checked rather than asserted
-// in prose. The first two throw: they are invariants the ladder is built on.
-// The third only reports, because a source-capped full-bleed frame is a
-// photograph problem and the build must still produce the site.
 // Display width of every full-bleed frame, from metadata alone — no decode and
 // no grade, so the checks below can run before any encoding starts. A cropped
 // frame's width is its source's width times the crop's own fraction, which is
@@ -125,6 +121,10 @@ async function bleedWidths() {
   return dims;
 }
 
+// What the two constants above actually promise, checked rather than asserted
+// in prose. The first two throw: they are invariants the ladder is built on.
+// The third only reports, because a source-capped full-bleed frame is a
+// photograph problem and the build must still produce the site.
 function assertLadder(dims) {
   for (let i = 1; i < LADDER.length; i++) {
     if (LADDER[i] <= LADDER[i - 1]) {
@@ -243,12 +243,50 @@ const CROPS = {
 // verified against the graded master at display size (flat skies/walls at
 // 1:1). AVIF has no 8x8 blocking so it holds flat regions at a lower number;
 // WebP and JPEG sit higher. Every variant is one encode from graded pixels.
+//
+// AVIF's quality is a function of the rung, because a rung is a statement
+// about how densely the pixels will be painted. q62 is the site's number and
+// it holds everywhere except one rung.
+//
+// BLEED_WIDTH takes q50. That rung exists only so a full-bleed frame can cover
+// a retina desktop, and at both reference viewports it is painted at or above
+// two image pixels per CSS pixel — 2.0 at 1440x900 DPR 2, 3.0 at 390x844
+// DPR 3. Rendered at 1:1 device pixels and then magnified 2x on top, the two
+// placements that fetch it — /faq/'s ground and the home hero's first slide —
+// do not separate from q62 at their own worst windows, where the departure
+// from the graded reference goes 7.33 -> 9.92 and 10.99 -> 11.76 mean codes
+// and neither is visible in a canopy or on a stone wall. It returns a third of
+// the bytes on the largest file every full-bleed page downloads.
+//
+// The 3840 SCALED rung does NOT take it, and that is the measurement rather
+// than caution. It is the one placement on the site scaled past the window —
+// the About wall's centre tile at 2.60x — so an artifact is magnified with the
+// frame, and at 150 device pixels drawn 2x the dark canopy visibly flattens at
+// q50 where q62 still holds its leaf structure. Its departure from the
+// reference goes 5.95 -> 8.34 on the same test the other two pass.
+//
+// One honest limit on the q50 rung, recorded rather than argued away: the
+// density figures above are the two reference viewports. Resolved across a
+// wider device matrix, a 2560 CSS px DPR 1 desktop — an ordinary 27-inch
+// 1440p at 100% — reaches this rung for the home hero at 1.09 image pixels per
+// CSS pixel, which is not dense. What carries the decision there is that the
+// 1:1 comparison above is already that case, and harder: it magnifies it.
+//
+// WebP and JPEG keep one quality at every rung, and that is a decision rather
+// than an omission. They are the fallback for a browser with no AVIF, which is
+// the visitor already receiving the least efficient format on the site;
+// lowering their quality on top of that inverts the policy every other number
+// here follows. Their cost is deploy weight and not payload — no visitor
+// downloads a rung they do not select — and the numbers above are AVIF's own,
+// so carrying them across to a different quantiser would be inheriting rather
+// than deciding.
+const AVIF_QUALITY = (w) => (w === BLEED_WIDTH ? 50 : 62);
 const FORMATS = [
-  { ext: "avif", mime: "image/avif", encode: (s) => s.avif({ quality: 62, effort: 4, chromaSubsampling: "4:2:0" }) },
+  { ext: "avif", mime: "image/avif", encode: (s, w) => s.avif({ quality: AVIF_QUALITY(w), effort: 4, chromaSubsampling: "4:2:0" }) },
   { ext: "webp", mime: "image/webp", encode: (s) => s.webp({ quality: 82, effort: 5, smartSubsample: true }) },
   { ext: "jpeg", mime: "image/jpeg", encode: (s) => s.jpeg({ quality: 90, mozjpeg: true }) },
 ];
-const CONFIG_VERSION = 1;
+const CONFIG_VERSION = 2;
 
 const force = process.argv.includes("--force");
 
@@ -280,6 +318,7 @@ function signature() {
   const parts = [`v${CONFIG_VERSION}`, `strength${productionStrength}`, `ladder${LADDER.join(",")}`,
     `cap${MAX_WIDTH}/${BLEED_WIDTH}`, `bleed${[...FULL_BLEED].sort().join(",")}`,
     `fmt${FORMATS.map((f) => f.ext).join(",")}`, `crops${JSON.stringify(CROPS)}`,
+    `avifq${LADDER.concat(Object.values(SCALED).map((s) => s.width)).map(AVIF_QUALITY).join(",")}`,
     `scaled${JSON.stringify(SCALED)}`];
   for (const f of ["scripts/responsive-images.mjs", "scripts/grade-photos.mjs"]) {
     parts.push(`${f}:${fs.statSync(path.join(ROOT, f)).mtimeMs}`);
@@ -367,7 +406,7 @@ async function run() {
           });
           if (region) pipe = pipe.extract(region);
           pipe = pipe.resize({ width: w, withoutEnlargement: true });
-          const buf = await fmt.encode(pipe).toBuffer();
+          const buf = await fmt.encode(pipe, w).toBuffer();
           fs.writeFileSync(path.join(OUT, `${base}-${w}.${fmt.ext}`), buf);
           count++;
           bytes += buf.length;
