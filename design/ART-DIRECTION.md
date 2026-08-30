@@ -152,26 +152,24 @@ scrolls only ~325px; it does not read as a page at all.
 ## 5 · Photographs
 
 **A photograph appears once per page, twice at most across the site, and never
-in two zones the reader crosses one after the other.** Eleven frames carry
-nineteen placements: eight twice, three once. **No frame is at three placements
-any more** — the About wall went from seven slots to five in §4.1, and the two
-compromises that paid for the seventh went with it. A frame painted sharp and
-again out of focus as the same page's ground — every inner page, and now the
-wall — is one placement, not two; so is the home hero's poster and its own
-first slide.
+in two zones the reader crosses one after the other.** Twelve frames carry
+twenty-one placements: one appears three times, eight twice, three once. A
+frame painted sharp and again out of focus as the same page's ground — every
+inner page — is one placement, not two; so is the home hero's poster and its
+own first slide.
 
 | File | Subject | Where it is |
 |---|---|---|
-| IMG_4585 | group on a path above the valley | home hero, poster and first slide — settled; About's wall, the **keystone** and the wall's own out-of-focus ground, which is one placement with it. The one frame on the wall that scales, out to 2.60 and full window coverage. At 6048×8064 it is the only strong frame in the set that can be painted at full coverage and stay under 1.0 against its own source — **0.594** at 1440×900 DPR 2 and **0.588** at 390×844 DPR 3. Its 10% horizontal is a phone decision: on a desktop the frame is narrower than the slot at every scale, so `object-position`'s x does nothing there, at rest or at the peak |
-| IMG_4619 | valley under open sky | as `-valley`: home's "What you gain" and the closing it dissolves into; as `-ridge`, a sub-rectangle of that crop with the sky off the top: About's wall, the lower-right 2.04:1 quadrant on a desktop and the 58vw top band on a phone. Its bottom-right cable corner is cropped out of both |
+| IMG_4585 | group on a path above the valley | home hero, poster and first slide — settled; About's finale, the **centre tile**, the one frame on the wall that scales, cropped at 35% to the village and the far mountains. At 6048×8064 it is the only strong frame in the set that can be painted at full window coverage and stay under 1.0 against its own source — 0.619 at 1440×900 DPR 2. Its 90% horizontal is a phone decision: on a desktop the frame is narrower than the slot at every scale, so `object-position`'s x does nothing there |
+| IMG_4619 | valley under open sky | as `-valley`: home's "What you gain" and the closing it dissolves into; as `-ridge`, a sub-rectangle of that crop with the sky off the top: About's finale, the upper-left 3.2:1 slot. Its bottom-right cable corner is cropped out of both |
 | IMG_4582 | road between stone walls, overcast | as `-road`: home only, crossed at the panels' join. Fencing across rows 107–507, and no window on it holds a complete subject — see §8 |
 | IMG_4739 | village at blue hour, cobbled lane | **off the site.** Both crops fail §2 from opposite ends: the whole frame carries overhead power cable across the sky, and the crop that removes the cable lands on railings, a satellite dish, a letterbox and a parked car |
-| hero-1 | the group walking the track above the reservoir | the ground under "What we do", and About's wall, the lower-left 1.30:1 quadrant on a desktop and the right-hand foot band on a phone, anchored to the foot of the frame at both so the walkers keep their legs. Uncropped it shows 84.8% of itself in a 16:10 window and it is a picture of the sentence it stands under. It is the tightest rendered-against-fetched reading on the wall at **0.965**, and the whole wall is clear of 1.0 |
-| IMG_4735 | cattle on a road at blue hour | as `-road`: the Contact ground, and About's wall, the upper-left 1.53:1 quadrant on a desktop and the left-hand foot band on a phone, anchored to the foot of the frame at both. Cables cross the upper half and the published crop takes the lower two thirds — **but not all of them**: a heavy cable, its pylon and a chain-link fence still stand between 21% and 41% of the cut frame, and the wall's slots open above that line at every viewport. §8 |
+| hero-1 | the group walking the track above the reservoir | the ground under "What we do", and About's finale, the **upper-right 2.13:1 slot**, anchored to the foot of the frame so the walkers keep their legs. Uncropped it shows 84.8% of itself in a 16:10 window and it is a picture of the sentence it stands under. It came out of the centre tile when that tile was given full coverage: a 2048px master is painted at 1.83 against its own source there, and capping the growth at what it could pay for left the tile covering 38.6% of the window |
+| IMG_4735 | cattle on a road at blue hour | as `-road`: the Contact ground, and About's finale, the lower-left 2.13:1 slot at 80% — one whole animal rather than a band across two of them. Cables cross the upper half; the published crop takes the lower two thirds |
 | IMG_4721 | cattle under oaks | the About ground, and nowhere else. Cropped at `0% 70%`, which is the one pair that holds the near animal whole in a landscape window and in a portrait one. It carries the h1 there, against this table's older "never behind a heading" — the heading clears its floor at 5.33, so the note is recorded rather than enforced |
-| IMG_4599 | moss-covered wall under trees | **off the site.** It was on the wall because the set ran one frame short of the page and not because it earned the slot, and §4.1's five-slot wall closed that debt. Confirmed on the built output: no placement, and `postexport` ships none of its variants |
-| hero-2 | the group walking a shaded forest road | home hero, second slide; and the FAQ ground. **Back to two placements** — §4.1 took it off the wall, which is the debt this table carried longest. Its overhead cable is still in both |
-| hero-3 | participants talking on mossy rocks | home hero, third slide; About's wall, the upper-right 1.60:1 quadrant on a desktop and the 42vw top band on a phone. At 2.14:1 it belongs in a wide slot and nowhere else — in an upright one it showed 13.5% of itself on a phone. All three seated figures are whole in both slots |
+| IMG_4599 | moss-covered wall under trees | About's finale, the left upright slot, cropped low to the wall. The set's one hard-midday frame; graded to match the others. At 1:2.19 it is the only frame that suits an upright slot on a phone — and it is on the wall because the set runs one frame short of the page, not because it earns the slot. See §8 |
+| hero-2 | the group walking a shaded forest road | home hero, second slide; the FAQ ground; About's finale, the right upright slot. **The one frame at three placements**, and it is there because nothing else is left — see §8 |
+| hero-3 | participants talking on mossy rocks | home hero, third slide; About's finale, the lower-right 3.2:1 slot. At 2.14:1 it belongs in a wide slot and nowhere else — in an upright one it showed 13.5% of itself on a phone |
 | home-training | a team-building game during a training course | About's third scene, and nowhere else |
 | AboutImage1 | five young people, Cypriot food, Cyprus + Portugal flags | Youth Exchanges panel on home; About's first scene |
 | AboutImage2 | twenty young people in a circle outside a cabin | Training Courses panel on home; About's second scene |
@@ -290,42 +288,24 @@ number was a fraction *of*, and check whether that thing is the same size here.
 Where it is not, carry the ratio the reference's own composition implies, not
 the percentage its markup happened to use.
 
-**The set was one photograph short of the site, and §4.1 closed it by
-shrinking the demand rather than the supply.** Thirteen frames are usable —
-fourteen less `IMG_4739`, which no crop clears. The seven-tile wall made the
-About page need eleven distinct ones: a ground, three scene objects and seven
-tiles; ten qualified, so one slot had no photograph and two compromises paid for
-it — `hero-2` at a third placement against this section's own two-at-most rule,
-and `IMG_4599` on the wall re-cut rather than replaced.
-
-The answer turned out not to be a fourteenth photograph. **A1 Keystone is five
-frames**, so the page needs nine and the set has ten. `hero-2` is back to two
-placements and `IMG_4599` is off the site, both confirmed by placement count on
-the built output rather than by reasoning. What made five enough is that the
-fifth frame is *set into the junction* of the other four instead of sitting
-beside them: the interlock the seven-tile wall bought with two extra slots, A1
-buys with one overlap.
+**The set is one photograph short of the site.** Thirteen frames are usable —
+fourteen less `IMG_4739`, which no crop clears. The About page alone needs
+eleven distinct ones: a ground, three scene objects and seven tiles. Taking out
+the three tiles that did not stand on their own leaves ten. So one slot on the
+wall has no photograph for it, and two compromises pay for that: `hero-2` takes
+a third placement against this section's own two-at-most rule, and `IMG_4599`
+stays on the wall re-cut rather than replaced. Both are photography, not code —
+the wall's geometry is sound and shrinking it would cost the interlock the
+whole composition is built on.
 
 What is still open:
 
 - **The lede, "What you gain", the closing** — §4 above. Under-designed, and the
   panels' geometry is now the only part of home that is settled.
 - **Overhead cable in `hero-2`.** It enters the top-left corner and runs down to
-  a pole a third of the way across. The frame is off the About wall now, so the
-  two placements that carry it are the home hero slide and the FAQ ground, and
-  both are the whole frame full-bleed with no window to compose around it. §2,
-  and only a different frame closes it.
-- **Cable, pylon and fence in `IMG_4735-road`, and the crop does not clear
-  them.** This table said "the published crop takes the lower two thirds", which
-  is true of the crop and not of the cable. Measured on the graded frame at
-  2880: the heavy cable descends across the cut frame's own sky to a lattice
-  pylon at 62% of its width, and a chain-link fence with a gate and a railing
-  runs from 21% to 41% of its height. Every wall slot on this frame is anchored
-  to the foot — the furthest from it any of them can be — and still opens at
-  26.5% on a desktop and 29.8%–54.0% on a phone, so the fence band is in the
-  picture at every viewport. It is also in the Contact ground, which is the
-  whole frame. §2, pre-existing, and only a different photograph or a second cut
-  closes it.
+  a pole a third of the way across. The About tile is cropped clear of it; the
+  home hero slide and the FAQ ground are not, and at both viewports it is
+  visible against the canopy. §2, and only a different frame closes it.
 - **Fencing in the road frame.** `IMG_4582-road` carries a chain-link fence
   across rows 107–507 of its 1020, and a 16:10 window shows 854 of them, so no
   pan clears it; the bottom-anchored one in use clears the most. The crop is

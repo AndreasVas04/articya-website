@@ -7,7 +7,6 @@ import {
   useReducedMotion,
   useScroll,
   useTransform,
-  type MotionValue,
 } from "framer-motion";
 import { ResponsiveImage } from "@/components/responsive-image";
 import { coverSizes, type SizeBox } from "@/lib/images";
@@ -21,9 +20,9 @@ const stageWindow = (value: number, from: number, to: number) =>
 // The words play on the clock, never on the scrollbar. Scrubbed by scroll a
 // real flick collapses the whole entrance into a couple of frames and the
 // closing line is gone before it can be read; on a fixed duration a visitor
-// who blasts past still finds it settled. The wall stays scroll-linked — the
-// frames are the composition itself, not text — and so does the handoff that
-// takes the words back out as the wall closes over them.
+// who blasts past still finds it settled. The mosaic stays scroll-linked —
+// the tiles are the composition itself, not text — and so does the handoff
+// that takes the words back out as the ring closes over them.
 const ENTER_EASE = "cubic-bezier(0.16, 1, 0.3, 1)";
 const RISE: CSSProperties = { translate: "0 40px" };
 const FADE: CSSProperties = { opacity: 0 };
@@ -32,186 +31,193 @@ const DRAW: CSSProperties = { scale: "0 1" };
 interface GalleryImage {
   src: string;
   alt: string;
-  /** Where the tile's window sits on the frame at 768 and up. A slot's aspect
-   *  is fixed by the wall, so this is the only thing that decides whether the
-   *  tile holds a whole subject or a slice of one. Defaults to centred. */
+  /** Where the tile's window sits on the frame. A slot's aspect is fixed by
+   *  the wall, so this is the only thing that decides whether the tile holds a
+   *  whole subject or a slice of one — centred, the cattle lost their legs to
+   *  the bottom edge and the walkers lost theirs. Defaults to centred. */
   position?: string;
-  /** The same, below 768. The wall is a different arrangement there — four
-   *  bands instead of four quadrants — so a frame that is fitted by its width
-   *  in one is fitted by its height in the other, and the axis the position
-   *  actually bites on swaps with it. */
-  positionCompact?: string;
 }
 
 interface GalleryFinaleProps {
   /** The closing paragraph in staged groups; joined with spaces it is the original text. */
   groups: string[];
-  /** Five frames; the first is the keystone and carries the closing zoom. */
+  /** Up to 7 images; the first is the centre tile and carries the closing zoom. */
   images: GalleryImage[];
 }
 
-/** A slot rectangle, in percent of the pinned frame. */
-interface Rect {
-  l: number;
-  t: number;
-  w: number;
-  h: number;
-}
-
-interface Slot {
-  wide: Rect;
-  compact: Rect;
-  /** Where the frame holds while the words are up, as an offset from its own
-   *  slot in percent of the pinned frame. */
-  gatherWide: [number, number];
-  gatherCompact: [number, number];
-}
-
-// The wall — A1 Keystone, from design/refs/wall/A1-keystone.html.
+// The wall. Seven photographs in three bands that tile the window exactly —
+// 100vw across and 100vh down, with no gap between any two of them and no
+// ground left showing anywhere.
 //
-// Four frames divide the window between them and the fifth is set into the
-// junction where all four meet. On a desktop the four are quadrants split at
-// x=44 and at two different heights — y=46 on the left, y=56 on the right — so
-// the two horizontal joins are offset from one another and neither runs across
-// the frame; the keystone then covers the middle 48% of both. The longest
-// horizontal edge *between two outer frames* is 26.0% of the window, which is
-// what the arrangement buys and what the old three-band wall could not: that
-// wall's bands ran the full width, and every one of them was a line.
+// It used to be a scatter: seven tiles of seven different sizes floating on
+// dark with a uniform gap around each and a dark margin around the whole
+// group. Seven objects arranged on a field. The complaint that this page is
+// "arranged, not composed" is that gap — an object with air around it reads as
+// placed, and seven of them read as a pile. Filling the frame is what turns
+// them into one thing: there is no ground to be placed on, so the composition
+// is not *in* the window, it *is* the window.
 //
-// On a phone the same idea lies down: two frames across the top, two across the
-// foot, the keystone full width between them. No horizontal edge between two
-// outer frames exists there at all.
+// Offsets are from the window's centre, which is where each tile's flex parent
+// puts it. Reading the three bands:
+//   top     60vw + 40vw, 30vh tall, meeting at x = +10vw
+//   middle  25vw + 50vw + 25vw, 40vh tall
+//   bottom  40vw + 60vw, 30vh tall, meeting at x = -10vw
+// The wide tile is on the left at the top and on the right at the bottom, so
+// the two long edges cross the frame in opposite directions and the wall has
+// the interlock the scatter had. The centre tile arrives last, in the place the
+// words stood, and it is the one that comes forward at the end.
 //
-// Five, not seven. The seven-tile wall needed eleven distinct photographs on
-// this page and the set holds ten, which is what put `hero-2` at a third
-// placement and kept `IMG_4599` on the wall re-cut rather than replaced. At
-// five both debts close: `hero-2` drops to two placements and `IMG_4599`
-// leaves the site.
-//
-// Reading order below is the keystone, then the four outer frames as they read
-// on a desktop — top left, bottom left, top right, bottom right.
-const SLOTS: Slot[] = [
-  {
-    wide: { l: 26, t: 8, w: 48, h: 64 },
-    compact: { l: 0, t: 13, w: 100, h: 72 },
-    gatherWide: [0, 0],
-    gatherCompact: [0, 0],
-  },
-  {
-    wide: { l: 0, t: 0, w: 44, h: 46 },
-    compact: { l: 0, t: 85, w: 52, h: 15 },
-    gatherWide: [-7.198, -4.859],
-    gatherCompact: [0, 5.225],
-  },
-  {
-    wide: { l: 0, t: 46, w: 44, h: 54 },
-    compact: { l: 52, t: 85, w: 48, h: 15 },
-    gatherWide: [-7.727, 4.443],
-    gatherCompact: [0, 5.118],
-  },
-  {
-    wide: { l: 44, t: 0, w: 56, h: 56 },
-    compact: { l: 58, t: 0, w: 42, h: 13 },
-    gatherWide: [7.071, -4.95],
-    gatherCompact: [0, -4.992],
-  },
-  {
-    wide: { l: 44, t: 56, w: 56, h: 44 },
-    compact: { l: 0, t: 0, w: 58, h: 13 },
-    gatherWide: [6.178, 5.504],
-    gatherCompact: [0, -5.403],
-  },
+// The bands are the same at both viewports. A wall does not need a breakpoint:
+// it is measured in fractions of the window, and the window is what it fills.
+const TILES = [
+  "h-[40vh] w-[50vw]",
+  "-top-[35vh] -left-[20vw] h-[30vh] w-[60vw]",
+  "-left-[37.5vw] h-[40vh] w-[25vw]",
+  "left-[37.5vw] h-[40vh] w-[25vw]",
+  "top-[35vh] left-[20vw] h-[30vh] w-[60vw]",
+  "top-[35vh] -left-[30vw] h-[30vh] w-[40vw]",
+  "-top-[35vh] left-[30vw] h-[30vh] w-[40vw]",
 ];
 
-const CENTER = 0;
-
-// The keystone is the only frame that scales, and the only question its
-// amplitude answers is whether the window ends up covered. **A scaling frame
-// either reaches full window coverage or does not scale at all** — see
-// DESIGN-SYSTEM.md. The slot decides the number and the tighter axis sets it:
-// 48 × 2.0834 = 100 on a desktop, 72 × 1.3889 = 100 on a phone. 2.60 clears
-// both and clears them early — coverage is crossed at stage 0.900 and 0.843
-// and then *held* for the last 197px and 265px of the pin, where a factor at
-// the threshold itself would touch coverage on one frame and lose it on the
-// next.
+// The ring is never scaled, at any frame. The old zoom ran all seven tiles out
+// to 2.60, 3.13, 3.67, 3.13, 3.67, 4.73 and 5.27 across stage 0.77–0.95, and
+// measured against the pixels that exist rather than against the rung that was
+// fetched it could not be paid for:
 //
-// What it costs is one rung, and the rung already exists: at 2.60 the frame is
-// painted 1797 CSS px wide at 1440×900 — 3594 device px at DPR 2 — against the
-// 3840 `scripts/responsive-images.mjs` publishes for this one key. Measured at
-// full coverage: 0.936 against the fetched variant and 0.594 against the
-// source at 1440×900 DPR 2, 0.926 and 0.588 at 390×844 DPR 3.
+//   tile 6 is a 576 × 270 box that reached 3036 CSS px, which is 9107 device
+//   px at DPR 3 out of a 6048 px master — 1.51× the source, and 4.74× the
+//   1920 rung its resting `sizes` asked for. That is the blur.
+//
+// No `sizes` string closes that. A declaration made at the peak asks for 9107
+// and the ladder stops at 2560. It is also the wrong move on its own terms:
+// the outer tiles carried the *largest* factors, so the wall arrived small and
+// swelled, which is the opposite of a wall.
+//
+// The centre tile is the one that keeps the beat, and the only question its
+// amplitude answers is whether the window ends up covered. **A scaling frame
+// either reaches full window coverage or does not scale at all.** A factor of
+// 1.39 took this tile to 69.5vw × 55.6vh — 38.6% of the window — which is
+// large enough to overlap the six around it and small enough that they still
+// show past it, so it read as a hard-edged rectangle laid on other rectangles.
+// That is the collage this site rejected at the start, and it is the same
+// polarisation the plate strengths already run on, one level up: the number in
+// between is the one that must not be held.
+//
+// The slot is 50vw × 40vh, so coverage is a threshold and the height sets it —
+// 40 × 2.5 = 100. Anything at or under 2.5 is not an ending. **2.60** is the
+// value the wall had before the resolution argument took it away, and it is
+// restored: 130vw × 104vh, the window covered with 15% off each side and 2%
+// off the top and foot, reached at stage 0.94 and held from there through the
+// release.
+//
+// What it costs is one rung. At 2.60 the tile is painted 1872 CSS px wide at
+// 1440×900 — 3744 device px at DPR 2 — against a ladder that stopped at 2880,
+// which is exactly why the factor was cut rather than paid for: `hero-1` is a
+// 2048px master and no rung can invent pixels it does not have. `IMG_4585` is
+// 6048, and `scripts/responsive-images.mjs` publishes a 3840 rung for the one
+// key this tile fetches. Measured at full coverage: **0.975 against the fetched
+// variant and 0.619 against the source** at 1440×900 DPR 2, **0.772 and 0.327**
+// at 390×844 DPR 3.
 const CENTER_PEAK = 2.6;
 
 // A travel of 1.6 needs a rise to spend it on. This one runs **455px at
 // 1440×900 and 439px at 390×844 — 0.506 and 0.520 of a viewport**, against the
-// half a viewport an overlapping move has to have. None of it is new pin: the
-// rise starts while the outer frames are still landing (the last settles at
-// 0.92 / 0.94) and the growing keystone covers them as they arrive, which is
-// the only place the travel could have come from. The stall inside the pin
-// stays where §2.5 left it.
+// half a viewport an overlapping move has to have; the fractions differ because
+// the section is 220svh on a desktop and 200svh on a phone. None of it is new
+// pin: the rise starts while the ring is still landing (the last of the six
+// settles at 0.92 / 0.94) and the growing tile covers them as they arrive,
+// which is the only place the travel could have come from. The stall inside the
+// pin stays where §2.5 left it.
+//
+// Full coverage is reached before the end rather than at it. Scale crosses 2.5
+// three quarters of the way through the eased rise — stage 0.945 on a desktop
+// and 0.938 on a phone — so the window is wholly one photograph for the last
+// 108px / 104px of the pin and on through the release, where `useScroll` clamps
+// at 1 and the wall slides up into the footer's 148px. A factor of exactly 2.5
+// would have touched full coverage on the last frame and never held it.
 const zoomWindow = (compact: boolean): [number, number] =>
   compact ? [0.74, 1] : [0.77, 1];
 
-// The words' handover, and with it the frame the keystone is allowed to start
-// on. It arrives in the place the words stood, so its fade begins exactly
-// where theirs ends: a photograph rising under live text would take the
-// contrast with it.
+// The words' handover, and with it the frame the centre tile is allowed to
+// start on. The tile arrives in the place the words stood, so its fade begins
+// exactly where theirs ends: a photograph rising under live text would take the
+// contrast with it, and the gap between the two used to be 0.12 of the section
+// with the centre slot showing bare page ground.
 const textWindow = (compact: boolean): [number, number] =>
   compact ? [0.6, 0.68] : [0.62, 0.7];
 
-// Where the sticky frame stops travelling and starts holding the window: one
-// viewport of the section's own 200svh / 220svh. Everything above the pin is
-// the section arriving; everything below it is the assembly.
-const pinAt = (compact: boolean) => (compact ? 1 / 2 : 1 / 2.2);
-
-// How deep the ground's top ramp is at its deepest, as a fraction of the
-// window — PhotoStage's own figure, and here for the same reason. The pinned
-// frame's top edge travels the whole window before it pins, and an opaque
-// ground inside it would draw a horizontal line between two backgrounds across
-// the full width for a viewport of scroll. What travels instead is a boundary
-// with no line in it to trace, and it closes to nothing exactly as the frame
-// pins — so from the pin onward the ground is opaque edge to edge and there is
-// no page ground anywhere behind the assembly.
-const WIPE_FEATHER = 0.4;
-
-// Each frame's box, in fractions of the viewport, derived from its own slot
-// rather than restated beside it. It is what `coverSizes` measures the painted
-// width against: the box scales with the window, and object-cover scales the
-// picture again wherever the frame's aspect and the box's disagree, so the two
-// together decide how many pixels the frame actually paints.
+// Each tile's box, in fractions of the viewport, matching TILES above. It is
+// what `coverSizes` measures the painted width against: the box scales with
+// the window, and object-cover scales the picture again wherever the frame's
+// aspect and the box's disagree, so the two together decide how many pixels
+// the tile actually paints.
 //
-// The keystone's box is its *peak*, not its slot, because that is the widest
-// it is ever painted. Scaling both axes by one factor leaves the box's aspect
-// alone, so the frame's overscale is unchanged and only the declared width
-// moves — 48vw → 124.8vw on a desktop, 100 → 260 on a phone.
-const boxes = (index: number): [SizeBox, SizeBox] => {
-  const slot = SLOTS[index];
-  const k = index === CENTER ? CENTER_PEAK : 1;
-  return [
-    { vw: (slot.wide.w / 100) * k, vh: (slot.wide.h / 100) * k },
-    { vw: (slot.compact.w / 100) * k, vh: (slot.compact.h / 100) * k },
-  ];
-};
+// It used to be two hand-computed strings for fourteen frames — one for the
+// centre tile, one for all six of the ring — carrying the overscale of the
+// widest frame in the widest slot so the worst case was covered and every
+// other tile over-fetched. Per tile and per frame, each one asks for the width
+// it paints and no more.
+//
+// The centre tile's box is its *peak*, not its slot, because that is the
+// widest it is ever painted. Scaling both axes by one factor leaves the box's
+// aspect alone, so the frame's overscale is unchanged and only the declared
+// width moves — 50vw → 130vw on a desktop, 65 → 169 on a phone.
+const TILE_BOXES: SizeBox[] = [
+  { vw: 0.5 * CENTER_PEAK, vh: 0.4 * CENTER_PEAK },
+  { vw: 0.6, vh: 0.3 },
+  { vw: 0.25, vh: 0.4 },
+  { vw: 0.25, vh: 0.4 },
+  { vw: 0.6, vh: 0.3 },
+  { vw: 0.4, vh: 0.3 },
+  { vw: 0.4, vh: 0.3 },
+];
 
+// Declared at the largest size the tile ever reaches: its own slot for the six
+// of the ring, which are never scaled, and the peak for the centre tile, which
+// is. The old zoom declared the six at their resting boxes while taking them
+// to between 3.1 and 5.3 — which is the error `coverSizes()` closed for the
+// full-bleed frames in 1.2, made again on a transient instead of on a fit.
 const tileSizes = (src: string, index: number) =>
-  coverSizes(src, ...boxes(index));
+  coverSizes(src, TILE_BOXES[index]);
 
-const rect = (slot: Slot, compact: boolean) => (compact ? slot.compact : slot.wide);
+// While the words are on screen each outer tile holds this offset from its
+// mosaic slot (x in vw, y in vh) — gathered loosely around the paragraph,
+// clear of the text block — then settles into the slot as the words hand
+// off. The center tile has no offset; it arrives last, where the words
+// stood.
+const GATHER: [number, number][] = [
+  [0, 0],
+  [0, -8],
+  [-14, 0],
+  [14, 0],
+  [0, 9],
+  [-6, 8],
+  [6, -8],
+];
 
-const rectStyle = (r: Rect): CSSProperties => ({
-  left: `${r.l}%`,
-  top: `${r.t}%`,
-  width: `${r.w}%`,
-  height: `${r.h}%`,
-});
+// Below md the paragraph runs nearly full-width and full-height, so the ring
+// stages vertically instead: the wide and small tiles hold as two aligned
+// bands above and below the words — mirrored pairs on the mosaic's 2vw side
+// margins, inset 11.5vh from the viewport edges so the top band clears the
+// fixed header — and the tall middle-row tiles wait just offscreen (their
+// slots sit beside the text) and sweep in as the ring closes.
+const GATHER_COMPACT: [number, number][] = [
+  [0, 0],
+  [0, -8],
+  [-24, 0],
+  [24, 0],
+  [0, 8],
+  [0, 8],
+  [0, -8],
+];
 
-// The story's finale: the photographs from the scenes above gather around the
-// closing paragraph while it completes — words and frames share every frame of
-// it — then the words dissolve, the four outer frames settle into the window
-// they divide, and the keystone comes forward out of the junction as the pin
-// releases. Before mount and under reduced motion it renders unpinned — the
-// full paragraph followed by the wall at rest — so the exported HTML is the
-// resting state.
+// The story's finale: the photographs from the scenes above rise around the
+// closing paragraph while it completes — words and tiles share every frame —
+// then the words dissolve, the loose ring closes into a wall over the point
+// where they stood, and the centre tile comes forward out of it as the pin
+// releases. Before mount and under reduced motion it renders unpinned —
+// the full paragraph followed by a static grid — so the exported HTML is
+// the resting state.
 export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
   const container = useRef<HTMLElement | null>(null);
   const textRef = useRef<HTMLDivElement | null>(null);
@@ -220,22 +226,33 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
   const [compact, setCompact] = useState(false);
   const [entered, setEntered] = useState(false);
 
-  const wall = images.slice(0, SLOTS.length);
-
-  // One travel-based timeline, ending where the held frame does. "end end" is
-  // the section's bottom edge reaching the bottom of the window, which is the
-  // exact frame the sticky child unpins on: every value from 0 to 1 is
-  // reachable, 1 is the release, and the ~148px of footer under it is the exit.
+  // One travel-based timeline, and it now ends where the held frame does. It
+  // used to run to "end start" — the section's bottom edge reaching the top of
+  // the window — which is a scroll position this document cannot reach: only
+  // the footer stands below the finale, so the page ran out at 0.739 of the
+  // declared 2880px at 1440×900 (0.725 of 2532 on a phone) and the last
+  // quarter of the choreography was unreachable at every viewport. "end end"
+  // ends on the section's bottom edge reaching the *bottom* of the window,
+  // which is the exact frame the sticky child unpins on. Every value from 0 to
+  // 1 is reachable now, 1 is the release, and the ~148px of footer under it is
+  // the exit.
   //
-  // The section opens at the bottom of the window, so the words are already
-  // arriving while the last scene releases and the frame is never empty. The
-  // pin engages at 0.455 desktop / 0.500 mobile — one viewport of travel over
-  // a 220svh / 200svh section — and releases at 1.0.
+  // The section still opens at the bottom of the window, so the words are
+  // already arriving while the last scene releases and the frame is never
+  // empty. The pin engages at 0.455 desktop / 0.500 mobile — one viewport of
+  // travel over a 220svh / 200svh section — and releases at 1.0. Everything
+  // below is written against that split: the ring assembles while the section
+  // rises, and the handover, the settle and the zoom all play inside the pin.
   const { scrollYProgress: stage } = useScroll({
     target: container,
     offset: ["start end", "end end"],
   });
 
+  // Text: the groups complete on their own clock shortly after the words
+  // arrive, hold among the gathering tiles, then hand the frame over as the
+  // ring closes. That handoff stays scroll-linked — it is the mosaic's beat,
+  // not the words' — and on compact screens the words dissolve completely
+  // before the ring starts moving, so the closing tiles never cross live text.
   const [fadeFrom, fadeTo] = textWindow(compact);
   const textOut = useTransform(
     () => 1 - stageWindow(stage.get(), fadeFrom, fadeTo)
@@ -243,15 +260,6 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
   const textDrift = useTransform(
     () => -24 * stageWindow(stage.get(), fadeFrom, fadeTo)
   );
-
-  // The ground's top ramp, closing as the frame pins. At the pin and below it
-  // the stop pair collapses to `transparent 0%, #000 0%`, which is opaque
-  // everywhere.
-  const groundMask = useTransform(() => {
-    const edge = 100 * (1 - Math.min(1, stage.get() / pinAt(compact)));
-    const depth = Math.min(WIPE_FEATHER * 100, edge);
-    return `linear-gradient(to bottom, transparent 0%, #000 ${depth.toFixed(2)}%)`;
-  });
 
   useEffect(() => {
     const query = window.matchMedia("(min-width: 768px)");
@@ -263,7 +271,9 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
   }, []);
 
   // Fires once, the first time a quarter of the text block has risen clear of
-  // the bottom 15% of the viewport.
+  // the bottom 15% of the viewport. The block is only in the tree once the
+  // component has mounted, and a viewport change re-keys the sticky frame
+  // out from under it, so both are cues to look for the element again.
   useEffect(() => {
     if (entered) return;
     const el = textRef.current;
@@ -280,6 +290,10 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
     return () => observer.disconnect();
   }, [entered, mounted, compact]);
 
+  // The hidden half of a text entrance exists only between mount and the
+  // trigger, so the exported HTML carries the words in place; from the
+  // trigger they run to their end states on a fixed duration, staggered in
+  // reading order. Reduced motion keeps the fade and drops the travel.
   const enter = (slot: number, hidden: CSSProperties) => {
     if (!mounted) return undefined;
     if (entered)
@@ -293,10 +307,8 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
     return hidden;
   };
 
-  // Resting state: the paragraph in full, then the wall standing. No pinning,
-  // no scroll-linked transforms — the same five rectangles the pinned frame
-  // settles into, so what the export holds is the composition and not a
-  // stand-in for it.
+  // Resting state: the paragraph in full, then the same photos as a plain
+  // grid. No pinning, no scroll-linked transforms.
   if (!mounted || reducedMotion) {
     return (
       <section ref={container} className="pt-16 md:pt-24">
@@ -313,28 +325,30 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
             {groups.join(" ")}
           </p>
         </div>
-        <div className="relative h-[100svh] overflow-hidden">
-          <WallGround src={wall[CENTER].src} compact={compact} />
-          {wall.map(({ src, alt, position, positionCompact }, index) => (
-            <div
+        {/* The resting state is the wall too: no gap, no padding, the frame
+            filled. It used to carry a 4px gutter and a 4px surround, which is
+            the scatter's own reading at rest. */}
+        <div className="grid grid-cols-2 md:grid-cols-3">
+          {images.slice(0, TILES.length).map(({ src, alt, position }, index) => (
+            <ResponsiveImage
               key={src}
-              className="absolute overflow-hidden"
-              style={{
-                ...rectStyle(rect(SLOTS[index], compact)),
-                zIndex: index === CENTER ? 20 : 10,
-              }}
-            >
-              <ResponsiveImage
-                src={src}
-                alt={alt}
-                fill
-                sizes={tileSizes(src, index)}
-                style={{
-                  objectPosition: compact ? positionCompact ?? position : position,
-                }}
-                className="object-cover"
-              />
-            </div>
+              src={src}
+              alt={alt}
+              style={{ objectPosition: position }}
+              // The same `sizes` the pinned tiles below declare, not the ones
+              // this grid's own layout implies. The server renders this grid
+              // and the mounted component swaps to the pinned tiles, so a
+              // narrower value here picks a smaller variant that is replaced
+              // before it is ever displayed — one download of each photo
+              // instead of two.
+              sizes={tileSizes(src, index)}
+              className={cn(
+                "h-full w-full object-cover",
+                index === 0
+                  ? "col-span-2 aspect-[16/9] md:col-span-3 md:aspect-[21/9]"
+                  : "aspect-[4/3]"
+              )}
+            />
           ))}
         </div>
       </section>
@@ -345,53 +359,22 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
     <section
       ref={container}
       // The sticky child pins for this height less one viewport: 1.2 viewports
-      // of held frame on desktop, 1.0 on a phone, against §G's 1.2 ceiling.
+      // of held frame on desktop, 1.0 on a phone, against §G's 1.2 ceiling. At
+      // 300/440 it was 2.0 and 3.4, and the last third carried no words at all.
       className="relative h-[200vh] md:h-[220vh]"
     >
-      {/* The pinned frame's job is to cover the window, so it names `dvh`. At
-          `svh` it was sized to the smallest viewport and left a band of floor
-          under the wall as soon as the URL bar collapsed. It is sticky inside a
-          fixed-height section, so it sets no document height and moves no key;
-          only what it covers changes. */}
+      {/* The pinned frame's job is to cover the window, so it names `dvh` — the
+          same correction §2.19 made to the stage, recorded there and made here.
+          At `svh` it was sized to the smallest viewport and left a band of
+          floor under the wall as soon as the URL bar collapsed. It is sticky
+          inside a fixed-height section, so it sets no document height and
+          moves no key; only what it covers changes. */}
       <div
         key={compact ? "compact" : "wide"}
         className="sticky top-0 h-[100dvh] overflow-hidden"
       >
-        <WallGround
-          src={wall[CENTER].src}
-          compact={compact}
-          mask={groundMask}
-        />
-
-        {wall.map(({ src, alt, position, positionCompact }, index) => (
-          <FinaleTile
-            key={src}
-            stage={stage}
-            index={index}
-            src={src}
-            alt={alt}
-            position={compact ? positionCompact ?? position : position}
-            compact={compact}
-          />
-        ))}
-
-        {/* The words' ground, and it leaves with them. A full-bleed top-to-
-            bottom ramp over the defocused copy of the keystone's own frame —
-            the one device §2 allows between a photograph and the words on it,
-            with nothing local drawn behind the type and no mask boundary
-            anywhere inside the layer the type is in. It rides above the four
-            outer frames and below the keystone, so the frames gathering around
-            the paragraph are carried by it while it is up and stand clear of it
-            once the words are gone: by 0.70 desktop / 0.68 mobile it is at
-            nothing, and the wall settles from 0.60 to 0.92 undarkened. */}
         <motion.div
-          aria-hidden="true"
-          className="plate-shade wall-shade absolute inset-0 z-[15]"
-          style={{ opacity: textOut }}
-        />
-
-        <motion.div
-          className="absolute inset-0 z-[16] flex items-center justify-center px-4"
+          className="absolute inset-0 z-10 flex items-center justify-center px-4"
           style={{ opacity: textOut, y: textDrift }}
         >
           <div ref={textRef} className="max-w-2xl text-center">
@@ -417,52 +400,20 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
             </p>
           </div>
         </motion.div>
+
+        {images.slice(0, TILES.length).map(({ src, alt, position }, index) => (
+          <FinaleTile
+            key={src}
+            stage={stage}
+            index={index}
+            src={src}
+            alt={alt}
+            position={position}
+            compact={compact}
+          />
+        ))}
       </div>
     </section>
-  );
-}
-
-// The wall's own ground: the keystone's frame again, out of focus, edge to
-// edge. It is what carries the words and what takes page ground to zero at
-// every frame of the assembly — without it the gathered state shows 22.7% of
-// the window on a desktop and 82.4% on a phone.
-//
-// It declares the keystone's `sizes` rather than its own. A full-bleed box
-// would resolve to the 2880 rung and the keystone to 3840, and the page would
-// download the same photograph twice; asking for the wider of the two costs
-// one URL and one decode for both. It is the same reasoning `PhotoStage` uses
-// for a soft plate standing beside its own sharp copy.
-//
-// Rasterized at a quarter of the frame and magnified back, like the gains ramp
-// and the soft plates: a blur is priced by the area it rasterizes and not by
-// its radius, so 7px here is 28px on the screen at a sixteenth of the cost. The
-// overhang that hides the blur's own edge fade is a length and lives in
-// `.wall-ground-soft`, not a scale on this image — see globals.css.
-function WallGround({
-  src,
-  compact,
-  mask,
-}: {
-  src: string;
-  compact: boolean;
-  mask?: MotionValue<string>;
-}) {
-  return (
-    <motion.div
-      aria-hidden="true"
-      className="wall-ground absolute inset-0 z-0 overflow-hidden"
-      style={mask ? { maskImage: mask, WebkitMaskImage: mask } : undefined}
-    >
-      <div className="wall-ground-soft">
-        <ResponsiveImage
-          src={src}
-          alt=""
-          fill
-          sizes={tileSizes(src, CENTER)}
-          style={{ objectPosition: "50% 76%" }}
-        />
-      </div>
-    </motion.div>
   );
 }
 
@@ -481,85 +432,81 @@ function FinaleTile({
   position?: string;
   compact: boolean;
 }) {
-  // The four outer frames arrive at their gathered offsets while the words
-  // complete, then settle into the window one at a time, and the keystone
-  // lands last in the place the words stood. Every window below is stated as a
-  // fraction of the section's own travel; nothing but the keystone is scaled
-  // at any of them.
+  // The ring arrives at its gathered offsets while the words complete, then
+  // closes into the mosaic one tile at a time, and the centre tile lands last
+  // in the place the words stood. Every window below is stated as a fraction
+  // of the section's own travel; nothing is scaled at any of them.
   //
-  // The arrivals still run 0.14 to 0.65 and the settles still end at 0.92
-  // desktop / 0.94 mobile — the two spans the seven-tile wall was tuned to,
-  // and the reason it has no frame where the reader scrolls and nothing moves.
-  // Four frames over the same spans means a wider stagger, not a shorter
-  // sequence: 0.117 between arrivals against 0.07, and 0.060 / 0.047 between
-  // settles against 0.036 / 0.028.
+  // The six ring tiles used to be in place by 0.39 and settled by 0.76, which
+  // left 0.455–0.616 with nothing moving at all — 320px of pin on a desktop
+  // and 168px on a phone where the reader scrolled and the glass did not
+  // change. Staggering the arrivals 0.07 apart runs them to 0.65 and closes
+  // that; spreading the settle to 0.92 spends the travel the zoom used to.
   //
-  // Compact screens keep the strict sequence they had: the wall does not begin
-  // to close until the words have fully dissolved at 0.68, so a moving frame
+  // Compact screens keep the strict sequence they had: the ring does not begin
+  // to close until the words have fully dissolved at 0.68, so a moving tile
   // never crosses live text on the viewport that has no room to spare.
-  const slot = SLOTS[index];
-  const center = index === CENTER;
-  const outers = SLOTS.length - 1;
+  //
+  // The centre tile alone carries the closing zoom, layered on the end of all
+  // of this; the six of the ring hold at 1.000 at every frame.
+  //
+  // Its own arrival now fills the whole of the gap between the words leaving
+  // and the rise starting, rather than sitting inside it: it fades from the
+  // frame the paragraph is gone on to the frame the scale begins on, 0.70–0.77
+  // on a desktop and 0.68–0.74 on a phone, so nothing scales while it is
+  // part-transparent and the centre slot is never bare ground with a settled
+  // wall around it.
+  const center = index === 0;
   const [zoomFrom, zoomTo] = zoomWindow(compact);
-  const inStart = center
-    ? textWindow(compact)[1]
-    : 0.14 + ((index - 1) * 0.35) / (outers - 1);
+  const inStart = center ? textWindow(compact)[1] : 0.14 + (index - 1) * 0.07;
   const inEnd = center ? zoomFrom : inStart + 0.16;
-  const [gatherX, gatherY] = center
-    ? [0, 0]
-    : compact
-      ? slot.gatherCompact
-      : slot.gatherWide;
-  const settleFrom =
-    (compact ? 0.68 : 0.6) + ((index - 1) * (compact ? 0.14 : 0.18)) / (outers - 1);
+  const [gatherX, gatherY] = (compact ? GATHER_COMPACT : GATHER)[index];
+  // Staggered per tile, so the ring closes as a sequence rather than as one
+  // move. The last of the six lands at 0.92 desktop / 0.94 mobile, which is
+  // inside the rise: the six settle into their slots while the centre tile is
+  // already growing over them, and each is covered as it arrives. That overlap
+  // is the only place half a viewport of rise could have come from — the
+  // alternative was more pin, and the pin is at §G's ceiling.
+  const settleFrom = (compact ? 0.68 : 0.6) + (index - 1) * (compact ? 0.028 : 0.036);
   const settleTo = settleFrom + (compact ? 0.12 : 0.14);
   const riseDirection = compact && gatherY < 0 ? -1 : 1;
 
   const opacity = useTransform(() => stageWindow(stage.get(), inStart, inEnd));
   const x = useTransform(
-    () => `${gatherX * (1 - stageWindow(stage.get(), settleFrom, settleTo))}%`
+    () =>
+      `${gatherX * (1 - stageWindow(stage.get(), settleFrom, settleTo))}vw`
   );
   const y = useTransform(() => {
     const rise =
       riseDirection * 6 * (1 - stageWindow(stage.get(), inStart, inEnd));
     const settle = 1 - stageWindow(stage.get(), settleFrom, settleTo);
-    return `${gatherY * settle + rise}%`;
+    return `${gatherY * settle + rise}vh`;
   });
-  // The wrapper is the window, so a translate on it is a percentage of the
-  // window and lands the frame exactly where the preview's own offsets put it.
-  // The scale is the keystone's and is taken about the tile's own middle
-  // rather than the window's, which is what `transformOrigin` below states —
-  // the slot is centred horizontally but sits high in the frame, and scaling
-  // about the window would slide it down as it grew.
+  // The wrapper is the window and the centre tile is centred in it, so scaling
+  // the wrapper and scaling the tile about its own middle are the same move.
   const scale = useTransform(() =>
     center
       ? 1 + (CENTER_PEAK - 1) * stageWindow(stage.get(), zoomFrom, zoomTo)
       : 1
   );
 
-  const r = rect(slot, compact);
-
   return (
     <motion.div
-      style={{
-        x,
-        y,
-        opacity,
-        scale,
-        transformOrigin: `${r.l + r.w / 2}% ${r.t + r.h / 2}%`,
-      }}
-      // The keystone is painted last of the five so that it comes forward over
-      // the outer frames rather than behind them. Before the rise the wall
-      // tiles the window exactly and nothing overlaps, so this changes no frame
-      // there; and it is transparent until the words are gone, so it crosses
+      style={{ x, y, opacity, scale }}
+      // The centre tile is painted last of the seven so that it comes forward
+      // over the ring rather than behind it. Before the rise the wall tiles the
+      // window exactly and nothing overlaps, so this changes no frame there;
+      // and the tile is transparent until the words are gone, so it crosses
       // nothing live either.
-      className={cn("absolute inset-0", center ? "z-20" : "z-10")}
+      className={cn(
+        "absolute top-0 flex h-full w-full items-center justify-center",
+        center && "z-20"
+      )}
     >
       <div
-        // No ring, no radius, no shadow: the reference frame is the picture and
-        // nothing else, which is what the offer panels already do.
-        className="absolute overflow-hidden"
-        style={rectStyle(r)}
+        // No ring, no radius, no shadow: the reference frame is the picture
+        // and nothing else, which is what the offer panels already do.
+        className={cn("relative overflow-hidden", TILES[index])}
       >
         <ResponsiveImage
           src={src}

@@ -61,109 +61,120 @@ export const closing = {
   ],
 };
 
-// The wall — A1 Keystone. Five frames, in the order `gallery-finale.tsx` lays
-// them out: the keystone first, then the four outer frames as they read on a
-// desktop. The keystone is the one frame that scales, out to full window
-// coverage.
+// The wall, in tile order. The first entry is the centre tile — the one the
+// zoom carries out to full bleed — and the six after it are the ring, reading
+// as the slots are laid out in `gallery-finale.tsx`.
 //
-// Five rather than seven, and that is what closes the two debts the seven-tile
-// wall was carrying. The set holds ten frames that stand on their own and the
-// page needed eleven distinct ones — a ground, three scene objects and seven
-// tiles — so one slot had no photograph for it, and two compromises paid for
-// that: `hero-2` took a third placement against the two-at-most rule and
-// `IMG_4599` stayed on the wall re-cut rather than replaced. At five the page
-// needs nine. `hero-2` is back to two placements, `IMG_4599` is off the site,
-// and the wall's own ground is a defocused copy of the keystone's frame, which
-// is one placement with it and not a second.
+// Every tile has to stand on its own, because at rest they are seven equal
+// pictures with no ground between them and nothing to subordinate one to
+// another. Three did not. The rope macro was a fragment and the only tile that
+// was neither a landscape nor people, so it broke the set as well; the valley
+// in a 2.13:1 slot was open sky and nothing else, no subject in the rectangle
+// at all; and the wooded bank, centred in a near-square slot, was one trunk.
 //
-// Slots are assigned by aspect, because a slot cannot be resized and a frame
-// put in the wrong one loses most of itself. The two widest desktop slots are
-// 1.60:1 and 2.04:1 and take the panorama and the group on the rocks; the two
-// on the left are 1.53:1 and 1.30:1 and take the cattle and the walkers. The
-// keystone's slot is 1.20:1 on a desktop and 0.64:1 on a phone — the only
-// portrait slot on the wall — and `IMG_4585` is the only portrait frame with
-// the pixels to be painted at 2.60 and stay under 1.0 against its own source.
+// Slots are assigned by aspect first, because a slot cannot be resized and a
+// frame put in the wrong one loses most of itself: the two 25vw slots are 1:1
+// on a desktop and 1:3.5 on a phone and take the portrait frames, the two 60vw
+// slots are 3.2:1 and take the two panoramas, and the two 40vw slots are
+// 2.13:1. `IMG_4585` moved out of an upright slot into one of those, where its
+// valley reads as the panorama it is (35.2% of the frame on a desktop, 82.1%
+// on a phone), and `IMG_4735-road` came the other way.
+//
+// The centre and the upper-right frames then swapped, and that was a
+// resolution decision rather than a compositional one. The centre tile is the
+// one that grows to fill the window, which paints it 1872 CSS px wide at
+// 1440×900 — 3744 device px at DPR 2 — and `hero-1` is a 2048px master, so
+// holding it at 1.0 against its own source capped the growth at 1.39 and left
+// the tile covering 38.6% of the screen: large enough to overlap its
+// neighbours and small enough that they still showed around it. The two slots
+// are 2.00:1 and 2.13:1, close enough that neither frame changes shape moving
+// between them, and `IMG_4585` is a 6048px master with the headroom to be
+// painted at full coverage.
+//
+// One slot has no photograph. The set holds thirteen usable frames, this page
+// needs eleven distinct ones — a ground, three scenes and seven tiles — and
+// after the three above come out, ten qualify. `IMG_4599` is the tenth and it
+// stays under protest: re-cut low it is a mossy bank running away under the
+// trees rather than a single trunk, which is a place, but it is the weakest
+// tile on the wall and only new photography closes it. The alternative was
+// `IMG_4582-road`, and that is worse on both counts — the chain-link fence no
+// pan clears, and a tile of road surface.
 export const gallery = [
   {
     // The key carries a fragment because this one placement fetches a rung
     // above the ladder's cap; `scripts/responsive-images.mjs` carries why that
-    // rung cannot live on the photograph's own srcset. The wall's out-of-focus
-    // ground declares the same key and the same width, so the two are one URL
-    // and one download.
+    // rung cannot live on the photograph's own srcset.
     src: "/images/pt/IMG_4585.jpg#wall",
     alt: "The group on the path above the valley",
-    // 76% is the vertical band on both viewports: on a desktop the slot keeps
-    // 62.5% of the frame's height and 76% lands it at 28.5%–91.0%, which is
-    // the far mountains down through the village and the path to the ferns.
-    //
     // The horizontal number is a phone decision and nothing else. On a desktop
     // this 3:4 frame is narrower than its slot at every scale, so it is fitted
-    // by width and `object-position`'s x does nothing — at rest the window sees
-    // the whole width of it, and at full coverage the middle 80.1%, whatever
-    // this says.
-    position: "50% 76%",
-    // On a phone the frame is the wider of the two and is fitted by its height,
-    // so x is the whole of what the tile shows: 85.6% of the frame's width at
-    // rest and 32.9% at full coverage, and the visible band travels 26.3 points
-    // to the right between the two.
+    // by width and painted exactly as wide as its box: the window sees the
+    // whole width of it at rest and the middle 80% at full coverage, and
+    // `object-position`'s x does nothing at either end. On a phone the frame is
+    // the wider of the two and is fitted by height, so x is the whole of what
+    // the tile shows — 77.0% of the frame's width at rest, 61.6% at full
+    // coverage, and the same 7.7% coming off each side as it grows.
     //
-    // Read at full resolution — 3840px, not the 768px variant the earlier
-    // numbers came off — the four walkers stand at 2.2–9.7%, 11.9–20.4%,
-    // 22.7–26.9% and 32.0–35.8% of the frame's width. The band's left edge is
-    // the only one that reaches them at either end, and 50% puts it through a
-    // body at *both*: 7.2% is walker one's chest at rest, and 33.6% is walker
-    // four's trailing hand at full coverage. Solved against all four, the edge
-    // clears every body only for x in 4.0–15.3% or 67.2–82.5%.
-    //
-    // 10% is in the first of those and the first is the better one: it holds
-    // all four walkers whole at rest and walker four whole at full coverage,
-    // where the second band holds three at rest and nobody at all at the end.
-    // The margins are 0.76 points at rest and 0.87 at full coverage.
-    positionCompact: "10% 76%",
-  },
-  {
-    src: "/images/pt/IMG_4735-road.jpg",
-    alt: "Cattle on the road into the village",
-    // Both slots are anchored to the foot of the frame, which is the most of
-    // the pole, the cable and the fence in its upper third that either can
-    // clear: the desktop slot keeps 73.5% of the height and the phone's 70.2%,
-    // so both still open above the fence line at 41%. The near animal is whole
-    // in both — horns to hooves, 40%–71% of the frame — and the far one is cut
-    // by the original frame's own right edge and cannot be made whole by any
-    // window on it.
-    position: "70% 100%",
-    positionCompact: "50% 100%",
-  },
-  {
-    src: "/images/hero-1.jpg",
-    alt: "Participants hiking along a lakeside mountain trail",
-    // Anchored to the foot of the frame at both viewports, so the walkers stand
-    // on the ground they are walking on. The desktop slot keeps 96.1% of the
-    // width and takes the trim off the trees on the left; the phone's keeps
-    // 91.7% of the height and takes it off the sky. Nothing in either band cuts
-    // a body the frame itself does not already cut — the foreground pair and
-    // the head in the bottom-right corner run off the original's own edges.
-    position: "85% 100%",
-    positionCompact: "50% 100%",
-  },
-  {
-    src: "/images/hero-3.jpg",
-    alt: "Participants talking on mossy rocks in the forest",
-    // The three sit between 14.5% and 76.3% of the frame's width. The desktop
-    // slot keeps 74.7% of it and 15% puts the band at 3.8%–78.5%; the phone's
-    // keeps 69.7% and 35% puts it at 10.6%–80.3%. All three are whole in both,
-    // by 10.7 and 2.2 points on a desktop and 3.9 and 4.0 on a phone.
-    position: "15% 100%",
-    positionCompact: "35% 50%",
+    // Four walkers are on the path, at 2.0–9.4%, 12.2–19.0%, 22.6–26.2% and
+    // 32.1–35.7% of the frame's width, and the phone shows the full height of
+    // the frame at every scale, so they are in the picture whichever band is
+    // taken. The left edge travels 7.7% as the tile grows and no gap between
+    // two of them is that wide, so one walker is crossed on the way whatever
+    // this number is; what it decides is whether either *end* of the travel
+    // cuts a body. 50% does: it lands the full-coverage edge on 19.2%, which
+    // is the second walker's trailing hand. 90% puts the edge at 20.9% at rest
+    // and 28.6% at full coverage — 1.7% clear of the second walker below and
+    // 2.4% clear of the third above, both ends whole.
+    position: "90% 35%",
   },
   {
     src: "/images/pt/IMG_4619-ridge.jpg",
     alt: "The village in the valley under the ridge at evening",
-    // 2.537:1 into a 2.036:1 slot and a 2.062:1 one, so it keeps 80.3% and
-    // 81.3% of its width and stays the panorama it is. Centred on a desktop;
-    // on the phone's 13vh band it is anchored low, where the ridge line and the
-    // village under it are. There is no body in this frame to cut.
-    position: "50% 50%",
-    positionCompact: "50% 100%",
+    // 2.535:1, and the widest slot is 3.2:1, so it keeps 79.3% of its height —
+    // the best fit of anything in the set for this slot. Centred is right: the
+    // ridge runs the width of the frame and the village sits under it.
+  },
+  {
+    src: "/images/pt/IMG_4599.jpg",
+    alt: "A moss-covered wall running away under the trees",
+    // The set's one ultra-portrait frame at 1:2.19, so it takes the upright
+    // slot — 63.1% of itself on a phone, more than any other frame manages
+    // there. Low on the frame, where the wall is: centred, the slot lands on
+    // the trunks and the tile has no subject.
+    position: "50% 80%",
+  },
+  {
+    src: "/images/hero-2.jpg",
+    alt: "The group walking a shaded forest road",
+    // The other upright slot, and the crop is chosen around this frame's
+    // overhead cable: it enters the top-left corner and runs down to a pole at
+    // a third of the width. A desktop slot keeps 75% of the height and takes
+    // it off the top; a phone keeps 38.5% of the width and takes it off the
+    // left. 62% 100% is the one pair that clears the cable at both and still
+    // holds whole walkers on the road.
+    position: "62% 100%",
+  },
+  {
+    src: "/images/hero-3.jpg",
+    alt: "Participants talking on mossy rocks in the forest",
+  },
+  {
+    src: "/images/pt/IMG_4735-road.jpg",
+    alt: "Cattle on the road into the village",
+    // 2.13:1 over a 1.125 frame keeps 52.7% of the height. Low, so the near
+    // animal is whole from her horns to her hooves; centred, the band ran
+    // across both animals' backs and left their legs outside it.
+    position: "50% 80%",
+  },
+  {
+    src: "/images/hero-1.jpg",
+    alt: "Participants hiking along a lakeside mountain trail",
+    // A 2.13:1 slot over a 1.356 frame keeps 63.6% of its height, and centred
+    // that band cut the two nearest walkers at the thigh. Anchored to the foot
+    // of the frame they stand on the ground they are walking on. The slot is
+    // 4.2 points tighter than the centre one this frame came out of and 2.8
+    // points wider on a phone (45.4% of the frame against 42.6%), so nothing
+    // it held before is lost here.
+    position: "50% 100%",
   },
 ];
