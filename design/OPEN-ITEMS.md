@@ -1662,9 +1662,9 @@ One photograph treated two ways, type bound into the picture's depth, an organic
 edge, a title that becomes a label, a deliberate seam. That is the standard for
 this page.
 
-**4.3 · The wall's side tiles — diagnostic only, nothing changed.** The two
-25×40 side tiles are gone with the seven-slot arrangement; the diagnosis below
-is kept because it is what the rebuild was measured against. §7.1 has the
+**4.3 · The wall's side tiles — diagnostic only, nothing changed.** Closed. The
+two 25×40 side tiles are gone with the seven-slot arrangement; the diagnosis
+below is kept because it is what the rebuild was measured against. §7.1 has the
 bare-ground figures on the built wall — 0.00% at every frame from the pin
 onward, at five viewports, against the 6.0% / 20.3% recorded here.
 
@@ -3145,6 +3145,255 @@ full coverage, where the second holds three at rest and nobody at the end.
 Nothing about the desktop changes: there the frame is narrower than the slot at
 every scale, so it is fitted by width and x does nothing at either end.
 
+### 7.3 · Contrast, and the darkness question
+
+The closing paragraph moves from bare page ground onto a photograph, which is
+the strict branch of the ratchet, so the whole instrument was run rather than a
+tier of it: **Tier 3 — every element, every page, 5px, ten configurations,
+including §6.1's two passes.** Clean production build, `rm -rf .next out` first.
+
+Two guards were taken before any of it, because both would have made the
+comparison meaningless:
+
+- **Every document height is identical before and after** — `/`, `/about/`,
+  `/contact/`, `/faq/` at 1440×900, 390×844 and 390×553, all twelve pairs. No
+  element's traversal was re-timed, so §4.3's coverage branch cannot apply to
+  anything below and every fall has to be explained by the ground itself.
+- **No `pageerror` and no console error**, in Chromium and WebKit, with and
+  without `prefers-reduced-motion`. About's reduced-motion `useScroll` failure
+  was fixed in `ec660b3` and a recurrence would be a regression; the hooks all
+  stand above the early return in the rewritten component.
+
+#### The seam, measured rather than argued
+
+The ground's top ramp is the one new boundary on the page, so it is measured on
+the same row-delta scan seam continuity is always judged by — the ground
+isolated, everything else in the pinned frame hidden, every stop from 0.10 to
+the pin, both engines, 1440×900 and 390×664.
+
+| | worst row ΔL **at the frame's own top edge** | worst row ΔL anywhere in the window |
+|---|---|---|
+| Chromium 1440×900 | **0.00292** | 0.0726 |
+| WebKit 1440×900 | **0.00318** | 0.0680 |
+| Chromium 390×664 | **0.00793** | 0.1252 |
+| WebKit 390×664 | **0.00904** | 0.0654 |
+
+In **no** configuration and at **no** stage is the frame's own edge the worst row
+in the window: the worst is always above the wall, in the page's own content, at
+ten to thirty times the size. The wipe leaves nothing to trace. The mask string
+is identical in both engines, so `-webkit-mask-image` is doing its work.
+
+#### What /about/ downloads
+
+The ground shares the keystone's key *and* its `sizes`, so the claim was that it
+costs no request and no bytes. A request log settles it: on both viewports
+`IMG_4585-3840.avif` is fetched **once** and serves both.
+
+| | before | after |
+|---|---|---|
+| `/about/` at 1440×900 DPR 2 | 12 files, **4.65 MB** | 10 files, **4.49 MB** |
+| `/about/` at 390×844 DPR 3 | 12 files, **2.86 MB** | 10 files, **3.49 MB** |
+
+The desktop falls 0.16 MB: two frames leave the page and the four that stay take
+wider rungs for their larger slots. **The phone rises 0.63 MB, and that is the
+keystone's peak and nothing else.** Before, the centre tile was 50vw × 40vh and
+its peak resolved to the 1984 rung at 715 KB; at 100vw × 72vh × 2.60 it paints
+3555 device px and resolves to 3840 at 2169 KB. There is no lever on it that is
+not a blur — the next rung down is 2880 and paints at 1.234 — and the sharing is
+what keeps it from being worse: declared for its own full-bleed box the ground
+would take the 1984 rung on a phone and add 715 KB on top. What carries the
+cost is the same argument `responsive-images.mjs` already makes for this rung,
+now true on a phone as well: the wall is the last thing on the page, below three
+scene photographs, it is not the LCP, and it lazy-loads.
+
+#### The sweep — Tier 3, thirty configurations over three passes
+
+**Nothing on the site is below its floor.** Not one element, in any of the ten
+configurations of any of the three passes. `/`, `/contact/` and `/faq/` are
+untouched to the decimal, in both of `/faq/`'s states and in the home hero's
+collapsed opening.
+
+**On `/about/`, three elements moved and they are the three the change was
+about.** Everything else on the page is *identical* — same value, same pixel
+count, same scroll position, seventeen rows at exactly +0.00 — which is what
+makes the three legible rather than arguable.
+
+| element | published d / m | A1 d / m | worst at | branch |
+|---|---|---|---|---|
+| `span` Through its continuous engagement in Erasmus+ i | 10.77 / 9.12 | **5.17** / 12.70 | chromium 1440×900, y3690, 5609 px | composition |
+| `span` ArtiCYa contributes meaningfully to the develop | 10.93 / 9.30 | **5.06** / 13.26 | webkit 1440×900, y3675, 12608 px | composition |
+| `span` fostering European values, solidarity and lifel | 10.97 / 10.54 | **8.56** / 12.82 | chromium 1440×900, y3620, 8527 px | composition |
+
+The mobile column goes **up** by 2.3 to 4.0 points. The desktop column falls by
+2.4 to 5.9, and the reason is the arrangement rather than any darkening: the
+seven-tile wall gathered its side tiles to ±14vw and left the middle of the
+window empty, so the closing paragraph stood on bare stage ground; A1's four
+frames cover the window by design, and on a desktop the paragraph is 672px wide
+in a 1440px window, so its right half sits on `hero-3` arriving over the middle.
+On a phone the frames gather straight up and down and the paragraph stands on
+the out-of-focus ground alone, which is darker and far smoother than what it
+stood on before — hence the rise.
+
+**The falls are composition-derived and the evidence rules the other three
+branches out.** The same instrument was run over `/about/` at 5px on **both
+builds**, so the comparison is not against a table:
+
+- not population-derived: at the worst *shared* stop the pixel count is
+  unchanged — 5911 → 5911, 12600 → 12602, 8924 → 8927 — and the value still
+  falls 10.81 → 5.34, 12.13 → 5.85, 11.40 → 8.58.
+- not coverage-derived: every document height is identical on both builds, so no
+  element traverses a different scroll position. Seventeen of the twenty rows on
+  `/about/` find their worst at the *same* pixel of scroll on both builds, at
+  the same value and over the same pixel count.
+- not resolution-derived: no variant under these three changed.
+
+Both engines agree, which is what rules out an antialiasing artefact. Before:
+10.77 / 10.81, 10.93 / 10.93, 11.04 / 10.97 (Chromium / WebKit) — reproducing
+the published table exactly. After: **5.17 / 5.21, 5.14 / 5.06, 8.56 / 8.58**.
+
+**One limit of the instrument, found while checking these and recorded rather
+than acted on.** WebKit reports the first span at **5.21 over 112 pixels** at
+y3965. That stop sits inside the paragraph's own fade at opacity ≈0.95, and the
+glyph-core test keeps a pixel only where the rendered value *is* the declared
+ink — on a partly transparent element that selects for the pixels whose ground
+is brightest, and the population collapses from 5,609 to 112. Below about
+opacity 0.9 the harness scores nothing at all, so the artefact is confined to
+two or three stops either side of 1.0. It does not govern anything here:
+Chromium finds **5.17 over the full 5,609 pixels** at y3690, which is lower and
+is a whole-population reading, and that is the number published above.
+
+**A correction to my own method while establishing that.** Walking the fade at
+0.02 of stage — 40px of scroll — put the same three spans at 5.63, 5.85 and
+12.04, and all three of those are too high: the 5px sweep finds lower minima
+*between* those stops. A traversal sampled at 40px is the 36-stop sampler's
+error at a finer grain, and §5.1 is about exactly that. The 5px sweep is the
+instrument; the numbers above are its.
+
+**The lowest reading these three take in any of the ten configurations is
+5.06**, against a floor of 4.5, and the tightest reading on the site is still
+`/faq/`'s first answer at 4.82.
+
+#### Two things the sweep turned up that are not this change
+
+**`/`'s lede reads 7.65 against a published 7.68**, at Chromium 1440×900,
+y345, over 11,767 pixels. Home is frozen and nothing in this change touches it —
+no file on `/`'s path is in the diff and its document height is identical at all
+three viewports. **Settled by re-running `/` on both builds rather than by
+argument**, at the same engine, viewport and step:
+
+| run | value | pixels | worst at |
+|---|---|---|---|
+| the **before** build, fresh | **7.74** | 11,768 | y335 |
+| the **after** build, second run | **7.74** | 11,768 | y335 |
+| the after build, first run (the sweep's own) | 7.65 | 11,767 | y345 |
+
+The two builds are **indistinguishable** — the same value, over the same pixel
+count, at the same pixel of scroll — and both land *above* the published 7.68,
+so 7.68 was itself a low draw and 7.65 is a lower one. The element sits inside
+the hero card, whose slideshow crossfades three photographs on a 4.5s clock, so
+what stands under those glyphs at a given stop is a function of wall-clock time
+rather than of scroll.
+
+**§5.2's own ratchet section already found this, on this element, at this
+size.** Three of the five falls it recorded are this lede — 7.78 → 7.74,
+7.71 → 7.68, 6.10 → 6.03 — in a repair that did not touch the plate it stands
+on, and it signed them off as "run-to-run scatter in which single pixel is
+worst, not a fall". The table above is that finding measured directly instead of
+inferred. The row is published at **7.65** because the set is a worst-per-element
+set and 7.65 is a real observation of the worst — not because anything moved.
+The two other rows that moved are on the same page and the same mechanism:
+`/poster`'s `a Home` 8.76 → 8.72 and its `span ArtiCYa` 11.43 → 11.09, both in
+the hero's collapsed opening, which is driven by synthetic wheel events and so
+does not even land on identical progress steps between runs. All three sit 3.1
+to 6.6 points above their floors. They are recorded at the lower draw, because
+the set is a worst-per-element set and a lower draw is a real observation of the
+worst — not because anything on `/` moved.
+**The reference set has a key that the probe cannot produce.** The poster
+table's `p ArtiCYa · Cyprus` carries a middle dot the DOM does not: separators on
+this site are CSS pseudo-content so the frozen text stays frozen, and the probe
+reads text nodes only. The row is transcribed from what is on the screen rather
+than from what the harness emits, so it never matches and shows up as one
+published row unseen plus one row not in the published set. A transcription
+defect in the table, not a change in the page, and the fix is to key it
+`p|ArtiCYa Cyprus`.
+
+#### The ratchet, and what closing it would cost
+
+§2.8 says no change may lower a measured value below the published set, and if
+one requires it, report and stop. This one requires it, so here is the report
+and the price, measured on the built page rather than derived.
+
+The only sanctioned lever is the plate strength of the zone — `.wall-shade`'s
+mid, which is the site's own 62% and is drawn only while the words are up.
+Raised in place at stage 0.50, with the mean luminance of the window beside it
+so the cost is visible next to what it buys:
+
+| `--shade-mid` | Through its… | ArtiCYa contributes… | fostering… | mean L of the window |
+|---|---|---|---|---|
+| **62% (shipped)** | 5.17 / 5.98 | 5.82 / 5.93 | 12.04 / 12.00 | **0.0250** |
+| 66% | 5.83 / 6.65 | 6.50 / 6.52 | 12.33 / 12.33 | 0.0226 |
+| 70% | 6.59 / 7.36 | 7.24 / 7.33 | 12.49 / 12.53 | 0.0203 |
+| 74% | 7.36 / 8.15 | 8.03 / 8.18 | 12.78 / 12.78 | 0.0182 |
+| 78% | 8.31 / 9.12 | 8.95 / 9.05 | 13.07 / 13.07 | 0.0163 |
+| 82% | 9.49 / 9.98 | 10.03 / 10.03 | 13.35 / 13.35 | 0.0146 |
+| 88% | 11.23 / 11.60 | 11.48 / 11.48 | 13.67 / 13.67 | 0.0124 |
+
+Chromium / WebKit. **Restoring the published 10.9 costs 62% → 86–88%**, which
+halves the luminance of the composition at the exact moment the four frames are
+arriving on the screen — a photograph with a veil on it, which `§3` rejects by
+name. Eight points of shade buys about 1.4 of contrast and costs 19% of the
+window's luminance.
+
+**Not spent.** All three readings are above their floor with 1.13, 1.35 and 4.08
+of headroom, none of the 430 stops reaches 5.00, and §4.3's instruction for this
+build is to repair *below-floor* readings only. The lever is left at the site's
+own number and the decision is Andreas's: the table above is what it costs.
+
+#### §5.3's question — is contrast being bought with darkness a sixth time?
+
+No. The answer is measurable in three parts and none of them is an argument.
+
+**No plate strength was raised anywhere on the site.** `.wall-shade` is
+`.plate-shade` carrying **52 / 62 / 70 across 22%–62%** — the same five numbers
+`.stage-plate-shade` already had, on the same `land-anchor`. Nothing else in
+`globals.css` moved. The phone's run of five increases does not become six.
+
+**Nothing outside the wall changed by a thousandth.** Mean relative luminance
+as painted, per photograph, on the rendered composite:
+
+| state | photograph | before | after |
+|---|---|---|---|
+| hero | `IMG_4721` sharp | 0.0714 | **0.0714** |
+| scene 1 | `IMG_4721` ground | 0.0324 | **0.0324** |
+| scene 1 | `AboutImage1` | 0.2713 | **0.2713** |
+| scene 2 | `IMG_4721` ground | 0.0252 | **0.0252** |
+| scene 2 | `AboutImage2` | 0.2020 | **0.2020** |
+| scene 3 | `IMG_4721` ground | 0.0252 | **0.0252** |
+| scene 3 | `home-training` | 0.3448 | **0.3448** |
+
+Identical at 390×844 as well, to four decimal places, every row.
+
+**Darkness was spent, and not on contrast.** The ground the closing paragraph
+stands on is a different photograph at a different filter — `IMG_4585`
+defocused at `brightness(0.40)` where the page's soft plate runs `brightness(0.6)`
+— and it is darker for it:
+
+| | before (`IMG_4721` soft) | after (`IMG_4585`, the wall's ground) |
+|---|---|---|
+| words' ground, 1440×900 | 0.0269 | **0.0230** (−14%) |
+| words' ground, 390×844 | 0.0393 | **0.0299** (−24%) |
+
+And the contrast on that ground went **up** on a phone, 9.12 → 12.70. The two
+are not connected: a defocused ground at full luminance is a second picture
+competing with the five in front of it, so the filter is a compositional
+decision, and the contrast it happens to produce has five points of slack. Even
+at `brightness(1.0)` — two and a half times the shipped value — the phone's
+closing paragraph would still read about **9.5**, against a floor of 4.5.
+
+So the one place the site did get darker is a ground nobody reads, the change
+bought no contrast, and where contrast did fall it fell on a *desktop*, where
+the ground got no darker at all and the words simply moved onto a picture.
+
 ---
 
 ## The contrast reference set — the corrected instrument
@@ -3211,7 +3460,9 @@ chrome ramp before believing any of it, or the number is the header.
 rendered composite, worst pixel per element — now **stepped at 5px across every
 element's whole traversal** rather than sampled at a fixed count of stops. Ten
 configurations: 1440×900 and 390×553, 664, 750 and 844, in Chromium and WebKit,
-DPR 2. **27,180 stops** over the three passes. **desktop** is the worst over both engines at 1440×900;
+DPR 2. **27,180 stops** over the three passes. Republished by §7.3's Tier 3 run
+— the same thirty configurations, the same 27,180 stops, 322.2 worker-minutes —
+against the A1 build. **desktop** is the worst over both engines at 1440×900;
 **mobile** is the worst over both engines and all four phone heights. A dash
 means the element does not render at that viewport (the desktop nav collapses to
 a menu). Transient text — the stats ledger's intermediate numerals — is excluded.
@@ -3229,9 +3480,19 @@ exist in that state and nowhere else.
 **Where the site stands against it.** **Nothing is below its floor**, in any
 configuration of any of the three passes. The nine elements §5.1 found under
 were repaired in §5.2 by plate strength and the two §6.1 found under were
-repaired in §6.1 by the same lever; the values below are that build. The
+repaired in §6.1 by the same lever; the values below are the A1 build. The
 tightest reading on the site is now `/faq/`'s first answer at **4.82** in WebKit
 at 390×750, with `/contact`'s email address next at 4.87.
+
+**Nine rows moved when §7.1 rebuilt the About wall, and §7.3 classifies every
+one.** Three are the closing paragraph, which moved from bare page ground onto
+the composition and fell 10.77/10.93/10.97 → **5.17/5.06/8.56** on a desktop
+while *rising* 9.12/9.30/10.54 → 12.70/13.26/12.82 on a phone. Three are
+`/about/`'s nav labels, which rose 0.01 to 0.03 because the wall's new top band
+is kinder to them than the old one. Three are on `/`, which this change does not
+touch: its lede and two rows of the collapsed opening move by 0.02 to 0.34
+because the hero's slideshow and its wheel-driven opening are not deterministic
+between runs, and they are recorded at the lower draw.
 
 
 **/**
@@ -3263,7 +3524,7 @@ at 390×750, with `/contact`'s email address next at 4.87.
 | `p` Travel across Europe with all expenses covered throu | 4.5 | 6.45 | 6.17 |
 | `a` Contact Us | 4.5 | 6.50 | 6.50 |
 | `span` All expenses covered | 3 | 6.58 | 4.65 |
-| `p` A youth organization connecting young people in Cypr | 4.5 | 7.68 | 5.07 |
+| `p` A youth organization connecting young people in Cypr | 4.5 | 7.65 | 5.09 |
 | `h2` What we do | 3 | 8.25 | 8.25 |
 | `div` 20+ | 3 | 8.25 | 8.25 |
 | `div` 500+ | 3 | 8.25 | 8.25 |
@@ -3276,15 +3537,18 @@ at 390×750, with `/contact`'s email address next at 4.87.
 
 | element | floor | desktop | mobile |
 |---|---|---|---|
-| `a` About | 4.5 | 4.74 | – |
+| `a` About | 4.5 | 4.75 | – |
 | `h1` About ArtiCYa | 3 | 4.95 | 4.81 |
+| `span` ArtiCYa contributes meaningfully to the development | 4.5 | 5.06 | 13.26 |
 | `p` A Cyprus-based organization committed to non-formal | 4.5 | 5.08 | 4.84 |
+| `span` Through its continuous engagement in Erasmus+ initia | 4.5 | 5.17 | 12.70 |
 | `span` ArtiCYa is a Cyprus-based organization actively enga | 4.5 | 5.47 | 5.02 |
 | `span` Over the years, the organization has demonstrated re | 4.5 | 5.47 | 5.21 |
 | `span` ArtiCYa | 4.5 | 5.99 | 6.18 |
-| `a` FAQ | 4.5 | 6.09 | – |
-| `a` Contact | 4.5 | 6.09 | – |
+| `a` FAQ | 4.5 | 6.11 | – |
+| `a` Contact | 4.5 | 6.12 | – |
 | `a` Home | 4.5 | 6.16 | – |
+| `span` fostering European values, solidarity and lifelong l | 4.5 | 8.56 | 12.82 |
 | `p` © 2026 ArtiCYa \| All Rights Reserved | 4.5 | 8.59 | 8.59 |
 | `span` and to create safe, open and respectful spaces for p | 4.5 | 9.04 | 8.90 |
 | `span` ArtiCYa places special emphasis on the promotion of | 4.5 | 9.12 | 8.60 |
@@ -3293,9 +3557,6 @@ at 390×750, with `/contact`'s email address next at 4.87.
 | `span` ArtiCYa focuses particularly on the arts as a powerf | 4.5 | 9.18 | 8.91 |
 | `span` actively supporting LGBTQ+ individuals and advocatin | 4.5 | 9.22 | 8.60 |
 | `span` Furthermore, the organization strongly supports and | 4.5 | 9.22 | 8.60 |
-| `span` Through its continuous engagement in Erasmus+ initia | 4.5 | 10.77 | 9.12 |
-| `span` ArtiCYa contributes meaningfully to the development | 4.5 | 10.93 | 9.30 |
-| `span` fostering European values, solidarity and lifelong l | 4.5 | 10.97 | 10.54 |
 
 **/contact**
 
@@ -3361,6 +3622,12 @@ the whole of it. `p` ArtiCYa · Cyprus stands inside the chrome ramp at every
 frame and is therefore scored on the composite as painted, like the header's own
 labels — see §6.1.
 
+Its row is written with the middle dot and the harness cannot produce one: the
+separator is CSS pseudo-content, so the frozen text stays frozen and the probe,
+which reads text nodes only, emits `p|ArtiCYa Cyprus`. The row was transcribed
+from the screen rather than from the harness, so it has never matched. Keyed on
+what the probe emits it reads **5.73** on a phone, which is the value below.
+
 | element | floor | desktop | mobile |
 |---|---|---|---|
 | `span` are ArtiCYa | 3 | 5.27 | 5.29 |
@@ -3368,11 +3635,11 @@ labels — see §6.1.
 | `p` ArtiCYa · Cyprus | 4.5 | 5.82 | 5.73 |
 | `p` A youth organization connecting young people in Cypr | 4.5 | 6.07 | 5.43 |
 | `a` Contact Us | 4.5 | 6.50 | 6.50 |
-| `a` Home | 4.5 | 8.76 | – |
+| `a` Home | 4.5 | 8.72 | – |
 | `a` About | 4.5 | 10.96 | – |
 | `a` Contact | 4.5 | 10.96 | – |
 | `a` FAQ | 4.5 | 11.12 | – |
-| `span` ArtiCYa | 4.5 | 11.43 | 9.48 |
+| `span` ArtiCYa | 4.5 | 11.09 | 9.48 |
 
 The last seven rows are the same elements the settled page carries, measured
 *during* the opening. Only one of them differs materially from its resting
