@@ -84,7 +84,29 @@ const plates: StagePlate[] = [
   // than the longest. The pan stays bottom-anchored: a 16:10 window shows 854
   // of this frame's 1020 rows and the fencing crosses rows 107 to 507, so no
   // pan clears it and this one clears the most of it.
-  { src: "/images/pt/IMG_4582-road.jpg", position: "45% 100%", wipe: true },
+  //
+  // It carries its own darkening now, and the shared numbers are why it had to.
+  // On 52/62/70 this plate is the whole ground under both offer panels' prose,
+  // and stepped at 5px across their traversal the Youth Exchanges bullets run
+  // to 3.70 at 1440x900 in both engines — the panel's four sentences sitting in
+  // the top fifth of the window, where the shared ramp is at its weakest 52%.
+  // The Training Courses prose crosses the foot of the window in the same
+  // passage and runs to 4.29 there. Nothing moved them onto it; the sampler
+  // simply never landed where they fell, and a coarser sweep read the same
+  // sentences at 5.09-5.59.
+  //
+  // 60/70/76 is the smallest step that clears the floor with margin: at
+  // 56/66/72 the worst two are still under at 4.23, at 58/68/74 they scrape
+  // 4.56, and at 60/70/76 the whole set lands 4.91-6.11 in Chromium and
+  // 4.91-6.07 in WebKit. `from`/`to` are declared rather than left to the
+  // prop's own defaults, which are 30%/78% — the ramp's geometry is unchanged
+  // and only its three strengths move.
+  {
+    src: "/images/pt/IMG_4582-road.jpg",
+    position: "45% 100%",
+    wipe: true,
+    shade: { top: 60, mid: 70, base: 76, from: "22%", to: "62%" },
+  },
   // The gains and the closing: the valley, the same frame the gains section
   // lays edge to edge over it — so the finale is that picture arriving at full
   // strength out of its own defocused copy.

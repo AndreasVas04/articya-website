@@ -2048,6 +2048,118 @@ are excluded from the set below; the settled `20+` / `500+` / `15+` are in it.
 ---
 
 
+## 5.2 · The repairs
+
+All nine clear the floor, and plate strength alone did it. Nothing else was
+touched: the diff is **three `shade` declarations** and their comments. No
+brightness filter, no crop, no `object-position`, no type, no zone, no
+`data-stage-strength`, no copy.
+
+**Two plates carry all nine, which is why three numbers reach them.**
+
+- **`/` — the road, `IMG_4582-road`.** It had no darkening of its own and took
+  the shared stage numbers, `52/62/70`. It is the whole ground under both offer
+  panels' prose during the passage across their join, and it is the weakest ramp
+  on the page. The Youth Exchanges bullets fall in the **top fifth of the
+  window**, where the shared ramp is at 52%; the Training Courses prose crosses
+  the **foot** of the window in the same passage. Now `60/70/76`, declared with
+  `from: "22%"` / `to: "62%"` so the ramp's geometry is unchanged — the `shade`
+  prop's own defaults are 30%/78%, and taking them would have moved the stops as
+  well as the strengths.
+- **`/contact` — the hero plate**, `68/58/57` → **`71/64/63`**. The invitation
+  crosses this plate's middle band at every height.
+- **`/contact` — the split plate**, `52/62/70` → **`54/66/72`**. The email
+  address stands in *this* plate's middle band on the three shortest phones, and
+  the hero plate cannot reach it: measured with the split left at 62, the
+  address stays at 4.21 / 4.40 / 4.47 while the invitation is already clear. By
+  the time it is on screen the crossfade has finished and this plate is the
+  whole ground.
+
+**Each number is the smallest step that clears with margin, and the steps below
+it were measured rather than skipped.** On the road: `56/66/72` leaves the worst
+two at **4.23**, `58/68/74` scrapes **4.56**, `60/70/76` lands the set at
+4.91–6.11. On the contact hero: `70/62/61` gives **4.67** at the worst height,
+`71/64/63` gives **5.04**. On the split: `54/66/72` gives **4.87** where the
+element failed at 4.21.
+
+### Before and after, ten configurations
+
+Chromium and WebKit at 1440×900 and 390×553/664/750/844, 5px, DPR 2.
+
+| element | c·desk | c·553 | c·664 | c·750 | c·844 | w·desk | w·553 | w·664 | w·750 | w·844 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| `/` Travel, accommodation and meals — before | 3.70 | 8.25 | 8.25 | 8.25 | 8.26 | 3.70 | 8.25 | 8.25 | 8.25 | 8.25 |
+| — after | **4.93** | 8.25 | 8.25 | 8.25 | 8.26 | **4.91** | 8.25 | 8.25 | 8.25 | 8.25 |
+| `/` Receive a Youthpass certificate — before | 3.70 | 8.25 | 8.25 | 8.25 | 8.26 | 3.70 | 8.25 | 8.25 | 8.25 | 8.25 |
+| — after | **4.91** | 8.25 | 8.25 | 8.25 | 8.26 | **4.91** | 8.25 | 8.25 | 8.25 | 8.25 |
+| `/` Participate through workshops — before | 4.09 | 8.25 | 8.25 | 8.25 | 8.25 | 3.75 | 8.25 | 8.25 | 8.25 | 8.25 |
+| — after | **5.38** | 8.25 | 8.25 | 8.25 | 8.25 | **4.92** | 8.25 | 8.25 | 8.25 | 8.25 |
+| `/` No prior experience needed. — before | 4.09 | 8.25 | 8.25 | 8.25 | 8.26 | 3.76 | 8.25 | 8.25 | 8.25 | 8.25 |
+| — after | **5.38** | 8.25 | 8.25 | 8.25 | 8.26 | **4.93** | 8.25 | 8.25 | 8.25 | 8.25 |
+| `/` Professional development programs — before | 4.29 | 4.21 | 4.58 | 4.39 | 4.62 | 4.33 | 4.64 | 4.58 | 4.51 | 4.41 |
+| — after | **5.64** | **5.47** | 5.98 | **5.72** | 5.94 | **5.64** | 6.02 | 5.91 | 5.82 | **5.73** |
+| `/` Focused on skill-building — before | 4.62 | 4.21 | 4.67 | 4.39 | 4.66 | 4.62 | 4.69 | 4.58 | 4.51 | 4.45 |
+| — after | 6.01 | **5.47** | 5.99 | **5.73** | 6.01 | 5.91 | 6.09 | 5.91 | 5.82 | **5.81** |
+| `/` Open to educators, trainers — before | 4.78 | 4.72 | 4.67 | 4.39 | 4.66 | 4.76 | 4.69 | 4.58 | 4.51 | 4.45 |
+| — after | 6.11 | 6.08 | 6.01 | **5.73** | 6.01 | 6.07 | 6.10 | 5.91 | 5.82 | **5.81** |
+| `/contact` If you are interested in Erasmus+ — before | 4.38 | 4.52 | 4.78 | 4.58 | 4.44 | 4.45 | 4.27 | 4.10 | 4.12 | 4.08 |
+| — after | **5.27** | 5.28 | 5.63 | 5.46 | **5.34** | **5.33** | **5.15** | **5.00** | **5.01** | **5.04** |
+| `/contact` articya4youth@gmail.com — before | 8.72 | 4.40 | 5.10 | 4.96 | 4.91 | 8.68 | 4.21 | 4.97 | 4.47 | 4.83 |
+| — after | 9.40 | **4.99** | 5.76 | 5.55 | 5.54 | 9.36 | **4.87** | 5.62 | **5.06** | 5.44 |
+
+Bold is a reading that was under 4.5 before. **Zero elements below floor in all
+ten configurations** — 90 elements at 1440×900, 74 to 80 on a phone. The
+tightest reading on the site is now the email address at 4.87 in WebKit at
+390×553, which is the configuration the split plate's number was set against.
+
+### The ratchet
+
+783 paired measurements across the ten configurations: **161 rose, 5 fell.**
+Darkening a plate can only raise contrast for the cream type standing on it, so
+every fall is on an element whose plate was not touched.
+
+| fall | element | configuration |
+|---|---|---|
+| 7.78 → 7.74 | `/` `p` A youth organization connecting young people in Cypr | chromium 1440×900 |
+| 7.71 → 7.68 | same | webkit 1440×900 |
+| 6.10 → 6.03 | same | chromium 390×844 |
+| 8.30 → 8.26 | `/` `div` 4+ | chromium 1440×900 |
+| 8.38 → 8.28 | `/` `div` 4+ | webkit 1440×900 |
+
+`div` 4+ is a numeral the stats ledger passes through while counting, caught at a
+different moment of its own animation — its pixel population moves 9,444 →
+11,683 across the pair, which is §2.8's population branch. The lede sits on the
+"What we do" plate, which this change does not touch; the three readings move by
+0.03–0.07 and sit at 6.03 or better against a 4.5 floor. That is run-to-run
+scatter in which single pixel is worst, not a fall.
+
+### Polarisation
+
+The ledger binds at every frame of any ramp: a plate is at **≥ 0.75 or ≤ 0.04**,
+never between. Measured at 5px across the whole scroll, with each ramp's
+midpoint read explicitly:
+
+- **`/`, plates 0 and 1** — the "What we do" frame and the road, both `wipe`
+  plates: **0 of 870 frames** in the band. Opacity snaps 0 ↔ 1 and the
+  transition is carried by a travelling mask, so the midpoints read exactly
+  1 and 0 (`@130 = 1`, `@2105 = 1`, `@2855 = 0`).
+- **`/`, plate 2** — the valley, a crossfade: 70 of 870 frames in the band,
+  midpoints 0.1125, 0.7684, 0.3312. Pre-existing and unchanged; this is the
+  plate whose ramp the gains section covers with its own edge-to-edge copy of
+  the same photograph, which is why it keeps the fade.
+- **`/contact`, plates 0 and 1** — 56 and 60 of 210 frames in the band,
+  midpoints 0.8638 / 0.1362 and 0.1632 / 0.8368, summing to 1.0. Pre-existing
+  and unchanged. Both plates are the *same photograph*, one sharp and one
+  defocused across a seam, so the crossfade is a focus pull on one picture
+  rather than a haze between two grounds.
+
+This repair alters no opacity: it moves `--shade-*` custom properties only,
+while opacity comes from the untouched `data-stage-strength` zones. The two
+`wipe` plates are strictly polarised, and the two crossfades are exactly where
+they were.
+
+---
+
 ## The contrast reference set — the corrected instrument
 
 §2.8 makes the floor a ratchet: **no change may lower any measured glyph-core
@@ -2108,42 +2220,52 @@ DPR 2. 19,954 stops. **desktop** is the worst over both engines at 1440×900;
 means the element does not render at that viewport (the desktop nav collapses to
 a menu). Transient text — the stats ledger's intermediate numerals — is excluded.
 
-**Where the site stands against it.** Nine elements are below their floor, four
-of which had never been visible to the old sampler in any configuration. They
-are listed in §5.1 and repaired in §5.2; the values below are the state §5.2
-starts from.
+**Eleven rows in the old tables are not here, and the honest reason is that no
+sweep on this build reaches them — the 36-stop sampler did not either.** Eight
+are `/faq`'s answers, which sit inside native `<details>` and are closed until a
+reader opens one. Three are `/`'s collapsed poster state — `span` We, `span` are
+ArtiCYa, `p` ArtiCYa · Cyprus — which the harness destroys on arrival, because
+the home hero pins `window.scrollY` at 0 until its card opens and `End` is the
+only way past it. Those values entered the set from the older harness at
+`3749c92`. This is a coverage gap carried forward, not a change made here, and
+closing it means opening each `<details>` and sweeping the hero before release.
+
+**Where the site stands against it.** **Nothing is below its floor**, in any of
+the ten configurations. The nine elements §5.1 found under were repaired in §5.2
+by plate strength, and the values below are the repaired build. The tightest
+reading on the site is `/contact`'s email address at 4.87 in WebKit at 390×553.
 
 
 **/**
 
 | element | floor | desktop | mobile |
 |---|---|---|---|
-| `span` Travel, accommodation and meals are fully covered. | 4.5 | 3.70 | 8.25 |
-| `span` Receive a Youthpass certificate recognizing your lea | 4.5 | 3.70 | 8.25 |
-| `span` Participate through workshops, cultural activities a | 4.5 | 3.75 | 8.25 |
-| `span` No prior experience needed. | 4.5 | 3.76 | 8.25 |
-| `h3` Training Courses | 3 | 4.02 | 4.06 |
-| `span` Professional development programs for youth workers | 4.5 | 4.29 | 4.21 |
 | `p` Your adventure starts here. | 3 | 4.30 | 3.26 |
 | `span` International friends | 3 | 4.51 | 4.86 |
-| `span` Focused on skill-building through workshops, simulat | 4.5 | 4.62 | 4.21 |
 | `span` Certified learning | 3 | 4.74 | 4.77 |
-| `span` Open to educators, trainers and young people involve | 4.5 | 4.76 | 4.39 |
 | `span` Real-world skills | 3 | 4.76 | 5.66 |
 | `a` Home | 4.5 | 4.78 | – |
+| `span` Travel, accommodation and meals are fully covered. | 4.5 | 4.91 | 8.25 |
+| `span` Receive a Youthpass certificate recognizing your lea | 4.5 | 4.91 | 8.25 |
+| `span` Participate through workshops, cultural activities a | 4.5 | 4.92 | 8.25 |
+| `span` No prior experience needed. | 4.5 | 4.93 | 8.25 |
 | `h2` What you gain | 3 | 5.04 | 6.48 |
 | `p` We work with young people in Cyprus and across Europ | 4.5 | 5.11 | 5.11 |
 | `div` PROJECTS | 4.5 | 5.11 | 5.11 |
 | `div` YOUTH | 4.5 | 5.11 | 5.11 |
 | `div` COUNTRIES | 4.5 | 5.12 | 5.11 |
+| `h3` Training Courses | 3 | 5.30 | 5.41 |
+| `span` Professional development programs for youth workers | 4.5 | 5.64 | 5.47 |
+| `span` Focused on skill-building through workshops, simulat | 4.5 | 5.91 | 5.47 |
 | `span` ArtiCYa | 4.5 | 5.99 | 6.18 |
+| `span` Open to educators, trainers and young people involve | 4.5 | 6.07 | 5.73 |
 | `a` FAQ | 4.5 | 6.11 | – |
 | `a` About | 4.5 | 6.12 | – |
 | `a` Contact | 4.5 | 6.14 | – |
 | `p` Travel across Europe with all expenses covered throu | 4.5 | 6.45 | 6.17 |
 | `a` Contact Us | 4.5 | 6.50 | 6.50 |
 | `span` All expenses covered | 3 | 6.58 | 4.65 |
-| `p` A youth organization connecting young people in Cypr | 4.5 | 7.71 | 5.05 |
+| `p` A youth organization connecting young people in Cypr | 4.5 | 7.68 | 5.07 |
 | `h2` What we do | 3 | 8.25 | 8.25 |
 | `div` 20+ | 3 | 8.25 | 8.25 |
 | `div` 500+ | 3 | 8.25 | 8.25 |
@@ -2181,21 +2303,21 @@ starts from.
 
 | element | floor | desktop | mobile |
 |---|---|---|---|
-| `h1` Contact | 3 | 3.80 | 3.71 |
-| `p` If you are interested in Erasmus+ opportunities, col | 4.5 | 4.38 | 4.08 |
-| `span` Email: | 4.5 | 4.74 | 5.27 |
-| `h2` Get in touch | 3 | 5.24 | 4.88 |
-| `span` Facebook: | 4.5 | 6.32 | 6.90 |
-| `span` Instagram: | 4.5 | 6.58 | 6.89 |
-| `p` © 2026 ArtiCYa \| All Rights Reserved | 4.5 | 7.99 | 8.07 |
-| `span` articya4youth@gmail.com | 4.5 | 8.68 | 4.21 |
-| `span` Articya | 4.5 | 10.21 | 10.36 |
+| `h1` Contact | 3 | 4.66 | 4.50 |
+| `span` Email: | 4.5 | 5.17 | 5.62 |
+| `p` If you are interested in Erasmus+ opportunities, col | 4.5 | 5.27 | 5.00 |
+| `h2` Get in touch | 3 | 6.21 | 5.71 |
+| `span` Facebook: | 4.5 | 6.49 | 7.02 |
+| `span` Instagram: | 4.5 | 6.86 | 7.10 |
+| `p` © 2026 ArtiCYa \| All Rights Reserved | 4.5 | 8.08 | 8.10 |
+| `span` articya4youth@gmail.com | 4.5 | 9.36 | 4.87 |
 | `a` Contact | 4.5 | 10.35 | – |
-| `span` @articya4youth | 4.5 | 10.62 | 5.78 |
-| `a` Home | 4.5 | 12.14 | – |
-| `a` About | 4.5 | 12.32 | – |
-| `span` ArtiCYa | 4.5 | 12.44 | 9.49 |
-| `a` FAQ | 4.5 | 12.76 | – |
+| `span` Articya | 4.5 | 10.47 | 10.65 |
+| `span` @articya4youth | 4.5 | 10.96 | 6.38 |
+| `a` Home | 4.5 | 12.29 | – |
+| `a` About | 4.5 | 12.46 | – |
+| `span` ArtiCYa | 4.5 | 12.70 | 9.49 |
+| `a` FAQ | 4.5 | 12.79 | – |
 
 **/faq**
 

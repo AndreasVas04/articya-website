@@ -35,16 +35,36 @@ const plates: StagePlate[] = [
   // land on: the invitation's worst glyph-core pixel went 4.50 -> 4.40, under
   // its floor. Three points of plate strength put it at 4.75. Nothing else on
   // this page changed.
-  { src: hero.image, position: "50% 50%", priority: true, shade: { top: 68, mid: 58, base: 57, color: "var(--color-sky-anchor)" } },
+  //
+  // 58 was the mid until the sampler was fixed. The invitation crosses this
+  // plate's middle band at every height, and stepped at 5px it reads 4.08 at
+  // 390x844 in WebKit and 4.38 at 1440x900 in Chromium — under floor in seven
+  // of the ten configurations, where the coarse sweep saw it under in one. The
+  // reading below that set 58 was taken at whatever positions that sampler
+  // happened to land on, so it was never the invitation's worst.
+  //
+  // 71/64/63 clears it: 5.04 at 390x844 and 5.01 at 390x750 in WebKit, the two
+  // worst heights, against 4.67/4.95 at 70/62/61. That is six points of mid
+  // handed back out of the sixteen this frame won when it replaced the sunlit
+  // track, and the frame keeps the rest.
+  { src: hero.image, position: "50% 50%", priority: true, shade: { top: 71, mid: 64, base: 63, color: "var(--color-sky-anchor)" } },
   // The split: the same frame, defocused to the left of a hard seam at 48%
   // and sharp to its right, with the invitation and the three channels
   // standing on the soft side. One frame of the reference set's density, on
   // the text the page already had.
+  //
+  // The mid is 66 for the same reason the hero plate's is 64, and it is the
+  // email address that asks for it: on the three shortest phones it stands in
+  // this plate's middle band and reads 4.21 at 390x553 in WebKit. Raising the
+  // hero plate alone does not touch it — measured with this one left at 62 the
+  // address stays at 4.21 / 4.40 / 4.47 — because by the time it is on screen
+  // the crossfade has finished and this plate is the whole ground. At 54/66/72
+  // it reads 4.87 and 5.06 at the two heights that failed.
   {
     src: hero.image,
     position: "50% 50%",
     split: 48,
-    shade: { top: 52, mid: 62, base: 70, from: "22%", to: "62%", color: "var(--color-sky-anchor)" },
+    shade: { top: 54, mid: 66, base: 72, from: "22%", to: "62%", color: "var(--color-sky-anchor)" },
   },
 ];
 
