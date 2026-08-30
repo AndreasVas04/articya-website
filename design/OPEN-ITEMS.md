@@ -1930,10 +1930,134 @@ fix is plate strength on the panels' join, which is composition.
 
 ---
 
-## The contrast reference set — `3749c92`
+## 5.1 · The sampler — what it was measuring
+
+The Youthpass sentence is what opened this. It read 4.96 → 4.45 from the
+canonical sweep and 3.766 → 3.705 stepped at 5px, and three panel elements had
+already shown the same shape earlier — 4.34, 3.76, 3.77, surfaced only when
+somebody stepped them at 6px. A number that moves that far when you look
+harder is not a number about the page. It is a number about where the
+instrument happened to stand.
+
+**What the sampler did.** It put a fixed *count* of stops across each page —
+`MAX_STOPS = 36` — and took the interval from the page height:
+`step = max(60, ceil(maxY / 35))`, then scrolled `0, step, 2·step, …, maxY`.
+So the interval was never chosen; it fell out of how tall the page happened to
+be at that viewport. At 1440×900 that is **125px on `/`, 138px on `/about`,
+and 60px on `/contact` and `/faq`**. Every element was then scored at whichever
+of those global stops it was visible for.
+
+That is the defect, and it is a division: an element's traversal is its own,
+but the stops belong to the page. Measured across the 134 element-instances at
+1440×900, the median element was scored at **6 positions across a 675px
+traversal**, and **39 of them were scored at 3 positions or fewer**. The
+reported value was its value at those positions. It was never its worst.
+
+**What it does now.** The interval is fixed in pixels and every element is
+scored at every stop it is visible for, so the reported number is the worst
+over the element's whole traversal at that resolution. The union of "where some
+element is visible" is the whole scroll range, so this is the page stepped
+uniformly — there is no cheaper honest version of it.
+
+**The step is 5px, and it was chosen by measurement rather than asserted.**
+`/contact` at 1440×900 was swept at **1px** — all 1049 stops, 21.6 minutes — to
+give a truth to compare against, and the result subsampled at every step
+between 1 and 20:
+
+| step | mean overstatement | worst element |
+|---|---|---|
+| 2px | 0.009 | 0.072 |
+| 3px | 0.018 | 0.083 |
+| **5px** | **0.026** | **0.119** |
+| 8px | 0.056 | 0.186 |
+| 10px | 0.042 | 0.142 |
+| 15px | 0.062 | 0.244 |
+| 20px | 0.084 | 0.603 |
+
+5px costs a fifth of 1px and gives up 0.026 on average and 0.12 at worst, which
+is inside the width of the decision it is used to make. It is also the
+resolution §2.8's fourth branch already names for confirming a fall, so the
+confirmation step and the sweep step are now the same number.
+
+For contrast, the same series subsampled at the *old* intervals overstates by up
+to **2.06**, and `/contact`'s invitation reads 4.65 at 125px against 4.32 at
+1px — above floor and below it, on one element, from sampling alone.
+
+**Runtime.** 19,954 stops over the ten configurations: **199.6 minutes** of
+single-worker time, about **85 minutes** of wall clock with four workers on a
+ten-core machine. The old sampler took roughly seven. Two changes paid for most
+of the difference and neither touches the measurement: the settle after an
+instant scroll went from 810ms to a two-frame wait, because with transitions
+disabled the composite is **pixel-identical by 30ms** (measured at three scroll
+depths, maxΔ 0 against a 1200ms wait); and the screenshot is clipped to the
+union of the text rects on screen rather than capturing the whole window.
+
+**The rewrite changes sampling and nothing else, and that is checked rather
+than claimed.** Run at the old interval on `/contact` — step 60, the same stops
+the 36-stop sampler used there — the new code reproduces the old numbers to a
+maximum absolute difference of **0.004** across all fifteen elements.
+
+### What was below floor all along
+
+Ten configurations of the current build: 1440×900 and 390×553/664/750/844, in
+Chromium and WebKit. 90 elements at 1440×900, 74 on a phone.
+
+| configuration | below floor, 36-stop | below floor, 5px |
+|---|---|---|
+| chromium 1440×900 | 0 | 6 |
+| chromium 390×553 | 0 | 3 |
+| chromium 390×664 | 0 | 0 |
+| chromium 390×750 | 0 | 3 |
+| chromium 390×844 | 0 | 1 |
+| webkit 1440×900 | 3 | 6 |
+| webkit 390×553 | 0 | 2 |
+| webkit 390×664 | 0 | 1 |
+| webkit 390×750 | 2 | 2 |
+| webkit 390×844 | 0 | 4 |
+| **total readings** | **5** | **28** |
+
+**Nine distinct elements are below their floor, and four of them had never once
+been below floor under the old sampler — at any viewport, in either engine.**
+Not "reported as marginal". Never seen. The other five were visible in one or
+two configurations out of ten, which is why the standing record described the
+panels' prose as a single WebKit-only oddity rather than as a desktop breach in
+both engines.
+
+| element | floor | worst | configurations under | ever seen before |
+|---|---|---|---|---|
+| `/` `span` Travel, accommodation and meals are fully covered. | 4.5 | 3.70 | 2 | yes |
+| `/` `span` Receive a Youthpass certificate recognizing your lea | 4.5 | 3.70 | 2 | yes |
+| `/` `span` Participate through workshops, cultural activities a | 4.5 | 3.75 | 2 | yes |
+| `/` `span` No prior experience needed. | 4.5 | 3.76 | 2 | **never** |
+| `/contact` `p` If you are interested in Erasmus+ opportunities, col | 4.5 | 4.08 | 7 | yes |
+| `/` `span` Professional development programs for youth workers | 4.5 | 4.21 | 5 | **never** |
+| `/` `span` Focused on skill-building through workshops, simulat | 4.5 | 4.21 | 3 | **never** |
+| `/contact` `span` articya4youth@gmail.com | 4.5 | 4.21 | 3 | yes |
+| `/` `span` Open to educators, trainers and young people involve | 4.5 | 4.39 | 2 | **never** |
+
+None of this is new damage. Every one of these values was true of the build the
+36-stop sweep signed off as "no composition-derived fall anywhere, so nothing
+stops", and true of the builds before it. **This section changes no pixels. It
+changes what we know about them**, and §5.2 is the repair.
+
+One instrument note worth keeping. The stats ledger counts up on entry, so at
+5px the sweep now catches its intermediate numerals — `div|4+`, `div|42+` — as
+elements in their own right. They are transient text, not elements, and they
+are excluded from the set below; the settled `20+` / `500+` / `15+` are in it.
+
+---
+
+
+## The contrast reference set — the corrected instrument
 
 §2.8 makes the floor a ratchet: **no change may lower any measured glyph-core
 value below its value here.** If one requires it, report and stop.
+
+This set replaces the one carried since `3749c92`. It is not a re-measurement of
+the same thing: every number in the old tables was the value at whatever
+positions a 36-stop sampler landed on, and §5.1 has the arithmetic on what that
+was worth. Nothing about the page changed to produce the differences below.
+
 
 ### The three branches — what a fall has to be before it counts as one
 
@@ -1974,150 +2098,128 @@ and five of them were the sampler: About's three scene paragraphs came out
 −1.65, −1.52 and −0.79. Two were real. Clip the measured rect to below the
 chrome ramp before believing any of it, or the number is the header.
 
-Method is the sweep in `ART-DIRECTION.md §7`'s terms — glyph cores on the
-rendered composite, worst pixel per element, swept across every element's own
-traversal at 1440×900 (desktop) and 390×844 (mobile), DPR 2, both ends of the
-inner heroes' breath. 93 elements, 186 measurements. A dash means the element
-does not render at that viewport (the desktop nav collapses to a menu).
 
-**Where the site stands against it now.** One element is below its floor and it
-is below it at `3749c92` too: FAQ's opening paragraph on mobile, **4.39**
-against 4.5, untouched by any of this work and by everything since. **Forty**
-elements sit under their reference value — thirty-eight of those listed below
-plus `/about`'s `a` Contact and `a` Home, which §2.13 took under for the first
-time. Nineteen of the thirty-eight predate this pass —
-they are the transitions work, where the panels' prose moved from the dark floor
-onto the road (13.51 → 8.35) and "Youth Exchanges" with it (12.04 → 8.05). The
-other nineteen are §2.7's, all on the desktop viewport and all on the five
-frames that changed rung, the largest 0.66 and none below a floor.
+**Method.** The sweep in `ART-DIRECTION.md §7`'s terms — glyph cores on the
+rendered composite, worst pixel per element — now **stepped at 5px across every
+element's whole traversal** rather than sampled at a fixed count of stops. Ten
+configurations: 1440×900 and 390×553, 664, 750 and 844, in Chromium and WebKit,
+DPR 2. 19,954 stops. **desktop** is the worst over both engines at 1440×900;
+**mobile** is the worst over both engines and all four phone heights. A dash
+means the element does not render at that viewport (the desktop nav collapses to
+a menu). Transient text — the stats ledger's intermediate numerals — is excluded.
 
-**That is a standing conflict and it is recorded rather than resolved.** The
-falls §2.7 caused are the resolution itself: a 2880 variant has detail in it
-that a 2560 variant averaged away, and the worst *single* glyph-core pixel finds
-it. The only ways to reverse them are to darken five photographs or to withhold
-the pixels §2.7 exists to deliver. One floor breach was repaired by plate
-strength because a floor is not negotiable; the remaining eighteen were left,
-and which way that goes is a decision for the next review, not for the change
-that surfaced it.
+**Where the site stands against it.** Nine elements are below their floor, four
+of which had never been visible to the old sampler in any configuration. They
+are listed in §5.1 and repaired in §5.2; the values below are the state §5.2
+starts from.
+
 
 **/**
 
 | element | floor | desktop | mobile |
 |---|---|---|---|
-| `span` All expenses covered | 3 | 6.04 | 4.48 |
-| `span` International friends | 3 | 4.52 | 4.88 |
-| `span` Certified learning | 3 | 4.72 | 4.78 |
-| `span` Real-world skills | 3 | 4.77 | 5.67 |
-| `a` Home | 4.5 | 5.01 | – |
-| `h2` What you gain | 3 | 5.03 | 6.48 |
-| `div` COUNTRIES | 4.5 | 5.61 | 5.11 |
-| `h3` Training Courses | 3 | 5.12 | 5.76 |
-| `p` Your adventure starts here. | 3 | 5.18 | 6.09 |
-| `span` Professional development programs for youth workers  | 4.5 | 5.53 | 5.2 |
-| `span` We | 3 | 5.27 | 5.34 |
-| `span` are ArtiCYa | 3 | 5.27 | 6.3 |
-| `p` We work with young people in Cyprus and across Europ | 4.5 | 5.3 | 5.53 |
-| `span` Focused on skill-building through workshops, simulat | 4.5 | 5.67 | 5.3 |
-| `div` PROJECTS | 4.5 | 5.55 | 5.43 |
-| `div` YOUTH | 4.5 | 5.57 | 6.21 |
-| `p` A youth organization connecting young people in Cypr | 4.5 | 8.95 | 5.71 |
-| `span` Open to educators, trainers and young people involve | 4.5 | 13.51 | 5.72 |
-| `p` ArtiCYa · Cyprus | 4.5 | 5.9 | 5.81 |
-| `a` FAQ | 4.5 | 6.25 | – |
-| `a` Contact | 4.5 | 6.34 | – |
-| `span` ArtiCYa | 4.5 | 6.56 | 6.43 |
-| `a` Contact Us | 4.5 | 6.5 | 6.5 |
-| `a` Contact Us | 4.5 | 6.5 | 6.5 |
-| `p` Travel across Europe with all expenses covered throu | 4.5 | 7.89 | 11.32 |
-| `a` About | 4.5 | 8.12 | – |
-| `div` 20+ | 3 | 8.25 | 8.72 |
-| `div` 500+ | 3 | 8.25 | 8.45 |
-| `div` 15+ | 3 | 8.3 | 8.47 |
-| `h2` What we do | 3 | 8.54 | 9.56 |
+| `span` Travel, accommodation and meals are fully covered. | 4.5 | 3.70 | 8.25 |
+| `span` Receive a Youthpass certificate recognizing your lea | 4.5 | 3.70 | 8.25 |
+| `span` Participate through workshops, cultural activities a | 4.5 | 3.75 | 8.25 |
+| `span` No prior experience needed. | 4.5 | 3.76 | 8.25 |
+| `h3` Training Courses | 3 | 4.02 | 4.06 |
+| `span` Professional development programs for youth workers | 4.5 | 4.29 | 4.21 |
+| `p` Your adventure starts here. | 3 | 4.30 | 3.26 |
+| `span` International friends | 3 | 4.51 | 4.86 |
+| `span` Focused on skill-building through workshops, simulat | 4.5 | 4.62 | 4.21 |
+| `span` Certified learning | 3 | 4.74 | 4.77 |
+| `span` Open to educators, trainers and young people involve | 4.5 | 4.76 | 4.39 |
+| `span` Real-world skills | 3 | 4.76 | 5.66 |
+| `a` Home | 4.5 | 4.78 | – |
+| `h2` What you gain | 3 | 5.04 | 6.48 |
+| `p` We work with young people in Cyprus and across Europ | 4.5 | 5.11 | 5.11 |
+| `div` PROJECTS | 4.5 | 5.11 | 5.11 |
+| `div` YOUTH | 4.5 | 5.11 | 5.11 |
+| `div` COUNTRIES | 4.5 | 5.12 | 5.11 |
+| `span` ArtiCYa | 4.5 | 5.99 | 6.18 |
+| `a` FAQ | 4.5 | 6.11 | – |
+| `a` About | 4.5 | 6.12 | – |
+| `a` Contact | 4.5 | 6.14 | – |
+| `p` Travel across Europe with all expenses covered throu | 4.5 | 6.45 | 6.17 |
+| `a` Contact Us | 4.5 | 6.50 | 6.50 |
+| `span` All expenses covered | 3 | 6.58 | 4.65 |
+| `p` A youth organization connecting young people in Cypr | 4.5 | 7.71 | 5.05 |
+| `h2` What we do | 3 | 8.25 | 8.25 |
+| `div` 20+ | 3 | 8.25 | 8.25 |
+| `div` 500+ | 3 | 8.25 | 8.25 |
+| `div` 15+ | 3 | 8.25 | 8.25 |
+| `h3` Youth Exchanges | 3 | 8.25 | 8.25 |
+| `span` International group experiences for young people age | 4.5 | 8.25 | 8.25 |
 | `p` © 2026 ArtiCYa \| All Rights Reserved | 4.5 | 8.77 | 8.77 |
-| `h3` Youth Exchanges | 3 | 12.04 | 12.04 |
-| `span` International group experiences for young people age | 4.5 | 13.51 | 13.51 |
-| `span` Participate through workshops, cultural activities a | 4.5 | 13.51 | 13.51 |
-| `span` No prior experience needed. | 4.5 | 13.51 | 13.51 |
-| `span` Travel, accommodation and meals are fully covered. | 4.5 | 13.51 | 13.51 |
-| `span` Receive a Youthpass certificate recognizing your lea | 4.5 | 13.51 | 13.51 |
 
 **/about**
 
 | element | floor | desktop | mobile |
 |---|---|---|---|
-| `a` About | 4.5 | 5.01 | – |
-| `h1` About ArtiCYa | 3 | 5.28 | 5.92 |
-| `p` A Cyprus-based organization committed to non-formal  | 4.5 | 5.43 | 5.35 |
-| `span` Over the years, the organization has demonstrated re | 4.5 | 6.05 | 5.96 |
-| `span` ArtiCYa is a Cyprus-based organization actively enga | 4.5 | 6.01 | 6.06 |
-| `a` Contact | 4.5 | 6.31 | – |
-| `span` ArtiCYa | 4.5 | 6.68 | 6.57 |
-| `a` Home | 4.5 | 6.88 | – |
-| `a` FAQ | 4.5 | 7.38 | – |
+| `a` About | 4.5 | 4.74 | – |
+| `h1` About ArtiCYa | 3 | 4.95 | 4.81 |
+| `p` A Cyprus-based organization committed to non-formal | 4.5 | 5.08 | 4.84 |
+| `span` ArtiCYa is a Cyprus-based organization actively enga | 4.5 | 5.47 | 5.02 |
+| `span` Over the years, the organization has demonstrated re | 4.5 | 5.47 | 5.21 |
+| `span` ArtiCYa | 4.5 | 5.99 | 6.18 |
+| `a` FAQ | 4.5 | 6.09 | – |
+| `a` Contact | 4.5 | 6.09 | – |
+| `a` Home | 4.5 | 6.16 | – |
 | `p` © 2026 ArtiCYa \| All Rights Reserved | 4.5 | 8.59 | 8.59 |
-| `span` The organization is deeply committed to social inclu | 4.5 | 9.14 | 9.97 |
-| `span` and to create safe, open and respectful spaces for p | 4.5 | 9.14 | 9.67 |
-| `span` Furthermore, the organization strongly supports and  | 4.5 | 9.26 | 9.22 |
-| `span` Through its continuous engagement in Erasmus+ initia | 4.5 | 10.78 | 9.26 |
-| `span` ArtiCYa contributes meaningfully to the development  | 4.5 | 10.93 | 9.52 |
-| `span` ArtiCYa places special emphasis on the promotion of  | 4.5 | 10.13 | 9.53 |
-| `span` Rooted in the values of creativity, inclusion and so | 4.5 | 10.22 | 9.87 |
-| `span` actively supporting LGBTQ+ individuals and advocatin | 4.5 | 10.16 | 10.13 |
-| `span` ArtiCYa focuses particularly on the arts as a powerf | 4.5 | 10.6 | 10.71 |
-| `span` fostering European values, solidarity and lifelong l | 4.5 | 11.05 | 10.88 |
+| `span` and to create safe, open and respectful spaces for p | 4.5 | 9.04 | 8.90 |
+| `span` ArtiCYa places special emphasis on the promotion of | 4.5 | 9.12 | 8.60 |
+| `span` The organization is deeply committed to social inclu | 4.5 | 9.14 | 8.90 |
+| `span` Rooted in the values of creativity, inclusion and so | 4.5 | 9.18 | 8.83 |
+| `span` ArtiCYa focuses particularly on the arts as a powerf | 4.5 | 9.18 | 8.91 |
+| `span` actively supporting LGBTQ+ individuals and advocatin | 4.5 | 9.22 | 8.60 |
+| `span` Furthermore, the organization strongly supports and | 4.5 | 9.22 | 8.60 |
+| `span` Through its continuous engagement in Erasmus+ initia | 4.5 | 10.77 | 9.12 |
+| `span` ArtiCYa contributes meaningfully to the development | 4.5 | 10.93 | 9.30 |
+| `span` fostering European values, solidarity and lifelong l | 4.5 | 10.97 | 10.54 |
 
 **/contact**
 
 | element | floor | desktop | mobile |
 |---|---|---|---|
-| `h1` Contact | 3 | 3.74 | 4.79 |
-| `p` If you are interested in Erasmus+ opportunities, col | 4.5 | 4.5 | 4.82 |
-| `span` articya4youth@gmail.com | 4.5 | 11.24 | 5.7 |
-| `h2` Get in touch | 3 | 6.61 | 6.86 |
-| `span` Email: | 4.5 | 6.75 | 7.36 |
-| `span` Instagram: | 4.5 | 6.88 | 7.44 |
-| `span` Facebook: | 4.5 | 6.96 | 7.01 |
-| `span` @articya4youth | 4.5 | 10.63 | 7.78 |
-| `p` © 2026 ArtiCYa \| All Rights Reserved | 4.5 | 8.16 | 8.16 |
-| `a` Contact | 4.5 | 10.38 | – |
-| `span` Articya | 4.5 | 10.77 | 12.59 |
+| `h1` Contact | 3 | 3.80 | 3.71 |
+| `p` If you are interested in Erasmus+ opportunities, col | 4.5 | 4.38 | 4.08 |
+| `span` Email: | 4.5 | 4.74 | 5.27 |
+| `h2` Get in touch | 3 | 5.24 | 4.88 |
+| `span` Facebook: | 4.5 | 6.32 | 6.90 |
+| `span` Instagram: | 4.5 | 6.58 | 6.89 |
+| `p` © 2026 ArtiCYa \| All Rights Reserved | 4.5 | 7.99 | 8.07 |
+| `span` articya4youth@gmail.com | 4.5 | 8.68 | 4.21 |
+| `span` Articya | 4.5 | 10.21 | 10.36 |
+| `a` Contact | 4.5 | 10.35 | – |
+| `span` @articya4youth | 4.5 | 10.62 | 5.78 |
 | `a` Home | 4.5 | 12.14 | – |
-| `span` ArtiCYa | 4.5 | 12.43 | 12.32 |
-| `a` FAQ | 4.5 | 12.91 | – |
-| `a` About | 4.5 | 13.49 | – |
+| `a` About | 4.5 | 12.32 | – |
+| `span` ArtiCYa | 4.5 | 12.44 | 9.49 |
+| `a` FAQ | 4.5 | 12.76 | – |
 
 **/faq**
 
 | element | floor | desktop | mobile |
 |---|---|---|---|
-| `p` Erasmus+ is a European Union programme that supports | 4.5 | 4.67 | 4.39 |
-| `h1` Frequently Asked Questions | 3 | 6 | 5.98 |
-| `p` Here you can find answers to the most common questio | 4.5 | 6.03 | 6.04 |
-| `p` No. Erasmus+ projects cover the main costs such as a | 4.5 | 6.05 | 6.66 |
-| `p` Yes. Projects are organised by accredited organisati | 4.5 | 6.05 | 7.12 |
-| `p` Participants gain international experience, new skil | 4.5 | 6.14 | 7.23 |
-| `p` No previous experience is required. Motivation and i | 4.5 | 6.22 | 6.79 |
-| `p` Travel arrangements are usually organised by the par | 4.5 | – | 6.79 |
-| `p` At the end of the project, participants receive a Yo | 4.5 | – | 6.94 |
-| `h3` Who can participate? | 4.5 | 7.53 | 7.09 |
-| `h2` Erasmus+ | 3 | 7.11 | 8.24 |
-| `p` Each opportunity has its own application process. Yo | 4.5 | 7.23 | 7.2 |
-| `h3` What is Erasmus+? | 4.5 | 7.78 | 10.47 |
-| `h2` Costs & safety | 3 | 10.68 | 8.45 |
-| `h3` Do I need previous experience? | 4.5 | 10.74 | 8.45 |
-| `p` © 2026 ArtiCYa \| All Rights Reserved | 4.5 | 8.59 | 8.66 |
-| `h3` Who handles the travel arrangements? | 4.5 | 9.76 | 11.49 |
-| `h3` Will I receive any proof of my participation? | 4.5 | 9.9 | 11.66 |
-| `h3` What will I gain from participating? | 4.5 | 10.04 | 10.95 |
-| `a` FAQ | 4.5 | 10.08 | – |
-| `h3` Is it safe to participate? | 4.5 | 10.16 | 10.74 |
-| `h2` Experience & participation | 3 | 10.64 | 10.95 |
-| `h3` Do I need to pay? | 4.5 | 10.98 | 11.19 |
-| `h2` Applications | 3 | 11.58 | 11.19 |
-| `h3` How do I apply? | 4.5 | 11.96 | 11.56 |
-| `h3` What happens if I am selected? | 4.5 | 11.66 | 11.61 |
-| `span` ArtiCYa | 4.5 | 12.97 | 11.8 |
-| `a` Contact | 4.5 | 13.02 | – |
-| `a` About | 4.5 | 13.02 | – |
-| `a` Home | 4.5 | 13.14 | – |
+| `h1` Frequently Asked Questions | 3 | 5.97 | 5.97 |
+| `p` Here you can find answers to the most common questio | 4.5 | 5.97 | 5.97 |
+| `h2` Erasmus+ | 3 | 6.45 | 6.35 |
+| `h3` What is Erasmus+? | 4.5 | 6.54 | 6.57 |
+| `h3` Who can participate? | 4.5 | 6.74 | 6.70 |
+| `p` © 2026 ArtiCYa \| All Rights Reserved | 4.5 | 8.59 | 8.59 |
+| `h2` Costs & safety | 3 | 8.85 | 8.20 |
+| `a` FAQ | 4.5 | 9.43 | – |
+| `h3` Do I need previous experience? | 4.5 | 9.62 | 8.43 |
+| `h3` What will I gain from participating? | 4.5 | 9.62 | 9.21 |
+| `h3` Will I receive any proof of my participation? | 4.5 | 9.62 | 10.30 |
+| `h3` Who handles the travel arrangements? | 4.5 | 9.69 | 8.43 |
+| `h3` Is it safe to participate? | 4.5 | 9.82 | 8.43 |
+| `h3` Do I need to pay? | 4.5 | 10.01 | 8.82 |
+| `h2` Experience & participation | 3 | 10.64 | 8.43 |
+| `h2` Applications | 3 | 10.79 | 11.08 |
+| `h3` How do I apply? | 4.5 | 11.16 | 11.57 |
+| `h3` What happens if I am selected? | 4.5 | 11.16 | 11.27 |
+| `a` About | 4.5 | 11.97 | – |
+| `a` Contact | 4.5 | 12.18 | – |
+| `a` Home | 4.5 | 12.29 | – |
+| `span` ArtiCYa | 4.5 | 12.74 | 11.76 |
