@@ -2160,6 +2160,115 @@ they were.
 
 ---
 
+## 5.3 · Deploy weight — report only
+
+Nothing in this section was changed. It is a measurement and a recommendation.
+
+### There is no "after" build time, and that is the first finding
+
+**`origin/main` is `b256c30`, dated 2026-07-26, and the last Actions run of any
+kind was that same day.** The 84 commits since — the whole photography pass, the
+ladder work, the encoder change, and §5.2 above — have never been pushed, so CI
+has never built any of them. The before/after asked for does not exist on the
+runner.
+
+What does exist is the **before**: run `30220942249`, `b256c30`, where the
+`npm run build:pages` step ran **21:22:59 → 21:33:44 = 10m45s** of an 11m28s job.
+
+For the after, the honest substitute is the same cold build measured locally.
+CI is always cold — `public/images/variants` is git-ignored and rebuilt every
+run — so a local cold build is the same work on different hardware. Ten cores,
+variants deleted, `rm -rf .next out` first:
+
+| commit | wall | CPU | deploy | variants kept |
+|---|---|---|---|---|
+| `b256c30` — `origin/main`, what is live | 110.0s | 232s | **65 MB** | 274 |
+| `98e47cb` — before the two full-resolution ingests | 256.2s | 702s | **169 MB** | 383 |
+| `ea8dcdc` — HEAD | 281.5s | 766s | **201 MB** | 398 |
+
+Scaling the measured **2.56×** wall ratio onto the 10m45s CI baseline puts the
+next Actions build at roughly **27 minutes**, and the CPU ratio of 3.30× puts it
+higher on a runner with fewer cores than this machine. Either way it is a
+material change to CI time and it has not been paid yet.
+
+**One correction to the premise: the deploy did not go 148 → 200 MB, it went
+65 → 201.** No commit I built lands on 148: `origin/main` is 65 MB and the
+commit before the two ingests is already 169. 148 MB is an intermediate local
+state somewhere between them, which means it already contained most of the
+growth — the Portugal set and the 2880 and 1984 rungs — and the two ingests
+added the last 32 MB (169 → 201). Against what is actually deployed, this pass
+has **tripled** the site.
+
+### What the 201 MB is
+
+`out/images` is 197.6 MiB of it. By format, across 132 referenced variants each:
+
+| width | AVIF | WebP | JPEG | fallbacks |
+|---|---|---|---|---|
+| 384–1152 | 7.3 MiB | 10.9 MiB | 13.4 MiB | 24.3 MiB |
+| 1366–1600 | 7.9 MiB | 12.0 MiB | 15.0 MiB | 27.0 MiB |
+| 1920–1984 | 11.4 MiB | 17.2 MiB | 21.9 MiB | 39.1 MiB |
+| 2560–3840 | 15.8 MiB | 28.4 MiB | 36.4 MiB | 64.8 MiB |
+| **total** | **42.4 MiB** | **68.4 MiB** | **86.7 MiB** | **155.1 MiB** |
+
+**The WebP and JPEG tiers are 155.1 MiB — 78.5% of the images, and AVIF is only
+21.5%.** The gap widens with the rung, and §4.2 is why: AVIF's quality is now a
+function of the rung and the fallbacks hold one quality at every rung, so at
+2880 AVIF is 5.3 MiB where WebP is 12.3 and JPEG 15.2.
+
+**None of it is payload.** `<picture>` gives the browser one source per type in
+order, so a visitor downloads exactly one file per image and every modern
+browser takes the AVIF. The 155 MiB is deploy weight, artifact upload and CI
+time, and nothing else.
+
+And it is barely CI time. Rebuilt cold with the two fallback tiers removed
+entirely, the same commit takes **196.9s wall / 683s CPU and produces 45 MB**,
+against 281.5s / 766s / 201 MB. **The fallbacks are 78% of the bytes and 11% of
+the encode CPU** — AVIF dominates the work, the fallbacks dominate the size.
+
+### Is trimming above a threshold safe?
+
+**The two tiers are not the same question, and the answer differs.**
+
+**Trimming JPEG above a threshold is safe.** The only browsers that reach the
+JPEG tier are those with no WebP: Safari 13 and older, IE11, and pre-2019
+Android. WebP has been in Chrome since 32, Firefox 65, Edge 18 and Safari 14
+(September 2020). The mechanism also degrades gracefully rather than breaking —
+if the JPEG srcset's widest rung is below what `sizes` asks for, the browser
+takes the widest it has and upscales. So the cost of trimming is a softer
+picture for a visitor on a seven-year-old browser, not a missing one.
+
+**Trimming WebP is not safe on the same reasoning.** That tier serves
+Safari 14 through 16.3 — iOS 14 to iOS 16.3, September 2020 to March 2023.
+AVIF only reached Safari in 16.4. Those are all retina devices at DPR 2–3, and
+the large rungs are exactly what a full-bleed frame needs on them. Trimming
+WebP above 1600 would deliberately soften the site for iPhones that are three
+years old, which is the one population this site's photography argument cannot
+afford to spend.
+
+**What trimming JPEG alone would save**, deploy 197.6 MiB of images before:
+
+| policy | saved | images after |
+|---|---|---|
+| JPEG ≤ 1920 | 47.6 MiB | 149.9 MiB |
+| JPEG ≤ 1600 | 58.3 MiB | 139.3 MiB |
+| **JPEG ≤ 1366** | **66.7 MiB** | **130.9 MiB** |
+| JPEG ≤ 1024 | 78.2 MiB | 119.4 MiB |
+| JPEG dropped entirely | 86.7 MiB | 110.9 MiB |
+
+**The recommendation, for the decision rather than as a change: cap the JPEG
+ladder at 1366.** It saves **66.7 MiB — a third of the deploy** — costs nothing
+to any browser released since 2020, and leaves every retina fallback path on
+WebP untouched. Capping at 1024 saves 78.2 MiB on the same argument and is also
+defensible; dropping JPEG outright saves 86.7 MiB and gives up IE11 and
+Safari 13, which is a product decision rather than a technical one.
+
+For completeness, trimming *both* tiers above a threshold would save 103.9 MiB
+at 1600 and 119.0 MiB at 1366 — but that is the WebP trim, and it is the one
+this section argues against.
+
+---
+
 ## The contrast reference set — the corrected instrument
 
 §2.8 makes the floor a ratchet: **no change may lower any measured glyph-core
