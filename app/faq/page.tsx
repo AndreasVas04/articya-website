@@ -17,8 +17,17 @@ export const metadata = pageMetadata({
 // headline on the site crosses the whole frame, including the gap of open sky
 // the road runs toward — at 83/68/70 the lede measures 4.57 desktop and 4.38
 // mobile against a 4.5 floor.
+//
+// The sharp plate's mid and base are 79/80 rather than 73/74, and the reason
+// is the state no sweep used to reach: with a <details> open, its answer is
+// `ink-soft` — the dimmest text on the site — and it crosses this plate low in
+// the window while the crossfade to the soft plate is barely under way, so
+// this plate is 92-97% of the ground under it. The first two answers measured
+// 3.94 and 4.16 there against a 4.5 floor, in both engines and at all five
+// heights. The soft plate cannot reach them: at those scrolls it is carrying
+// three parts in a hundred.
 const plates: StagePlate[] = [
-  { src: hero.image, position: "50% 50%", priority: true, shade: { top: 85, mid: 73, base: 74, color: "var(--color-land-anchor)" } },
+  { src: hero.image, position: "50% 50%", priority: true, shade: { top: 85, mid: 79, base: 80, color: "var(--color-land-anchor)" } },
   {
     src: hero.image,
     position: "50% 50%",

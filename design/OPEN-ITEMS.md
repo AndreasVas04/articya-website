@@ -2269,6 +2269,202 @@ this section argues against.
 
 ---
 
+## 6.1 · The coverage gap — closed
+
+Eleven rows of the reference set were carried from an older harness because no
+sweep on this build reached them. Both states are reachable, both are now
+measured, and the count was wrong in one direction and the diagnosis right in
+the other.
+
+**The `/faq/` answers are ten, not eight.** Eight of them stood in the
+`3749c92` tables; two — `p` "Erasmus+ opportunities are open to young people
+usually aged…" and `p` "If selected, you will receive detailed information…" —
+have never appeared in any reference set this project has published. And one of
+the eight was already recorded **below its own floor**: `p` "Erasmus+ is a
+European Union programme that supports…" stands at **4.39 mobile** in the old
+table against a 4.5 floor. It was carried, not caught.
+
+### Opening them
+
+`<details>` is native, so the answer is in the exported markup and the state is
+one property: the pass sets `open` on all ten, waits out the 400ms
+`accordion-open` keyframe — it is an animation and not a transition, so the
+sweep's `transition: none` does not reach it — and then steps the page at 5px
+exactly as the standing sweep does. The page is 2374px of scroll at 1440×900
+and 2657 at 390, against 1413 and 1608 closed, so the pass is 476 and 533 stops.
+
+Opening all ten at once rather than one at a time is the harder state and not
+the easier one, and that is worth stating because it is not obvious. A zone
+owns the stage when its own middle reaches the middle of the window, so opening
+the answers makes the questions section taller, moves its key **down**, and
+therefore holds the *hero's* plate — the sharp one — over the answers for
+longer. Answer 1 sits directly under the first question either way; what
+changes is that it is now crossed while the crossfade to the soft plate is
+three parts in a hundred rather than a tenth.
+
+### Reaching the poster without `End`
+
+`End` is the hero's keyboard escape hatch: it calls `expandInstantly()` and the
+collapsed opening is gone in one frame. It is also the only reason the poster
+state was unreachable, and the way past it is not a trick — the page's own
+handler is a non-passive `wheel` listener on `window` that runs
+`applyProgress(e.deltaY * 0.0009)`. A `WheelEvent` dispatched on `window` enters
+that handler, that arithmetic and that state, so the pass drives the opening
+the way a reader's wheel drives it: one event of **deltaY 5.556** per stop,
+which is **0.005 of progress**, from 0 to 1 in 201 stops.
+
+Nothing about the reached state is assumed. Each stop reads the progress the
+page actually arrived at back off the card's own height — `400px + p ·
+(107.639% − 400px)` — and asserts `window.scrollY` is still 0, so a pass that
+silently escaped the lock would fail rather than report.
+
+**The step is the 5px rule expressed on the axis that moves.** Scroll is not
+that axis here; the page is pinned at 0 for the whole opening. What travels is
+§2.6's boundary — the poster's ramp withdrawing upward through the window over
+a 40%-deep gradient — and 0.005 of progress moves it **4.5px at 1440×900 and
+4.2px at 390×844**. Below the resolution the 5px scroll step already buys.
+
+**One rule is lifted for this pass, and the reason it was there is the reason
+it has to be.** The sweep clips an element's rect below the chrome ramp — 150px
+desktop, 130px phone — because a scrolling element passing under the header is
+partly obscured by it. The poster's hint label stands at **y 135–153 at
+1440×900** and travels *upward* as the card opens: it is inside the band at
+every frame, and there is no state of it outside one. Clipping it does not
+measure it conservatively, it deletes it, which is exactly how it came to be
+missing. It is scored on the composite as painted, the same exception the
+header's own labels already have.
+
+### What the two passes found
+
+Ten configurations each — 1440×900 and 390×553/664/750/844, Chromium and
+WebKit, DPR 2, 5px and 0.005 — 7,226 stops in all.
+
+**The poster is clean.** Nothing below floor in any of the ten, and the three
+rows that were carried are carried no longer:
+
+| element | floor | desktop | mobile |
+|---|---|---|---|
+| `span` We | 4.5 | 5.29 | 5.29 |
+| `span` are ArtiCYa | 4.5 | 5.27 | 5.29 |
+| `p` ArtiCYa · Cyprus | 4.5 | 5.82 | 5.73 |
+
+The pass also measures two elements in states the `End`-pressed sweep never
+sees, because they enter *during* the expansion. `p` "A youth organization
+connecting young people in Cypr" reads **6.07 desktop** against the **7.68** it
+settles at — the intermediate frames of the opening are 1.61 worse than the
+state the page rests in, and still 1.57 clear of the floor. On a phone the
+travelling state is the *better* one, 5.43 against 5.07. `a` "Contact Us" is
+6.50 in both, unchanged.
+
+**The `/faq/` answers are a real breach, in every configuration.** Two of the
+ten are under, and not marginally:
+
+| element | c·desk | c·553 | c·664 | c·750 | c·844 | w·desk | w·553 | w·664 | w·750 | w·844 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| `p` Erasmus+ is a European Union programme — before | **4.00** | **4.05** | **4.06** | **4.05** | **4.06** | **3.94** | **3.96** | **3.94** | **4.00** | **3.94** |
+| `p` Erasmus+ opportunities are open — before | **4.26** | **4.36** | **4.39** | **4.36** | **4.35** | **4.16** | **4.33** | **4.23** | **4.26** | **4.17** |
+
+Ten of ten and ten of ten. The other eight answers pass at 5.23 to 6.50, and
+every question, heading and footer line on the page passes.
+
+**Why those two and not the other eight** is one mechanism and it is the zone
+key. Both stand in the first question group, high enough on the page that the
+crossfade from the hero's sharp plate to the soft one has barely begun — at
+their worst stops the sharp plate carries **0.92 to 0.97** of the ground and the
+soft plate three to eight parts in a hundred. And they are `ink-soft`, the
+dimmest text on the site, crossing the **bottom of the window**, where that
+plate's own ramp is at its `base`. Measured at the worst stop: the window's mean
+row luminance is 2–7 of 255 and the ground under the glyphs is a single speck
+of open sky through the canopy at **rgb(80, 77, 73)**. It is not a dark
+photograph problem; it is one bright pixel in a dark one.
+
+### The repair, and the one lever that could reach it
+
+**Plate strength of the zone, and nothing else.** The diff is **two numbers** on
+`/faq/`'s sharp plate: `mid` **73 → 79** and `base` **74 → 80**. No crop, no
+`object-position`, no type, no zone, no `data-stage-strength`, no copy, and
+nothing on any other page.
+
+**The soft plate cannot do it, and that is arithmetic rather than preference.**
+At the stops where the two answers are worst it carries three to eight parts of
+the ground in a hundred; taking it from 70 to 90 at the base would move the
+composite by a fraction of a code. The plate that is 92–97% of the ground there
+is the hero's own, so that is the plate the repair has to move.
+
+**Mid as well as base, because the worst pixel migrates.** Raising `base`
+alone — 74 → 78, 80, 82 — moves the worst from 3.94 to 4.09 and then stops
+dead: the binding stop simply travels up the window into the band the `mid`
+holds, and no value of `base` reaches it. The two have to move together.
+
+**The step below was measured, not skipped.**
+
+| plate 0 mid/base | `p` Erasmus+ is a European Union… | `p` Erasmus+ opportunities are open… |
+|---|---|---|
+| 73 / 74 — before | **3.94** | **4.16** |
+| 77 / 78 | **4.49** | 4.77 |
+| **79 / 80** | **4.85** | **5.09** |
+
+77/78 misses by a hundredth, which is exactly the width of the decision, so it
+is not the number. 79/80 is the smallest step that clears with margin.
+
+### After
+
+Ten configurations of each pass on the repaired build, against ten of the same
+passes on the build before it — the controlled before/after §5's method
+requires, not a comparison against the table.
+
+| element | c·desk | c·553 | c·664 | c·750 | c·844 | w·desk | w·553 | w·664 | w·750 | w·844 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| `p` Erasmus+ is a European Union programme — before | 4.00 | 4.05 | 4.06 | 4.05 | 4.06 | 3.94 | 3.96 | 3.94 | 4.00 | 3.94 |
+| — after | **4.91** | **4.97** | **4.97** | **4.97** | **4.91** | **4.85** | **4.89** | **4.84** | **4.82** | **4.84** |
+| `p` Erasmus+ opportunities are open — before | 4.26 | 4.36 | 4.39 | 4.36 | 4.35 | 4.16 | 4.33 | 4.23 | 4.26 | 4.17 |
+| — after | **5.16** | **5.27** | **5.31** | **5.27** | **5.25** | **5.09** | **5.23** | **5.17** | **5.17** | **5.11** |
+
+**Zero elements below floor in all twenty configurations** — ten of the page
+open and ten of it closed. And the ratchet:
+
+| pass | paired measurements | rose | fell |
+|---|---|---|---|
+| `/faq/` with the answers open | 288 | 92 | **0** |
+| `/faq/` closed — the standing sweep | 188 | 67 | **0** |
+
+Not one fall in 476 pairs, which is what darkening a plate under cream type can
+do and nothing else. The page's own hero rose with it: `h1` "Frequently Asked
+Questions" **5.97 → 7.37**, its lede **5.97 → 7.36**, `h2` "Erasmus+"
+**6.45 → 7.72**.
+
+### Seven published values now read lower, and none of them is a regression
+
+The republished `/faq` table carries seven readings below the number the
+reference set has been carrying — `span` ArtiCYa at 11.74 against 11.76, `h3`
+"Will I receive any proof…" at 8.43 against 10.30, `h2` "Applications" at
+10.64/10.30 against 10.79/11.08, and three more of the same kind. Every one of
+them is **identical on both builds**, before the plate change and after it, and
+every one of them comes from the pass that is new. With ten answers open the
+page is 961px taller at 1440×900, so the questions and headings below the first
+group traverse different scroll positions and stand on different parts of the
+ramp. The lowest of the seven is 8.43 against a floor of 3 or 4.5.
+
+This is a branch of its own and §2.8 now carries it: **coverage-derived — not a
+regression**, and the evidence required is that the value is the same on both
+builds. The same applies to the three poster rows: they were carried from the
+`3749c92` harness at 5.27/5.34, 5.27/6.30 and 5.90/5.81, and the corrected
+instrument reads 5.29/5.29, 5.27/5.29 and 5.82/5.73 in a state that harness
+could not reach at all.
+
+### Both passes are in the standing sweep
+
+They are not a one-off diagnosis. `/faq/` is swept twice — closed and with every
+`<details>` open — and `/` is swept twice, once past the hero and once inside
+it. The reference set is republished from the worse of the two passes wherever
+an element appears in both, and §6.2's policy names them in Tier 3.
+
+**What the two passes cost.** 5,216 stops for the FAQ pass and 2,010 for the
+poster, against the standing sweep's 19,954 — **7,226 stops, 73.1 minutes of
+worker time**, which takes the full sweep from 19,954 stops to **27,180**.
+
+---
+
 ## The contrast reference set — the corrected instrument
 
 §2.8 makes the floor a ratchet: **no change may lower any measured glyph-core
@@ -2307,7 +2503,16 @@ reader actually sees — the worst is 5.38. Nothing was darkened; the hidden fou
 fifths came back. A fall with a pixel count that grew like that is the
 measurement getting honest, and it is signed off as such.
 
-**A fourth thing, and it is the instrument rather than the page.** The sweep
+**Coverage-derived — not a regression.** The set gains a *state* it never
+measured, and the element reads lower there than in the state it was recorded
+in. §6.1's two new passes are the case: with `/faq/`'s answers open the page is
+961px taller, so every question below the first group traverses different scroll
+positions, and seven published readings are lower for that reason alone. The
+evidence required is that the value is **identical on both builds** — before the
+change and after it — and it has to be in the report. A state that was never
+swept cannot have regressed in a change that did not touch it.
+
+**A fifth thing, and it is the instrument rather than the page.** The sweep
 takes a fixed number of stops across each element's own traversal. Move an
 element inside its section and those stops land at different absolute scrolls,
 so the ground under them changes and the *sampled* worst moves while the *true*
@@ -2324,25 +2529,27 @@ chrome ramp before believing any of it, or the number is the header.
 rendered composite, worst pixel per element — now **stepped at 5px across every
 element's whole traversal** rather than sampled at a fixed count of stops. Ten
 configurations: 1440×900 and 390×553, 664, 750 and 844, in Chromium and WebKit,
-DPR 2. 19,954 stops. **desktop** is the worst over both engines at 1440×900;
+DPR 2. **27,180 stops** over the three passes. **desktop** is the worst over both engines at 1440×900;
 **mobile** is the worst over both engines and all four phone heights. A dash
 means the element does not render at that viewport (the desktop nav collapses to
 a menu). Transient text — the stats ledger's intermediate numerals — is excluded.
 
-**Eleven rows in the old tables are not here, and the honest reason is that no
-sweep on this build reaches them — the 36-stop sampler did not either.** Eight
-are `/faq`'s answers, which sit inside native `<details>` and are closed until a
-reader opens one. Three are `/`'s collapsed poster state — `span` We, `span` are
-ArtiCYa, `p` ArtiCYa · Cyprus — which the harness destroys on arrival, because
-the home hero pins `window.scrollY` at 0 until its card opens and `End` is the
-only way past it. Those values entered the set from the older harness at
-`3749c92`. This is a coverage gap carried forward, not a change made here, and
-closing it means opening each `<details>` and sweeping the hero before release.
+**The eleven carried rows are gone, and the set now covers two states the sweep
+used to pass over.** `/faq/` is swept twice — once closed and once with every
+`<details>` open — and `/` is swept twice, once past the hero and once *inside*
+it, the collapsed opening driven by the wheel events the page's own handler
+reads rather than escaped with `End`. Where an element appears in both passes of
+its page the published value is the worse of the two. §6.1 carries the
+mechanism, the step each pass uses, what they found and the one repair it took;
+the poster's three rows are published under a heading of their own, because they
+exist in that state and nowhere else.
 
-**Where the site stands against it.** **Nothing is below its floor**, in any of
-the ten configurations. The nine elements §5.1 found under were repaired in §5.2
-by plate strength, and the values below are the repaired build. The tightest
-reading on the site is `/contact`'s email address at 4.87 in WebKit at 390×553.
+**Where the site stands against it.** **Nothing is below its floor**, in any
+configuration of any of the three passes. The nine elements §5.1 found under
+were repaired in §5.2 by plate strength and the two §6.1 found under were
+repaired in §6.1 by the same lever; the values below are that build. The
+tightest reading on the site is now `/faq/`'s first answer at **4.82** in WebKit
+at 390×750, with `/contact`'s email address next at 4.87.
 
 
 **/**
@@ -2429,28 +2636,64 @@ reading on the site is `/contact`'s email address at 4.87 in WebKit at 390×553.
 | `a` FAQ | 4.5 | 12.79 | – |
 
 **/faq**
-
 | element | floor | desktop | mobile |
 |---|---|---|---|
-| `h1` Frequently Asked Questions | 3 | 5.97 | 5.97 |
-| `p` Here you can find answers to the most common questio | 4.5 | 5.97 | 5.97 |
-| `h2` Erasmus+ | 3 | 6.45 | 6.35 |
-| `h3` What is Erasmus+? | 4.5 | 6.54 | 6.57 |
-| `h3` Who can participate? | 4.5 | 6.74 | 6.70 |
+| `p` Erasmus+ is a European Union programme that supports | 4.5 | 4.85 | 4.82 |
+| `p` Erasmus+ opportunities are open to young people usua | 4.5 | 5.09 | 5.11 |
+| `p` No previous experience is required. Motivation and i | 4.5 | 5.96 | 5.23 |
+| `p` Participants gain international experience, new skil | 4.5 | 5.96 | 5.23 |
+| `p` At the end of the project, participants receive a Yo | 4.5 | 5.96 | 5.23 |
+| `p` Each opportunity has its own application process. Yo | 4.5 | 5.96 | 6.25 |
+| `p` Travel arrangements are usually organised by the par | 4.5 | 6.01 | 5.23 |
+| `p` Yes. Projects are organised by accredited organisati | 4.5 | 6.08 | 5.23 |
+| `p` No. Erasmus+ projects cover the main costs such as a | 4.5 | 6.20 | 5.23 |
+| `p` If selected, you will receive detailed information a | 4.5 | 6.50 | 6.20 |
+| `p` Here you can find answers to the most common questio | 4.5 | 7.36 | 7.45 |
+| `h1` Frequently Asked Questions | 3 | 7.37 | 7.37 |
+| `h2` Erasmus+ | 3 | 7.72 | 7.68 |
+| `h3` What is Erasmus+? | 4.5 | 7.75 | 7.72 |
+| `h3` Who can participate? | 4.5 | 8.05 | 8.18 |
 | `p` © 2026 ArtiCYa \| All Rights Reserved | 4.5 | 8.59 | 8.59 |
-| `h2` Costs & safety | 3 | 8.85 | 8.20 |
 | `a` FAQ | 4.5 | 9.43 | – |
 | `h3` Do I need previous experience? | 4.5 | 9.62 | 8.43 |
-| `h3` What will I gain from participating? | 4.5 | 9.62 | 9.21 |
-| `h3` Will I receive any proof of my participation? | 4.5 | 9.62 | 10.30 |
+| `h3` What will I gain from participating? | 4.5 | 9.62 | 8.43 |
+| `h3` Will I receive any proof of my participation? | 4.5 | 9.62 | 8.43 |
+| `h3` What happens if I am selected? | 4.5 | 9.65 | 11.23 |
 | `h3` Who handles the travel arrangements? | 4.5 | 9.69 | 8.43 |
-| `h3` Is it safe to participate? | 4.5 | 9.82 | 8.43 |
-| `h3` Do I need to pay? | 4.5 | 10.01 | 8.82 |
+| `h3` How do I apply? | 4.5 | 9.85 | 11.43 |
+| `h3` Is it safe to participate? | 4.5 | 9.92 | 8.43 |
+| `h2` Costs & safety | 3 | 9.98 | 8.43 |
+| `h3` Do I need to pay? | 4.5 | 10.05 | 8.82 |
 | `h2` Experience & participation | 3 | 10.64 | 8.43 |
-| `h2` Applications | 3 | 10.79 | 11.08 |
-| `h3` How do I apply? | 4.5 | 11.16 | 11.57 |
-| `h3` What happens if I am selected? | 4.5 | 11.16 | 11.27 |
+| `h2` Applications | 3 | 10.64 | 10.30 |
 | `a` About | 4.5 | 11.97 | – |
 | `a` Contact | 4.5 | 12.18 | – |
 | `a` Home | 4.5 | 12.29 | – |
-| `span` ArtiCYa | 4.5 | 12.74 | 11.76 |
+| `span` ArtiCYa | 4.5 | 12.74 | 11.74 |
+
+**/ — the collapsed opening**
+
+The hero's own state, before the card grows: stepped along the progress axis at
+0.005 rather than along scroll, because the page holds `window.scrollY` at 0 for
+the whole of it. `p` ArtiCYa · Cyprus stands inside the chrome ramp at every
+frame and is therefore scored on the composite as painted, like the header's own
+labels — see §6.1.
+
+| element | floor | desktop | mobile |
+|---|---|---|---|
+| `span` are ArtiCYa | 3 | 5.27 | 5.29 |
+| `span` We | 3 | 5.29 | 5.29 |
+| `p` ArtiCYa · Cyprus | 4.5 | 5.82 | 5.73 |
+| `p` A youth organization connecting young people in Cypr | 4.5 | 6.07 | 5.43 |
+| `a` Contact Us | 4.5 | 6.50 | 6.50 |
+| `a` Home | 4.5 | 8.76 | – |
+| `a` About | 4.5 | 10.96 | – |
+| `a` Contact | 4.5 | 10.96 | – |
+| `a` FAQ | 4.5 | 11.12 | – |
+| `span` ArtiCYa | 4.5 | 11.43 | 9.48 |
+
+The last seven rows are the same elements the settled page carries, measured
+*during* the opening. Only one of them differs materially from its resting
+value: the intro paragraph reads **6.07 desktop against the 7.68 it settles at**,
+so the frames of the expansion are 1.61 worse than the state the page rests in
+and still 1.57 clear of the floor.
