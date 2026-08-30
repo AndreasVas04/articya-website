@@ -2465,6 +2465,147 @@ worker time**, which takes the full sweep from 19,954 stops to **27,180**.
 
 ---
 
+## 6.2 · The sweep policy
+
+The full sweep was 85 minutes of wall clock at four workers before §6.1 added
+two passes to it, and every remaining phase of work is composition — the strict
+branch of §2.8's ratchet, the one that stops the work rather than recording it.
+A verification that expensive gets sampled or skipped, and sampling is exactly
+the failure §5.1 spent a section unwinding. So the question is not whether to
+keep the full sweep; it is the reference and it stays. The question is what runs
+between them.
+
+Three tiers. The first is not a contrast measurement at all.
+
+### Tier 1 — the ground detector
+
+**What it is.** Both builds are served, both are opened with **every glyph
+blanked**, and the two composites are diffed at the same scroll, stepped at
+25px. Any element whose rect covers a changed pixel at any stop is in scope, and
+the scroll band it changed over is recorded with it. It answers one question —
+*whose ground moved* — and it answers it in pixels.
+
+**Why it is the answer to "a shared plate reaches further than the file that
+changed".** It never looks at the source. A `--shade-*` number on one plate, a
+token in `globals.css`, a section's height four screens above, an encoder
+setting that rewrites a variant — every one of them arrives at the detector the
+same way, as pixels that differ. A diff of the *source* would have to know that
+`.stage-plate-shade` is read by four pages, that a section's height moves every
+stage key below it, and that a rung change rewrites the ground of every page
+that fetches it. The detector knows none of that and needs to know none of it.
+
+**Run against §6.1's repair, which is the ideal test case** — a change to two
+numbers in one page's file, whose reach is a question rather than an assumption:
+
+| configuration | stops | stops with a changed ground | elements in scope | minutes |
+|---|---|---|---|---|
+| chromium 1440×900 | 467 | 73 | 38 | 10.7 |
+| webkit 1440×900 | 467 | 75 | 35 | 4.9 |
+| chromium 390×844 | 439 | 74 | 26 | 4.5 |
+
+It found **every `/faq/` element the 5px sweep later moved**, including both
+breached answers, and it bounded the reach: the ground changed only over
+**scroll 0–975**, the band where the crossfade to the soft plate has not yet
+taken over. Below that the sharp plate contributes nothing and nothing moves.
+
+**Its false positives, and they are worth naming exactly.** The change was one
+page's plate, so every hit outside `/faq/` is a false positive by construction —
+and there were two kinds, each with its own signature.
+
+- **Nine elements on `/`, over scroll 0–850, in all three configurations.** The
+  home hero's slideshow runs on its own 4.5s clock, and two independently loaded
+  pages are not on the same one. Time-driven state is not ground.
+- **Three elements on `/about/`, at exactly one stop, in one configuration.**
+  `/about/` is the one page that mounts Lenis, so an instant jump does not
+  settle where it is asked to; a one-stop hit is a scroll that had not come to
+  rest, not a ground that moved.
+
+Both are fixable in the harness — freeze the slideshow, and wait for
+`window.scrollY` to be stationary for three frames before either shot, which is
+the same fix the tuning harness needed for the same reason. Until they are, the
+detector **over-approximates**, and that is the safe direction for a coverage
+proof: it can name an element whose ground did not move, and cannot miss one
+whose ground did.
+
+**Its real limits.**
+
+- **25px.** A ground change confined to a narrower band can be missed. Every
+  mechanism on this site moves a ground over hundreds of pixels — a plate ramp,
+  a zone key, a variant — but the limit is real, so where the detector finds any
+  change on a page it re-steps that page at 5px before naming the bands.
+- **It compares two builds of the same page.** An element that does not exist in
+  the before build has no comparison, so **every element new to the markup is in
+  scope by definition**, without being detected.
+- **It is per configuration**, so it runs the same ten the sweep does.
+
+### Tier 2 — the targeted sweep
+
+Only the elements Tier 1 named, at **5px**, in all ten configurations, over
+their own traversals with one window of margin either side — and run on **both
+builds**, never against the published table. §5.1's lesson is that a number
+compared against a table produced by a different instrument is not a comparison,
+and a targeted run is a different instrument the moment its stops are chosen
+differently.
+
+**It saves about half, and it is worth being honest about why it is not more.**
+§6.1's repair was targeted exactly this way — `/faq/` only, both of its passes,
+both builds — and it cost **16,736 stops and 150.2 minutes of worker time**
+against Tier 3's 27,180 and 272.7. The unit that can be targeted is a
+*page-pass*, and the site has six of them; a change that reaches one page still
+costs that page's whole sweep on two builds.
+
+Narrowing further by the detector's own scroll bands does not pay on this site
+and the arithmetic says so: `/faq/`'s band was 0–975 and one window of margin at
+each end takes it to 0–1875 of a 2374px page — **79% of it**. On a page three
+windows tall, one window of margin is most of the page. **The saving comes from
+the pages the detector did not name**, which is precisely what Tier 1 measures.
+
+### Tier 3 — the full sweep
+
+Every element, every page, 5px, ten configurations, **including §6.1's two
+passes** — `/faq/` with every `<details>` open, and the home hero's collapsed
+opening driven by the wheel. It is the reference set's own instrument and the
+only thing that may republish it.
+
+### Runtime
+
+Measured on this machine, at DPR 2, worker-minutes summed over the ten
+configurations. Wall clock is quoted at four workers using the 199.6 → 85 minute
+ratio the standing sweep was measured at, which is 59% parallel efficiency.
+
+| tier | stops | worker-min | wall at 4 workers |
+|---|---|---|---|
+| **1 — ground detector** | 4,446 | ≈ 42 | **≈ 18 min** |
+| **2 — targeted, one page's two passes, both builds** | 16,736 | 150.2 | **≈ 64 min** |
+| **3 — full sweep, one build** | 27,180 | 272.7 | **≈ 116 min** |
+| 3 as a controlled before/after | 54,360 | 545.4 | ≈ 232 min |
+
+Tier 1's ten configurations are extrapolated from the three measured above at
+each engine's own measured cost per stop; the other two rows are summed from the
+runs this session actually made. Tier 3 grew from 85 minutes to 116 because
+§6.1's two passes added 7,226 stops to it, and that is the price of the coverage
+gap being closed rather than carried.
+
+### What triggers what
+
+| trigger | tier |
+|---|---|
+| any change at all, including one believed to be text-only | **1** |
+| Tier 1 names elements on one page | **2** on that page's passes |
+| Tier 1 names elements on three or more pages, or an element that appears on every page | **3** |
+| `globals.css` tokens, `.plate-shade`, `.chrome-shade`, `.foot-shade`, `PhotoStage`, `lib/images.ts` | **3**, without waiting for Tier 1 |
+| the ladder, the crops, the grade, the encoder | **3** |
+| new markup — any element that does not exist in the before build | **2** on the new elements; **3** if there are more than a handful |
+| Tier 1 finds nothing anywhere | **nothing further**, and that is a measurement rather than a claim |
+| before a push, and at the end of every numbered phase, regardless of every row above | **3** |
+
+The last row is the one that matters. Tiers 1 and 2 exist to make the work
+*between* full sweeps honest, not to replace them: **the full sweep runs at the
+end of every phase whatever the tiers said**, so anything the 25px step or a
+targeted set's boundary lets through has a fixed horizon rather than an open one.
+
+---
+
 ## The contrast reference set — the corrected instrument
 
 §2.8 makes the floor a ratchet: **no change may lower any measured glyph-core
