@@ -423,6 +423,83 @@ body {
   }
 }
 
+/* The About wall — the three layers that are not photographs in slots. See
+   `components/gallery-finale.tsx` for the arrangement itself. */
+@layer components {
+  /* The wall's own ground: the keystone's frame again, out of focus, edge to
+     edge behind all five. It is what carries the closing words and what takes
+     page ground to zero at every frame of the assembly — without it the
+     gathered state shows 22.7% of the window on a desktop and 82.4% on a
+     phone, because the frames gather *outward* and the gap they open is the
+     middle, where the words are.
+
+     Rasterized at a quarter of the frame and magnified back, like the soft
+     plates and the gains ramp: a blur is priced by the area it rasterizes and
+     not by its radius, so 7px here is 28px on the screen at a sixteenth of the
+     cost. The darkening rides in the same filter rather than in a layer of its
+     own — a defocused ground at full luminance is a second picture competing
+     with the five in front of it, not a ground. */
+  .wall-ground-soft {
+    position: absolute;
+    /* The box is a quarter of the frame and is magnified back by 4, so every
+       length here is a quarter of what it is on the screen — and it is set in
+       lengths rather than in percentages on purpose.
+
+       A CSS blur samples what is outside the element as transparent, so a
+       blurred layer fades out at its own edges and needs picture beyond them
+       to hide the fade. `blur(7px)` here is `stdDeviation` 28px on the screen,
+       and the fade is only spent by 3σ — 84px, at every viewport, because a
+       blur radius is a length and not a share of anything. The preview covered
+       it with `scale(1.08)`, which is 57px at 1440 wide and **15.6px at 390**:
+       measured, that left the page's own ground showing through the outermost
+       9px of the window down both sides of a phone wherever the frames were
+       gathered clear of it — 2.11% of the window at stage 0.65 — and nothing at
+       all on a desktop. That is §8's rule about a number read off a reference:
+       record what it was a fraction *of*, and carry the constraint rather than
+       the ratio when the thing it was a fraction of is a different size here.
+
+       84px of overhang on all four sides costs a magnification of 1.12 at 1440
+       and 1.43 at 390, which is invisible in a frame already defocused to 28px
+       and is why the ground can pay it where a sharp tile could not. */
+    top: -84px;
+    left: -84px;
+    width: calc(25% + 42px);
+    height: calc(25% + 42px);
+    scale: 4;
+    transform-origin: 0 0;
+    filter: blur(7px) brightness(0.4) saturate(0.8);
+    will-change: transform;
+  }
+  /* The ground's top ramp is written per frame by the component, and closes to
+     nothing as the frame pins. Stated here rather than left to the initial
+     value: a mask image defaults to repeating, and a gradient whose stops run
+     past the box would tile its own overflow back into the frame — the same
+     correction `.stage-plate` already carries. */
+  .wall-ground {
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+  }
+  /* The ground the closing paragraph stands on, and the only lever that repairs
+     it: a full-bleed top-to-bottom ramp, the one device allowed between a
+     photograph and the words on it. It is `.plate-shade` with the stage's own
+     numbers on it — the same three strengths the About soft plate carries, on
+     the same anchor — because the words are standing on the same kind of
+     ground here as they do everywhere else below the hero, and a second set of
+     numbers for it would only drift. It rides above the four outer frames and
+     below the keystone, and its opacity is the words' own, so the wall settles
+     undarkened once they are gone. */
+  .wall-shade {
+    --shade-color: var(--color-land-anchor);
+    --shade-top: 52%;
+    --shade-mid: 62%;
+    --shade-mid-from: 22%;
+    --shade-mid-to: 62%;
+    --shade-bottom: 70%;
+  }
+}
+
 /* The offer panels' composition, measured off the reference set — see
    design/REFERENCE-LANGUAGE.md section A. Five tracks across the viewport,
    and the two outer ones are the margins: 17% on the text's side, 12% on the
