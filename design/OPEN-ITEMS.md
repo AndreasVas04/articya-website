@@ -2199,6 +2199,25 @@ growth — the Portugal set and the 2880 and 1984 rungs — and the two ingests
 added the last 32 MB (169 → 201). Against what is actually deployed, this pass
 has **tripled** the site.
 
+### Deploy weight is measured against `origin/main`
+
+The premise this section corrected was not a slip of arithmetic, it was a
+number carried out of an older report without checking what it was a number
+*of*. **148 MB was an intermediate local build.** It is not what is deployed,
+it was never deployed, and against it the growth looks like a third of what it
+is.
+
+The rule, from here on: **deploy weight and build time are measured against
+`origin/main`, never against an intermediate local build.** `origin/main` is
+the only state a reader has ever seen and the only one CI has ever produced.
+An intermediate local commit is a state of this working tree, and comparing to
+it under-reports every change made before it.
+
+The same rule is what makes "there is no after" the honest answer above rather
+than a gap: with nothing pushed since 2026-07-26 there is no CI time for any
+commit in this pass, and a local cold build is offered as a substitute *and
+labelled as one*, not as an after.
+
 ### What the 201 MB is
 
 `out/images` is 197.6 MiB of it. By format, across 132 referenced variants each:
@@ -2603,6 +2622,111 @@ The last row is the one that matters. Tiers 1 and 2 exist to make the work
 *between* full sweeps honest, not to replace them: **the full sweep runs at the
 end of every phase whatever the tiers said**, so anything the 25px step or a
 targeted set's boundary lets through has a fixed horizon rather than an open one.
+
+---
+
+## 6.3 · The JPEG ladder, capped at 1366
+
+Done. `LADDER` is unchanged and WebP is untouched; the JPEG entry in `FORMATS`
+carries a `cap` and the emit loop runs `widthsFor(widths, fmt)` — a capped
+format keeps every rung at or below its cap and, if that would leave it with
+none, keeps the narrowest rung the frame has, so **no srcset can be empty by
+construction rather than by inspection**. `lib/images.ts` reads the cap out of
+the manifest and mirrors the same filter, and the `<img>` fallback is now the
+largest *JPEG* rather than the largest rung.
+
+### Confirmed on the built output
+
+- **32 `<picture>` blocks. 0 without a JPEG `<source>`. 0 empty srcsets** — in
+  any format, including the `<img>` fallback's own srcset.
+- 189 JPEG variants become **114**; 567 emitted files become **492**; the
+  deploy keeps **344** referenced images where it kept 398.
+- The `#wall` key behaves: its 3840 rung is AVIF and WebP only, and the JPEG it
+  publishes is 1366 like every other frame's.
+
+### Deploy and build
+
+| | before | after |
+|---|---|---|
+| deploy, whole site | 201 MB | **134 MB** |
+| `out/images` | 197.6 MiB | **130.8 MiB** |
+| — AVIF | 42.4 MiB | 42.4 MiB |
+| — WebP | 68.4 MiB | 68.4 MiB |
+| — JPEG | 86.7 MiB | **20.0 MiB** |
+| cold build, wall | 281.5s | **261.5s** |
+| cold build, CPU | 766s | **767s** |
+
+**66.7 MiB off the deploy — a third of it — and no measurable CPU.** The two
+figures are not in tension: §6.4's profile puts the 75 removed encodes at
+**30.1 seconds of encode wall, 9.5% of it**, and mozjpeg is single-threaded
+where AVIF is not, so 30 seconds of wall is 30 seconds of CPU out of 766 and
+disappears into run-to-run noise. The wall did move, by 20 seconds.
+
+### Nothing regressed, in either engine, and the check is a measurement
+
+Two independent ones.
+
+**Neither engine ever reaches the JPEG tier.** Every image request each engine
+finished, across all four pages, scrolled to the foot, at both reference
+viewports:
+
+| engine | viewport | avif | webp | jpeg |
+|---|---|---|---|---|
+| chromium | 1440×900 DPR 2 | 21 | **0** | **0** |
+| chromium | 390×844 DPR 3 | 21 | **0** | **0** |
+| webkit | 1440×900 DPR 2 | 23 | **0** | **0** |
+| webkit | 390×844 DPR 3 | 23 | **0** | **0** |
+
+**And no pixel of either engine's composite moved.** §6.2's Tier 1 detector, run
+between the pre-cap and post-cap builds over all four pages:
+
+| configuration | stops | elements in scope | where |
+|---|---|---|---|
+| chromium 1440×900 | 467 | 9 | `/` hero only |
+| webkit 1440×900 | 467 | 9 | `/` hero only |
+| chromium 390×844 | 439 | 6 | `/` hero only |
+
+Every hit is the home hero's own 4.5s slideshow clock — the false positive §6.2
+names, identical in count and band to the run against a change that had nothing
+to do with images. **Nothing on `/about/`, `/contact/` or `/faq/`, and nothing on
+`/` outside the hero.** `verify:text` PASS on all four pages, 1303 / 1599 / 277 /
+1993 characters.
+
+### Who now receives an upscaled JPEG, and by how much
+
+Only a browser with **no WebP**: Safari 13.1 and older (iOS 13 and older),
+IE11, Chrome before 32, Firefox before 65, Edge before 18, and the pre-2019
+Android stock browser. Every one of them is a 2019-or-earlier engine, and the
+mechanism degrades rather than breaks — where the widest rung is below what
+`sizes` asks for, the browser takes the widest it has and scales it up.
+
+Every placement that now upscales, at the two reference viewports, largest
+magnification per frame. Nothing that is *not* full-bleed appears: the About
+wall's tiles ask 768–1928 and the panel and scene objects 835, so the ones that
+already sat at or under 1366 are untouched.
+
+| magnification | viewport | asks | takes | frame |
+|---|---|---|---|---|
+| 4.09× | 390×844 DPR 3 | 5588 | 1366 | `hero-3` |
+| 2.91× | 1440×900 DPR 2 | 3974 | 1366 | `hero-3` |
+| 2.74× | 1440×900 DPR 2 | 3744 | 1366 | `IMG_4585` (the About wall's centre tile) |
+| 2.51× | 390×844 DPR 3 | 3434 | 1366 | `hero-1` |
+| 2.48× | 390×844 DPR 3 | 3392 | 1366 | `IMG_4582-road` |
+| 2.17× | 1440×900 DPR 2 | 2966 | 1366 | `hero-2` |
+| 2.11× | 1440×900 DPR 2 | 2880 | 1366 | `IMG_4721`, `IMG_4735-road`, `hero-1`, `IMG_4582-road`, `IMG_4619-valley` |
+| 2.09× | 390×844 DPR 3 | 2849 | 1366 | `IMG_4735-road` |
+| 1.81× | 390×844 DPR 3 | 2477 | 1366 | `IMG_4619-valley` |
+| 1.45× | 390×844 DPR 3 | 1976 | 1366 | `IMG_4585` |
+| 1.43× | 390×844 DPR 3 | 1956 | 1366 | `hero-2` |
+| 1.41× | 390×844 DPR 3 | 1928 | 1366 | `IMG_4619-ridge` |
+| 1.39× | 390×844 DPR 3 | 1900 | 1366 | `IMG_4721` |
+| 1.27× | 1440×900 DPR 2 | 1728 | 1366 | `IMG_4619-ridge` |
+
+Six of these already upscaled before the cap — `hero-3` at 2.41× and 1.72×,
+`hero-1` at 1.19×, `IMG_4582-road` at 1.18×, `IMG_4585` and `hero-2` at 1.03×,
+because their masters stop short of the rung `sizes` asks for. The cap does not
+introduce upscaling to this tier; it deepens it, on browsers whose newest member
+shipped in 2019.
 
 ---
 

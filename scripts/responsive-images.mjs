@@ -280,12 +280,35 @@ const CROPS = {
 // downloads a rung they do not select — and the numbers above are AVIF's own,
 // so carrying them across to a different quantiser would be inheriting rather
 // than deciding.
+//
+// What the JPEG tier does have is a `cap`, and the two tiers differ on it
+// because the browsers behind them differ. JPEG is reached only where there is
+// no WebP: Safari 13 and older, IE11, pre-2019 Android. WebP has been in
+// Chrome since 32, Firefox 65, Edge 18 and Safari 14. So the whole JPEG ladder
+// above 1366 was 66.7 MiB of deploy weight for browsers that stopped shipping
+// in 2019, and the mechanism degrades rather than breaks: where the widest
+// rung in a srcset is below what `sizes` asks for, the browser takes the
+// widest it has and upscales.
+//
+// WebP is NOT capped on the same reasoning. That tier serves Safari 14 to
+// 16.3 — iOS 14 through iOS 16.3, September 2020 to March 2023, before AVIF
+// reached Safari in 16.4. Those are all retina devices at DPR 2-3 and the
+// large rungs are exactly what a full-bleed frame needs on them.
 const AVIF_QUALITY = (w) => (w === BLEED_WIDTH ? 50 : 62);
 const FORMATS = [
   { ext: "avif", mime: "image/avif", encode: (s, w) => s.avif({ quality: AVIF_QUALITY(w), effort: 4, chromaSubsampling: "4:2:0" }) },
   { ext: "webp", mime: "image/webp", encode: (s) => s.webp({ quality: 82, effort: 5, smartSubsample: true }) },
-  { ext: "jpeg", mime: "image/jpeg", encode: (s) => s.jpeg({ quality: 90, mozjpeg: true }) },
+  { ext: "jpeg", mime: "image/jpeg", cap: 1366, encode: (s) => s.jpeg({ quality: 90, mozjpeg: true }) },
 ];
+
+// The rungs a format actually emits for one frame. A capped format keeps at
+// least the narrowest rung the frame has, so no srcset can come out empty —
+// a frame displayed at under 1366px is unaffected either way.
+function widthsFor(widths, fmt) {
+  if (!fmt.cap) return widths;
+  const kept = widths.filter((w) => w <= fmt.cap);
+  return kept.length ? kept : [widths[0]];
+}
 const CONFIG_VERSION = 2;
 
 const force = process.argv.includes("--force");
@@ -317,7 +340,7 @@ const displayDims = (w, h, o) => (o >= 5 && o <= 8 ? { w: h, h: w } : { w, h });
 function signature() {
   const parts = [`v${CONFIG_VERSION}`, `strength${productionStrength}`, `ladder${LADDER.join(",")}`,
     `cap${MAX_WIDTH}/${BLEED_WIDTH}`, `bleed${[...FULL_BLEED].sort().join(",")}`,
-    `fmt${FORMATS.map((f) => f.ext).join(",")}`, `crops${JSON.stringify(CROPS)}`,
+    `fmt${FORMATS.map((f) => `${f.ext}${f.cap ?? ""}`).join(",")}`, `crops${JSON.stringify(CROPS)}`,
     `avifq${LADDER.concat(Object.values(SCALED).map((s) => s.width)).map(AVIF_QUALITY).join(",")}`,
     `scaled${JSON.stringify(SCALED)}`];
   for (const f of ["scripts/responsive-images.mjs", "scripts/grade-photos.mjs"]) {
@@ -399,8 +422,8 @@ async function run() {
       }
       const emitted = scaled ? [...widths, scaled.width] : widths;
 
-      for (const w of emitted) {
-        for (const fmt of FORMATS) {
+      for (const fmt of FORMATS) {
+        for (const w of widthsFor(emitted, fmt)) {
           let pipe = sharp(oriented.data, {
             raw: { width: fullW, height: fullH, channels: 3 },
           });
@@ -431,7 +454,7 @@ async function run() {
   const manifest = {
     signature: sig,
     dir: "/images/variants",
-    formats: FORMATS.map((f) => ({ ext: f.ext, mime: f.mime })),
+    formats: FORMATS.map((f) => ({ ext: f.ext, mime: f.mime, ...(f.cap ? { cap: f.cap } : {}) })),
     images,
   };
   fs.writeFileSync(MANIFEST, JSON.stringify(manifest, null, 2));

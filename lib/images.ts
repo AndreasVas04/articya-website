@@ -16,7 +16,9 @@ interface ManifestEntry {
 }
 interface Manifest {
   dir: string;
-  formats: { ext: string; mime: string }[];
+  /** `cap` is the widest rung a format emits — the JPEG tier is capped, and a
+   *  srcset must never list a file the build did not write. */
+  formats: { ext: string; mime: string; cap?: number }[];
   images: Record<string, ManifestEntry>;
 }
 
@@ -24,6 +26,9 @@ const data = manifest as unknown as Manifest;
 
 const MIME: Record<string, string> = Object.fromEntries(
   data.formats.map((f) => [f.ext, f.mime])
+);
+const CAP: Record<string, number | undefined> = Object.fromEntries(
+  data.formats.map((f) => [f.ext, f.cap])
 );
 
 export interface ImageSource {
@@ -43,8 +48,18 @@ export interface ResolvedImage {
   height: number;
 }
 
+/** The rungs one format actually carries. Mirrors the emit filter in
+ *  scripts/responsive-images.mjs: a capped format keeps at least the narrowest
+ *  rung, so no srcset is ever empty. */
+function widthsFor(entry: ManifestEntry, ext: string): number[] {
+  const cap = CAP[ext];
+  if (!cap) return entry.widths;
+  const kept = entry.widths.filter((w) => w <= cap);
+  return kept.length ? kept : entry.widths.slice(0, 1);
+}
+
 function srcSetFor(entry: ManifestEntry, ext: string): string {
-  return entry.widths
+  return widthsFor(entry, ext)
     .map((w) => `${withBasePath(`${data.dir}/${entry.base}-${w}.${ext}`)} ${w}w`)
     .join(", ");
 }
@@ -54,14 +69,15 @@ function srcSetFor(entry: ManifestEntry, ext: string): string {
 export function resolveImage(src: string): ResolvedImage | null {
   const entry = data.images[src];
   if (!entry) return null;
-  const largest = entry.widths[entry.widths.length - 1];
+  const jpegs = widthsFor(entry, "jpeg");
+  const largestJpeg = jpegs[jpegs.length - 1];
   return {
     sources: entry.formats.map((ext) => ({
       ext,
       mime: MIME[ext] ?? `image/${ext}`,
       srcSet: srcSetFor(entry, ext),
     })),
-    fallback: withBasePath(`${data.dir}/${entry.base}-${largest}.jpeg`),
+    fallback: withBasePath(`${data.dir}/${entry.base}-${largestJpeg}.jpeg`),
     jpegSrcSet: srcSetFor(entry, "jpeg"),
     width: entry.width,
     height: entry.height,
@@ -139,7 +155,8 @@ export function imagePreload(
     : entry.formats.includes("webp")
       ? "webp"
       : "jpeg";
-  const largest = entry.widths[entry.widths.length - 1];
+  const rungs = widthsFor(entry, ext);
+  const largest = rungs[rungs.length - 1];
   return {
     href: withBasePath(`${data.dir}/${entry.base}-${largest}.${ext}`),
     imageSrcSet: srcSetFor(entry, ext),
