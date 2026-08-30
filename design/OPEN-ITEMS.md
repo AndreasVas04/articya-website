@@ -1652,16 +1652,21 @@ it.
 
 ## 4 · About
 
-**4.1 · The page needs a photographic ground that moves.**
-It should feel as though the reader is travelling through it, the way the
-reference set does. At the moment each scene is a separate arrangement.
+**4.1 · The page needs a photographic ground that moves.** The wall is rebuilt
+as A1 Keystone — §7. Five frames, the fifth set into the junction of the other
+four, and the wall carries its own out-of-focus ground so there is no frame of
+the assembly with page ground showing through it.
 
 **4.2 · `ART-DIRECTION.md §6` applies here in full.**
 One photograph treated two ways, type bound into the picture's depth, an organic
 edge, a title that becomes a label, a deliberate seam. That is the standard for
 this page.
 
-**4.3 · The wall's side tiles — diagnostic only, nothing changed.**
+**4.3 · The wall's side tiles — diagnostic only, nothing changed.** The two
+25×40 side tiles are gone with the seven-slot arrangement; the diagnosis below
+is kept because it is what the rebuild was measured against. §7.1 has the
+bare-ground figures on the built wall — 0.00% at every frame from the pin
+onward, at five viewports, against the 6.0% / 20.3% recorded here.
 
 > Andreas, on the About wall: the side tiles read wrong in both states —
 > too small while they grow, too cut once they hold. The slot geometry is
@@ -1700,10 +1705,14 @@ by 0.88** at 1440×900, and **20.3% falling to nothing by 0.94** at 390×844.
 0.75–0.85 is the tail of that range, not a separate defect, and every tile with
 ground beside it is one still travelling from its gathered offset.
 
-**4.4 · The rebuild audits every slot, not the one that moves.** Carried from
-§2.22 and not fixed there, because the wall is being recomposed from the
-previews in `design/refs/wall/` and auditing the current composition is wasted
-work.
+**4.4 · The rebuild audits every slot, not the one that moves.** Done — §7.2.
+Every slot, at rest and at peak, at 553/664/750/844 and 1440×900,
+rendered-against-fetched and rendered-against-source: nothing over 1.0, worst
+0.965 against the fetched variant and 0.932 against the source. Two findings
+came out of it, one of them the preview's own crop and one of them the slot
+geometry at short viewports. Carried from §2.22 and not fixed there, because the
+wall was being recomposed from the previews in `design/refs/wall/` and auditing
+the old composition was wasted work.
 
 **The finding.** `hero-2` in the right upright slot paints at **0.987 of the
 variant it fetches** at 390×844 DPR 3 — one percent under the ceiling, on the
@@ -2853,6 +2862,288 @@ requires finding 1 above, because the script's own freshness check would delete
 the restored tree before the build could use it. On a CI run whose
 `build:pages` is projected at ~27 minutes and whose variants step is 96% of a
 cold build, that is the difference between ~27 minutes and roughly one.
+
+---
+
+## 7 · The About wall — A1 Keystone
+
+Section 4 of the review. `design/refs/wall/A1-keystone.html` is the
+specification; `design/refs/wall/built/` holds the contact sheets, frame for
+frame against it, at 1440×900 DPR 2 and 390×664 DPR 3.
+
+Four frames divide the window between them and the fifth is set into the
+junction where all four meet. On a desktop the four are quadrants split at
+x = 44 and at two *different* heights — y = 46 on the left, y = 56 on the right
+— so neither horizontal join runs across the frame, and the keystone then covers
+the middle 48% of both. On a phone the same idea lies down: two frames across
+the top, two across the foot, the keystone full width between them.
+
+---
+
+### 7.1 · What was built, and where it departs from the preview
+
+**Everything the preview states, the component reproduces to the decimal.** The
+keystone reaches 2.60 at **100.00%** window coverage at both viewports; coverage
+is crossed at stage **0.9003** desktop and **0.8428** mobile against the
+preview's 0.900 and 0.843, and held for **197.3px** and **265.4px** of the pin
+against its 197.19 and 265.30. The rise is **455.4px = 0.506** of a viewport on
+a desktop and **438.9px = 0.520** on a phone, against the half a viewport an
+overlapping move has to have — and it is 0.520 at every phone height, because
+both the section and the rise are fractions of the same window. No pin was
+added: the section is the same `200vh` / `220vh` it was, the last outer frame
+still settles at 0.92 / 0.94, and the rise is bought from that overlap.
+
+Two things had to be different, and both are cases of the same thing — a number
+the preview could state as a ratio because it only ever rendered one window.
+
+**The ground's top edge is a luminance wipe until the frame pins.** The preview
+is a window-sized stage. The component is a `sticky` child inside a 220svh
+section, so for stage 0 → 0.455 the frame's own top edge travels the whole
+window with the last story scene above it, and an opaque full-bleed ground
+inside it draws a horizontal line between two backgrounds across the full width
+for a viewport of scroll — the defect `ART-DIRECTION §2` forbids outright and
+the one `DESIGN-SYSTEM`'s stage section exists to avoid ("sections paint no
+ground of their own, so there is no edge for a seam to land on"). The ground
+therefore carries `PhotoStage`'s own device: a mask ramp `min(40%, edge
+position)` deep, which has no line in it at any frame and **closes to nothing
+exactly as the frame pins**. Everything the assembly does happens after that —
+first settle 0.60, words 0.60–0.70, last settle 0.92, rise 0.77–1.0 — so the
+ground is opaque edge to edge for all of it.
+
+**The blur's edge cover is a length, not a ratio.** A CSS blur samples what is
+outside the element as transparent, so a blurred layer fades out at its own
+edges and needs picture beyond them to hide the fade. `blur(7px)` on a
+quarter-size raster is `stdDeviation` 28px on the screen and is only spent by
+3σ = 84px. The preview covers it with `scale(1.08)`, which is 57px at 1440 wide
+and **15.6px at 390**. Measured: that left the page's own ground showing through
+the outermost 9px of the window down both sides of a phone wherever the frames
+were gathered clear of it — **2.11% of the window at stage 0.65** — and nothing
+at all on a desktop, which is why a desktop-only preview could not see it. The
+cover is now 84px on all four sides at every viewport. It costs a magnification
+of 1.12 at 1440 and 1.43 at 390, invisible in a frame already defocused to 28px.
+
+This is `§8`'s rule about a number read off a reference, met a second time:
+record what the number was a fraction *of*, and where that thing is a different
+size here, carry the constraint rather than the ratio. A blur radius is a
+length. So is the cover it needs.
+
+**The keystone's phone crop is 10%, not 50%** — see 7.2.
+
+#### The two debts, confirmed by placement count on the built output
+
+Not by reasoning. `out/**/*.html` was parsed with script and style blocks
+stripped, exactly as `postexport` does, and every `<img>`/`<link>` counted per
+page.
+
+| frame | before | after | variant files shipped |
+|---|---|---|---|
+| `IMG_4599` | `/about` ×1 | **none** | 26 → **0** |
+| `hero-2` | `/` ×1, `/about` ×1, `/faq` ×2+preload | `/` ×1, `/faq` ×2+preload | 28 → 28 |
+| `IMG_4585` | `/` ×3+preload, `/about` ×1 | `/` ×3+preload, `/about` ×2 | 30 → 30 |
+
+`IMG_4599` is off the site: no placement, and `postexport` ships none of its
+variants. `hero-2` is at **two** zones — the home hero's second slide and the
+FAQ ground — against the three it carried since the wall was built. `IMG_4585`
+gains an `<img>` on `/about/` and no placement: the wall's out-of-focus ground
+is the keystone's own frame, which `§5` counts as one placement with it, and it
+declares the keystone's `sizes` so the two resolve to the same rung and the page
+downloads it once. Both `<img>` on `/about/` carry
+`(min-width: 768px) 124.8vw, 303.9vw`.
+
+Site-wide the table in `ART-DIRECTION §5` is now **eleven frames at nineteen
+placements, eight twice and three once**, and nothing at three.
+
+#### Page ground behind the wall — 0.00%
+
+Measured optically rather than geometrically, because a rectangle can cover the
+window without being opaque there and the ground's own top ramp is exactly that
+case. The page's ground is painted magenta, `PhotoStage` is taken out, and the
+composite is counted: a pixel is page ground where red and blue both stand more
+than 40 above green, which no frame in this set produces and which survives the
+shade being drawn over it.
+
+| stage | 1440×900 | 390×844 | 390×750 | 390×664 | 390×553 |
+|---|---|---|---|---|---|
+| 0.10 | 95.37 | 97.87 | 97.57 | 97.52 | 96.74 |
+| 0.20 | 64.29 | 58.50 | 60.61 | 62.33 | 63.95 |
+| 0.30 | 40.99 | 46.43 | 46.86 | 47.04 | 47.22 |
+| 0.40 | 14.72 | 28.35 | 27.46 | 26.51 | 25.29 |
+| **pin** (0.455 / 0.50) | **0.00** | **0.00** | **0.00** | **0.00** | **0.00** |
+| 0.55 → 1.00, every stop | **0.00** | **0.00** | **0.00** | **0.00** | **0.00** |
+| the wall standing | **0.00** | **0.00** | **0.00** | **0.00** | **0.00** |
+
+Seventeen stops per viewport. **Zero at every frame from the pin onward**, at
+rest and at every frame of the assembly, against the 6.0% desktop and 20.3%
+mobile §4.3 logged. Above the pin the numbers are the section rising into view
+and are the page *above* the wall, not a hole in it — the frame does not cover
+the window there and no arrangement of the wall's own layers could make it.
+
+#### The horizontal edge
+
+Geometric and exact: every tile boundary, minus the parts a higher tile covers,
+clipped to the window.
+
+| | at rest | worst frame of the assembly |
+|---|---|---|
+| longest edge **between two outer frames**, 1440×900 | **26.0%** | 25.4% (stage 0.80) |
+| longest edge between two outer frames, 390×844/750/664/553 | **0.0%** | **0.0%** |
+| longest edge of any kind, 1440×900 | 48.0% | 60.9% (stage 0.85, mid-rise) |
+| longest edge of any kind, 390×* | 100.0% | 100.0% |
+
+The first two rows are what A1 resolves by construction, and they hold at every
+test height — the four phone columns are identical to the decimal, because every
+rectangle in the wall is a percentage of the window. The desktop 26.0% is the
+preview's own figure.
+
+The last two rows are the keystone's own boundary and they are in the preview
+too, marked red by its own 92% test: on a phone the keystone is full width, so
+its top and bottom edges run the window. That is the arrangement Andreas chose
+rather than a defect introduced by the component, and it is recorded here rather
+than softened — the strips above and below it are 13% and 15% of the window, and
+nothing but a different arrangement changes it.
+
+---
+
+### 7.2 · Every slot, not the one that scales
+
+`§4.4` required this and 2.14 did not do it. Per slot, at rest and at peak, at
+all four phone heights and at 1440×900, rendered-against-fetched and
+rendered-against-source, read off the built output in a real browser.
+
+**Three corrections to the instrument first**, because the first pass of this
+audit got all three wrong and each one hides the thing it is supposed to find.
+
+- **The fetched rung comes from `currentSrc`, never from `naturalWidth`.** With
+  a `w` descriptor the browser corrects the intrinsic dimensions by the density
+  it selected, so `naturalWidth` reports the CSS width the image occupies — and
+  a ratio built on it is not a measurement of anything, it is the DPR.
+- **Crop survival is the smaller of the two axis ratios.** A frame *narrower*
+  than its box is fitted by width and loses height; scoring only the width
+  overscale calls that 100%, which is exactly what it reported for the keystone.
+- **"At rest" is not a stage of the pinned timeline.** The composition standing
+  does not occur inside the pin at all: the last outer frame lands at 0.92/0.94
+  and the keystone has been growing since 0.77/0.74, which is the overlap the
+  rise is bought from. Sampled at `zoomFrom` the outer frames are still part
+  gathered and half off the window, and the audit reads their travel rather than
+  their slot. The unpinned render is the standing composition exactly, and it is
+  also what the export holds, so that is where the slot state is measured.
+
+#### Resolution — nothing on the wall is within 0.035 of the ceiling
+
+| viewport | frame | state | slot, css | painted dev px | rung | ÷ fetched | ÷ source | crop survives | subject |
+|---|---|---|---|---|---|---|---|---|---|
+| 1440x900 DPR 2 | `IMG_4585` | in slot | 691x576 | 1382 | 3840 | 0.360 | 0.229 | 62.5% | whole |
+| 1440x900 DPR 2 | `IMG_4585` | **at 2.60** | 1797x1498 | 3594 | 3840 | 0.936 | 0.594 | 62.5% | whole |
+| 1440x900 DPR 2 | `IMG_4735-road` | in slot | 634x414 | 1267 | 1366 | 0.928 | 0.210 | 73.5% | whole |
+| 1440x900 DPR 2 | `hero-1` | in slot | 634x486 | 1318 | 1366 | 0.965 | 0.436 | 96.1% | whole |
+| 1440x900 DPR 2 | `hero-3` | in slot | 806x504 | 2160 | 2316 | 0.932 | 0.932 | 74.7% | whole |
+| 1440x900 DPR 2 | `IMG_4619-ridge` | in slot | 806x396 | 2009 | 2560 | 0.785 | 0.475 | 80.3% | whole |
+| 1440x900 DPR 2 | `IMG_4585` (ground) | defocused | 1608x1068 | 3216 | 3840 | 0.838 | 0.532 | 49.8% | — |
+| 390x844 DPR 3 | `IMG_4585` | in slot | 390x608 | 1367 | 3840 | 0.356 | 0.226 | 85.6% | whole |
+| 390x844 DPR 3 | `IMG_4585` | **at 2.60** | 1014x1580 | 3555 | 3840 | 0.926 | 0.588 | 85.6% | whole |
+| 390x844 DPR 3 | `IMG_4735-road` | in slot | 203x127 | 608 | 640 | 0.951 | 0.101 | 70.2% | whole |
+| 390x844 DPR 3 | `hero-1` | in slot | 187x127 | 562 | 640 | 0.877 | 0.186 | 91.7% | whole |
+| 390x844 DPR 3 | `hero-3` | in slot | 164x110 | 705 | 768 | 0.918 | 0.304 | 69.7% | whole |
+| 390x844 DPR 3 | `IMG_4619-ridge` | in slot | 226x110 | 835 | 1024 | 0.815 | 0.197 | 81.3% | whole |
+| 390x844 DPR 3 | `IMG_4585` (ground) | defocused | 558x1012 | 2277 | 3840 | 0.593 | 0.376 | 73.5% | — |
+| 390x750 DPR 3 | `IMG_4585` | in slot | 390x540 | 1215 | 3840 | 0.316 | 0.201 | 96.3% | whole |
+| 390x750 DPR 3 | `IMG_4585` | **at 2.60** | 1014x1404 | 3159 | 3840 | 0.823 | 0.522 | 96.3% | whole |
+| 390x750 DPR 3 | `IMG_4735-road` | in slot | 203x113 | 608 | 640 | 0.951 | 0.101 | 62.4% | whole |
+| 390x750 DPR 3 | `hero-1` | in slot | 187x113 | 562 | 640 | 0.877 | 0.186 | 81.5% | whole |
+| 390x750 DPR 3 | `hero-3` | in slot | 164x98 | 627 | 768 | 0.816 | 0.271 | 78.4% | whole |
+| 390x750 DPR 3 | `IMG_4619-ridge` | in slot | 226x98 | 742 | 1024 | 0.725 | 0.175 | 91.4% | whole |
+| 390x750 DPR 3 | `IMG_4585` (ground) | defocused | 558x918 | 2066 | 3840 | 0.538 | 0.342 | 81.0% | — |
+| 390x664 DPR 3 | `IMG_4585` | in slot | 390x478 | 1170 | 3840 | 0.305 | 0.193 | 91.9% | whole |
+| 390x664 DPR 3 | `IMG_4585` | **at 2.60** | 1014x1243 | 3042 | 3840 | 0.792 | 0.503 | 91.9% | whole |
+| 390x664 DPR 3 | `IMG_4735-road` | in slot | 203x100 | 608 | 640 | 0.951 | 0.101 | **55.2%** | **cuts near cow (y)** |
+| 390x664 DPR 3 | `hero-1` | in slot | 187x100 | 562 | 640 | 0.877 | 0.186 | 72.1% | whole |
+| 390x664 DPR 3 | `hero-3` | in slot | 164x86 | 555 | 768 | 0.722 | 0.240 | 88.6% | whole |
+| 390x664 DPR 3 | `IMG_4619-ridge` | in slot | 226x86 | 679 | 1024 | 0.663 | 0.160 | 96.8% | whole |
+| 390x664 DPR 3 | `IMG_4585` (ground) | defocused | 558x832 | 1872 | 3840 | 0.488 | 0.310 | 89.4% | — |
+| 390x553 DPR 3 | `IMG_4585` | in slot | 390x398 | 1170 | 3840 | 0.305 | 0.193 | 76.6% | whole |
+| 390x553 DPR 3 | `IMG_4585` | **at 2.60** | 1014x1035 | 3042 | 3840 | 0.792 | 0.503 | 76.6% | whole |
+| 390x553 DPR 3 | `IMG_4735-road` | in slot | 203x83 | 608 | 640 | 0.951 | 0.101 | **46.0%** | **cuts near cow (y)** |
+| 390x553 DPR 3 | `hero-1` | in slot | 187x83 | 562 | 640 | 0.877 | 0.186 | 60.1% | whole |
+| 390x553 DPR 3 | `hero-3` | in slot | 164x72 | 491 | 768 | 0.640 | 0.212 | 94.0% | whole |
+| 390x553 DPR 3 | `IMG_4619-ridge` | in slot | 226x72 | 679 | 1024 | 0.663 | 0.160 | 80.6% | whole |
+| 390x553 DPR 3 | `IMG_4585` (ground) | defocused | 558x721 | 1674 | 3840 | 0.436 | 0.277 | 96.9% | — |
+
+**Nothing exceeds 1.0 anywhere**: 60 rows over five viewports and three states,
+worst rendered-against-fetched **0.965** (`hero-1`, 1440×900) and worst
+rendered-against-source **0.932** (`hero-3`, 1440×900). §4.4's finding — the
+right upright at 0.987 at rest, on a slot nobody had measured — has no analogue
+here; the tightest slot on the wall has 3.5 points of headroom.
+
+The keystone's peak is the number the whole arrangement was chosen for and it
+lands where the preview said: **3594 device px against the 3840 rung and the
+6048 source at 1440×900 DPR 2 — 0.936 and 0.594** — and **3555, 0.926 and 0.588**
+at 390×844 DPR 3.
+
+#### Crop and subject — two findings, and only one of them is the wall's
+
+**`IMG_4735-road` cuts the near cow's horns at 664 and at 553, and the slot is
+what does it.** The frame's own subject band was re-read at 2880 rather than off
+a 768 variant: the near animal stands at **24.0%–58.0% across and 40.9%–71.0%
+down** the cut frame. The phone's foot band is `52vw × 15vh`, so its aspect is a
+function of the window's *height* — 1.60:1 at 844, 2.45:1 at 553 — and the band
+it opens on the frame moves with it:
+
+| phone height | band aspect | crop survives | visible band, y | near cow |
+|---|---|---|---|---|
+| 844 | 1.60:1 | 70.2% | 29.8 – 100 | whole, 11.1 points clear |
+| 750 | 1.80:1 | 62.4% | 37.6 – 100 | whole, 3.3 points clear |
+| **664** | **2.03:1** | **55.2%** | **44.8 – 100** | **horns cut** |
+| **553** | **2.45:1** | **46.0%** | **54.0 – 100** | **head cut** |
+
+Both of the failing columns are heights a real iPhone actually gives. The
+position is already `100%`, which is the furthest from the frame's top any
+window on it can be, so **nothing in `object-position` closes this** — and
+55.2% and 46.0% are also under §2's 60% floor. `hero-1`'s band on the same row
+falls 91.7% → 60.1% and lands exactly on the floor.
+
+What would close it is the §A2 lesson applied to the bands: they are declared in
+`vh`, and a slot whose *aspect* has to hold is a fraction of the window's width,
+not its height. 15vh at 844 is 32.5vw; declared that way the foot band is
+126.6px at every height, its aspect never moves, and the cut test holds at all
+four columns by construction. That is a change to the arrangement Andreas picked
+and it would want its own preview, so it is **recorded here and not made** —
+the wall shipped is A1 as specified.
+
+**The keystone's desktop peak clears walker one by 0.3 points, and that margin
+is not tunable.** At 2.60 the window shows the middle 80.1% of the tile, which
+is frame x **9.9%–90.1%**; walker one ends at 9.6%. He is excluded outright,
+which is what the rule asks for — but 0.3 points is 18 source px, about 5 CSS
+px on the screen. On a desktop this slot is fitted by *width* at every scale, so
+the tile holds the whole frame width and the visible band at peak is the same
+whatever `object-position` says. Only the slot or the frame moves it. Recorded.
+
+**Everything else is whole at both ends.** Mid-travel the edge necessarily
+crosses a body — the band travels 26.3 points on a phone and no gap between two
+walkers is that wide — and the rule is about the ends, which is where it is
+measured.
+
+#### The keystone's phone crop, and why it is 10%
+
+This is the one number in the preview the audit had to change, and it is the
+clearest case for why §4.4 asked for the audit at all.
+
+Read at 3840 rather than at 768, the four walkers stand at **2.2–9.7%,
+11.9–20.4%, 22.7–26.9% and 32.0–35.8%** of the frame's width. On a phone the
+frame is the wider of the two and is fitted by its height, so x is the whole of
+what the tile shows: 85.6% of the width at rest and 32.9% at full coverage, with
+the band's left edge travelling 26.3 points between them. That left edge is the
+only one that reaches a body at either end, and the preview's **50% puts it
+through one at both** — 7.2% is walker one's chest at rest, 33.6% is walker
+four's trailing hand at full coverage.
+
+Solved against all four bodies at both ends, the edge clears every one of them
+only for x in **4.0%–15.3%** or **67.2%–82.5%**. The first band is the better
+of the two: it holds all four walkers whole at rest and walker four whole at
+full coverage, where the second holds three at rest and nobody at the end.
+**10%** sits in it with 0.76 points of margin at rest and 0.87 at full coverage.
+
+Nothing about the desktop changes: there the frame is narrower than the slot at
+every scale, so it is fitted by width and x does nothing at either end.
 
 ---
 
