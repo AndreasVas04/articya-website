@@ -1,9 +1,13 @@
 # PHOTO-MANIFEST.md
 
 Inventory of the eighteen files delivered into `photo-src/incoming/` on
-2026-08-29, taken against the build at `c7c6de2`. Nothing was replaced,
-regraded, re-laddered or committed except this document. `photo-src/incoming/`
+2026-08-29, taken against the build at `c7c6de2`. `photo-src/incoming/`
 is in `.git/info/exclude` — 1.3 GB of DNG must never enter the repository.
+
+**Sections A–E are the survey, and they were taken before anything moved. The
+ingest was taken the next day and its outcome is at the foot of this file** —
+read that section before relying on a figure here, and note in particular the
+correction it makes to §B's reading of `hero-2`.
 
 `ART-DIRECTION.md` §5 owns the placement table this is measured against,
 `PHOTO-GRADE.md` owns the grade paths, and `OPEN-ITEMS.md`'s *Carried* list
@@ -503,8 +507,105 @@ instead of the published rectangle:**
 
 ---
 
-## What was not done
+## What was done, 2026-08-30
 
-No file replaced, no grade run, no ladder regenerated, no component or crop
-edited, no image committed. `photo-src/incoming/` is excluded from the
-repository and stays on disk only. This document is the only change.
+Everything above was priced on 2026-08-29 and nothing was touched. The
+ingest was taken the next day. This section records what it cost against what
+it predicted; `PHOTO-GRADE.md` owns the grade side of it.
+
+**The three swaps landed as specified.** `hero-2` is the whole of `IMG_2894` at
+3024×4032, `hero-1` is its own published rectangle re-cut from `IMG_8626` at
+3024×2230, and `hero-3` is corrected to the 2316×1081 the capture actually
+holds. Framing was proved rather than inferred from the aspect ratio: across
+every placement of every swapped frame at 1440×900 and at 390×553, 664, 750 and
+844, the **worst edge of the visible rectangle moves 0.0111% of the frame**,
+which is 0.13 of a device pixel at the widest any of them is painted. `hero-2`
+is exact.
+
+**The two resolution ceilings closed, and `hero-3`'s number went the way it was
+predicted to.** Rendered against source at rest, 1440×900 DPR 2 and 390×844
+DPR 3:
+
+| Placement | before | after |
+|---|---|---|
+| `/faq/` ground | 1.875 / 1.237 | **0.952 / 0.628** |
+| home hero slide 2 | 1.931 / 1.274 | **0.981 / 0.647** |
+| home "What we do" ground | 1.406 / 1.677 | **0.952 / 1.136** |
+| About wall upper-right | 0.563 / 0.503 | **0.381 / 0.341** |
+| home hero slide 3 | 1.552 / 2.183 | 1.716 / 2.413 |
+| About wall lower-right | 0.675 / 0.636 | 0.746 / 0.703 |
+
+"What we do" closes on a desktop and does not on a phone, and cannot: at
+390×844 DPR 3 that placement is painted 1145 CSS px wide and asks for 3434
+device px, above both the 2880 ladder cap and the 3024 the original holds. It
+was 1.677 before. `hero-3` rises because its denominator is now a width that
+exists.
+
+### The correction this document owes
+
+**§B calls `hero-2` a "pure downscale" of `IMG_2894` and that is only half
+right.** The ZNCC of 0.9999 is real and proves the two are the same *picture*;
+it says nothing about their *tone*, because — as this document's own Method
+section states — ZNCC normalises each window's mean and variance. Measured as a
+transfer curve at a common width, the old master and the fresh decode agree
+below code 100 and diverge steadily above it (224 → 214, 248 → 235, 255 → 244).
+A roll-off was baked into the old export. At the same 1536 width the fresh
+decode holds **0.555% of the frame at L ≥ 251 against the old master's 0.055%**,
+and put through the old match parameters it blows 1.67% and fails the clip
+guard. The swap therefore cost one real thing the pricing did not foresee: a
+highlight shoulder on `hero-2`, the only frame in the set to carry one.
+`PHOTO-GRADE.md` records how it was set.
+
+**§B's `AboutImage1` row needed no action, and there was nothing to remove.**
+The byte-identity with `IMG_8526` is confirmed (MD5 `903cbb62…`), and hashing
+every master against every incoming file returns that one pair and no other.
+The survivor is already the referenced file; the duplicate is the copy in
+`photo-src/incoming/`, which is excluded from the repository and never entered
+it. Nothing in the built output changes. The delivered copy was **left on
+disk** rather than deleted — along with the eight byte-identical `" 2"` DNG
+pairs — because deleting a delivered original is not reversible from here.
+
+### The bill, and it is not what was priced
+
+Whole-page image bytes, AVIF, per page per viewport, measured on the built
+output. The pass also added a 1984px ladder rung and made AVIF quality a
+function of the rung, and those two are why the bill lands where it does:
+
+| Page | before | after 1984 | after ingest | after per-rung q | **net** |
+|---|---|---|---|---|---|
+| `/` 1440 DPR 2 | 4501 | 4501 | 6235 | **4339** | −163 |
+| `/` 390 DPR 3 | 4138 | 3733 | 4605 | **3905** | −233 |
+| `/about/` 1440 DPR 2 | 4834 | 4834 | 4864 | **4483** | −351 |
+| `/about/` 390 DPR 3 | 3143 | 2700 | 2730 | **2730** | −413 |
+| `/contact/` both | 967 | 967 | 967 | **632** | −335 |
+| `/faq/` 1440 DPR 2 | 636 | 636 | 2065 | **1389** | +753 |
+| `/faq/` 390 DPR 3 | 636 | 636 | 1142 | **1142** | +506 |
+
+**Seven of the eight pairs end lighter than they started**, having gained two
+frames at two and four times the pixels. The prediction that `/faq/` would take
++1445 KB at 1440×900 was right about the ingest in isolation (636 → 2065) and
+the encoder gives most of it back: the page ends at +753 KB rather than +1445.
+LCP: home 1367 → 901 KB and 1120 → 715 KB, About 1260 → 878 KB, Contact
+967 → 632 KB, FAQ 636 → 1389 KB and 636 → 1142 KB.
+
+Repository weight was the real cost. `_originals` goes 2.76 → 10.90 MB across
+the three frames, and the graded masters 6.68 → 10.00 MB. The deploy goes
+148 → 200 MB, of which the 1984 rung alone is 20 MB and three quarters of that
+is the WebP and JPEG fallbacks. `PHOTO-GRADE.md`'s payload budgets are re-based
+and now govern repository weight, which is what they had already become.
+
+### Standing debts, after
+
+| Debt | Status |
+|---|---|
+| `/faq/` ground resolution | **Closed.** 1.875 / 1.237 → 0.952 / 0.628 |
+| home hero slide 2 resolution | **Closed.** 1.931 / 1.274 → 0.981 / 0.647 |
+| "What we do" ground resolution | **Closed on a desktop.** 1.406 → 0.952; the phone is a ladder-cap case at 1.136 |
+| `hero-3` shipping interpolation | **Closed.** 244 manufactured columns gone |
+| `hero-2`'s overhead cable | **Not closed.** It is in the photograph, at higher resolution than before |
+| `IMG_4582-road` holds no complete subject | **Not closed** |
+| A landscape frame for the About and FAQ grounds | **Not closed.** All seventeen files are portrait |
+| An outdoor activity frame for the offer panels | **Partially closed.** `IMG_2865`, not yet placed |
+
+`photo-src/incoming/` is still excluded from the repository and still on disk
+only. No incoming file was deleted, no composition changed, no crop moved.

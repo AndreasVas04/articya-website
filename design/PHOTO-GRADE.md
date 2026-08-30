@@ -18,6 +18,24 @@ decoded pixels (luminance 0–255; p1/p99 are the 1st/99th percentile —
 the clipping guard baseline; sat is mean HSV saturation; R−B is the mean
 red-minus-blue channel gap, the temperature proxy: negative = cool).
 
+**This table is the inventory the grade was built on and it has not been
+re-taken since. Read it as dated rather than as current**, and re-measure
+before relying on a cell:
+
+- `About.jpg`, `Contact.jpg` and `FAQ.jpg` are gone. The Portugal set replaced
+  the three inner-page grounds, and the Portugal frames — which are the
+  majority of what the site now serves — never appear here at all.
+- The *Renders* and *Display* columns predate the photograph reassignment.
+  `hero-1` is the "What we do" ground and the wall's upper-right tile, not a
+  hero slide; `hero-2` is the FAQ ground, hero slide 2 and a wall tile.
+- The *Px* and *KB* columns for `hero-1`, `hero-2` and `hero-3` are superseded
+  by the full-resolution ingest at the foot of this file: they are now
+  3024×2230 / 2945 KB, 3024×4032 / 6884 KB and 2316×1081 / 1071 KB.
+- The seven older frames no longer take `resinHour` at all. They go through
+  `MATCH`, which is a fit onto the ungraded Portugal set with no look applied;
+  the script's own comment at `MATCH` is the authority on that path, and most
+  of what follows here describes the look those frames used to carry.
+
 | File | Px | KB | Renders (page · spot) | Display @1440 / @390 | On top of it (CSS) | meanL | sd | p1–p99 | sat | R−B | Contains |
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | hero-1.jpg | 2048×1510 | 803 | Home hero slide 1 + hero backdrop · About finale center tile (ends full-viewport) | 1368×800 / 370×600; backdrop full-vp; finale ends ≈ full-vp | Card: `saturate(1.06) sepia(.08)`, gold-wash overlay .22–.75, warm vignette, grain ×; backdrop: opacity .18 blur 28px sat 1.2 + glass veil | 117.7 | 59.4 | 9–229 | .32 | −26.5 | people (backs), water, sky, scrub |
@@ -503,10 +521,24 @@ split-tone backs off faces (`splitSkinProtect` 0.7); and one chroma ceiling,
 `sat0 + 0.05` opening to a bounded multiple, compresses 4:1 above the knee
 rather than clipping.
 
-**Encode.** Quality floor q88, never breached. Payload budgets — home set
-(hero-1/2/3, home-youth, FAQ) ≤ 4.8 MB, full referenced set ≤ 12.5 MB — are
+**Encode.** Quality floor q88, never breached. Budgets — home set
+(hero-1/2/3, home-youth) ≤ 7.5 MB, full referenced set ≤ 10 MB — are
 spent raising quality above the floor, smoothest files first. If the floor
 cannot meet a budget the floor ships anyway and the overage is reported.
+
+Those two numbers were **re-based on 2026-08-30, and what they govern changed
+with them.** They were payload budgets, set when these files were the files the
+site served. They are not that any more: `scripts/postexport.mjs` drops every
+master from the published output, and `scripts/responsive-images.mjs` builds its
+variants from `_originals` through `gradeToRaw` rather than from these. A byte
+here costs repository weight and reaches no visitor. The old pair — home 4.8 MB,
+set 12.5 MB — was written when hero-1, 2 and 3 were 3.1 MP each; at their full
+resolution the home set does not fit them even at the q88 floor, and defending a
+payload budget that no longer describes a payload would have meant shipping
+worse masters for nobody. The current pair sits a little above what the floor
+costs (6.78 and 8.89 MB), so the allocator can still lift the smoothest files
+and a file that grows unasked is still caught. Shipping now: q90 on six files,
+q93 on `home-training`, home 7.48 / 7.50 MB and set 10.00 / 10.00 MB.
 
 ## Per-file trims
 
@@ -587,3 +619,151 @@ each is a place where a future pass should re-measure rather than trust.
    rather than sky. Any set-wide sky number is therefore an average over a
    handful of images and swings hard on whichever of them a change touches.
    Report sky per-file, as the table above does; a set mean will mislead.
+
+---
+
+## The full-resolution ingest — 2026-08-30
+
+`PHOTO-MANIFEST.md` found that three of the site's frames were shipping far
+below the originals sitting in `photo-src/incoming/`. All three were swapped.
+This section records what the swap did to the grade; the manifest owns the
+resolution arithmetic and the byte bill.
+
+| Frame | Master before | Master after | Source | What was taken |
+|---|---|---|---|---|
+| `hero-2` | 1536×2048 | **3024×4032** | `IMG_2894.HEIC` | the whole frame |
+| `hero-1` | 2048×1510 | **3024×2230** | `IMG_8626.JPG` | rows 1046–3276 of 4032, full width |
+| `hero-3` | 2560×1195 | **2316×1081** | `IMG_6572.JPG` | rows 1464–2545 of 3088, full width |
+
+`hero-3` gets *smaller* and that is the point of it: 244 of its 2560 columns
+were interpolation, and the master now stops at the width the capture holds.
+
+Masters are written at q95 4:4:4 with no ICC profile. The profile is inert —
+`gradeToRaw` decodes raw and never converts, verified by round-tripping the old
+master with and without one and comparing the decoded pixels — and 4:4:4 is
+worth its bytes on a file that is the grade's permanent input and never ships.
+
+### The framing was proved, not inferred
+
+A swap that keeps the field of view has to be shown to keep it. For every
+placement of every swapped frame, at 1440×900 and at 390×553, 664, 750 and 844,
+the visible sub-rectangle was computed before and after from the frame's aspect,
+the box's aspect and the placement's own `object-position`. Because the same box
+is used on both sides, any error in how a slot is modelled cancels and the
+*difference* is exact.
+
+**Worst edge movement across all 35 placement/viewport pairs: 0.0111% of the
+frame** — 0.13 of a device pixel at the widest any of them is painted. `hero-2`
+is exact to seven decimals, its aspect being 3:4 on both sides. The instrument
+was checked against `OPEN-ITEMS.md` §2.13's own recorded crop audit and
+reproduces it to the decimal: the wall's upper-right tile at 63.6% and 45.4%,
+the centre at rest 37.5%, "What we do" at 84.8%.
+
+### The matches were re-solved, and against what
+
+Each frame was re-fitted to reproduce **the frame that shipped before the swap**
+rather than to reach the set again from scratch: those numbers had been solved
+onto the set and signed off there, and a swap meant to add pixels should not
+also move the colour. Both sides of the objective are computed the same way
+(resize, then grade), so the order bias against the production path (grade, then
+resize — measured at ΔE2000 1.2–1.7) cancels instead of biasing the optimum.
+
+| Frame | Before | After | mean ΔE2000 to the shipped frame |
+|---|---|---|---|
+| `hero-1` | `wb [1.012, 1, 1.028]`, γ 1.013, sat 1.07 | `wb [1.009, 1, 1.044]`, γ 1.042, sat 1.008 | 2.84 → **2.67** |
+| `hero-2` | `wb [1.064, 1, 1.16]`, γ 0.716, sat 0.88 | `wb [1.069, 1, 1.16]`, γ 0.727, sat 0.838, **shoulder 0.93** | 2.99 → **2.96** |
+| `hero-3` | `wb [0.943, 1, 1.16]`, γ 0.981, sat 1.3 | `wb [0.936, 1, 1.16]`, γ 0.985, sat 1.065 | 2.65 → **2.08** |
+
+The residual is a floor rather than slack in the fit. It is what separates two
+renderings of one negative, and no combination of a gain, a gamma and a
+saturation scale removes it. The black point stayed at 0.006 on all three:
+solved free it wanted 0.009–0.011 and returned 0.009 ΔE for it, which is a
+black point climbing for nothing — and on a canopy frame that is the move this
+pipeline treats as almost pure cost.
+
+### `hero-2`'s shoulder, and the manifest claim it corrects
+
+**`hero-2`'s old master is not a plain downscale of `IMG_2894`, and the manifest
+saying so should be read with its own method note.** ZNCC normalises each
+window's mean and variance, so it proves the two are the same *picture* and says
+nothing about their *tone*. Measured as a transfer curve — both at a common
+width, aligned pixel for pixel, the mean old-luma in each new-luma bin — they
+agree below code 100 and diverge steadily above it:
+
+| fresh decode | 128 | 160 | 192 | 224 | 248 | 255 |
+|---|---|---|---|---|---|---|
+| old master | 126.7 | 156.5 | 187.2 | 214.2 | 234.8 | 244.1 |
+
+A roll-off was baked into the old export. At the same 1536 width the fresh
+decode carries **0.555% of the frame at L ≥ 251 against the old master's 0.055%**
+and p99 246 against 231 — ten times the highlight content, on the same picture.
+Put through the old numbers it blows 1.67% of the frame where the master itself
+holds 0.58%, and the clip guard fails outright.
+
+`matchParams` therefore takes an optional `shoulder`, defaulting to 1 — no
+roll-off, which is still the rule. **The rule holds where the source and the
+target carry the same range; where the source carries more, refusing the
+shoulder does not preserve the highlights, it clips them.** `hero-2` is the only
+frame that asks for one.
+
+Its value is set by the guard, not by the fit. A 512px objective cannot see half
+a percent of blown pixels — they are averaged away at that size — so fitting the
+shoulder to ΔE returns "no roll-off" every time. Bisected instead against the
+guard evaluated at full resolution, it lands at **0.934, giving 0.61% blown
+against a 0.78% cap, and costs 0.013 ΔE** against no roll-off at all. It ships
+at 0.93. Clip guard clean on all seven files.
+
+---
+
+## The variant encoder — quality per rung
+
+`scripts/responsive-images.mjs` owns a second encoder, downstream of everything
+above: the AVIF/WebP/JPEG ladder the site actually serves. Its AVIF quality is
+now **a function of the rung**, because a rung is a statement about how densely
+its pixels will be painted, and one number for all of them spends the same bytes
+on a file shown at two image pixels per CSS pixel as on one shown at one.
+
+**q62 holds everywhere except `BLEED_WIDTH` (2880), which takes q50.**
+
+That rung exists only so a full-bleed frame can cover a retina desktop. It is
+painted at 2.0 image px per CSS px at 1440×900 DPR 2 and 3.0 at 390×844 DPR 3.
+
+### The evidence, because SSIM is not evidence here
+
+Crops were rendered at 1:1 device pixels for the three placements where the
+decision is most visible, and then magnified 2× on top — a harder test than any
+screen applies. They are in `design/refs/encoder/`. Departure from the graded,
+unencoded reference, mean absolute codes over each placement's own worst window:
+
+| Placement | rung | q62 | q50 | separable at 2×? |
+|---|---|---|---|---|
+| `/faq/` ground at 1440×900 DPR 2 | 2880 | 7.33 | 9.92 | **no** — canopy bokeh masks it |
+| home hero slide 1 at 1440×900 DPR 2 | 2880 | 10.99 | 11.76 | **no** |
+| About wall centre **at peak, 2.60×** | 3840 | 5.95 | 8.34 | **yes** — the dark canopy flattens |
+
+**So the 3840 rung keeps q62, and the exclusion is the measurement rather than
+caution.** It is the one placement on the site scaled past the window, so an
+artifact is magnified with the frame. On the project's own flat-region standard
+the three are indistinguishable — block-boundary step against the reference
+moves 0.452 → 0.504 codes on the hero's sky and 0.373 → 0.414 on the wall's —
+which is exactly why that metric is not the one that decided it. `hero-2` has no
+flat region at all; its flattest window measures a block step of 4.80.
+
+### One honest limit, recorded rather than argued away
+
+The density figures above are the two reference viewports. Resolved across a
+28-configuration device matrix, **no rung on this site is dense everywhere**: a
+2560 CSS px DPR 1 desktop — an ordinary 27-inch 1440p at 100% — reaches the 2880
+rung for the home hero at **1.09** image px per CSS px and the 3840 rung for the
+wall's centre tile at **1.15**. What carries the decision there is that the 1:1
+comparison above already *is* that case, and magnifies it.
+
+### WebP and JPEG
+
+They keep one quality at every rung, deliberately. They are the fallback for a
+browser with no AVIF — the visitor already receiving the least efficient format
+on the site — and lowering their quality on top of that inverts the policy every
+other number here follows. Their cost is deploy weight rather than payload: no
+visitor downloads a rung they do not select. And the numbers above are AVIF's
+own, so carrying them across to a different quantiser would be inheriting a
+decision rather than making one.

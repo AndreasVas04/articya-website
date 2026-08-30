@@ -1750,6 +1750,27 @@ the mismatch §2.19 recorded and left inside the frozen geometry.
   what `coverSizes()` did in 1.2 and what 2.5 has now done for the finale.
   **Rendered-against-source** asks whether the pixels exist, and only a
   different photograph closes it.
+
+  **Largely closed on 2026-08-30, and by exactly that route — a different file
+  of the same photograph.** `PHOTO-MANIFEST.md` found full-resolution originals
+  for all three heroes sitting in the camera roll, and they were ingested.
+  `hero-2` is 1536 → 3024 and `hero-1` 2048 → 3024, so rendered-against-source
+  at rest now reads:
+
+  | | before | after |
+  |---|---|---|
+  | `/faq/` ground | 1.88 / 1.24 | **0.95 / 0.63** |
+  | home hero slide 2 | 1.93 / 1.27 | **0.98 / 0.65** |
+  | "What we do" plate | 1.41 / 1.68 | **0.95 / 1.14** |
+
+  Two things are left of this item and both are named rather than open. "What
+  we do" at 390×844 DPR 3 asks for 3434 device px, above the 2880 ladder cap
+  *and* above the 3024 the original holds — the same 1440×DPR 3 class this list
+  already excludes, met on a phone. And `hero-3` moved the other way, 1.51/2.26
+  → **1.72/2.41**, because its master was corrected from 2560 to the 2316 the
+  capture actually holds: 244 of those columns were interpolation. Nothing on
+  screen got worse; the number stopped flattering it, and no delivery can
+  improve that frame.
 - ~~**The variant ladder stops 320px short of a retina desktop.**~~ Closed by
   §2.7: one rung at 2880 for the five frames that are painted edge to edge, and
   rendered-against-fetched at rest is 1.00 for all of them at DPR 2. What is
@@ -1767,6 +1788,16 @@ the mismatch §2.19 recorded and left inside the frozen geometry.
   alone needs eleven distinct ones. After the three tiles that did not stand on
   their own came out, ten qualified. `hero-2` therefore takes a third placement
   and `IMG_4599` stays on the wall re-cut rather than replaced. Photography.
+
+  The 2026-08-29 delivery adds **three usable frames** — `IMG_3004`, `IMG_2865`,
+  `IMG_9087` — taking the set from thirteen to sixteen, and none of them is
+  placed yet. It does not close the item, and `PHOTO-MANIFEST.md` §D has the
+  arithmetic: all three are 3:4 portrait, and what the About wall is short of is
+  *wide* frames. Re-answered against the five-slot arrangements in
+  `design/refs/wall/`, the minimum About/Home overlap is **2 tiles** (admitting
+  a crop of the marginal `IMG_3005`) or **3 on solid frames alone**, in every
+  one of A1, A2 and A3 — forced by the widest slot, which only `IMG_4619-ridge`
+  and `hero-3` reach, and both are Home's.
 - **The chain-link fence** is still in the road frame. It is crossed rather
   than stopped on now, but it is also why that frame holds no complete subject
   at either viewport: every pan that reaches the landscape reaches the fence,
@@ -1777,6 +1808,125 @@ the mismatch §2.19 recorded and left inside the frozen geometry.
   be, since both are the whole frame full-bleed.
 - **No device testing.** Nothing since the dark world landed has been confirmed
   on a real phone.
+
+---
+
+## The contrast sweep after the photography pass — 2026-08-30
+
+The fourth time sharper photographs have gone under live type, and the first
+time the sweep was run as a **controlled before/after** rather than against
+`3749c92`. That change of method is the point of this section: forty elements
+already sat under the `3749c92` reference before this pass began, so a
+comparison against it cannot say what any one change did. The pre-pass commit
+`d066c78` was built in a worktree, served on a second port, and swept by the
+same harness at the same viewports — so every number below is this pass and
+nothing else.
+
+**Method.** Glyph cores on the rendered composite, as `ART-DIRECTION.md` §7
+requires: each scroll position screenshotted twice, once as rendered and once
+with every glyph painted transparent, the two diffed, and the diff eroded. A
+core pixel is one where the rendered value **is the ink the element declares** —
+anything else is the antialiased fringe, which is a blend of ink and ground and
+belongs to neither. Scoring the fringe is what drops a footer line from 8.6 to
+2.5, and it is the trap this harness was rebuilt to avoid. Contrast is WCAG 2.1
+between that ink and the blanked pixel under it, minimised across the element's
+traversal. Rects are clipped below the chrome ramp (150px desktop, 130px phone)
+except for the header's own labels, which are painted *on* that ramp. DPR 2 at
+both viewports, matching the reference set. 36 stops per page.
+
+Two things the harness has to do that are worth writing down. The home hero
+holds `window.scrollY` at 0 until its card opens — its own scroll handler snaps
+it back — so nothing below the hero is reachable until `End` is pressed, which
+is the component's keyboard escape hatch. And elements must be re-found at every
+stop rather than tagged once, because framer-motion replaces nodes as the page
+animates and a marker set at load does not survive.
+
+**Coverage.** 1440×900 and 390×553, 664, 750, 844, in Chromium and WebKit —
+ten configurations of the current build, and five of the pre-pass build for the
+comparison. 90 elements at 1440×900 and 74 on a phone.
+
+### Result
+
+| configuration | measured | falls | below floor |
+|---|---|---|---|
+| chromium 1440×900 | 90 | 34 | **0** |
+| webkit 1440×900 | 90 | 30 | 3 — see below |
+| chromium 390×844 | 74 | 17 | **0** |
+| webkit 390×844 | 74 | 13 | **0** |
+| both engines, 390×553 and 390×664 | 74 | — | **0** |
+| chromium 390×750 | 74 | — | **0** |
+| webkit 390×750 | 74 | 11 | 2 — see below |
+
+**No composition-derived fall anywhere, so nothing stops.** The falls are small
+and two-sided: at 1440×900, 34 fell and 17 rose in Chromium, 30 fell and 21 rose
+in WebKit, and the median fall is under 0.1. The two engines agree to a **mean
+|Δ| of 0.110** over 90 elements, which is the strongest evidence in this section
+that the instrument is measuring the page rather than the browser.
+
+### The five below-floor readings, each classified
+
+**Two rose into their present state and were already under.** At 1440×900 in
+WebKit, `span` "Participate through workshops…" and `span` "Travel,
+accommodation and meals are fully covered." read **4.16 → 4.23**. Below 4.5
+before this pass and less far below it after. Not a finding of this pass.
+
+**Two did not move at all.** At 390×750 in WebKit, `/contact/`'s `p` "If you are
+interested in Erasmus+ opportunities…" reads **4.34 → 4.34** and `span`
+"articya4youth@gmail.com" **4.48 → 4.48**, identical to two decimals. The
+mechanical proof is stronger than the measurement: at 390×750 DPR 2 that page
+asks for 1899 device px and takes the 1920 rung, and
+`IMG_4735-road-1920.avif` is **byte-identical between the two builds**. The
+entire photographic ground of `/contact/` at that viewport is the same file.
+This is a standing WebKit-only breach at one test height, and it is for the next
+review rather than for this one.
+
+**One fell, and the reported size of the fall was the sampler.** `span` "Receive
+a Youthpass certificate recognizing your learning." — the fifth sentence of the
+Youth Exchanges panel — was reported at 4.96 → 4.45 in WebKit and 5.52 → 5.09 in
+Chromium by the 36-stop sweep. §2.8's fourth branch says a fall like that is not
+a finding until it is confirmed at fine resolution, and it does not survive it.
+Stepping the whole traversal at **5px on both builds**:
+
+| | true worst before | true worst after | Δ |
+|---|---|---|---|
+| chromium 1440×900 | 3.762 @ 2300 | 3.697 @ 2330 | **−0.065** |
+| webkit 1440×900 | 3.766 @ 2295 | 3.705 @ 2330 | **−0.061** |
+
+Aligned position by position across 47 stops, the mean Δ is **+0.017** in WebKit
+and **−0.009** in Chromium — the element is not systematically worse. The −0.50
+lives at exactly one position, 2250, and its neighbours move the other way
+(+0.34 at 2280, +0.40 at 2310). This is a scroll-linked plate ramping steeply
+through that band: a hair of difference lands the sample at a different point on
+a steep curve.
+
+**And it is not composition-derived, which is what the ratchet needs to know.**
+The evidence is the ground itself, taken from the blanked frame inside the
+element's own rect and averaged over those 47 aligned positions:
+
+- ground **median** moved **−0.00001** in relative luminance — unchanged to five
+  decimal places, in both engines;
+- ground **minimum** — the pixel that sets the number — moved **+0.000037**
+  (WebKit) and **+0.000119** (Chromium);
+- glyph-core **population** 10118 → 10119 and 10419 → 10420, so it is not
+  population-derived either.
+
+Nothing was darkened, brightened, or moved. What changed under it is that
+`IMG_4582-road`'s 2880 variant is a different file — §4.2 took that rung to q50
+— and a lossier encode of the same picture moves the extremes by a fraction of a
+code. That is the **resolution branch** of §2.8's ratchet in the other
+direction, and it is permitted and recorded, as that branch requires.
+
+### The finding this sweep leaves behind
+
+**The offer panels' prose runs to 3.70 at 1440×900, against a 4.5 floor, and it
+did before this pass.** The 36-stop sweep — and, on this evidence, the sweeps
+before it — never landed on the position where it does. `3749c92` records this
+element at 13.51, which is the dark floor it used to stand on; §2 moved it onto
+the road, and the recorded value for that move was 8.35. Its true minimum,
+stepped at 5px, is **3.70**. That is a real breach of the site's own floor, in
+both engines, and it is the one thing this sweep found that the next review has
+to deal with. It is not in scope here: no change in this pass caused it, and the
+fix is plate strength on the panels' join, which is composition.
 
 ---
 
