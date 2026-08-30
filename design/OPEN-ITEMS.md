@@ -2730,6 +2730,132 @@ shipped in 2019.
 
 ---
 
+## 6.4 · Where the build time goes, and what a cache could key on — report only
+
+Nothing here was changed. The pipeline is measured, not altered.
+
+**Method.** The variants step run cold with `--force`, every `sharp` encode
+timed individually, on an idle ten-core machine with nothing else running.
+567 files, 19 frames, the uncapped ladder — the state §6.3 changed, so these are
+the numbers the cap was decided against. Times are **wall seconds per encode
+call**; sharp threads AVIF internally and mozjpeg not at all, so this is not a
+CPU split and is not read as one.
+
+### Where the time goes
+
+**The variants step is 96% of a cold build.** 333.0s of it against a 261.5s
+whole-build wall once the ladder is capped, and a warm tree reduces the whole
+`npm run build:pages` to 9.7s. Everything below is inside that step.
+
+| | wall | share |
+|---|---|---|
+| decode + grade, 19 frames from `_originals` | 16.7s | 5.0% |
+| encode, 567 files | 316.4s | 95.0% |
+| **pipeline** | **333.0s** | |
+
+By format:
+
+| format | files | encode s | share of encode | MiB emitted | share of bytes |
+|---|---|---|---|---|---|
+| AVIF | 189 | 224.2 | **70.9%** | 55.9 | 21.9% |
+| WebP | 189 | 51.2 | 16.2% | 87.4 | 34.3% |
+| JPEG | 189 | 41.0 | 13.0% | 111.9 | 43.8% |
+
+By rung — and this is the shape that matters, because cost is area:
+
+| rung | files | encode s | share | MiB |
+|---|---|---|---|---|
+| 384 | 57 | 2.8 | 0.9% | 2.0 |
+| 640 | 57 | 6.8 | 2.1% | 5.1 |
+| 768 | 57 | 9.8 | 3.1% | 7.3 |
+| 1024 | 57 | 17.5 | 5.5% | 12.5 |
+| 1152 | 57 | 21.1 | 6.7% | 15.5 |
+| 1366 | 57 | 28.4 | 9.0% | 21.1 |
+| 1536 | 9 | 3.7 | 1.2% | 3.1 |
+| 1600 | 48 | 32.4 | 10.2% | 24.5 |
+| 1920 | 48 | 44.2 | 14.0% | 33.4 |
+| 1984 | 48 | 47.1 | 14.9% | 35.4 |
+| 2316 | 3 | 1.5 | 0.5% | 1.4 |
+| 2560 | 45 | 59.2 | 18.7% | 52.3 |
+| 2880 | 21 | 30.0 | 9.5% | 31.9 |
+| 3840 | 3 | 11.7 | 3.7% | 9.9 |
+
+The top four rungs — 1920 and above — are **42.6% of the encode over 24% of the
+files**, and the single slowest encode on the site is `IMG_4585`'s 3840 AVIF at
+**7.9 seconds**, one file. Per frame the spread is 1.0% (`home-training`, 21
+files) to 12.0% (`IMG_4585`, 36 files).
+
+### The cache: today it cannot work at all
+
+Three findings, and the first is the one that decides the other two.
+
+**1 · The freshness check is keyed on mtimes, so it can never survive a
+checkout.** `signature()` puts `fs.statSync(...).mtimeMs` into the key for
+`scripts/responsive-images.mjs`, `scripts/grade-photos.mjs` and every graded
+original. `actions/checkout` writes every one of those files at checkout time,
+so **every CI run computes a different signature for identical content** — and
+the mismatch path is `fs.rmSync(OUT, { recursive: true })`. A restored cache
+would be deleted and re-encoded in full. This is not a hypothetical: it is why
+caching has never been worth adding, and it has to be fixed before a cache step
+would do anything at all.
+
+**2 · There is no cache step, and the tree is git-ignored.** `deploy.yml` caches
+npm only. `public/images/variants` is regenerated from scratch on every run by
+construction, which is correct today and is the whole of the 27-minute
+projection.
+
+**3 · The signature is one string for 567 files.** Any change to any input
+rebuilds every variant of every frame. This session changed
+`scripts/responsive-images.mjs` twice — once to cap the JPEG tier, once to write
+this measurement — and under today's key each one invalidated all 567 files,
+including 189 AVIFs that no edit could have altered.
+
+### What would key a variant safely
+
+The complete determinant of one output file, and nothing else belongs in it:
+
+- `sha256` of the **source original's bytes** — content, never mtime;
+- the grade: `productionStrength` and a content hash of `grade-photos.mjs`;
+- the **crop rectangle** for that key, or none;
+- the baked **EXIF orientation**;
+- the target **width**;
+- the **format and its exact encoder options at that width** — AVIF's quality
+  is a function of the rung, so the rung has to be inside the format's own term
+  and not only in the width;
+- the resize options (`withoutEnlargement`).
+
+Everything else in the script — `LADDER` membership, `FULL_BLEED`, `SCALED`,
+`MAX_WIDTH` — decides *which* variants exist, not what any one of them
+contains. It belongs to the manifest, not to a variant's key. That is the whole
+of the difference between today's global signature and a per-file one: the
+global key mixes the two, so a change to the set invalidates the contents.
+
+### What that would save, in files and seconds
+
+Against 567 files and 316.4s of encode:
+
+| change | re-encoded | encode cost |
+|---|---|---|
+| a `responsive-images.mjs` edit touching neither encoder options nor crops | **0 files** | **0s** (today: 567 files, 316.4s) |
+| one photograph re-ingested | 21–36 files | 3.3–37.9s (1.0–12.0%) |
+| `AVIF_QUALITY` changed at the 2880 rung | 7 files | 19.0s (6.0%) |
+| a rung added to the ladder | 3 files per frame that takes it | — |
+| the 3840 `#wall` rung alone | 1 AVIF | 7.9s (2.5%) |
+| the grade or its strength changed | all 567 | 316.4s — correct, every pixel moves |
+
+And the coarse version, which is worth stating because it needs no rewrite of
+the keying at all: an `actions/cache` step on `public/images/variants` keyed by
+`hashFiles('public/images/_originals/**', 'scripts/grade-photos.mjs',
+'scripts/responsive-images.mjs')` plus a manual version string would restore the
+whole tree — **172 MB capped, 256 MB uncapped** — on any run that changed no
+photograph and no pipeline file, and take the variants step to zero. It still
+requires finding 1 above, because the script's own freshness check would delete
+the restored tree before the build could use it. On a CI run whose
+`build:pages` is projected at ~27 minutes and whose variants step is 96% of a
+cold build, that is the difference between ~27 minutes and roughly one.
+
+---
+
 ## The contrast reference set — the corrected instrument
 
 §2.8 makes the floor a ratchet: **no change may lower any measured glyph-core
