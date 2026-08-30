@@ -53,6 +53,31 @@ lands at **0.9501–1.0000** and no false candidate anywhere in the matrix excee
 **0.8910**. The three published frames with no incoming original peak at 0.49,
 0.55 and 0.75.
 
+**A correlation identifies the picture; it does not license a swap.** The same
+normalisation that makes ZNCC robust — each window's mean and variance divided
+out — is exactly what makes it blind to tone, so a score of 0.9999 constrains
+*what is in the frame* and says nothing about how that frame is mapped to code
+values. "Pure downscale" in the table below is therefore a statement about
+geometry only, and it is not sufficient grounds to substitute one file for the
+other.
+
+`hero-2` is the case that retired the looser reading. It matches `IMG_2894` at
+ZNCC 0.9999 as a whole-frame 0.5079× downscale, and the old master nevertheless
+had a highlight roll-off baked into it that the fresh decode does not carry:
+aligned pixel for pixel at a common width, the two agree below code 100 and
+diverge steadily above it (fresh 224 → old 214.2, fresh 255 → old 244.1), and
+the fresh decode holds **0.555% of the frame at L ≥ 251 against the old master's
+0.055%**. Ten times the highlight content, on a picture the correlation called
+identical. Swapped in under the old grade parameters it blew 1.67% of the frame
+and failed the clip guard outright. `PHOTO-GRADE.md` carries the repair.
+
+**So the requirement is: a frame swap is justified by a transfer-curve
+comparison, not by a correlation.** Bring both files to a common width, align
+them, bin one's luma by the other's, and read the curve — plus the blown-pixel
+share at full resolution, which a downsampled objective averages away and
+cannot see. A swap is clean when the curve is straight; where it bends, the
+grade that was solved against the old file does not carry over to the new one.
+
 The GPS fixes are recorded in the files and are not reproduced here: they are
 private locations and this repository is public. The set clusters in two places
 in northern Portugal, one per trip.

@@ -777,6 +777,28 @@ Two consequences follow, and both bit before the rule was written down.
   rather than a beat. 2.60 crosses at three quarters of the eased rise and
   holds full coverage to the release.
 
+**Encoder quality is chosen against the largest size a frame is ever *painted*,
+not the largest rung it ships.** A scaling frame is the one place the two come
+apart, and it is this rule's own consequence: the amplitude that buys coverage
+also magnifies whatever the encoder left in the file. Density does not protect
+it, because the density argument prices a rung by image pixels per CSS pixel at
+rest, and a scaled frame is not at rest.
+
+The measurement is the About wall's centre tile, the site's only placement
+scaled past the window. Its rung is wide enough that the ordinary reasoning
+said "dense, therefore cheap" — the same reasoning that took the 2880 full-bleed
+rung to q50 and holds there. On this rung it is wrong: at 2.60× the dark canopy
+visibly flattens at q50 where q62 still holds its leaf structure, and its
+departure from the graded reference goes 5.95 → 8.34 on the test the two
+full-bleed placements pass at 7.33 → 9.92 and 10.99 → 11.76. So the scaled rung
+keeps q62 while the wider full-bleed rung below it takes q50 — a lower quality
+on a *larger* file, which only reads as sane once quality is indexed to painted
+size rather than to shipped width.
+
+Stated as the check: before lowering a rung's quality, resolve every placement
+that fetches it and multiply by any scale that placement applies. The number
+that governs is that product.
+
 **Type may sit inside the photograph's depth, but never inside a layer whose
 mask or clip boundary travels. Where a boundary travels, type composites against
 it, not within it. Verify by rendering the type at the boundary's midpoint, not
