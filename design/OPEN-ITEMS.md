@@ -3702,6 +3702,40 @@ and five of them were the sampler: About's three scene paragraphs came out
 chrome ramp before believing any of it, or the number is the header.
 
 
+### The decorative-glyph exemption — four conditions, all of them
+
+One element on the site reads below its floor and is published rather than
+repaired: the poster's amber middle dot, `span` `·` inside `ArtiCYa · Cyprus`,
+at **2.59** on a phone. That decision is taken, and it is fenced here so that it
+cannot be cited for anything else.
+
+An element may be recorded below its floor instead of repaired only if it meets
+**every one** of these:
+
+1. **Purely decorative.** It exists to separate or to punctuate. Remove it and
+   no information leaves the page.
+2. **Under 200 px of glyph population**, counted the way the sweep counts —
+   scored glyph-core pixels at the worst frame, at the viewport it fails on.
+3. **It carries no word.** Not an abbreviation, not a numeral, not an initial.
+   A glyph that can be read aloud as a word fails this outright.
+4. **Visible for under 5% of its zone's travel**, measured as stops at the
+   opacity gate over the zone's own scroll range.
+
+**An element failing any one of the four is repaired, not exempted.** There is
+no weighing between them and no partial credit: three out of four is a repair.
+
+The dot qualifies on all four — **nine pixels**, 1.9 CSS px wide, no word, and
+**two stops out of 201** on the opening, which is 1.0% against the 5% allowed.
+The line a reader actually reads, `p` ArtiCYa Cyprus, is one glyph in sixteen of
+that same row and measures **5.91 / 5.80**.
+
+Two things this exemption is not. It is **not a population rule** — §2.8's
+population branch is about a measurement getting honest as more of a glyph comes
+into view, and this is about an element too small to govern anything. And it is
+**not a licence for small type**: condition 3 keeps every word on the site inside
+the ratchet at every size, and condition 2 is a count of one element's pixels,
+not of a glyph's stem width.
+
 **Method.** The sweep in `ART-DIRECTION.md §7`'s terms — glyph cores on the
 rendered composite, worst pixel per element — **stepped at 5px across every
 element's whole traversal** rather than sampled at a fixed count of stops. Ten
@@ -3955,4 +3989,7 @@ being scored.
 
 `span` `·` is the row with no desktop reading, and it is the one below floor —
 see the method above for the nine-pixel population, the two stops out of 201,
-and the identical reading on the build before this change.
+and the identical reading on the build before this change. It is published under
+*The decorative-glyph exemption*, which sets the four conditions an element has
+to meet before it may be recorded rather than repaired, and the dot meets all
+four.
