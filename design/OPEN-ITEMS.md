@@ -3527,6 +3527,121 @@ captioned with what each frame reads as.
 
 ---
 
+## 7.5 · What the screen reads as — report only
+
+§7.1 measured visible page ground behind the A1 wall and found **0.00%** at
+every frame from the pin onward, and the measurement was correct. The dark
+middle of the screenshot that got the wall rejected is a defocused copy of
+`IMG_4585` under a gradient, not a hole in the composition. Nothing was showing
+through. The screen still read empty.
+
+So the measurement answered the wrong question. "Is any page ground visible" and
+"does this read as a picture" are different questions, and only the first was
+ever asked. This section asks the second, on the restored build, and changes
+nothing.
+
+### The instrument, and why its threshold is not a guess
+
+A pixel counts as photographic content only if a reader could resolve a subject
+in it. What separates a photograph from a defocused or heavily darkened ground
+is **local structure**, so the test is the luminance range over a 9px window at
+screen scale, and there is deliberately **no luminance floor**: a dark
+photograph that still carries structure reads as a photograph, and a flat
+*bright* region carries no subject either — which is why the mean luminance of
+the empty region is reported rather than assumed, and is what tells a blank sky
+apart from a black screen.
+
+Glyphs are painted out before the measurement. Type has the highest local range
+on the screen — white on near-black is a step of 200 — so left in, it scores as
+picture and an empty window reads as full.
+
+The threshold was calibrated against the two verdicts nobody disputes, on the
+build that was rejected, at 390×664:
+
+| | median local range | median luminance |
+|---|---|---|
+| A1's dark middle, stages 0.30–0.50 | **1.9 – 2.1** (p75: 2.9 – 9.8) | 24.5 – 30.7 |
+| a sharp frame of the same wall | **79 – 118** | 77 – 93 |
+
+Two orders of magnitude apart, so the cut is not delicate. **15** is the
+geometric midpoint of 2.9 and 81, with five times the margin on the empty side
+and five times on the picture side. Three readings follow: the share of the
+window that is photographic content, the largest 4-connected region that is not,
+and that region's mean relative luminance.
+
+### The restored wall against the one that was rejected
+
+Both builds served at once — the rejected one from a worktree on a second port —
+so every pair below is the same instrument on the same stop.
+
+**photographic content, % of window**
+
+| stage | 553 A1 → restored | 664 A1 → restored | 750 A1 → restored | 844 A1 → restored |
+|---|---|---|---|---|
+| 0.10 | 15.6 → 15.6 | 17.4 → 17.4 | 18.8 → 18.8 | 20.3 → 20.3 |
+| 0.20 | 15.6 → **19.0** | 17.4 → **20.7** | 18.8 → **21.8** | 20.3 → **23.2** |
+| 0.30 | 13.9 → **27.8** | 13.5 → **27.0** | 13.7 → **26.9** | 14.0 → **26.8** |
+| 0.40 | 5.2 → **20.5** | 4.0 → **18.7** | 3.5 → **17.9** | 2.8 → **16.9** |
+| **pin** | 4.4 → **24.7** | 4.1 → **23.6** | 4.1 → **23.4** | 4.0 → **22.9** |
+| 0.50 | 9.8 → **31.2** | 10.0 → **31.1** | 10.1 → **30.9** | 10.0 → **30.6** |
+| 0.55 | 10.0 → **35.0** | 10.2 → **35.3** | 10.3 → **35.6** | 10.2 → **35.6** |
+| 0.60 | 10.1 → **40.1** | 10.3 → **39.8** | 10.5 → **39.7** | 10.4 → **39.4** |
+| 0.65 | 15.9 → **40.3** | 15.6 → **40.0** | 15.3 → **39.8** | 14.8 → **39.6** |
+| 0.70 | 53.5 → 50.5 | 50.7 → 51.2 | 46.7 → 49.5 | 45.8 → 49.4 |
+| 0.80 | 86.7 → 77.0 | 76.3 → 76.3 | 72.5 → 75.7 | 70.8 → 75.2 |
+| 1.00 | 89.1 → 72.5 | 86.6 → 70.9 | 79.1 → 69.3 | 78.4 → 67.9 |
+
+**the largest region carrying no identifiable subject — % of window, and its
+mean luminance**
+
+| stage | 553 | 664 | 750 | 844 |
+|---|---|---|---|---|
+| 0.30 | 84.8 → **70.2** · 0.0132 → 0.0147 | 84.3 → **69.9** · 0.0137 → 0.0154 | 83.9 → **69.6** · 0.0139 → 0.0158 | 83.5 → **69.2** · 0.0141 → 0.0160 |
+| 0.40 | 92.5 → **76.4** · 0.0137 → 0.0156 | 93.5 → **77.8** · 0.0142 → 0.0159 | 94.4 → **78.8** · 0.0144 → 0.0163 | 96.3 → **80.7** · 0.0146 → 0.0165 |
+| **pin** | 95.4 → **73.9** · 0.0142 → 0.0160 | 95.8 → **75.0** · 0.0147 → 0.0160 | 95.8 → **75.2** · 0.0149 → 0.0162 | 95.8 → **75.5** · 0.0151 → 0.0162 |
+| 0.50 | 89.6 → **62.1** · 0.0136 → 0.0163 | 87.8 → **62.6** · 0.0142 → 0.0164 | 87.5 → **62.7** · 0.0145 → 0.0165 | 87.3 → **62.9** · 0.0148 → 0.0165 |
+| 0.60 | 89.4 → **52.9** · 0.0137 → 0.0173 | 87.5 → **53.3** · 0.0143 → 0.0173 | 87.1 → **53.3** · 0.0146 → 0.0174 | 86.8 → **53.4** · 0.0150 → 0.0173 |
+| 0.65 | 83.5 → **52.6** · 0.0286 → 0.0174 | 83.8 → **53.0** · 0.0317 → 0.0174 | 84.0 → **53.0** · 0.0331 → 0.0174 | 83.9 → **53.1** · 0.0342 → 0.0174 |
+
+A desktop is measured too and is the same shape: the window is 8.1% photograph
+at stage 0.20 and 22.0% at 0.40, against an 88.0% and 74.9% void at 0.022 and
+0.016.
+
+### The answer
+
+**The restored wall has the same problem, and a materially smaller one.**
+
+Andreas's screenshot is stage 0.30–0.45 at roughly 390×664. On the rejected
+build that window is **4.0% photograph with a 95.8% void at luminance 0.015** —
+two thin strips clipped by the nav, a black middle, two frames at the foot, and
+the measurement now says so. On the restored build the same window is **23.6%
+photograph with a 75.0% void**, and through the whole dark passage from 0.30 to
+0.65 the restored wall carries **2.5 to 5.7 times** as much identifiable picture
+while its largest empty region falls from about 90% of the window to about 60%.
+
+That is a real improvement and it is not a fix. At its worst frame — stage 0.40,
+every phone height — the restored wall is still **16.9% to 20.5% photograph with
+a 76% to 81% void at a mean luminance of 0.016**, which is a screen that is four
+fifths empty and nearly black in the empty part. The composition Andreas prefers
+is better at the same defect; it does not clear it.
+
+Two things are worth separating from that verdict. The stages above 0.70 look
+*worse* on the restored build — 72.5% against 89.1% at 1.00 — and they are not:
+the restored wall's void there is **bright**, mean luminance 0.42 to 0.63, which
+is the open sky in the centre frame at 2.60. A flat sky carries no subject and
+is not an empty screen, and the luminance column is in this table precisely so
+those two cannot be confused. And stage 0.10 is identical on both builds, at
+every height, because the section has not arrived yet and what is on screen is
+the page above it.
+
+Nothing here is fixed. The mechanism is that both walls spend the first half of
+the pin gathering frames *outward* around a paragraph in the middle, so the
+middle of the window is ground for a viewport and a half of scroll — and on a
+phone that middle is most of the screen. Only a different arrangement of the
+gathered state changes it.
+
+---
+
 ## The contrast reference set — the corrected instrument
 
 §2.8 makes the floor a ratchet: **no change may lower any measured glyph-core

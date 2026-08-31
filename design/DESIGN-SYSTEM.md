@@ -1261,6 +1261,26 @@ Rules, in order of precedence:
   the lightest ground every dark-ground pair still passes on. Gradient layers
   mix only existing grounds; photo layers respect the ceiling through their
   opacity and brightness caps.
+- **A ground that passes the page-ground test can still read as an empty
+  screen.** Zero visible page ground is **necessary and not sufficient**. The
+  page-ground test asks whether anything is showing *through* the composition;
+  it cannot see a composition that covers the window with picture nobody can
+  read. A defocused frame under a darkening gradient passes it perfectly and
+  measures, on the site's own rejected build, a **local luminance range of
+  1.9–2.1** against a sharp frame's **79–118** — two orders of magnitude, and
+  invisible to a test that only counts holes. Where the question is whether a
+  screen reads as a picture, measure **local structure** and report three
+  numbers: the share of the window carrying identifiable photographic content,
+  the largest contiguous region carrying none, and **that region's mean
+  luminance** — the last is what tells a flat bright sky apart from a black
+  screen, and without it the two score the same. Paint the glyphs out first;
+  white type on near-black is a step of 200 and will score as picture.
+- **Judge a preview at the states the reader passes through, not at three
+  canonical moments.** A composition verified at rest, at its pin and at its
+  peak can be empty for a viewport and a half of scroll between them and every
+  canonical frame will still pass. The states a reader crosses are the states
+  that have to be measured, and a contact sheet of the whole timeline is the
+  cheapest way to be unable to miss one.
 - **One light.** `.lamp-falloff`'s warm whisper is the falloff of the same
   resin lamp at the hero seam — direction for the existing light, never a
   second source. Everything else is pine and plaster, and every layer stays
