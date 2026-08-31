@@ -3396,6 +3396,137 @@ the ground got no darker at all and the words simply moved onto a picture.
 
 ---
 
+## 7.4 · A1 is off, and the seven-tile wall is back
+
+Seen on a real iPhone, A1 Keystone was rejected: the frames are too small and
+the composition reads worse than the wall it replaced. The layout wanted and the
+zoom wanted are the same commit — `e78d483` took the centre frame to full window
+coverage on the seven-tile wall — so this is a revert and not a rebuild.
+
+**The revert is exact, and that is checked rather than claimed.** `2ebe527`
+touched four files and nothing after it touched three of them; the fourth,
+`gallery-finale.tsx`, was also touched by `445b883`, which is an ancestor of
+the rebuild and therefore survives a checkout of the parent. All four files are
+now **byte-identical to `2ebe527^`** — `git diff 2ebe527^` over them is empty —
+and `445b883`'s `h-[100dvh]` is still on the pinned frame.
+
+### What came off, and what stayed
+
+Off, because it is the composition: the five-slot geometry and its two
+arrangements, the slot aspects, the frame assignment, `WallGround` and
+`.wall-ground-soft`, the ground's luminance wipe and the `pinAt` / `WIPE_FEATHER`
+machinery that existed only to hide that ground's top edge, `.wall-shade` and
+the shade layer under the lede, and `positionCompact`.
+
+Stayed. There is exactly **one** correction in code and **four** in the
+instrument, and each is named with the reason it survives.
+
+**The blur's edge cover is a length, not a ratio.** It survives as a rule and it
+has **no code site left**, which is worth stating rather than quietly dropping.
+The correction was written entirely inside `.wall-ground-soft`, a class that
+exists only to carry A1's ground, so the revert takes its only application with
+it. The site's two other quarter-raster layers — `.stage-plate-soft` and
+`.gain-defocus` — never used `scale(1.08)`: they carry no overhang at all, which
+is a different situation and a pre-existing one, and both are on surfaces frozen
+for this pass. The rule stands where it is written; nothing on the restored
+build reads a ratio for a length.
+
+**`naturalWidth` is density-corrected and cannot measure the fetched rung.** An
+instrument correction, not a geometry one. The audit below reads the rung out of
+`currentSrc` because of it.
+
+**Crop survival is the smaller of the two axis ratios, not the width
+overscale.** Same: it describes how to measure a slot, not which slots exist.
+
+**The composition standing is not a stage of the pinned timeline.** The last
+outer frame lands at 0.92 while the centre has been growing since 0.77, so the
+resting composition has to be reached on its own rather than read off a stage
+key. True of both walls.
+
+**A glyph-core test is invalid on a partly transparent element.** At opacity
+0.95 the population collapses and selects for the brightest ground. This one is
+now enforced in the harness rather than left as a note — see the method below —
+and it moves exactly one published row.
+
+### Everything after `e78d483` that is not the wall, confirmed on the built output
+
+Not by reasoning about which files the revert touched. The revert touched four
+files; these are the built artefacts.
+
+| what | how it was confirmed | reading |
+|---|---|---|
+| `hero-1` / `hero-2` ingested at full resolution | variant ladder in `out/images/variants/` | both reach **2880**, which a 1536px master could not have produced |
+| `hero-3` cut to its honest width | same | ladder stops at **2316**, and the wall paints it at 0.746 of that source |
+| the 1984 rung | same | present on **every** frame's ladder |
+| per-rung AVIF quality | mean bytes per pixel per rung, measured on the shipped files | 2560 **0.1178** → 2880 **0.0884** → 3840 **0.1130**: the q50 step is on `BLEED_WIDTH` alone and the SCALED rung does not take it |
+| the JPEG cap | JPEG widths across the whole set | 384–1366 and nothing above, 13 frames at each rung |
+| §5.2's plate repairs | `--shade-*` custom properties in the exported HTML | `/contact` **71/64/63** on `sky-anchor` and **54/66/72**; `/` **60/70/76** |
+| §6.1's plate repair | same | `/faq/` **85/79/80** on `land-anchor` |
+
+`IMG_4599` is back on the wall and `hero-2` back to three placements, both by
+placement count on `out/**/*.html` with script and style blocks stripped:
+`/about/` carries seven wall frames — `IMG_4585`, `IMG_4619-ridge`, `IMG_4599`,
+`hero-2`, `hero-3`, `IMG_4735-road`, `hero-1` — and `ART-DIRECTION §5` is back
+to twelve frames at twenty-one placements with the two debts it was carrying
+before the rebuild.
+
+### The restored wall, measured
+
+Every property the restore was required to have, at both reference viewports.
+Painted width is the picture and not the box: `object-fit: cover` paints a frame
+wider than its box wherever the frame is proportionally the wider of the two.
+
+**1440×900 DPR 2, at the peak**
+
+| frame | rung | painted | device | rendered / fetched | rendered / source | covers |
+|---|---|---|---|---|---|---|
+| `IMG_4585` — the centre | 3840 | 1872 | 3744 | 0.975 | 0.619 | **100.00% × 100.00%** |
+| `IMG_4619-ridge` | 1920 | 864 | 1728 | 0.900 | 0.675 | 60% × 30% |
+| `IMG_4599` | 768 | 360 | 720 | 0.938 | 0.281 | 25% × 40% |
+| `hero-2` | 768 | 360 | 720 | 0.938 | 0.250 | 25% × 40% |
+| `hero-3` | 1920 | 864 | 1728 | 0.900 | 0.746 | 60% × 30% |
+| `IMG_4735-road` | 1152 | 576 | 1152 | **1.000** | 0.400 | 40% × 30% |
+| `hero-1` | 1152 | 576 | 1152 | **1.000** | 0.400 | 40% × 30% |
+
+**390×844 DPR 3, at the peak**
+
+| frame | rung | painted | device | rendered / fetched | rendered / source | covers |
+|---|---|---|---|---|---|---|
+| `IMG_4585` — the centre | 1984 | 658 | 1973 | 0.995 | 0.326 | **100.00% × 100.00%** |
+| `IMG_4619-ridge` | 1984 | 642 | 1927 | 0.971 | 0.753 | 60% × 30% |
+| `IMG_4599` | 640 | 154 | 461 | 0.721 | 0.180 | 25% × 40% |
+| `hero-2` | 768 | 253 | 758 | 0.987 | 0.263 | 25% × 40% |
+| `hero-3` | 1920 | 542 | 1627 | 0.848 | 0.703 | 60% × 30% |
+| `IMG_4735-road` | 1024 | 285 | 856 | 0.836 | 0.297 | 40% × 30% |
+| `hero-1` | 1152 | 343 | 1030 | 0.894 | 0.358 | 40% × 30% |
+
+- **Full window coverage at both viewports**, 100.00% on both axes.
+- **Nothing over 1.0 rendered-against-fetched.** The tightest are `IMG_4735-road`
+  and `hero-1` at exactly **1.000** on a desktop and `hero-2` at 0.987 on a
+  phone. That is the boundary and not a breach, and it is where this wall has
+  always sat — `c779ac1` recorded the right upright at 0.987 "unnoticed", and it
+  is 0.987 here, noticed.
+- **The ring holds at 1.000 at every frame.** The six outer tiles paint the same
+  width at stage 0.60 and at stage 1.00 — 864, 360, 360, 864, 576, 576 on a
+  desktop — so nothing but the centre is scaled.
+- **The rise and the stall are unchanged**, which follows from byte-identity:
+  the section is the same `200vh` / `220vh`, `zoomWindow` the same 0.77–1.0 and
+  0.74–1.0, and the 455px / 439px rise is still bought from the overlap with the
+  settles.
+
+**One number moved against `e78d483`, and the ladder is why.** The centre tile
+read 0.772 rendered-against-fetched at 390×844 then and reads **0.995** now, at
+an unchanged 0.326 against its source. `e75e14d` added the 1984 rung for the
+phone cluster just above 1920, so the phone now fetches 1984 where it used to
+fetch 2560 — the rung doing exactly what it was added to do, and still under
+1.0. The desktop figures reproduce `e78d483`'s to the decimal: 0.975 and 0.619.
+
+Contact sheets of the restored assembly are in `design/refs/wall/restored/`, at
+390×664 DPR 3 and 1440×900 DPR 2, sixteen frames of the pinned timeline each,
+captioned with what each frame reads as.
+
+---
+
 ## The contrast reference set — the corrected instrument
 
 §2.8 makes the floor a ratchet: **no change may lower any measured glyph-core
@@ -3457,42 +3588,110 @@ chrome ramp before believing any of it, or the number is the header.
 
 
 **Method.** The sweep in `ART-DIRECTION.md §7`'s terms — glyph cores on the
-rendered composite, worst pixel per element — now **stepped at 5px across every
+rendered composite, worst pixel per element — **stepped at 5px across every
 element's whole traversal** rather than sampled at a fixed count of stops. Ten
 configurations: 1440×900 and 390×553, 664, 750 and 844, in Chromium and WebKit,
-DPR 2. **27,180 stops** over the three passes. Republished by §7.3's Tier 3 run
-— the same thirty configurations, the same 27,180 stops, 322.2 worker-minutes —
-against the A1 build. **desktop** is the worst over both engines at 1440×900;
-**mobile** is the worst over both engines and all four phone heights. A dash
-means the element does not render at that viewport (the desktop nav collapses to
-a menu). Transient text — the stats ledger's intermediate numerals — is excluded.
+DPR 2. **27,180 stops** over the three passes. Republished by §7.4's Tier 3 run
+— the same thirty configurations, the same 27,180 stops, **81.1 minutes of wall
+clock at five workers** — against the **restored** build. **desktop** is the
+worst over both engines at 1440×900; **mobile** is the worst over both engines
+and all four phone heights. A dash means the element does not render at that
+viewport (the desktop nav collapses to a menu). Transient text — the stats
+ledger's intermediate numerals — is excluded; the three the counters land on are
+not transient and are in.
 
-**The eleven carried rows are gone, and the set now covers two states the sweep
-used to pass over.** `/faq/` is swept twice — once closed and once with every
+**The instrument was rebuilt for this run and calibrated against the set it
+replaces before it was trusted with anything.** `/contact` at 1440×900 in
+Chromium, stepped at 5px, reproduces the published table on **eight of fifteen
+elements to 0.01 or better** — `h1` Contact 4.66, `span` Email: 5.17, the
+invitation 5.27, the footer 8.08 — with the largest deviation anywhere +0.32 on
+a footer span, and every deviation in the *high* direction, which is what a
+different stop alignment produces. Two changes make the 5px step affordable and
+neither touches the measurement: Chromium is captured through its own
+`optimizeForSpeed` encoder (692ms → 179ms on a full window) and decoding is
+`sharp` rather than `pngjs` (112ms → 46ms). Both were verified **pixel-identical**
+to the path they replace before use, and the pair reproduces §6.1's own stop
+counts exactly — 476 desktop and 533 phone for the `/faq/` open pass.
+
+**One rule is new, and it is §7.3's own finding turned into a gate.** An element
+is scored only where its *effective* opacity — its own multiplied by every
+ancestor's — is 1. The glyph-core test keeps a pixel only where the rendered
+value **is** the declared ink, so on a part-transparent element it selects a
+collapsed population and the number is about the survivors rather than the
+element. This changes exactly one published row and is called out below.
+
+**The eleven carried rows are gone, and the set covers two states the sweep used
+to pass over.** `/faq/` is swept twice — once closed and once with every
 `<details>` open — and `/` is swept twice, once past the hero and once *inside*
 it, the collapsed opening driven by the wheel events the page's own handler
 reads rather than escaped with `End`. Where an element appears in both passes of
 its page the published value is the worse of the two. §6.1 carries the
 mechanism, the step each pass uses, what they found and the one repair it took;
-the poster's three rows are published under a heading of their own, because they
-exist in that state and nowhere else.
+the poster's rows are published under a heading of their own, because they exist
+in that state and nowhere else.
 
-**Where the site stands against it.** **Nothing is below its floor**, in any
-configuration of any of the three passes. The nine elements §5.1 found under
-were repaired in §5.2 by plate strength and the two §6.1 found under were
-repaired in §6.1 by the same lever; the values below are the A1 build. The
-tightest reading on the site is now `/faq/`'s first answer at **4.82** in WebKit
-at 390×750, with `/contact`'s email address next at 4.87.
+**Where the site stands against it.** **Nothing that this instrument can measure
+is below its floor**, in any configuration of any of the three passes, with one
+element that the instrument cannot measure and which is recorded rather than
+repaired — see the paragraph after next. The tightest reading on the site is
+still `/faq/`'s first answer at **4.82** in WebKit at 390×750, with
+`/contact`'s email address next at 4.87. **No plate strength was raised
+anywhere**, and nothing outside the About wall and the poster's own pass moved
+by more than 0.34.
 
-**Nine rows moved when §7.1 rebuilt the About wall, and §7.3 classifies every
-one.** Three are the closing paragraph, which moved from bare page ground onto
-the composition and fell 10.77/10.93/10.97 → **5.17/5.06/8.56** on a desktop
-while *rising* 9.12/9.30/10.54 → 12.70/13.26/12.82 on a phone. Three are
-`/about/`'s nav labels, which rose 0.01 to 0.03 because the wall's new top band
-is kinder to them than the old one. Three are on `/`, which this change does not
-touch: its lede and two rows of the collapsed opening move by 0.02 to 0.34
-because the hero's slideshow and its wheel-driven opening are not deterministic
-between runs, and they are recorded at the lower draw.
+**The wall's revert moves six rows, and they are the A1 rows going back.** The
+closing paragraph's three spans stood at 10.77/10.93/10.97 desktop and
+9.12/9.30/10.54 mobile before A1; A1 put them on the composition and took them
+to 5.17/5.06/8.56 and 12.70/13.26/12.82; the revert returns them to
+**10.78/10.93/10.97** and **9.12/9.30/10.54**. Every one of the six lands on its
+pre-A1 value, five of them exactly and the sixth 0.01 away, which is the
+strongest confirmation available that the revert restored the ground and not
+merely the markup. The three mobile numbers are *falls* against the set being
+replaced, and they are composition-derived and sanctioned: they are not new
+lows, they are the baseline the set carried for the whole of this project before
+one rebuild moved it, and the lowest of them is 9.12 against a floor of 4.5.
+`/about/`'s three nav labels come back the same way, 0.01 to 0.03 down, exactly
+reversing the rise A1's top band gave them.
+
+**One element reads below 4.5 and it is not repaired.** The poster's amber
+middle dot — `span` `·`, the separator inside `ArtiCYa · Cyprus` — reads **2.59
+on a phone**, and everything about that number says it is not a measurement of
+the page:
+
+- **The population is nine pixels.** The glyph is 1.9 CSS px wide. §7.3 already
+  ruled that a 112-pixel population is too few to govern a decision; nine is two
+  orders below that.
+- **It exists for two stops out of 201.** Stepped along the opening, the
+  element's effective opacity is 0.000 → 0.990 rising and 0.984 → 0.000 falling,
+  and reaches 1 at stops 5 and 6 alone. Every other stop is refused by the
+  opacity gate above, correctly.
+- **It is identical on the build before this change.** Run against the A1 build
+  in a worktree on a second port, the same probe returns **2.59 over 9 pixels at
+  the same stop**. That is §2.8's coverage branch met exactly: a state the set
+  never covered cannot have regressed in a change that did not touch it.
+- **It is on the home hero**, which is frozen for this pass in every respect, and
+  the only lever that reaches it is the poster's own plate.
+
+It is published rather than hidden, and the line a reader actually reads —
+`p` ArtiCYa Cyprus, of which the dot is one glyph in sixteen — is 5.91 and 5.80.
+
+**Two rows differ from the set being replaced for reasons that are the
+instrument and not the page.** The poster's intro paragraph reads **10.42**
+desktop against a published 6.07: the published figure was taken at a
+part-transparent frame, the new gate refuses those, and the paragraph's opaque
+worst during the opening is its final frame. Its governing value is unchanged —
+the settled pass's **7.60**, which is the number in the `/` table. And the
+location line splits: the previous set carried one row `p ArtiCYa · Cyprus` at
+5.82/5.73, transcribed from the screen because the harness was believed to read
+the separator as pseudo-content. It is not pseudo-content; it is a real
+`<span class="text-amber">`, so the probe emits two rows and both are published.
+
+**Everything else that moved is under 0.35 and none of it is the wall.**
+`/contact`'s `h2` rises 0.30, `/about/`'s scene spans move +0.06 to +0.13,
+`/`'s lede spans ±0.08, and `/`'s "Travel across Europe" falls 0.07 — the home
+hero's slideshow runs on its own 4.5s clock and two runs are not on the same
+one, which §5.2 already recorded as run-to-run scatter on the same element at
+the same size. All are recorded at the lower draw.
 
 
 **/**
@@ -3500,13 +3699,13 @@ between runs, and they are recorded at the lower draw.
 | element | floor | desktop | mobile |
 |---|---|---|---|
 | `p` Your adventure starts here. | 3 | 4.30 | 3.26 |
-| `span` International friends | 3 | 4.51 | 4.86 |
+| `span` International friends | 3 | 4.52 | 4.86 |
 | `span` Certified learning | 3 | 4.74 | 4.77 |
 | `span` Real-world skills | 3 | 4.76 | 5.66 |
 | `a` Home | 4.5 | 4.78 | – |
-| `span` Travel, accommodation and meals are fully covered. | 4.5 | 4.91 | 8.25 |
 | `span` Receive a Youthpass certificate recognizing your lea | 4.5 | 4.91 | 8.25 |
 | `span` Participate through workshops, cultural activities a | 4.5 | 4.92 | 8.25 |
+| `span` Travel, accommodation and meals are fully covered. | 4.5 | 4.92 | 8.25 |
 | `span` No prior experience needed. | 4.5 | 4.93 | 8.25 |
 | `h2` What you gain | 3 | 5.04 | 6.48 |
 | `p` We work with young people in Cyprus and across Europ | 4.5 | 5.11 | 5.11 |
@@ -3517,14 +3716,14 @@ between runs, and they are recorded at the lower draw.
 | `span` Professional development programs for youth workers | 4.5 | 5.64 | 5.47 |
 | `span` Focused on skill-building through workshops, simulat | 4.5 | 5.91 | 5.47 |
 | `span` ArtiCYa | 4.5 | 5.99 | 6.18 |
-| `span` Open to educators, trainers and young people involve | 4.5 | 6.07 | 5.73 |
+| `span` Open to educators, trainers and young people involve | 4.5 | 6.10 | 5.81 |
 | `a` FAQ | 4.5 | 6.11 | – |
 | `a` About | 4.5 | 6.12 | – |
 | `a` Contact | 4.5 | 6.14 | – |
-| `p` Travel across Europe with all expenses covered throu | 4.5 | 6.45 | 6.17 |
+| `p` Travel across Europe with all expenses covered throu | 4.5 | 6.45 | 6.10 |
 | `a` Contact Us | 4.5 | 6.50 | 6.50 |
 | `span` All expenses covered | 3 | 6.58 | 4.65 |
-| `p` A youth organization connecting young people in Cypr | 4.5 | 7.65 | 5.09 |
+| `p` A youth organization connecting young people in Cypr | 4.5 | 7.60 | 5.05 |
 | `h2` What we do | 3 | 8.25 | 8.25 |
 | `div` 20+ | 3 | 8.25 | 8.25 |
 | `div` 500+ | 3 | 8.25 | 8.25 |
@@ -3537,26 +3736,26 @@ between runs, and they are recorded at the lower draw.
 
 | element | floor | desktop | mobile |
 |---|---|---|---|
-| `a` About | 4.5 | 4.75 | – |
+| `a` About | 4.5 | 4.74 | – |
 | `h1` About ArtiCYa | 3 | 4.95 | 4.81 |
-| `span` ArtiCYa contributes meaningfully to the development | 4.5 | 5.06 | 13.26 |
 | `p` A Cyprus-based organization committed to non-formal | 4.5 | 5.08 | 4.84 |
-| `span` Through its continuous engagement in Erasmus+ initia | 4.5 | 5.17 | 12.70 |
-| `span` ArtiCYa is a Cyprus-based organization actively enga | 4.5 | 5.47 | 5.02 |
-| `span` Over the years, the organization has demonstrated re | 4.5 | 5.47 | 5.21 |
+| `span` ArtiCYa is a Cyprus-based organization actively enga | 4.5 | 5.53 | 5.02 |
+| `span` Over the years, the organization has demonstrated re | 4.5 | 5.60 | 5.27 |
 | `span` ArtiCYa | 4.5 | 5.99 | 6.18 |
-| `a` FAQ | 4.5 | 6.11 | – |
-| `a` Contact | 4.5 | 6.12 | – |
+| `a` FAQ | 4.5 | 6.09 | – |
+| `a` Contact | 4.5 | 6.09 | – |
 | `a` Home | 4.5 | 6.16 | – |
-| `span` fostering European values, solidarity and lifelong l | 4.5 | 8.56 | 12.82 |
 | `p` © 2026 ArtiCYa \| All Rights Reserved | 4.5 | 8.59 | 8.59 |
 | `span` and to create safe, open and respectful spaces for p | 4.5 | 9.04 | 8.90 |
 | `span` ArtiCYa places special emphasis on the promotion of | 4.5 | 9.12 | 8.60 |
 | `span` The organization is deeply committed to social inclu | 4.5 | 9.14 | 8.90 |
-| `span` Rooted in the values of creativity, inclusion and so | 4.5 | 9.18 | 8.83 |
 | `span` ArtiCYa focuses particularly on the arts as a powerf | 4.5 | 9.18 | 8.91 |
+| `span` Rooted in the values of creativity, inclusion and so | 4.5 | 9.18 | 8.91 |
 | `span` actively supporting LGBTQ+ individuals and advocatin | 4.5 | 9.22 | 8.60 |
 | `span` Furthermore, the organization strongly supports and | 4.5 | 9.22 | 8.60 |
+| `span` Through its continuous engagement in Erasmus+ initia | 4.5 | 10.78 | 9.12 |
+| `span` ArtiCYa contributes meaningfully to the development | 4.5 | 10.93 | 9.30 |
+| `span` fostering European values, solidarity and lifelong l | 4.5 | 10.97 | 10.54 |
 
 **/contact**
 
@@ -3565,9 +3764,9 @@ between runs, and they are recorded at the lower draw.
 | `h1` Contact | 3 | 4.66 | 4.50 |
 | `span` Email: | 4.5 | 5.17 | 5.62 |
 | `p` If you are interested in Erasmus+ opportunities, col | 4.5 | 5.27 | 5.00 |
-| `h2` Get in touch | 3 | 6.21 | 5.71 |
+| `h2` Get in touch | 3 | 6.21 | 6.01 |
 | `span` Facebook: | 4.5 | 6.49 | 7.02 |
-| `span` Instagram: | 4.5 | 6.86 | 7.10 |
+| `span` Instagram: | 4.5 | 6.86 | 7.11 |
 | `p` © 2026 ArtiCYa \| All Rights Reserved | 4.5 | 8.08 | 8.10 |
 | `span` articya4youth@gmail.com | 4.5 | 9.36 | 4.87 |
 | `a` Contact | 4.5 | 10.35 | – |
@@ -3579,6 +3778,7 @@ between runs, and they are recorded at the lower draw.
 | `a` FAQ | 4.5 | 12.79 | – |
 
 **/faq**
+
 | element | floor | desktop | mobile |
 |---|---|---|---|
 | `p` Erasmus+ is a European Union programme that supports | 4.5 | 4.85 | 4.82 |
@@ -3590,7 +3790,7 @@ between runs, and they are recorded at the lower draw.
 | `p` Travel arrangements are usually organised by the par | 4.5 | 6.01 | 5.23 |
 | `p` Yes. Projects are organised by accredited organisati | 4.5 | 6.08 | 5.23 |
 | `p` No. Erasmus+ projects cover the main costs such as a | 4.5 | 6.20 | 5.23 |
-| `p` If selected, you will receive detailed information a | 4.5 | 6.50 | 6.20 |
+| `p` If selected, you will receive detailed information a | 4.5 | 6.50 | 6.23 |
 | `p` Here you can find answers to the most common questio | 4.5 | 7.36 | 7.45 |
 | `h1` Frequently Asked Questions | 3 | 7.37 | 7.37 |
 | `h2` Erasmus+ | 3 | 7.72 | 7.68 |
@@ -3616,33 +3816,28 @@ between runs, and they are recorded at the lower draw.
 
 **/ — the collapsed opening**
 
-The hero's own state, before the card grows: stepped along the progress axis at
-0.005 rather than along scroll, because the page holds `window.scrollY` at 0 for
-the whole of it. `p` ArtiCYa · Cyprus stands inside the chrome ramp at every
-frame and is therefore scored on the composite as painted, like the header's own
-labels — see §6.1.
-
-Its row is written with the middle dot and the harness cannot produce one: the
-separator is CSS pseudo-content, so the frozen text stays frozen and the probe,
-which reads text nodes only, emits `p|ArtiCYa Cyprus`. The row was transcribed
-from the screen rather than from the harness, so it has never matched. Keyed on
-what the probe emits it reads **5.73** on a phone, which is the value below.
-
 | element | floor | desktop | mobile |
 |---|---|---|---|
-| `span` are ArtiCYa | 3 | 5.27 | 5.29 |
-| `span` We | 3 | 5.29 | 5.29 |
-| `p` ArtiCYa · Cyprus | 4.5 | 5.82 | 5.73 |
-| `p` A youth organization connecting young people in Cypr | 4.5 | 6.07 | 5.43 |
+| `span` are ArtiCYa | 3 | 5.27 | 5.33 |
+| `span` We | 3 | 5.29 | 5.35 |
+| `p` ArtiCYa Cyprus | 4.5 | 5.91 | 5.80 |
 | `a` Contact Us | 4.5 | 6.50 | 6.50 |
-| `a` Home | 4.5 | 8.72 | – |
-| `a` About | 4.5 | 10.96 | – |
+| `a` Home | 4.5 | 8.76 | – |
+| `p` A youth organization connecting young people in Cypr | 4.5 | 10.42 | 5.43 |
 | `a` Contact | 4.5 | 10.96 | – |
+| `a` About | 4.5 | 10.96 | – |
 | `a` FAQ | 4.5 | 11.12 | – |
-| `span` ArtiCYa | 4.5 | 11.09 | 9.48 |
+| `span` ArtiCYa | 4.5 | 11.43 | 9.48 |
+| `span` · | 4.5 | – | 2.59 |
 
-The last seven rows are the same elements the settled page carries, measured
-*during* the opening. Only one of them differs materially from its resting
-value: the intro paragraph reads **6.07 desktop against the 7.68 it settles at**,
-so the frames of the expansion are 1.61 worse than the state the page rests in
-and still 1.57 clear of the floor.
+Six of these elements — the four nav labels, the wordmark and `a` Contact Us —
+are the same ones the settled page carries, measured *during* the opening, and
+with the opacity gate in place **not one of them is worse in the opening than at
+rest**. The intro paragraph is the same: 10.42 against the 7.60 it settles at on
+a desktop, 5.43 against 5.05 on a phone. The published 6.07, which had the
+opening 1.61 *worse* than the resting state, was the part-transparent frames
+being scored.
+
+`span` `·` is the row with no desktop reading, and it is the one below floor —
+see the method above for the nine-pixel population, the two stops out of 201,
+and the identical reading on the build before this change.
