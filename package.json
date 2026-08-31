@@ -4,11 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "npm run images && next dev",
-    "build": "npm run images && next build",
-    "build:pages": "npm run images && GITHUB_PAGES=true next build && node scripts/postexport.mjs",
+    "build": "npm run images && next build && npm run verify:placements",
+    "build:pages": "npm run images && GITHUB_PAGES=true next build && node scripts/postexport.mjs && npm run verify:placements",
     "images": "node scripts/responsive-images.mjs",
     "grade:photos": "node scripts/grade-photos.mjs",
-    "verify:text": "node scripts/verify-text-parity.mjs"
+    "verify:text": "node scripts/verify-text-parity.mjs",
+    "verify:placements": "node scripts/verify-placements.mjs"
   },
   "dependencies": {
     "@studio-freight/lenis": "^1.0.42",

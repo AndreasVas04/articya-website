@@ -3642,6 +3642,82 @@ gathered state changes it.
 
 ---
 
+## 7.6 · The placement ratchet — `npm run verify:placements`
+
+The centre tile reads **0.995** rendered-against-fetched on a phone because
+`e75e14d`'s 1984 rung is the first one at or above what it asks for. That is
+within rule and the margin is five thousandths, which is not a number anyone
+notices moving. `scripts/verify-placements.mjs` now runs at the end of both
+build scripts and fails if it does.
+
+**It is static and it is exact.** The browser's rule is `requested =
+resolve(sizes, viewport) × DPR`, then the first rung at or above `requested`, or
+the widest if there is none — so the ratio exceeds 1.0 for exactly one reason,
+which is that the ladder does not reach what `sizes` asks for. The script walks
+every `<img>`, `<source>` and preload `<link>` in `out/`, resolves each `sizes`
+list at seven viewports — 375×553, 390×664, 390×750, 390×844 at DPR 3, 768×1024,
+1440×900 and 1920×900 at DPR 2 — and compares. **132 placements × 7.**
+
+**Checked against the engine before it was trusted.** Chromium at 390×844 DPR 3,
+1440×900 DPR 2 and 1920×900 DPR 2, walked to the foot of every page so nothing
+is unloaded, reading each image's own `currentSrc` and its painted width — with
+`object-fit: cover`'s magnification computed from the natural size, since the
+box is not the paint. Every figure reproduces to within 2%, and the residual is
+that `sizes` is one declaration made against a box the hero breathes.
+
+**What it does not catch.** A `sizes` string that under-declares the paint —
+§1.2's defect. That is held by `coverSizes()` at the declaration site. This
+script trusts `sizes` and checks the ladder behind it. The JPEG tier is reported
+and never asserted: its 1366 cap is §6.3's decision and neither engine reaches
+that tier at all.
+
+### What it found, and it is not the wall
+
+**Twenty-three placement/viewport pairs are over 1.0 today**, on a clean build,
+and every one of them is a standing debt this file already carries rather than
+anything that drifted. Worst first, and these are the script's own figures:
+
+| placement | viewport | asks | widest rung | ratio |
+|---|---|---|---|---|
+| `hero-3` | 390×664 / 750 / 844 DPR 3 | 5588 | 2316 | **2.414** |
+| `hero-3` | 375×553 DPR 3 | 5373 | 2316 | 2.320 |
+| `hero-3` | 1920×900 DPR 2 | 5299 | 2316 | 2.289 |
+| `hero-3` | 1440×900 DPR 2 | 3974 | 2316 | 1.717 |
+| `IMG_4585`, `hero-2` | 1920×900 DPR 2 | 3955 | 2880 | 1.374 |
+| five full-bleed frames | 1920×900 DPR 2 | 3840 | 2880 | 1.334 |
+| `hero-1` | 390×664 / 750 / 844 DPR 3 | 3434 | 2880 | 1.193 |
+| `IMG_4582-road` | 390×664 / 750 / 844 DPR 3 | 3392 | 2880 | 1.179 |
+| `hero-1` | 375×553 DPR 3 | 3302 | 2880 | 1.147 |
+| `IMG_4582-road` | 375×553 DPR 3 | 3261 | 2880 | 1.133 |
+| `IMG_4585`, `hero-2` | 1440×900 DPR 2 | 2966 | 2880 | 1.031 |
+
+**Two causes, and neither is a code defect.**
+
+`hero-3` is a **2316px source**. §1.2 has the arithmetic — 3.1 MP against the
+Portugal set's 48 — and `PHOTO-MANIFEST.md` closes the door on fixing it from
+the delivery: `hero-3` is *upscaled* and no incoming file improves it. It is a
+2.41 on a phone because the slide's box is tall and a 2.14:1 frame cover-fits
+into it at **1899 CSS px, 4.6× the window's own width**. Photography, not code.
+
+Everything else is `BLEED_WIDTH` at **2880**, which is 1440 CSS at DPR 2 and
+what §2.7 chose after declining 3200 on an LCP argument with the bytes measured.
+A 1920 window at DPR 2 asks 3840 of a `100vw` frame and a phone at DPR 3 asks
+3434 of a landscape frame cover-fitted into a tall box. Both are outside the
+envelope 2880 was chosen for, and saying so is the point of writing them down.
+
+**So it is a ratchet rather than a gate**, the same shape as §2.8's floor: the
+twenty-three are recorded in `KNOWN` with the item that decided each of them,
+the build fails if any of them gets **worse** by more than 0.005, and it fails
+on anything **not** on the list. Verified in both directions before it was
+wired in — tightening one recorded value fails with `WORSE`, deleting one fails
+with `NEW`.
+
+**The one rule about closing a failure.** Never by lowering `sizes` below the
+paint. That moves the failure off this script and onto the screen, and it is
+exactly what §1.2 spent a section undoing.
+
+---
+
 ## The contrast reference set — the corrected instrument
 
 §2.8 makes the floor a ratchet: **no change may lower any measured glyph-core
