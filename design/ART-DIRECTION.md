@@ -314,6 +314,16 @@ What is still open:
   panels' join for 0.36 of a viewport instead of holding a screen the reader
   stops and reads on, so it is now the shortest hold on the page rather than the
   longest. It still needs a different frame to close.
+- **An activity frame with the people large in the frame.** The offer panels
+  and About's story scenes want a photograph that *shows* young people on an
+  Erasmus+ activity, and showing is a matter of scale on the screen rather than
+  of what is in the shot. The slot renders **179 CSS px wide at 390×664**, so a
+  figure that is a twentieth of the frame is 9 px there. `IMG_2865` was priced
+  for it and refused on exactly that: three walkers whole, 21 × 37 CSS px
+  between them, while the timber railing behind them reads clearly. The frame
+  has to hold the people large, in a bright register, and stand beside
+  `AboutImage1` and `AboutImage2` as a pair. `PHOTO-MANIFEST.md` §D carries it
+  as the fifth standing debt.
 - **The home h1 under reduced motion.** The hero renders expanded, so the
   headline and the label sit at opacity 0. Pre-existing, still open.
 - **Real-device confirmation.** Everything above is measured in a headless

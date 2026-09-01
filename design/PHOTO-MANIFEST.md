@@ -386,8 +386,12 @@ the overlap is forced to sit.
    that every portrait ground on the site currently carries on a desktop. One
    for About, and the same kind again for `/faq/`.
 3. **One more outdoor activity frame** with people, portrait 3:4, to stand
-   beside a programme heading. `IMG_2865` is the first of these; a second
-   retires `AboutImage1`'s interior from the Youth Exchanges panel.
+   beside a programme heading. ~~`IMG_2865` is the first of these~~ — it is
+   not; see the standing-debts row above. A frame for this slot has to hold
+   the people **large in the frame**, because the slot renders at 179 CSS px
+   wide on a phone and a figure that is a twentieth of the frame is 9 px there.
+   A second such frame retires `AboutImage1`'s interior from the Youth
+   Exchanges panel.
 
 ### The standing debts
 
@@ -397,7 +401,8 @@ the overlap is forced to sit.
 | **`IMG_4582-road` holds no complete subject** | **Not closed** | `IMG_4582.DNG` is the shipped frame at ZNCC 1.0000 and the same pixel dimensions. The chain-link fence and the cables are in the original. Only a different photograph closes it, and no incoming frame is a road between stone walls |
 | **`hero-2`'s overhead cable, two full-bleed placements** | **Not closed** | Measured in `IMG_2894` itself: the cable enters the top edge at **col ≈ 21%** and runs down to the canopy at **col ≈ 33%, row ≈ 41%**. It is in the photograph, not in the crop. `ART-DIRECTION.md` §8's description was accurate to the third |
 | **A landscape frame for the About and FAQ grounds** | **Not closed** | All seventeen distinct files carry EXIF orientation 6. **Zero landscape frames arrived** |
-| **An outdoor activity frame for the offer panels** | **Partially closed** | `IMG_2865` — three young people walking a forest track, portrait 3:4, deep pine tone. Costs: a fourth person cut at the frame's own left edge (cols 0–6%, rows 78–92%) and a timber railing at cols 30–37%, rows 51–56% |
+| **An outdoor activity frame for the offer panels** | **Not closed** — the survey read this as partially closed; the placement audit at the foot of this file overturned it | `IMG_2865` — three young people walking a forest track, portrait 3:4, deep pine tone. Costs: a fourth person cut at the frame's own left edge (cols 0–6%, rows 78–92%) and a timber railing at cols 30–37%, rows 51–56%. At the panel's rendered size the group is 21 × 37 CSS px and each figure 8–11 px wide |
+| **An activity frame with the people large in the frame** | **Not closed** | A fifth debt, and a different one: the people must *occupy* the frame rather than appear in it, in a bright register that stands beside `AboutImage1` and `AboutImage2` as a pair. Every candidate in this delivery is either a place (`IMG_3004`, `IMG_3005`, `IMG_9087`) or an activity seen from too far away (`IMG_2865`) |
 
 ---
 
@@ -630,7 +635,8 @@ and now govern repository weight, which is what they had already become.
 | `hero-2`'s overhead cable | **Not closed.** It is in the photograph, at higher resolution than before |
 | `IMG_4582-road` holds no complete subject | **Not closed** |
 | A landscape frame for the About and FAQ grounds | **Not closed.** All seventeen files are portrait |
-| An outdoor activity frame for the offer panels | **Partially closed.** `IMG_2865`, not yet placed |
+| An outdoor activity frame for the offer panels | **Not closed.** `IMG_2865` is not the panels' answer, and the reason is size rather than content: at the panel's rendered size the walking group is **21 × 37 CSS px at 664** and each figure 8–11 px wide, while the timber railing at cols 30–37% reads clearly. It is two stops darker than `hero-2` with 40% of the frame in deep shadow, against a companion frame at chroma 73, and it costs **+19.4 MB of variants for a picture 179 px wide**. A frame that contains the subject is not a frame that shows it |
+| **An activity frame with the people large in the frame** | **Not closed, and it is not the row above.** The requirement is that the people *occupy* a substantial share of the frame rather than merely appear in it, in a bright register that stands beside `AboutImage1` and `AboutImage2` as a pair. `IMG_2865` fails it on both counts at once — by size and by tone |
 
 `photo-src/incoming/` is still excluded from the repository and still on disk
 only. No incoming file was deleted, no composition changed, no crop moved.
