@@ -3873,6 +3873,40 @@ the ratio, and each one was arguing that its own change moved nothing. What was
 false was the second half of the sentence, every time: that nothing on home
 exceeds 1.0. Something always did.
 
+### The third instrument sweep — every other ratio table, read not re-measured
+
+Three instruments have been in circulation for rendered-against-fetched: **box
+over rung**, **`naturalWidth` over rung**, and **painted rect over
+`currentSrc`**. Only the third is correct. Five figures were struck above and
+§7.2 records that the first pass of the wall audit got all three wrong, so on
+2026-09-01 every *other* ratio table in these documents was read for which
+instrument produced it. **Nothing here was re-measured and nothing here is
+struck.** Where a figure is suspect the sweep says what would settle it.
+
+| figure | instrument, on the evidence in the text | verdict |
+|---|---|---|
+| **§2.14**, the two rise tables — `vs fetched` and `vs source` at ten stages, both viewports | states it: *painted device px against the fetched variant and against the graded source* | **safe**, and the geometry makes it safe whatever was run: the centre tile is a 0.75 portrait source in a landscape slot, so cover fits it **by width** at every stage and the paint *is* the box. §7.4 reproduces the desktop end — 1872 painted, 0.975 / 0.619 — on a table that declares the paint |
+| **§2.22**, the seven-tile per-tile table at 664 / 750 / 844 | states it, as its own correction: the 2.0-era probe *"read the finale tiles' ratio off the box rather than off the painted rectangle"*, and the corrected centre tile is 0.771 | **safe.** Five of the seven rows reproduce §7.4's independently-taken 390×844 column to 0.001. The two that differ — centre 0.771 vs 0.995, upper-left 0.753 vs 0.971 — are the same painted device px over a different rung, `e75e14d`'s 1984. The rung's *source* is not named in §2.22; that reconciliation is what settles it |
+| **§7.2**, sixty rows over five viewports and three states | names all three corrections in its own opening, `currentSrc` first | **safe**, and self-demonstrating: `painted dev px` differs from `slot × DPR` exactly where cover-fit requires it — `hero-3` at 2160 from a 806×504 slot is 504 × 2.14 × 2, not 806 × 2; `hero-1` at 1318 is 486 × 1.356 × 2 |
+| **§7.4**, the two restored-wall tables | states it in the line above them: *"Painted width is the picture and not the box"* | **safe**, and self-demonstrating: `hero-1`'s phone 343 CSS is 253.2 × 1.356 and `IMG_4585`'s 658 is 877.8 × 0.75 |
+| **`PHOTO-MANIFEST.md` §B**, the twenty-one-row per-placement table | states it: *painted CSS width at rest × DPR ÷ the frame's own display width* | **safe as rendered-against-**source**.** `hero-3` painted at 1928 / 1808 CSS in 1440 / 390 windows could only be the paint. It is never a fetch figure and must not be read as one |
+| **`PHOTO-MANIFEST.md`**, the 2026-08-30 before/after table | claims *rendered against source **at rest*** | **instrument safe, state label wrong on three rows.** The three hero rows carry `HERO_PUSH`: slide 2 reads **0.981** where `/faq/`'s ground — same frame, same painted width, no push — reads **0.952**, and 0.981 / 0.952 = 1.031 exactly; the *before* column carries it too, 1.931 / 1.875 and 1.274 / 1.237; and `hero-3`'s 1.716 / 2.413 are §7.6's **script** figures, not its at-rest 1.666 / 2.343. Nothing to re-measure — one word to correct |
+| the ***Carried*** list's own before/after table | copied from the row above it, and it inherits the same push | **suspect on two counts.** The push, as above; and it does not restate its viewports, inside a list whose established convention is *1440 CSS at DPR 3* — its prose gives `/faq/` as 1.88 / 2.81 and its table gives 1.88 / **1.24**, which is 390×844 DPR 3. Two different second columns under one heading |
+| **§2.7**, *1.13 → 1.00 at DPR 2 for all five* and *1.69 → 1.50 at 1440×DPR 3* | states *at rest* | **safe.** §7.6's `at rest` column reproduces the 1.000, and all five frames are fitted by width in a 16:10 window, so paint = box there |
+| **§2.24**, *rendered-against-fetched rises 0.72–0.84 → 0.85–0.95* | **not stated** | **instrument unverifiable from the text; the figures are safe on the geometry.** Both panel frames are exactly 3:4 and the box is `aspect-ratio: 3 / 4`, so paint = box identically. Superseded by §2.27's re-derivation in any case |
+| **§2.27**, the panel photograph at *0.70 / 0.84 / 0.95 / 0.89* | not stated in the item | **safe** — re-run on the current build and confirmed on the paint; the one figure in the 0.80 family that survived |
+| **§6.3**, the fourteen-row JPEG magnification table | states it: **asks** / **takes** | **safe as a declaration figure**, which is what it is for. One prose slip beside it: the *1.03×* it gives `IMG_4585` and `hero-2` is the hero push, not their masters "stopping short" — `IMG_4585`'s master is 6048 |
+| **§4.4**, *worst 0.965 / 0.932* and the seven 390×844 tile figures | restated verbatim from §7.2 and §2.22 | **safe by derivation** |
+| **`ART-DIRECTION.md` §5**, `IMG_4585` at *0.619* and `hero-1` at *1.83 against its own source* | not stated | **safe on the geometry** — both are the centre slot, a landscape box that fits either frame by width, so paint = box. `hero-1`'s is historical: that master is 3024 now |
+
+**What a later pass re-measures first.** Nothing on this list is a figure whose
+instrument cannot be determined *and* whose value the geometry does not pin, so
+there is no re-measurement queued by it. What is queued is **one word and one
+heading**: the three hero rows in `PHOTO-MANIFEST.md`'s 2026-08-30 table and in
+the *Carried* list say "at rest" and are at the push, and the *Carried* table
+does not name its viewports. Both are Gate 2 documentation, and both are the
+same defect the hero push section above was written to stop hiding.
+
 **So it is a ratchet rather than a gate**, the same shape as §2.8's floor: the
 twenty-three are recorded in `KNOWN` with the item that decided each of them,
 the build fails if any of them gets **worse** by more than 0.005, and it fails
