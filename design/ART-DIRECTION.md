@@ -130,12 +130,35 @@ overcast road and this frame is a sunny one.
 people on an Erasmus+ activity. `AboutImage1` (the group with the Cyprus and
 Portugal flags) and `AboutImage2` (the circle of chairs outside the mountain
 cabin) are the right subjects. A landscape portrait beside these headings says
-nothing. The window cuts the frame now: the inner edge is the column-4 line and
-the outer edge runs off the screen, 41vw rather than the column's 29%, which is
-what finally puts the picture at §A2's 86% of the section instead of 62%. The
-five tracks, the 3:4, the −12svh lift and the numeral on the eyebrow row are
-untouched — the outer margin is the only thing that was spent. About's three
-story scenes share the classes and take it with them.
+nothing.
+
+**The 3:4 is spent, and it will not come back.** On a phone the box is
+**36svh tall and 1.11 of that wide**, which is the largest picture the rules
+leave: wider than 1.11 and the ground beside it falls under the `3svh` the head,
+the gap and the foot each take, and a photograph that reaches the frame's edges
+stops being an object and becomes a background — the failure `c61f320` was
+reverted for, one viewport down. The height is what is declared, so the panel's
+total and all twelve of the page's keys are where they were and the whole gain
+is 48% of width. Above `md` the box keeps the 3:4 and nothing changed at any
+width.
+
+The box is now wider than every frame in it, so cover crops the height and
+**each frame carries its own anchor**, in `components/panel-photo.ts`:
+
+- `AboutImage1` — **`50% 100%`**. Everything it is on the site for is low in the
+  frame; what is above the banner is ceiling and roller-blind recess. The cut
+  lands at 32.43% and clears the white tape at the banner's corners, at 35.47%,
+  by three points of frame.
+- `AboutImage2` — **`50% 50%`**. Centred it clears the conifer crown at 18.85%
+  by 2.63 points at the top and the lowest shoe at 78.5% by 5.28 at the foot.
+- `home-training` — **`50% 0%`**. Centred, the top cut crosses two participants
+  through the head — their hair crowns are at 9.3% and 7.5% of the frame — so
+  this one is anchored to the top and the bottom third goes instead.
+
+Every band keeps 67.57% of its frame, seven and a half points over the 60%
+floor. The five tracks, the −12svh lift and the numeral on the eyebrow row are
+untouched. About's three story scenes share the classes and take all of it with
+them.
 
 **What you gain** — four lines currently sit stacked with no composition. It
 needs structure: a rule, an order, an arrival, something that makes it a designed

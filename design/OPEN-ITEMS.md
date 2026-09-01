@@ -1654,103 +1654,641 @@ verified to hold at 553, 664, 750 and 844 in both engines, but **that the panel
 fits the phone at both chrome states, and that the photograph is whole in it,
 has to be confirmed on the phone.**
 
-### The panels' aspect — the direction, pending a real-device pass
+### The panels' aspect — the ceiling, measured, and built
 
-**This is not a build instruction and nothing below is done.** It is Andreas's
-direction for the panels, recorded so it survives, and it is **pending a real
-device**. Two things have to happen before any of it becomes work, and neither
-is a measurement:
+**This is the pricing that chose the aspect; what shipped is under *Built*
+below.** The device pass has happened: Andreas looked at the contact sheets on
+an iPhone and returned two decisions, and the second of them supersedes
+A = 1.045. **1.045 was superseded by a direction rather than by a
+measurement** — *leave almost no empty space, fill it as well as it fits* is a
+request for the largest picture the rules allow, which is a different question
+from the one 1.045 answered, and this item is that question answered in numbers.
 
-1. The contact sheets are **looked at on an iPhone in Safari with flick
-   scrolling** — `ART-DIRECTION.md` §7's own rule, and §2.19's list of what no
-   headless engine can produce is unchanged.
-2. **The box ceasing to be 3:4 is judged by eye.** `ART-DIRECTION.md` §4 lists
-   the 3:4 among the panel numbers left untouched and §8 calls this geometry the
-   only settled part of home. At A = 1.045 the picture stops being an upright
-   and becomes very nearly square. That is a composition judgement, not a
-   measurement, and it is Andreas's.
+**Decision one. The Cyprus flag stays whole — and it has now been seen that
+way.** `AboutImage1` is bottom-anchored, so the crop spends its whole travel on
+the ceiling and the roller-blind box and none of it on the tablecloth. Every
+sheet before this one was shot at the shipped `50% 50%`, so the anchor had been
+reasoned and not looked at. It is looked at now, at 390×664 and 375×553, DPR 3,
+head at the window top, entrance forced to its end state:
+`design/refs/panels/strip-anchored-390x664.jpg`, `strip-anchored-375x553.jpg`
+and `flag-check-1110.jpg` — the last of them the picture's own rect clipped out
+of the built page with the whole box inside the window.
 
-**The direction.** One aspect, **A = 1.045**, for both panels; **a per-frame
-anchor** — `AboutImage2` keeps `50% 50%`, `AboutImage1` moves toward `50% 100%`.
-Body copy stays at 16px. The head stays at `3svh`, and the eyebrow is not bought
-out of the picture's width.
+**The box's top edge lands at 32.43% of the frame, 3.04 points above the
+banner's white tape at 35.47%** and 4.15 above the cloth at 36.58%. Scanned off
+the display-oriented pixels, everything this frame is on the site for is below
+that line and inside the visible band: the **tablecloth from 77.83%**, the
+**Cyprus island 80.95–92.5%**, the **olive wreath 93.11–98.76%**, and **both
+shoes**. The wreath's tip is the last thing in the frame — 1.24% of frame below
+it, **4.4 CSS px at 664 and 3.7 at 553**. Confirmed.
 
-**The aspect diverges nothing; the anchor does, and that is the whole of it.**
-Both frames are exactly 3:4, so at today's `aspect-ratio: 3 / 4` the box matches
-the source and `object-position` does nothing at all — there is no crop to
-place. At A = 1.045 the box is wider than the source, so cover fits by width and
-crops vertically: the visible band is **0.75 / 1.045 = 71.77% of the frame's
-height**, and 28.23% goes. Where it goes from is the anchor's whole job.
+**One thing those sheets show is the window's doing and not the crop's.** At
+375×553, with the head at the window top, the picture's foot is **16.9px under
+the fold on both panels** — §2.27's overflow, which A does not touch. What
+changes is how much of the frame that 17px costs: the last frame row above the
+fold is **94.20% at A = 1.11 against 91.46% at the shipped 0.750**, because the
+same 17px is a smaller share of a shorter crop. The whole island is above the
+fold at 1.11 and cut at 0.750; the wreath is under it in both.
 
-- **`AboutImage2` keeps `50% 50%`.** 14.11% off each end. The frame's first real
-  event above is the **conifer at A = 1.2114**, which puts its crown 19.05% down
-  the frame, so at 1.045 it clears by 4.94 points — a margin of
-  **1.2114 / 1.045 = 15.9%**. The chimney at 1.3915 is a *further* limit, not
-  the nearer one; a margin quoted against it reads 33.2% and is a percentage of
-  the wrong thing.
-- **`AboutImage1` moves toward `50% 100%`, and the reason is at the bottom edge
-  rather than the top.** Centred at 1.045 the lower 14.11% crop cuts through the
-  **Cyprus flag on the tablecloth** — the emblem this frame is on the site to
-  show, against `ART-DIRECTION.md` §5's own description of it. A bottom anchor
-  spends the whole 28.23% on the top instead, and the top is ceiling, the
-  roller-blind box and bare wall: the ArtiCYa banner's top edge is at **36–37%**
-  of the frame and the tallest head at **41%**, so a 28.23% cut stops eight
-  points clear of both. The subject is at the foot of this frame and at the
-  middle of the other one, which is why one number cannot serve both.
+**Decision two. The largest picture the rules allow.**
 
-**What it buys.** With the panel's total frozen the picture's height stays
-`36svh` and its width goes `27svh` → `37.62svh`: **179.3 → 249.8 CSS px at
-390×664**, +39.3%. That is the item `ART-DIRECTION.md` carries as *an activity
-frame with the people large in the frame*, answered from the slot rather than
-from a photograph.
+**The family, and it is one number.** The picture's height is the declaration
+and A is its width: `height: 36svh`, `width: calc(36svh * A)`, `max-width: 100%`
+kept. Shipped is A = 0.75. Everything below is measured on the built `out/` at
+DPR 3 with the box overridden at run time, not modelled.
 
-**Contrast is not a constraint on this item, and that is now measured at 5px.**
-The hardest bound available: every glyph in the block blanked and the picture
-hidden, the **brightest ground pixel anywhere in the band the block occupies**,
-over each block's whole traversal, both panels, at 553, 664, 750 and 844. Any
-lever that moves the paragraph inside the panel can only move it onto ground
-already inside this maximum.
+**First, a correction to the geometry this was being reasoned about in.** The
+box is **not** `calc(57% + 96px)` capped at `349px` — that was §2.24 and §2.27
+replaced it. `.offer-panel-photo` below `md` is `width: 27svh; max-width: 100%;
+aspect-ratio: 3 / 4`, so the horizontal cap is `max-width: 100%` of a block
+inset 16px each side: **358px at 390 wide, 343px at 375**.
 
-| | 390×553 | 375×553 | 390×664 | 390×750 | 390×844 |
+#### The seven, and the first A at which each stops being true
+
+| | 375×553 | 390×664 | 390×750 | 390×844 |
+|---|---|---|---|---|
+| **1 · the picture stops growing** — width reaches `width − 32` | **1.73** | **1.50** | **1.33** | **1.18** |
+| **2 · the block exceeds a screen** (1.061 at 553) | never | never | never | never |
+| **3 · any key, span or document height moves** | never | never | never | never |
+| **4 · `AboutImage1` loses the banner, bottom-anchored** | 1.17 | 1.17 | 1.17 | 1.17 |
+| **5 · `AboutImage2` loses the conifer, centred** | 1.21 | 1.21 | 1.21 | 1.21 |
+| **6 · either frame falls under the 60% crop floor** | 1.26 | 1.26 | 1.26 | 1.26 |
+| **7 · the ground bound falls under 4.5** | never | never | never | never |
+
+**The horizontal cap has never been reported and it is reported here.** It is
+`(width − 32) / 36svh`, so it is **1.723 / 1.498 / 1.326 / 1.178** at 553 / 664
+/ 750 / 844, and the 0.01 step at which the box stops growing is the row above —
+confirmed by stepping across it, 355.5 → 358.0px at 844 between 1.17 and 1.18.
+**The cap is loosest where the screen is shortest**: 553 can take an aspect of
+1.72 before the picture touches the gutter and 844 only 1.18, because the
+picture's width is a share of the *height* and the gutter is a share of the
+width.
+
+**It does not bind first, and at 844 it misses by 1.4%.** The composition limit
+arrives at 1.162 and the screen at 1.178. On §9.3's recorded *36–37%* for the
+banner the two swap and the screen binds — **the two constraints are inside the
+width of the banner's own top hem**, so which of them is named first is not a
+number this file should pretend to know to three places. Either way the answer
+is the same: at 390×844 the photograph runs out of screen at almost exactly the
+moment it runs out of frame, and **"fill it as well as it fits" has an exact
+answer there.** At 664 and 750 the cap is 29% and 15% away and only the
+photograph binds.
+
+**Where 4 and 5 come from, measured on the display-oriented pixels rather than
+carried.** `AboutImage1`'s master is stored 4032×3024 with EXIF orientation 6;
+it displays 3024×4032 and is **exactly 3:4**, as is `AboutImage2` at 1536×2048 —
+so the direction's premise holds, but a build that re-cuts from the master
+without honouring the flag gets it 90° wrong. Scanned across the banner's own
+columns against the dark roller-blind recess above it, the **white tape at the
+banner's corners tops at 35.47%** and the **cloth at 36.58%**; §9.3 recorded
+36–37%, which is the cloth. Bottom-anchored, the cut is `1 − 0.75/A` and it is
+all taken off the top, so the tape is lost at 1.17 and the cloth at 1.19.
+`AboutImage2`'s conifer crown scans at **18.85%** against §9.3's 19.05%; centred,
+the cut is half that and the crown is lost at 1.21 rather than 1.22. The 60%
+floor is `0.75/A ≥ 0.60` exactly, so it is 1.25 and no measurement moves it.
+
+**Two and three are the finding of this sweep and they are unconditional.**
+Stepped at 0.750, 1.045, 1.16, 1.17, 1.18, 1.30, 1.32, 1.33, 1.49, 1.50, 1.72,
+1.73 and 1.75, at all four heights: **the twelve keys are identical to the pixel
+at every A**, the four document heights stay **3409 / 3903 / 4339 / 4814**, and
+the panel block stays **586.5 / 664 / 750 / 844** — 1.061 / 1.00 / 1.00 / 1.00
+screens. The eleven spans follow, since they are differences of those keys over
+the same heights. The reason is worth stating because it is what makes A a safe
+lever at all: **the height is the declaration and A only moves the width**, and
+above the cap `max-width` clamps the width and leaves the height alone. Nothing
+in the panel's vertical stack can hear A at any value.
+
+**Seven, re-run rather than assumed.** The brightest ground pixel inside the
+**text block's own rect with the photograph painted**, every glyph and every
+`::before`/`::after` blanked, ink at 0.72, stepped at **5px across every scroll
+position at which any part of the block is in the readable band** — 1,309 frames
+per configuration, both panels, four heights, at A = 0.75 and again at A = 1.16:
+
+| | 375×553 | 390×664 | 390×750 | 390×844 |
+|---|---|---|---|---|
+| Youth Exchanges | 5.81 | 7.79 | 7.79 | 7.79 |
+| Training Courses | **5.27** | **5.40** | **5.40** | 5.81 |
+
+**Every figure is identical to four decimals at both aspects**, and the
+instrument says why: at **0 frames out of 1,309** does the picture's box
+intersect the type's box. They are separate items in a column flex with `3svh`
+between them, so no width can put the picture under a glyph. §2.27's own
+published bound — the *block's* rect with the picture hidden, 5.27 / 5.40 / 5.16
+/ 5.28 — is reproduced by the same harness; the 5.16 at 750 is a ground pixel in
+the picture's band, which a wider picture covers, so A can only raise it.
+
+#### The largest A that satisfies all seven
+
+**A = 1.16**, bound by `AboutImage1`'s banner at every height, with the screen at
+390×844 **1.4% behind it** at 1.178. On the cloth reading rather than the tape it
+is 1.18 and the screen binds instead.
+
+#### What "almost no empty space" is, measured
+
+The panel's head at the top of the window, both panels, at 0.750 and at the
+recommended 1.11. Area of the window, not height:
+
+| | picture | type | neither | picture at 1.11 | neither at 1.11 |
 |---|---|---|---|---|---|
-| brightest ground pixel, L | 0.0937 | 0.0960 | 0.0927 | **0.0992** | 0.0958 |
-| worst possible glyph-core | 5.36 | 5.27 | 5.40 | **5.16** | 5.28 |
+| 375×553 | 13.1% | 27.1 / 29.2% | 57.7 / 59.8% | **19.5%** | **51.4 / 53.5%** |
+| 390×664 | 16.5% | 21.8 / 23.4% | 60.0 / 61.6% | **24.5%** | **52.1 / 53.7%** |
+| 390×750 | 18.7% | 19.3 / 20.8% | 60.6 / 62.0% | **27.7%** | **51.6 / 53.0%** |
+| 390×844 | 21.0% | 17.2 / 18.4% | 60.5 / 61.8% | **31.1%** | **50.4 / 51.7%** |
 
-**Worst anywhere is 5.16 against a floor of 4.5**, at 390×750, and it holds on
-both panels at every height. Stepped at **1px** on that worst configuration —
-611 frames — the truth is **5.15**, so the 5px step overstates by **0.01**; the
-0.66 of margin is real and is not an artefact of the interval. Widened to every
-scroll position at which any part of the block is in the readable band — the
-entering phase included, where the panel's top rows cross the clearing's and the
-road's ground — both panels converge on the same figures and the worst is still
-**5.16**. Ink is taken at 0.72, which is under `--color-ink`'s own 0.766, so the
-bound is on the conservative side of the paint.
+**Half the window carries neither, and §2.27's three bands are not where it is.**
+Decomposed at 390×844, Training Courses, at A = 1.11: of the 50.4% that carries
+neither, **24.4% is the full-width empty runs** (the centring slack and the head,
+the gap, the foot and the slack below), **21.2% is inside the type's own band** —
+leading, the ragged right edge, the space beside short lines, which is
+typography and not padding — and **4.9% is beside the picture**, of which 3.2
+points is `px-4`, the gutter every block on the site sits inside. At 664 the same
+three are 13.7 / 26.9 / 11.5.
 
-**One instrument note, and it is this file's own defect turned on the
-verifier.** The first widened run reported a hard failure at **2.15**, at
-exactly `--color-amber`'s luminance, 0.3076, at the same value in every
-configuration. It was not ground: the blanking used `.offer-panel-text *`, and
-`*` does not match a pseudo-element, so `.offer-eyebrow-text::before` was still
-painting its amber label inside the measured rect. The bound was reading a glyph
-and calling it a ground. Blank `::before` and `::after` explicitly or the
-number is the eyebrow.
+**The largest single empty run**, contiguous and full width, and A does not move
+any of them:
 
-**What a Gate 2 build of this would touch and re-verify.** The
-`object-position` on `AboutImage1` and the `aspect-ratio` on
-`.offer-panel-photo` are the only two declarations that change, and About's
-three story scenes share both classes and take the change with them. What it
-would have to re-verify is everything a changed box touches: **the whole-subject
-audit on `AboutImage1` under its new anchor**, at all four heights and on both
-of its placements, because §2.24's and §2.27's "the crop does not move, so there
-is nothing to re-audit" stops being true the moment the box stops being 3:4;
-**`sizes` re-derived from the new painted width and never carried** — §2.24
-wrote `calc(57vw + 78px)` for its geometry and §2.27 replaced it with `27vh` for
-this one, and a box that is no longer 3:4 no longer paints its own width; **the
-twelve keys**, **the eleven spans** and **the four document heights**, because a
-wider picture is a wider flex item and the identity §2.24 built has to be shown
-to still hold; **`verify:text`** on all four pages; and **`verify:placements`**,
-which exists for exactly this and is what catches a carried `sizes`. None of it
-is begun.
+| | 375×553 | 390×664 | 390×750 | 390×844 |
+|---|---|---|---|---|
+| Youth Exchanges | 20px — **3.6%** | 47px — 7.1% | 73px — 9.8% | 102px — **12.1%** |
+| Training Courses | 20px — **3.6%** | 34px — 5.1% | 60px — 8.0% | 89px — 10.5% |
+
+**None of it can be spent on the picture, and 553 is the whole reason.** At 664,
+750 and 844 `min-h-svh` binds and the block is exactly a screen, so the picture's
+height could grow into the centring slack — **27.6 / 74.8 / 126.6px** on the
+longer paragraph — without the total moving at all. At **375×553 the slack is
+zero**: the content is 586.5px in a 553 screen, the block is already its content
+at 1.061 screens, and every pixel added to the picture is a pixel added to the
+panel and to every key below it. One `svh` declaration has to serve all four
+heights, so the binding height is 553 and the amount of height available is
+**zero**. The head, the gap and the foot are `3svh` and cannot be spent either,
+because the bands sum to the total.
+
+**So the empty space is real, it is near half the window, and it is not
+spendable.** The picture is bounded by the frozen paragraph — 337.6px of copy at
+a reading size that does not scale, 61% of a 553 screen — exactly as §2.27 said,
+and **the only free direction left is width, which is what A is.**
+
+#### The recommendation
+
+**A = 1.11. `AboutImage1` at `50% 100%`, `AboutImage2` at `50% 50%`.**
+
+**What binds it, and it is an eighth rule the list of seven leaves out.**
+`ART-DIRECTION.md` §8 — the correction §A2 was given when `c61f320` was reverted
+— says the photograph is *an object with ground on all four sides, sized from the
+window's width*. Measured at 390×844, where the picture is widest against its
+screen:
+
+| A | width | ground each side | against the panel's own `3svh` |
+|---|---|---|---|
+| 0.750 | 227.9 | 81.1px | 3.21× |
+| 1.045 | 317.5 | 36.3px | 1.43× |
+| **1.110** | **337.3** | **26.4px** | **1.04×** |
+| 1.160 | 352.5 | 18.8px | 0.74× |
+| 1.178 — the cap | 358.0 | 16.0px | 0.63× — `px-4` exactly, no picture-ground left |
+
+**1.11 is the largest A at which the ground beside the picture is still at least
+the panel's own `3svh` band**, so the ground reads the same on all four sides. It
+clears that by 4.3%. Of the seven, the nearest is the banner's tape — the cut is
+**32.43% against 35.47%, 3.04 points of frame**, an A margin of 4.7%; then the
+screen at 844 at 6.2%, the conifer at 8.5% and the 60% floor at 12.6%.
+
+**Object or band, and it is a judgement.** Shot on the built page at 390×664 and
+390×844 at 0.750, 1.045, 1.11 and 1.16. At 1.11 the picture reads as an object
+standing on dark ground. **At 1.16 it reads as a band**: its edges land 2.75px
+inside the paragraph's own edges, which is near enough to read as one column and
+far enough to read as a misalignment, and the dark left and right of it is the
+page's gutter rather than the picture's ground. At the cap it is flush with the
+measure exactly. This is the same failure `c61f320` was reverted for, one
+viewport down — a photograph that reaches the frame's edges stops being an
+object and becomes a background, and the section already has one.
+
+**The picture, at all four heights:**
+
+| | 375×553 | 390×664 | 390×750 | 390×844 |
+|---|---|---|---|---|
+| shipped, 0.750 | 149.3 × 199.1 | 179.3 × 239.0 | 202.5 × 270.0 | 227.9 × 303.8 |
+| **at 1.11** | **221.0 × 199.1** | **265.3 × 239.0** | **299.7 × 270.0** | **337.3 × 303.8** |
+| gain | **+48.0%** | **+48.0%** | **+48.0%** | **+48.0%** |
+| share of the window | 13.1 → **19.5%** | 16.5 → **24.5%** | 18.7 → **27.7%** | 21.0 → **31.1%** |
+
+The height never moves — the gain is all width, which is why nothing below it
+moves either. Against the direction's 1.045 it is **+6.2%**.
+
+**Bytes, per panel, at each height.** AVIF, the format a current phone takes;
+`sizes` re-derived to `39.96vh`, read off `currentSrc` rather than computed:
+
+| | 375×553 | 390×664 | 390×750 | 390×844 |
+|---|---|---|---|---|
+| rung, before → after | 640 → **768** | 640 → **1024** | 640 → **1024** | 768 → **1024** |
+| `AboutImage1` | 46.1 → **61.7 kB** | 46.1 → **97.8 kB** | 46.1 → **97.8 kB** | 61.7 → **97.8 kB** |
+| `AboutImage2` | 78.2 → **111.0 kB** | 78.2 → **169.3 kB** | 78.2 → **169.3 kB** | 111.0 → **169.3 kB** |
+| the pair | 124.3 → **172.7** | 124.3 → **267.1** | 124.3 → **267.1** | 172.7 → **267.1** |
+| painted ÷ fetched | 0.863 | 0.777 | 0.878 | **0.988** |
+
+**The two panels cost 48–143 kB more on a phone**, and About's three story scenes
+share these classes and pay the same rise on three more placements. The
+painted-against-fetched figures reproduce §2.27's published 0.70 / 0.84 / 0.95 /
+0.89 on the before build, so the instrument is the one `verify:placements`
+judges; after, the tightest is **0.988 at 844**, 1.2% under the ratchet. On a
+real phone `vh` is the large viewport and the paint is `svh`, so the declaration
+sits above the paint and the ratio falls — the safe side, and the reason
+`PHOTO_SIZES` is written in `vh`.
+
+**What a Gate 2 build touches, corrected — it is four call sites, not two.**
+`.offer-panel-photo`'s `width` and its `aspect-ratio` (which has to become an
+explicit `height: 36svh`, or the `max-width` clamp shortens the picture and takes
+the keys with it); **the `aspect-[3/4]` on the `<ResponsiveImage>` inside it** —
+`offer-panel.tsx:137` and `story-scene.tsx:137`, which the direction missed and
+which would leave the inner picture overflowing its own box; `PHOTO_SIZES` at
+`offer-panel.tsx:35`; and `object-position` on `AboutImage1`. About's three story
+scenes take all of it.
+
+**What it still has to re-verify, and what this pass has already discharged.**
+The **twelve keys, the eleven spans and the four document heights are shown above
+to hold at every A**, so that part of the list is answered in advance — but it
+was measured in Chromium at DPR 3 with the box overridden at run time, and a
+build has to reproduce it in both engines. What remains: **the whole-subject
+audit on `AboutImage1` under its new anchor**, at all four heights and on both of
+its placements, since §2.24's and §2.27's "the crop does not move" stops being
+true the moment the box stops being 3:4; **`verify:text`**; and
+**`verify:placements`**, which is what catches a carried `sizes` and which now
+runs at 0.988 rather than 0.95. Contrast is answered: 1,309 frames at 5px say the
+picture never enters the type's band at any width.
+
+#### Growing the picture downward — priced, and not taken
+
+**Andreas's second addition is *it can grow a little more, downward*.** Two
+forms were priced against it and **neither is taken: `36svh` stands.** Nothing
+here is built and none of it is a build instruction. Measured on the built
+`out/` at DPR 3 with the box overridden at run time, A held at the chosen 1.11,
+the worse of the two panels reported — one declaration serves both.
+
+**a · A taller fixed fraction.** The height stepped up from `36svh`, each bound
+bisected to 0.01svh on the page:
+
+| the first height at which it stops being true | 375×553 | 390×664 | 390×750 | 390×844 |
+|---|---|---|---|---|
+| the block exceeds one screen | already at 36 | 40.24 | 46.05 | 51.06 |
+| a key, a span or a document height moves | **36.04** | 40.18 | 46.05 | 51.04 |
+| the foot reaches the fold, head at the window top | already at 36 | 43.16 | 48.98 | 54.00 |
+| the width hits `max-width` and the box stops being A | 55.97 | 48.65 | **43.07** | **38.27** |
+
+**The ceiling on a fixed fraction is the smallest number in that table —
+`36.04svh` — and it buys 0.22px.** 553 is the whole of the reason, and it is the
+same reason the empty space could not be spent: the block is already 586.5px in
+a 553 screen and the foot is already 16.9px under the fold, so every `svh` added
+is added to the panel and to every key below it. The keys move at 36.04 and the
+document height at 38.
+
+**The width cap has never been reported on this axis, and at the two tallest
+screens it binds first.** It is `100(W − 32) / (A·H)`, so at A = 1.11 it is
+**55.97 / 48.65 / 43.07 / 38.27** — the same direction as the aspect cap,
+loosest where the screen is shortest. At 390×844 the picture may grow **6.3%**
+taller before it stops being A = 1.11.
+
+**b · The picture takes the remainder.** `height: max(36svh, calc(91svh −
+337.7px))`, width `1.11 ×` that, `max-width` kept. The 91 is `100 − 3 − 3 − 3`;
+the 337.7 is the rendered height of the taller of the two text blocks. The
+`max()` is not decoration — at 553 the remainder is 165.5px, *less* than
+`36svh`, and without it the picture shrinks at the one height that cannot
+afford it.
+
+| | 375×553 | 390×664 | 390×750 | 390×844 |
+|---|---|---|---|---|
+| `36svh` at A = 1.11 | 221.0 × 199.1 | 265.3 × 239.0 | 299.7 × 270.0 | 337.3 × 303.8 |
+| the remainder | 221.0 × 199.1 | 295.9 × 266.5 | **358.0** × 344.8 | **358.0** × 430.3 |
+| gain in height | **none** | +11.5% | +27.7% | +41.7% |
+| share of the window | 21.2% | 24.5 → **30.5%** | 27.7 → **42.2%** | 31.1 → **46.8%** |
+| the aspect the box reads | 1.110 | 1.110 | **1.038** | **0.832** |
+| ground each side, against `3svh` | 4.64× | 2.36× | **0.71×** | **0.63×** |
+
+**The ledger holds under it, and that is measured at thirteen heights rather
+than argued.** The twelve keys, the eleven spans and the four document heights
+were read at 36, 36.04, 38, 40, 40.18, 42, 44, 46, 48, 50, 51.04 and 54 `svh`
+and at the remainder form, at all four heights. Under the remainder form all
+three are **identical to the shipped build at every height**. The fixed
+fractions are not: the keys move at **36.04** at 553, **42** at 664, **48** at
+750 and **54** at 844, and the document height a step earlier at three of the
+four.
+
+**`max-width` binds at 750 and 844 and nowhere below.** The box reads **1.110 /
+1.110 / 1.038 / 0.832** and its share of the window runs **21.2 → 46.8%**. On
+any one screen the pair still reads as a pair — both panels take the same box
+and both frames are exactly 3:4 — but *the panel* is a landscape object on a
+short phone and an upright one on a tall phone, at more than twice the weight.
+A composition decided at one height would be a different composition at the
+other three.
+
+**Crop survival gets safer, and it is confirmed rather than assumed.** Both
+frames, all four heights, rendered at the size the panel would paint:
+
+| the box reads | of the frame kept | `AboutImage1` cut, vs the tape at 35.47% | `AboutImage2` cut/2, vs the conifer at 18.85% | vs the 60% floor |
+|---|---|---|---|---|
+| 1.110 — 553, 664 | 67.57% | 32.43%, clears 3.04 | 16.22%, clears 2.63 | +7.57 |
+| 1.038 — 750 | 72.23% | 27.77%, clears 7.70 | 13.89%, clears 4.97 | +12.23 |
+| 0.832 — 844 | 90.15% | 9.85%, clears 25.62 | 4.93%, clears 13.92 | +30.15 |
+
+Every margin grows with the box's height, which is what a bottom anchor implies
+and is now measured instead of assumed. No aspect the form produces goes under
+the floor, and neither frame loses its subject at any of them.
+
+**It is still not takeable, and the reason is the constant.** `b` is the
+rendered height of frozen copy — a px number registered inside an `svh` system,
+which is the class `DESIGN-SYSTEM.md`'s *Viewport heights* exists for. Two
+measurements close it:
+
+- **It tolerates 0.5px of under-estimation.** At `b = 337.0`, 0.7px optimistic,
+  the block exceeds a screen at 664, 750 and 844 and the ledger moves.
+  Over-estimation is free — the picture shrinks and the slack comes back.
+- **It is a function of the *width*, and the rule is to check the narrowest.**
+  The taller paragraph renders **337.66px from 375 to 402 wide, 364.20px at 360,
+  390.75px at 320 and 311.11px from 412 up.** `b = 337.7` is 26.5px optimistic
+  at 360, so at **360×664, 360×750 and 360×844 the remainder form pushes the
+  panel past a screen and every key below it moves.** The shipped build holds at
+  all three.
+
+Raising `b` to the safe 390.8 keeps the ledger everywhere and takes the gains
+with it: at 390×664 the picture returns to exactly `36svh` — **nothing** — at
+750 it is 323.8 × 291.7, and at 844 it is still clamped to 358 and still reads
+0.949.
+
+**And where it does hold it lands on the cap.** At 750 and 844 the width *is*
+`max-width`: 16.0px of ground each side, which is `px-4` and nothing else, 0.71×
+and 0.63× of the panel's own `3svh`. That is the eighth rule above broken at two
+of the four heights — the same failure `c61f320` was reverted for, and the same
+one that ruled out A = 1.16.
+
+**c · The foot, and where the head and the whole photograph stop being visible
+together.** With the head at the window top, both panels:
+
+| | 375×553 | 390×664 | 390×750 | 390×844 |
+|---|---|---|---|---|
+| shipped 3:4, and `36svh` at A = 1.11 | −16.9 / −16.9 | +47.0 / +33.7 | +73.2 / +59.9 | +101.9 / +88.6 |
+| the remainder | −16.9 / −16.9 | +33.2 / +20.0 | +35.8 / +22.5 | +38.6 / +25.4 |
+
+A does not touch this line — the height is the declaration and A only moves the
+width — which is why the first two rows are one row.
+
+**They stop being visible together at 375×553, on both panels, and they already
+do.** The overflow is 16.9px, 8.5% of the picture's own height, it is on the
+shipped build today, and neither A nor either growth form changes it. At 664,
+750 and 844 they are visible together under every form, and the least clearance
+any form produces is the remainder form's **+20.0px** at 664.
+
+**Why "a little more, downward" is worth so little at 844, in one sentence.** At
+A = 1.11 the height and the width are the same lever, and the eighth rule above
+already puts `36svh` within **4.3%** of the ground it needs at 390×844 — so the
+picture has 4.3% of room there in *any* direction, and `36svh` has spent 95.7%
+of it. A third form was priced to prove it rather than assert it:
+`min(max(36svh, 91svh − b), (100vw − 6svh)/1.11)` — the remainder, capped so the
+ground never falls under `3svh` — holds the aspect at 1.110 at all four heights,
+holds the ledger, and gains **0% / +11.5% / +15.1% / +0.6%**. At 844 that is
+**1.9px**. It inherits the same `b` and the same 360-wide failure, and it makes
+the picture's share of the window non-monotonic: 21.2 / 30.5 / 36.7 / **31.5%**,
+peaking at 750 and falling at 844.
+
+**So `36svh` stands, and what bounds the picture is not geometry.** Its height
+is `0.91H` less the paragraph, and the paragraph is 337.7px of frozen copy at a
+reading size that does not scale — 61% of a 553 screen. Every form above is a
+redistribution of what is left after it, which is why the largest of them gains
+nothing at the height that binds. The only quantities that move that number are
+the reading size, the line-height and the measure, and all three are text.
+
+**Everything above is a run-time override.** The box was overridden in the page
+at DPR 3 and nothing was written to the repo. What follows is the build.
+
+#### Built — 2026-09-01
+
+**A = 1.110, mobile only, height held at `36svh`.** `AboutImage1` at `50% 100%`,
+`AboutImage2` at `50% 50%`. Body copy 16px, head `3svh`, eyebrow where it was.
+Desktop untouched. Every figure below is read off a clean production build —
+`rm -rf .next out` — in both engines at 375×553, 390×664, 390×750, 390×844, with
+1440×900 as the desktop control.
+
+**The four call sites, and there were four.** `.offer-panel-photo`'s
+`aspect-ratio: 3 / 4` becomes `height: 36svh` with `width: calc(36svh * 1.11)`
+and `max-width: 100%` kept; the `md` block takes `height: auto` and the `3 / 4`
+back, so nothing above the breakpoint can hear it. The `aspect-[3/4]` on the
+`<ResponsiveImage>` *inside* the box becomes `h-full w-full` below `md` and
+`md:h-auto md:aspect-[3/4]` above it — left at `3/4` the inner picture would
+have overflowed its own box, which is the call site the direction missed.
+`PHOTO_SIZES` and the anchor move out of both components into
+`components/panel-photo.ts`: they were duplicated in two files with a comment
+in each pointing at the other, which is one edit away from the silent drift
+§11.3 named. About's three story scenes take all of it.
+
+**`sizes` was re-derived, not carried.** The painted width below `md` is
+`min(1.11 × 36svh, 100% of a block inset 16px each side)`, so the declaration is
+`1.11 × 36` — **`(min-width: 768px) 29vw, 39.96vh`** — in `vh` rather than `svh`
+for §2.27's reason: `vh` is the large viewport, so on a real phone the
+declaration sits above the `svh` paint and the ratio falls on the safe side. It
+resolves to **220.98 / 265.33 / 299.70 / 337.26 CSS px** at the four heights,
+and the horizontal cap — 343px at 375 wide, 358px at 390 — binds at none of
+them. Against the box the browser actually laid out (220.97 / 265.33 / 299.69 /
+337.25) the declaration is within **0.01px** everywhere.
+
+**a · The ledger does not move, and it is checked rather than argued.** The
+twelve keys, the eleven spans between them, the four document heights and both
+panel block heights, read on the shipped build and on this one, in Chromium and
+WebKit, at all five viewports:
+
+| | 375×553 | 390×664 | 390×750 | 390×844 | 1440×900 |
+|---|---|---|---|---|---|
+| home, document | 3409 | 3903 | 4339 | 4814 | 5248 |
+| `/about/`, document | 3466 | 4132 | 4648 | 5212 | 5728 |
+| panel block | 586.5 | 664 | 750 | 844 | 900 |
+| keys, spans | identical | identical | identical | identical | identical |
+
+**Ten configurations, nothing moved in any of them.** The reason is the one
+§11.3 gave: the height is the declaration and A only moves the width, so
+nothing in the panel's vertical stack can hear it.
+
+**One sub-pixel did move, and it is worth naming so it is not found later.** The
+picture's height at 553 goes **199.0625 → 199.0781** — one sixty-fourth of a
+CSS pixel — because `36svh` is now declared instead of being reached through a
+width rounded to the same grid. 553 is the one height where the block is its
+content rather than `min-h-svh`, so the block follows: **586.4531 → 586.4688**.
+`scrollHeight` is 3409 before and after, every key is unmoved, and at one
+decimal the block is 586.5 in Chromium and 586.4 in WebKit exactly as §2.27
+published it.
+
+**b · `verify:text` PASS on all four pages** — home 1303, about 1599, contact
+277, faq 1993, on the clean build.
+
+**c · `verify:placements` PASS.** 132 placements × 7 viewports, **23
+placement/viewport pairs over 1.0 and all 23 already in `KNOWN`** — the same 23
+as the shipped build, no new entry, none worse, and the eight tightest figures
+still under 1.0 are the same eight frames at the same values. The panel
+photograph's own ratio, which is what this change moves:
+
+| | 375×553 | 390×664 | 390×750 | 390×844 |
+|---|---|---|---|---|
+| asks | 662.9px | 796.0 | 899.1 | 1011.8 |
+| rung | 768 | 1024 | 1024 | 1024 |
+| **ratio** | **0.863** | **0.777** | **0.878** | **0.988** |
+
+11.3 predicted 0.988 at 844 and that is what it reads — **1.2% under the
+ceiling**, and on a real phone `vh` sits above the `svh` paint, so the live
+figure falls further under.
+
+**d · The whole-subject audit, on the crop the box actually produces.** The box
+reads **A = 1.1100 at all four heights** — `max-width` binds at none of them —
+so the band is one band rather than four, and it is `0.75 / 1.11` of the frame's
+height, **67.5676%**:
+
+| frame | anchor | band | what the cut is measured against |
+|---|---|---|---|
+| `AboutImage1` | `50% 100%` | **32.4324% – 100%** | white tape at **35.47%**, clears **3.04 points** |
+| `AboutImage2` | `50% 50%` | **16.2162% – 83.7838%** | conifer crown at **18.85%**, clears **2.63 points** |
+| `home-training` | `50% 0%` | **0% – 67.5676%** | hair crowns at **7.5%** and **9.3%**, both inside |
+
+In painted pixels the `AboutImage1` margin is **8.9 / 10.7 / 12.1 / 13.7px** at
+553 / 664 / 750 / 844, and `AboutImage2`'s is **7.8 / 9.3 / 10.5 / 11.8px**.
+Against §9.3's recorded 36–37% for the banner — the cloth, at 36.58% on the
+pixels — `AboutImage1` clears **4.15 points**; the tallest head in the frame is
+at **36.01%**, so the cut is above every person in it. Against §9.3's 19.05% for
+the conifer, `AboutImage2` clears **2.83 points**.
+
+**Everything `AboutImage1` is on the site for is inside the band, confirmed on
+the rendered crop rather than reasoned.** The banner and its tape, all five
+people head to shoes, the Portugal flag whole, the tablecloth from 77.83%, the
+Cyprus island 80.95–92.5% and the olive wreath 93.11–98.76% — the band runs to
+100%, so nothing is lost at the foot at all.
+
+**`AboutImage2`'s bottom is the half of it §11.3 did not price, and it is
+clean.** The cut at 83.78% falls on chair legs, poles and ground; the lowest
+human element in the frame is a shoe whose sole ends at **78.5%**, **5.28 points
+above the cut**. The top cut truncates the antenna mast rather than removing it
+— the mast runs from 2.00% — which is roof clutter that was in the frame before
+and is now less of it.
+
+**e · Crop survival.** `0.75 / 1.11 = 67.57%` of the frame kept, at every height
+and on both placements of every frame, **7.57 points over the 60% floor**. Read
+off the rendered box rather than the declaration it is 67.42–67.63%, the spread
+being the chosen variant's own integer intrinsic size.
+
+**f · The ground rule holds on all four sides at every height.**
+
+| | 375×553 | 390×664 | 390×750 | 390×844 |
+|---|---|---|---|---|
+| the panel's `3svh` band | 16.58 | 19.91 | 22.50 | 25.31 |
+| ground each side, shipped | 112.8 | 105.4 | 93.8 | 81.1 |
+| **ground each side, built** | **77.0** | **62.3** | **45.2** | **26.4** |
+| **× the `3svh` band** | **4.65** | **3.13** | **2.01** | **1.043** |
+| above — the grid's gap | `3svh` | `3svh` | `3svh` | `3svh` |
+| below — the foot, home | 16.6 | 33.7–47.0 | 59.9–73.2 | 88.6–101.9 |
+| below — the foot, `/about/` | 16.6–36.6 | 70.5 | 96.7 | 125.3 |
+
+The binding side is the *gap*, which is `3svh` by declaration and equal to it at
+every height; the side ground clears the same band by **4.3% at 390×844**, which
+is the tightest the picture gets and is the eighth rule the recommendation was
+chosen on.
+
+**g · The ground bound at 5px, re-run on the built page.** The brightest ground
+pixel inside the text block's own rect with the photograph painted, every glyph
+and every `::before`/`::after` blanked, ink at 0.72, stepped at 5px across every
+scroll position at which any part of the block is in the readable band —
+**1,409 frames over the four heights, both panels**:
+
+| | 375×553 | 390×664 | 390×750 | 390×844 |
+|---|---|---|---|---|
+| Youth Exchanges | 5.81 | 7.79 | 7.79 | 7.79 |
+| Training Courses | **5.27** | **5.40** | **5.40** | 5.81 |
+
+**Every figure is what §11.3 measured under the override**, and the instrument
+says why: at **0 frames out of 1,409** does the picture's box intersect the
+type's box. They are separate items in a column flex with `3svh` between them,
+so no width can put the picture under a glyph. This is the contrast check for
+this change; no plate strength moved anywhere.
+
+**h · Bytes, per placement per height, off `currentSrc` on the built output.**
+AVIF, the format a current phone takes:
+
+| | 375×553 | 390×664 | 390×750 | 390×844 |
+|---|---|---|---|---|
+| rung, before → after | 640 → **768** | 640 → **1024** | 640 → **1024** | 768 → **1024** |
+| `AboutImage1` | 46.1 → **61.7 kB** | 46.1 → **97.8** | 46.1 → **97.8** | 61.7 → **97.8** |
+| `AboutImage2` | 78.2 → **111.0 kB** | 78.2 → **169.3** | 78.2 → **169.3** | 111.0 → **169.3** |
+| `home-training` | 28.2 → **34.4 kB** | 28.2 → **46.8** | 28.2 → **46.8** | 34.4 → **46.8** |
+| home, the pair | 124.3 → **172.7** | 124.3 → **267.1** | 124.3 → **267.1** | 172.7 → **267.1** |
+| `/about/`, the three | 152.5 → **207.1** | 152.5 → **313.9** | 152.5 → **313.9** | 207.1 → **313.9** |
+
+**Home's pair costs 48–143 kB more on a phone and `/about/`'s three cost
+55–161 kB.** 11.3 priced the pair at exactly these numbers.
+
+**The picture, and the gain is all width:**
+
+| | 375×553 | 390×664 | 390×750 | 390×844 |
+|---|---|---|---|---|
+| shipped | 149.30 × 199.06 | 179.27 × 239.02 | 202.50 × 270.00 | 227.88 × 303.83 |
+| **built** | **220.97 × 199.08** | **265.33 × 239.03** | **299.69 × 270.00** | **337.25 × 303.83** |
+| width | **+48.0%** | **+48.0%** | **+48.0%** | **+48.0%** |
+| share of the window | 14.3 → **21.2%** | 16.6 → **24.5%** | 18.7 → **27.7%** | 21.0 → **31.1%** |
+
+At 553 the picture's foot is 16.9px under the fold with the head at the window
+top — §2.27's overflow, on the shipped build too, and A does not touch it — so
+19.4% of that 21.2% is above the fold rather than all of it.
+
+#### One decision the direction did not contain, and it is a photograph being cut
+
+**`home-training` had no anchor named and the default one cuts two people
+through the head.** The direction named `AboutImage1` and `AboutImage2` because
+those are the frames §11.3 priced; `/about/`'s third scene shares the class and
+takes the box with it, and at `50% 50%` the 16.22% taken off its top crosses one
+participant at the brow and a second at the hairline. Their hair crowns are at
+**9.3%** and **7.5%** of the frame, measured on the display-oriented pixels.
+
+**It is top-anchored at `50% 0%`.** Both heads are then whole with 7.5 points of
+frame above the higher of them, the game the scene is a picture of is still in
+the band, and what goes is the bottom third — defocused ground and the backs of
+the two foreground figures, which the frame's own edge already cuts. A partial
+anchor was priced and rejected: at `50% 20%` the cut lands at 6.49% and the
+higher crown is 1.0 point inside the edge, which reads as clipped.
+
+**This is a per-frame anchor, which is the mechanism the direction established,
+and it reverses on one line** of `PANEL_ANCHOR`. It is called out here rather
+than buried because the direction did not ask for it.
+
+#### Desktop, and it is pixels rather than an argument
+
+**Pixel-identical, before against after.** The photograph's own rect and the
+whole window, at the resting scroll of all five placements — both offer panels
+and all three story scenes — at **768×1024, 1024×768, 1440×900 and 1920×900**,
+DPR 2. Twenty comparisons, no differing pixel in any of them. 768 is there for
+the `min-width: 768px` branch itself.
+
+**The anchors are inert above `md`, and that is checked at the source.** The box
+is the frames' own 3:4 there, so cover fits by height and a vertical anchor has
+nothing to place — but only if no rung is *narrower* than 3:4. Every rung of all
+three ladders reads 0.750000 to 0.750293, never under, so the anchor cannot bite
+at any width.
+
+#### Narrower phones than the four
+
+320×568, 320×844, 360×664, 360×750 and 360×844: **keys, spans and document
+heights identical to the shipped build at all five, and no horizontal overflow
+anywhere.** `max-width` clamps at 320×844 and 360×844, where the box reads
+**0.948** and **1.080** rather than 1.110 and the picture is narrower — never
+wider than the gutter allows — and crop survival *rises* there, to 79.1% and
+69.4%.
+
+#### Contact sheets
+
+`design/refs/panels/built/` — both panels at 375×553 and 390×664, DPR 3, ten
+frames across each panel's own traversal, the range derived from the twelve keys
+at the height being shot and opening at whichever comes first of half a window
+before the block's top row and the road's rise. Captioned with the frame's
+reading, the scroll, the road's strength and the picture's own rows. These are
+the after against 12.1's before, which is the same four names one directory up.
+
+#### What still requires the device
+
+`ART-DIRECTION.md` §7, unchanged and unchangeable by any of the above: no
+headless engine has browser chrome, so none of them can produce the state where
+`svh`, `lvh` and `dvh` differ. Everything here holds at 553, 664, 750 and 844 in
+both engines; **that the panel fits the phone at both chrome states, and that a
+box which is no longer an upright reads as a picture rather than as a band at
+arm's length, is still the phone's answer and Andreas's.**
 
 ---
 

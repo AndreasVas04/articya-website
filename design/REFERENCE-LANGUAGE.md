@@ -59,13 +59,13 @@ behind it at all. Two grounds in one section is one too many, and the one that
 loses is the picture, because a picture that fills the screen has nothing left
 to be *placed* against.
 
-| | value |
-|---|---|
-| Aspect ratio | **3:4 portrait** |
-| Width | **29% of the viewport width** — this is the measurement that governs |
-| Height | whatever the width and the ratio give: **38.7% of the viewport width** |
-| Vertical offset | starts **~12% of a viewport ABOVE** the text block's top edge |
-| Border / ring / shadow / radius | **none**, all four |
+| | above `md` | stacked, below `md` |
+|---|---|---|
+| Aspect ratio | **3:4 portrait** | **1.11** — see below |
+| Governing measurement | **width**, 29% of the viewport width | **height**, `36svh` |
+| The other side | height: whatever the width and the ratio give — **38.7% of the viewport width** | width: **1.11 × the height**, capped at `max-width: 100%` |
+| Vertical offset | starts **~12% of a viewport ABOVE** the text block's top edge | the column stacks; no offset |
+| Border / ring / shadow / radius | **none**, all four | **none**, all four |
 
 **The frame is measured against the window, never against the section.** That
 is the part that has to survive being copied into a layout with different
@@ -106,11 +106,27 @@ section. That is what `min(100%, 64.5svh)` in `globals.css` is: the same 86%
 turned around at 3:4, binding only above about a 2.2:1 window and idle below
 it, where the column is the smaller number and decides.
 
+**Which measurement governs is not the same on both sides of `md`, and that is
+the one thing this section did not anticipate.** Above the breakpoint the two
+columns sit side by side and the picture's width is a share of the window's
+width, so the width rule produces the test on its own, exactly as written. When
+the column stacks, the picture's *height* is what has to fit — the panel is one
+screen and a paragraph of frozen copy takes most of it — so the height is the
+declaration and the width is what is left free. `36svh` is 36% of the window's
+height, comfortably inside the two-thirds bound, and the width is spent up to
+the point where the ground beside the picture would fall under the `3svh` the
+head, the gap and the foot each take. That point is **1.11**, and it is the
+stacked form of the same rule rather than a different one: the picture is still
+an object with ground on all four sides, sized from the window.
+
 **As built**, and the numbers to check against: at 1440×900 the frame is
 **29.0vw × 61.9vh** — 417.6 × 556.8 — which is 61.9% of the section, with
-20.5% of the section as ground above it and 17.6% below. On a phone the layout
-stacks and the frame is 66.1vw × 40.7vh, 38–40% of its section. Both clear the
-test at both viewports.
+20.5% of the section as ground above it and 17.6% below. On a phone it is
+**36.0vh tall at every height** and 58.9 / 68.0 / 76.8 / 86.5vw wide at 553 /
+664 / 750 / 844, which is 33.9% of its section at 553 and 36.0% at the other
+three. The ground beside it runs 77.0 / 62.3 / 45.2 / 26.4px against a `3svh`
+band of 16.6 / 19.9 / 22.5 / 25.3 — **4.65× down to 1.04×**, tightest at 844 and
+still clear. Both viewports clear the test on both counts.
 
 The vertical offset is the other half of the composition and is separate from
 all of the above: the photograph is not aligned to the text — it enters the

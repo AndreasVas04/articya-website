@@ -1327,6 +1327,13 @@ only be traded against another px quantity: a share of the width and a length
 scale differently, so a redistribution that has to hold a total at more than one
 device width needs the length on both sides of the trade.
 
+**The same identity read backwards is why the stacked panel now declares a
+height and not a ratio.** With a ratio alive, `max-width` clamps the width and
+the ratio shortens the height with it, so a rule about the *width* reaches the
+panel's total and every scroll key under it. Declared as `height: 36svh` with
+the width free, nothing in the vertical stack can hear the width at any value —
+which is what let the panel photograph grow 48% without a single key moving.
+
 **One basis for the document, and it is `svh`.** Everything in flow — every
 section's height, every marker offset, every band inside a panel — names the
 small viewport, which is the one height a phone holds at both chrome states.
@@ -1368,6 +1375,13 @@ half a screen of height for the picture, and half a screen of height at 3:4 is
 a little under half a screen of width. **Measure the copy first and design the
 rest of the block into the remainder** — the reverse order is how a block ends
 up fitting exactly one window, and never the window the device makes.
+
+That ceiling is on the *height* and nothing else, and the free direction it
+leaves is width. The picture is 36svh tall — 265 × 239 at 664 rather than the
+179 × 239 the frame's own 3:4 gave — because the box is 1.11 rather than 3:4
+below `md`, which is the largest the ground beside it allows. What the
+paragraph forbids and what it leaves alone are two different axes, and only the
+first is fixed.
 
 ## The stage
 
