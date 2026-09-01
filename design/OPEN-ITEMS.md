@@ -611,8 +611,13 @@ engines. The peak is exactly 1.07 and the last sample before the key is
 the two that are not on show hold 1.05 at opacity 0. **Nothing leaves residue in
 WebKit.**
 
-*Not a resolution failure.* Worst rendered-against-fetched anywhere on home at
-DPR 3 is **0.80** — `hero-2` at the 1536 rung. Nothing exceeds 1.0.
+*Not a resolution failure.* ~~Worst rendered-against-fetched anywhere on home
+at DPR 3 is **0.80** — `hero-2` at the 1536 rung. Nothing exceeds 1.0.~~
+**Withdrawn 2026-08-31 — see §7.6.** The quantity measured was the box over the
+rung, not the paint over the rung; on this build the honest worst was **2.12**,
+`hero-3`, and `hero-2` itself was 1.24. What the sentence was arguing survives —
+the defect is a unit, not a resolution — but this number is not evidence for
+it.
 
 *It is the unit, and the home page states its height three ways, one of which
 states nothing at all:*
@@ -706,14 +711,16 @@ worse.
 
 Nothing else moved. The block is absolutely positioned, so it cannot change
 flow: **document height and all twelve Section 2 keys are identical** at 664,
-750 and 844 in both engines, worst rendered-against-fetched holds at 0.80, and
-there is no horizontal overflow at any height. `verify:text` passes on all four.
+750 and 844 in both engines, ~~worst rendered-against-fetched holds at 0.80~~
+(withdrawn — §7.6; the box, not the paint, and nothing in this item moves the
+ratio either way), and there is no horizontal overflow at any height. `verify:text` passes on all four.
 
 **2.19 · The ground now names the viewport instead of inheriting it.** Done.
 **The cause was the unit, not the transient** — §2.17 excluded the transient by
 measurement first: every plate is written the literal string `scale(1)` at its
-arrival key and at every scroll past it, in both engines at all three heights,
-and the worst rendered-against-fetched anywhere on home is 0.80.
+arrival key and at every scroll past it, in both engines at all three heights.
+~~And the worst rendered-against-fetched anywhere on home is 0.80.~~ Withdrawn —
+§7.6.
 
 `PhotoStage`'s layer goes from `fixed inset-0` to **`fixed inset-x-0 top-0
 h-[100dvh]`**. `inset-0` gives a fixed box no height of its own, so it resolves
@@ -731,8 +738,11 @@ It applies on all four pages; `PhotoStage` is the ground everywhere.
 
 - **No Section 2 transition key shifted.** All twelve identical at all three
   heights, and the document heights with them — 4392 / 4650 / 4931.
-- **No rendered/intrinsic ratio moved above 1.0.** Worst on home holds at
-  **0.80**, `hero-2` at the 1536 rung, unchanged. No horizontal overflow.
+- ~~**No rendered/intrinsic ratio moved above 1.0.** Worst on home holds at
+  **0.80**, `hero-2` at the 1536 rung, unchanged.~~ **Withdrawn — §7.6.** That
+  nothing *moved* is what this item had to show and it still stands; that
+  nothing was above 1.0 is false, and was false before the change as well —
+  `hero-3` sat at 2.12 and `hero-1` at 1.68. No horizontal overflow.
 - **Every arrival still settles on `scale(1)` exactly**, read off the inline
   string, at the key and at +40, +200 and +800px past it.
 - The computed height is `innerHeight` at every viewport, which is the check
@@ -960,8 +970,9 @@ with the document heights (4056 / 4392 / 4650 / 4931) with them:
 **Nothing else moved, and this was checked by pixels rather than argued.** Full
 screenshots of all four pages at seven scroll positions, at 375×553, 390×664,
 390×750 and 1440×900, before against after: **0.000% of pixels differ, worst
-channel sum 0, on every one of them.** Worst rendered-against-fetched holds at
-**0.815** on a phone and no horizontal overflow anywhere; every plate settles on
+channel sum 0, on every one of them.** ~~Worst rendered-against-fetched holds at
+**0.815** on a phone~~ — withdrawn, §7.6 — and no horizontal overflow
+anywhere; every plate settles on
 `scale(1)` at the far end of the page. `verify:text` passes on all four.
 
 **What is not on the basis, and it is deliberate.** The About wall's tiles are
@@ -1622,8 +1633,11 @@ showing at any frame, so the polarised ledger holds; the largest one-step change
 in plate strength anywhere is **0.086**. No horizontal overflow at any
 viewport. Rendered-against-fetched on home improves — the panel photograph drops
 from the 1024 rung to 640 (844 takes 768) and paints at 0.70 / 0.84 / 0.95 /
-0.89 of what it fetches, and the worst figure anywhere on the page goes 0.9 →
-0.8 at 553 and 664. The desktop's 2.0 is `hero-2` full-bleed, the carried item,
+0.89 of what it fetches — **those four reproduce exactly on the current build
+and are the one figure in this family that was measured on the paint.**
+~~The worst figure anywhere on the page goes 0.9 → 0.8 at 553 and 664.~~
+Withdrawn — §7.6: the worst figure anywhere on the page is `hero-3`, at 1.61 at
+553 and 1.94 at 664. The desktop's 2.0 is `hero-2` full-bleed, the carried item,
 unchanged.
 
 **Contact sheets re-rendered** at 390×664 and 390×750 into
@@ -3677,19 +3691,64 @@ that tier at all.
 and every one of them is a standing debt this file already carries rather than
 anything that drifted. Worst first, and these are the script's own figures:
 
-| placement | viewport | asks | widest rung | ratio |
-|---|---|---|---|---|
-| `hero-3` | 390×664 / 750 / 844 DPR 3 | 5588 | 2316 | **2.414** |
-| `hero-3` | 375×553 DPR 3 | 5373 | 2316 | 2.320 |
-| `hero-3` | 1920×900 DPR 2 | 5299 | 2316 | 2.289 |
-| `hero-3` | 1440×900 DPR 2 | 3974 | 2316 | 1.717 |
-| `IMG_4585`, `hero-2` | 1920×900 DPR 2 | 3955 | 2880 | 1.374 |
-| five full-bleed frames | 1920×900 DPR 2 | 3840 | 2880 | 1.334 |
-| `hero-1` | 390×664 / 750 / 844 DPR 3 | 3434 | 2880 | 1.193 |
-| `IMG_4582-road` | 390×664 / 750 / 844 DPR 3 | 3392 | 2880 | 1.179 |
-| `hero-1` | 375×553 DPR 3 | 3302 | 2880 | 1.147 |
-| `IMG_4582-road` | 375×553 DPR 3 | 3261 | 2880 | 1.133 |
-| `IMG_4585`, `hero-2` | 1440×900 DPR 2 | 2966 | 2880 | 1.031 |
+**One owner per line, and the lines are not grouped.** Twenty-three entries
+with no owner is a laundry list; twenty-three with owners is a punch list. The
+*at rest* column is what Chromium actually paints — the painted rectangle over
+the rung it took, read off `currentSrc`, with the plate settled and no
+transition running. Where it differs from the script's figure the script is not
+wrong; it is reading a declaration, and the declaration is made once against a
+box that changes (see the two mechanisms under the table).
+
+| `KNOWN` key | script | at rest | owner |
+|---|---|---|---|
+| `hero-3\|375x553@3` | 2.320 | 1.536 | **`hero-3` is a 2316px source.** §1.2's arithmetic; `PHOTO-MANIFEST.md` §B closes the door — the frame is upscaled and no incoming file improves it. Photography debt, open |
+| `hero-3\|390x664@3` | 2.414 | 1.843 | as above |
+| `hero-3\|390x750@3` | 2.414 | 2.082 | as above |
+| `hero-3\|390x844@3` | 2.414 | 2.343 | as above |
+| `hero-3\|1440x900@2` | 1.717 | 1.666 | as above |
+| `hero-3\|1920x900@2` | 2.289 | 1.665 | as above |
+| `IMG_4585\|1920x900@2` | 1.374 | 1.333 | **§2.7's 2880 cap**, plus the hero's own `HERO_PUSH` — the `103vw` half of the declaration. A 1920 window is outside the envelope 2880 was chosen for |
+| `hero-2\|1920x900@2` | 1.374 | 1.333 | as above |
+| `IMG_4721\|1920x900@2` | 1.334 | 1.333 | **§2.7's 2880 cap**, by decision: 3200 was declined on an LCP argument with the bytes measured. `/about/`'s ground |
+| `IMG_4735-road\|1920x900@2` | 1.334 | 1.333 | as above, `/contact/`'s ground |
+| `hero-1\|1920x900@2` | 1.334 | 1.333 | as above, home's "What we do" ground |
+| `IMG_4582-road\|1920x900@2` | 1.334 | 1.333 | as above, the panels' join |
+| `IMG_4619-valley\|1920x900@2` | 1.334 | 1.333 | as above, "What you gain" and the closing |
+| `IMG_4585\|1440x900@2` | 1.031 | **1.000** | **`HERO_PUSH = 0.03`.** `coverSizes` declares the widest the card is ever painted — the middle of the opening, where `1 + 0.03·sin(π·progress)` peaks — against §2.7's 2880 cap. At rest the push is 1 and the paint is 2880 exactly. §2.7's "1.00 at DPR 2 for all five" and §6.3's 2966 are the same placement in two states |
+| `hero-2\|1440x900@2` | 1.031 | **1.000** | as above |
+| `hero-1\|375x553@3` | 1.147 | 0.781 | **`coverSizes`' `REFERENCE_COMPACT`, 390×844.** A cover-fitted frame's overscale is set by the *box's* aspect, and one `sizes` string cannot carry four phone heights, so the compact declaration is the paint at 844 and an overstatement at every shorter window. Not a debt; the declaration is deliberately on the safe side of §1.2 |
+| `hero-1\|390x664@3` | 1.193 | 0.938 | as above |
+| `hero-1\|390x750@3` | 1.193 | 1.059 | as above **and** §2.7's 2880 cap — this one is genuinely over at rest |
+| `hero-1\|390x844@3` | 1.193 | **1.192** | **§2.7's 2880 cap.** The reference height, where declaration and paint agree to 2 device px. A 1.356:1 frame cover-fitted into a 390×844 box paints 2.93× the window's width |
+| `IMG_4582-road\|375x553@3` | 1.133 | 0.772 | `REFERENCE_COMPACT`, as `hero-1` above |
+| `IMG_4582-road\|390x664@3` | 1.179 | 0.926 | as above |
+| `IMG_4582-road\|390x750@3` | 1.179 | 1.046 | as above **and** §2.7's 2880 cap |
+| `IMG_4582-road\|390x844@3` | 1.179 | **1.177** | **§2.7's 2880 cap**, at the reference height |
+
+**Nothing on the list is unattributed.** Every one of the twenty-three lands on
+one of four things: `hero-3`'s source width, §2.7's 2880 cap, the hero's 3%
+push, or `coverSizes`' single compact reference viewport. The first is
+photography and is carried in `PHOTO-MANIFEST.md`; the second is a decision with
+the bytes measured; the third and fourth are declarations that are deliberately
+above the paint, which is the safe side of §1.2 and the reason this script says
+it trusts `sizes`.
+
+**Two of the four are not debts at all, and saying so is half the value of the
+column.** `IMG_4585` and `hero-2` at 1440×900 paint **1.000** at rest and 1.031
+only at the middle of the card's opening; `hero-1` and `IMG_4582-road` at 553,
+664 and 750 paint **0.77–1.06** where the script reads 1.13–1.19. Seven of the
+twenty-three are under 1.0 on the screen. They stay on the list because the
+script is a ratchet on the *declaration*, and the declaration is what governs
+the fetch.
+
+**At Gate 2, if the panel photograph's aspect moves, its `sizes` is re-derived
+from the new painted width and never carried over.** §2.24 wrote
+`calc(57vw + 78px)` for its own geometry and §2.27 replaced it with `27vh` for
+the one it has now; a changed aspect changes the expression again, because a
+box that is no longer 3:4 no longer paints its own width. `verify:placements`
+is what catches it if it is forgotten, and that is exactly what it was built
+for. Recorded here, not done.
+
 
 **Two causes, and neither is a code defect.**
 
@@ -3704,6 +3763,42 @@ what §2.7 chose after declining 3200 on an LCP argument with the bytes measured
 A 1920 window at DPR 2 asks 3840 of a `100vw` frame and a phone at DPR 3 asks
 3434 of a landscape frame cover-fitted into a tall box. Both are outside the
 envelope 2880 was chosen for, and saying so is the point of writing them down.
+
+### The three published 0.80 figures are withdrawn
+
+§2.17, §2.18, §2.19, §2.21 and §2.27 each publish a *worst
+rendered-against-fetched on home* of **0.80** or **0.815**, and on 2026-08-31
+all five were struck. They are not a second opinion on the numbers above; they
+are a withdrawn one, and they sat in this file beside `PHOTO-MANIFEST.md`'s
+**2.183** for the same page at the same viewport on the same build.
+
+**What the instrument was.** Not the `naturalWidth` path §7.4 retired — that one
+returns the DPR, and it does so exactly: with a `w`-descriptor srcset the
+browser divides the intrinsic width by the density it selected, so
+`naturalWidth` reports the `sizes`-resolved CSS width and nothing else.
+Measured on the current build, `hero-1` at 390×664 declares 1144.7 CSS px and
+reports `naturalWidth` **1144**. A ratio built on it is 3.00 at DPR 3, never
+0.80.
+
+What reproduces 0.80 is the **box** over the rung instead of the **paint** over
+the rung — §1.2's defect, applied to the instrument rather than to the
+declaration. On the build those items measured, `hero-2`'s slide box at 390 wide
+is 390 × 3 = 1170 device px against the 1536 rung: **0.762** at scale 1,
+**0.800** at the 1.05 the two slides not on show hold, and **0.815** at the 1.07
+a `PhotoStage` plate holds through its arrival. Both published values fall out
+of that one arithmetic, and it is also the only instrument under which `hero-2`
+*is* the page's worst — which is what those items say it is. Under the paint,
+the worst on home was `hero-3` at **2.12** and `hero-1` at **1.68**, and
+`hero-2` itself at 1.24.
+
+**What replaces them.** This section's table, and the `at rest` column in it.
+The worst rendered-against-fetched on home, measured on the paint with the
+plates settled, is `hero-3` at **1.54 / 1.84 / 2.08 / 2.34** at 375×553,
+390×664, 390×750 and 390×844 DPR 3 and **1.67** at both desktop windows. The
+conclusions those five items were drawing are untouched — none of them turned on
+the ratio, and each one was arguing that its own change moved nothing. What was
+false was the second half of the sentence, every time: that nothing on home
+exceeds 1.0. Something always did.
 
 **So it is a ratchet rather than a gate**, the same shape as §2.8's floor: the
 twenty-three are recorded in `KNOWN` with the item that decided each of them,
