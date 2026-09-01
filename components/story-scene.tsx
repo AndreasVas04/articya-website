@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { useReducedMotion } from "framer-motion";
+import { PANEL_ANCHOR, PHOTO_SIZES } from "@/components/panel-photo";
 import { ResponsiveImage } from "@/components/responsive-image";
 import { cn } from "@/lib/utils";
 
@@ -16,10 +17,6 @@ const RISE: CSSProperties = { translate: "0 40px" };
 const FADE: CSSProperties = { opacity: 0 };
 const DRAW: CSSProperties = { scale: "0 1" };
 
-// The 29% column on desktop, 27svh of picture below it — the same measurement
-// the offer panels fetch at, declared in `vh` for the same reason.
-const PHOTO_SIZES = "(min-width: 768px) 29vw, 27vh";
-
 interface SceneImage {
   src: string;
   alt: string;
@@ -32,10 +29,11 @@ interface StorySceneProps {
 }
 
 // One scene of the About story, and it is the home offer panel's composition
-// exactly: the same five-track grid, the same 3:4 photograph at 29% of the
-// viewport, the same -12svh lift, one viewport, never pinned. It shares the
-// panels' classes rather than restating their numbers, so the two cannot drift
-// apart — see design/REFERENCE-LANGUAGE.md §A.
+// exactly: the same five-track grid, the same photograph at 29% of the viewport
+// on a desktop and the same 1.11 box below it, the same -12svh lift, one
+// viewport, never pinned. It shares the panels' classes and their
+// components/panel-photo.ts rather than restating their numbers, so the two
+// cannot drift apart — see design/REFERENCE-LANGUAGE.md §A.
 //
 // What it used to be is what this replaces. The photograph sat in a mat —
 // `bg-gold-card`, a 1px amber ring and a 24px drop shadow — which is a card
@@ -134,7 +132,8 @@ export function StoryScene({ groups, image, flip = false }: StorySceneProps) {
               src={image.src}
               alt={image.alt}
               sizes={PHOTO_SIZES}
-              className="block aspect-[3/4] w-full object-cover"
+              className="block h-full w-full object-cover md:h-auto md:aspect-[3/4]"
+              style={{ objectPosition: PANEL_ANCHOR[image.src] }}
             />
           </div>
         </div>

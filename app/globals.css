@@ -490,15 +490,15 @@ body {
     }
   }
 
-  /* The photograph is 3:4 and carries no border, ring, shadow or radius — the
-     reference frame is the picture and nothing else. It starts 12% of the
-     section above the text block's top edge: the two columns are aligned to
-     one line and this margin lifts the picture off it, which is what stops
-     the pair reading as a row of a grid. The width cap is the height rule
-     turned around — 86% of the section, at 3:4 — so on a window wide enough
-     for the column to outgrow it the picture stops instead of overrunning the
-     frame. Below about a 2.2:1 window the column is the narrower of the two
-     and the cap never binds. */
+  /* The photograph carries no border, ring, shadow or radius — the reference
+     frame is the picture and nothing else. It starts 12% of the section above
+     the text block's top edge: the two columns are aligned to one line and
+     this margin lifts the picture off it, which is what stops the pair reading
+     as a row of a grid. The desktop width cap is the height rule turned around
+     — 86% of the section, at 3:4 — so on a window wide enough for the column to
+     outgrow it the picture stops instead of overrunning the frame. Below about
+     a 2.2:1 window the column is the narrower of the two and the cap never
+     binds. */
   /* The picture is sized against the window it has to fit inside, which is the
      only quantity that answers the complaint. A height derived from a width is
      a fixed length however it is written — `calc(57% + 96px)` at 3:4 gave
@@ -506,27 +506,38 @@ body {
      could only fit one of those screens, and it fitted the one the device
      never makes.
 
-     27svh of width is 36svh of picture. With the head, the gap and the foot at
-     3svh each, a panel is 0.45 of the window plus its paragraph, and the
-     paragraph is the whole of what is left: 337.6px of frozen copy at a
-     reading size that does not scale, which is 50.8% of a 664 screen. That is
-     the ceiling on this composition and it is why the picture is 179px wide at
-     664 rather than 300 — a stacked panel that shows the paragraph and the
-     whole photograph on one screen has half a screen to spend on the picture,
-     and at 3:4 half a screen of height is a little under half a screen of
-     width.
+     36svh of picture. With the head, the gap and the foot at 3svh each, a panel
+     is 0.45 of the window plus its paragraph, and the paragraph is the whole of
+     what is left: 337.6px of frozen copy at a reading size that does not scale,
+     which is 50.8% of a 664 screen. That is the ceiling on this composition,
+     and it binds the *height* only — which is why the height is what is
+     declared here.
 
-     The crop does not move. `aspect-ratio: 3 / 4` and the frame's
-     `object-position` are untouched, so the picture is the same rectangle of
-     the same photograph, painted smaller — there is nothing to re-audit
-     against the whole-subject rule. */
+     The width is 1.11 of that height, so below `md` the box is no longer the
+     frame's own 3:4. It is the largest the picture can be: wider than 1.11 and
+     the ground beside it drops under the 3svh the head, the gap and the foot
+     each take, and the picture stops reading as an object standing on dark
+     ground and starts reading as a band. 36svh × 1.11 is 337.3px at 390 × 844,
+     which is 26.4px of ground each side against a 25.3px band.
+
+     `height` rather than `aspect-ratio`, and that is load-bearing: with a ratio
+     alive, `max-width` clamps the width and the ratio shortens the height with
+     it, which moves the panel's total and takes all twelve of the page's keys
+     with it. Declared as a height, no width can be heard below it.
+
+     The box is wider than the frame, so cover fits by width and 28.2% of the
+     height goes; which end it goes from is `PANEL_ANCHOR` in
+     components/panel-photo.ts. Desktop keeps the 3:4, where the box matches the
+     frame and the anchor does nothing. */
   .offer-panel-photo {
-    width: 27svh;
+    height: 36svh;
+    width: calc(36svh * 1.11);
     max-width: 100%;
-    aspect-ratio: 3 / 4;
   }
   @media (min-width: 768px) {
     .offer-panel-photo {
+      height: auto;
+      aspect-ratio: 3 / 4;
       width: min(100%, 64.5svh);
       max-width: none;
       margin-top: -12svh;

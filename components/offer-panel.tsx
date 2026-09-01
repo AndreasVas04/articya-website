@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { useReducedMotion } from "framer-motion";
+import { PANEL_ANCHOR, PHOTO_SIZES } from "@/components/panel-photo";
 import { ResponsiveImage } from "@/components/responsive-image";
 import { cn } from "@/lib/utils";
 
@@ -16,14 +17,6 @@ const LIFT: CSSProperties = { opacity: 0, translate: "0 40px" };
 const RISE: CSSProperties = { translate: "0 40px" };
 const FADE: CSSProperties = { opacity: 0 };
 const DRAW: CSSProperties = { scale: "0 1" };
-
-// How wide the photograph renders, so the browser fetches that width and no
-// more: the 29% column on desktop, 27svh of picture below it. The stacked
-// declaration is `vh` rather than `svh` deliberately — `vh` is the large
-// viewport, so on a phone it is the painted width plus the toolbar's share and
-// never under it, and a declaration a hair over the paint is the safe side of
-// this line.
-const PHOTO_SIZES = "(min-width: 768px) 29vw, 27vh";
 
 // The eyebrow label, one per panel, in the order the panels appear. Like the
 // numerals it is pseudo-content and never enters the DOM — the site's visible
@@ -191,7 +184,8 @@ export function OfferPanel({
                 src={image}
                 alt=""
                 sizes={PHOTO_SIZES}
-                className="block aspect-[3/4] w-full object-cover"
+                className="block h-full w-full object-cover md:h-auto md:aspect-[3/4]"
+                style={{ objectPosition: PANEL_ANCHOR[image] }}
               />
             </div>
           </div>
