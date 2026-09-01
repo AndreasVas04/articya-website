@@ -3714,7 +3714,7 @@ box that changes (see the two mechanisms under the table).
 | `hero-1\|1920x900@2` | 1.334 | 1.333 | as above, home's "What we do" ground |
 | `IMG_4582-road\|1920x900@2` | 1.334 | 1.333 | as above, the panels' join |
 | `IMG_4619-valley\|1920x900@2` | 1.334 | 1.333 | as above, "What you gain" and the closing |
-| `IMG_4585\|1440x900@2` | 1.031 | **1.000** | **`HERO_PUSH = 0.03`.** `coverSizes` declares the widest the card is ever painted — the middle of the opening, where `1 + 0.03·sin(π·progress)` peaks — against §2.7's 2880 cap. At rest the push is 1 and the paint is 2880 exactly. §2.7's "1.00 at DPR 2 for all five" and §6.3's 2966 are the same placement in two states |
+| `IMG_4585\|1440x900@2` | 1.031 | **1.000** | **`HERO_PUSH = 0.03` — a real transient breach, and not a declaration artefact.** The paint reaches 2966 device px at the middle of the opening. Own owner below: *The hero push is the one breach on this list that is paint* |
 | `hero-2\|1440x900@2` | 1.031 | **1.000** | as above |
 | `hero-1\|375x553@3` | 1.147 | 0.781 | **`coverSizes`' `REFERENCE_COMPACT`, 390×844.** A cover-fitted frame's overscale is set by the *box's* aspect, and one `sizes` string cannot carry four phone heights, so the compact declaration is the paint at 844 and an overstatement at every shorter window. Not a debt; the declaration is deliberately on the safe side of §1.2 |
 | `hero-1\|390x664@3` | 1.193 | 0.938 | as above |
@@ -3729,17 +3729,20 @@ box that changes (see the two mechanisms under the table).
 one of four things: `hero-3`'s source width, §2.7's 2880 cap, the hero's 3%
 push, or `coverSizes`' single compact reference viewport. The first is
 photography and is carried in `PHOTO-MANIFEST.md`; the second is a decision with
-the bytes measured; the third and fourth are declarations that are deliberately
-above the paint, which is the safe side of §1.2 and the reason this script says
-it trusts `sizes`.
+the bytes measured; the fourth is a declaration deliberately above the paint,
+which is the safe side of §1.2 and the reason this script says it trusts
+`sizes`. **The third is none of those things and must not be filed with them —
+see the owner below.**
 
-**Two of the four are not debts at all, and saying so is half the value of the
-column.** `IMG_4585` and `hero-2` at 1440×900 paint **1.000** at rest and 1.031
-only at the middle of the card's opening; `hero-1` and `IMG_4582-road` at 553,
-664 and 750 paint **0.77–1.06** where the script reads 1.13–1.19. Seven of the
-twenty-three are under 1.0 on the screen. They stay on the list because the
-script is a ratchet on the *declaration*, and the declaration is what governs
-the fetch.
+**One of the four is not a debt at all, and saying so is half the value of the
+column.** `hero-1` and `IMG_4582-road` at 553, 664 and 750 paint **0.77–1.06**
+where the script reads 1.13–1.19: `coverSizes` carries one compact reference
+viewport, 390×844, so the declaration is the paint at 844 and an overstatement
+at every shorter window. **Four of the eight rows these two frames own are under
+1.0 on the screen** — 553 and 664 for both, counted rather than carried; 750 and
+844 are genuinely over and belong to the 2880 cap. They stay on the list because
+the script is a ratchet on the *declaration*, and the declaration is what
+governs the fetch.
 
 **At Gate 2, if the panel photograph's aspect moves, its `sizes` is re-derived
 from the new painted width and never carried over.** §2.24 wrote
@@ -3763,6 +3766,76 @@ what §2.7 chose after declining 3200 on an LCP argument with the bytes measured
 A 1920 window at DPR 2 asks 3840 of a `100vw` frame and a phone at DPR 3 asks
 3434 of a landscape frame cover-fitted into a tall box. Both are outside the
 envelope 2880 was chosen for, and saying so is the point of writing them down.
+
+### The hero push is the one breach on this list that is paint
+
+**`IMG_4585|1440x900@2` and `hero-2|1440x900@2` are the opposite of
+`coverSizes`' rows, and filing the two together as "declarations deliberately
+above the paint" was an error, corrected on 2026-09-01.** The distinction is
+which side of the fetch the excess falls on:
+
+- **`coverSizes` over-declares.** On a short phone the browser fetches more than
+  it paints. It costs bytes and it cannot make a picture soft. Harmless, and
+  deliberate.
+- **`HERO_PUSH` over-paints.** `heroPush(p) = 1 + 0.03·sin(π·p)` scales the
+  card past the window and back as it opens, so at `p = 0.5` a 1440×900 DPR 2
+  window **paints 2966 device px out of a 2880 file**. That is a magnification
+  of **1.031 on a real frame of a real animation**, not a number about a
+  declaration.
+
+The site's rule is ratio ≤ 1.0 against fetched and against source **at every
+frame, not only at rest**, so these two are a breach: small, transient, and on
+frozen hero mechanics. Against *source* nothing is wrong — 2966 of `IMG_4585`'s
+6048 and of `hero-2`'s 3024 — so no photograph is implicated. It is the ladder
+that stops one rung below the paint.
+
+Three documents already carry the push without naming it, which is how it went
+twenty-three rows unattributed: `PHOTO-MANIFEST.md`'s 2026-08-30 before/after
+table gives the home hero's slide 2 as **0.981** where `/faq/`'s ground — the
+same frame, the same painted width, no push — is **0.952**, and the two differ
+by exactly 1.031; the *Carried* list rounds the same pair to 0.98 and 0.95; and
+§6.3 lists `IMG_4585` and `hero-2` upscaling **1.03×** on the JPEG tier before
+the cap, attributing it to their masters, which for a 6048px master it is not.
+
+**The closure, priced and not taken.** One further rung at 3072, encoded from
+the same graded pixels at the same settings the build uses:
+
+| | shipped | with a 3072 rung | delta |
+|---|---|---|---|
+| home LCP, `IMG_4585` AVIF | **901 KB** (2880, q50) | **1007 KB** (3072, q50) | +106 KB, +11.8% |
+| `/` whole page, AVIF, 1440×900 DPR 2 | 4339 KB | ~6154 KB | **+1815 KB, +42%** |
+| variants on disk | 172 MB | ~195 MB | **+22.9 MB** |
+
+**And `sizes` would land the resting page on 3072, which is the whole of the
+objection.** The declaration is made once and it is `103vw` — confirmed on the
+built page, `sizes="(min-width: 768px) 103vw, 167.2vw"` — so it asks 2966 at
+every moment including rest, and a browser takes the first rung at or above what
+`sizes` asks. With 3072 on the ladder the resting page fetches 3072 and paints
+2880: **192 device px carried for the whole visit to remove an 86px overshoot
+that exists at one frame of the opening.** That is the cure being worse than the
+disease, and it is the same shape as §2.7's exclusion of 1440×DPR 3.
+
+Two further costs, both structural rather than incidental:
+
+- **`assertLadder` requires `LADDER` to end at `BLEED_WIDTH`, and
+  `AVIF_QUALITY` gives q50 to `BLEED_WIDTH` alone.** So "add 3072" means
+  `BLEED_WIDTH = 3072`, and **2880 hands q50 back to q62** for every full-bleed
+  frame. That is where most of the +1815 KB comes from: the FAQ ground goes
+  1389 → 2065 KB, About's 878 → 1260, Contact's 632 → 967, none of which is
+  the placement being repaired.
+- **`hero-2` cannot take a 3072 rung at any price.** Its graded source is
+  **3024 px**. Its new top rung would be 3024, which is not `BLEED_WIDTH` and
+  therefore not q50, so that one placement goes **1389 → 2342 KB (+68.6%)** on
+  both the home hero and the FAQ ground.
+
+The alternative shape — a `SCALED` key of its own, as `#wall` is — keeps q50 on
+2880 but is worse where it matters: a `SCALED` rung does not take q50 either, so
+the home LCP goes **901 → 1522 KB (+69%)**, and the build throws outright for
+`hero-2`, whose 3024px source is under the 3072 the key would ask for.
+
+**So it stays open, recorded, and owned.** Not by the 2880 cap and not by
+`coverSizes`. The levers that would close it are all frozen: `HERO_PUSH` itself,
+which is one of the five frozen hero mechanics; the ladder; and the encoder.
 
 ### The three published 0.80 figures are withdrawn
 
