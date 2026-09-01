@@ -1654,6 +1654,104 @@ verified to hold at 553, 664, 750 and 844 in both engines, but **that the panel
 fits the phone at both chrome states, and that the photograph is whole in it,
 has to be confirmed on the phone.**
 
+### The panels' aspect — the direction, pending a real-device pass
+
+**This is not a build instruction and nothing below is done.** It is Andreas's
+direction for the panels, recorded so it survives, and it is **pending a real
+device**. Two things have to happen before any of it becomes work, and neither
+is a measurement:
+
+1. The contact sheets are **looked at on an iPhone in Safari with flick
+   scrolling** — `ART-DIRECTION.md` §7's own rule, and §2.19's list of what no
+   headless engine can produce is unchanged.
+2. **The box ceasing to be 3:4 is judged by eye.** `ART-DIRECTION.md` §4 lists
+   the 3:4 among the panel numbers left untouched and §8 calls this geometry the
+   only settled part of home. At A = 1.045 the picture stops being an upright
+   and becomes very nearly square. That is a composition judgement, not a
+   measurement, and it is Andreas's.
+
+**The direction.** One aspect, **A = 1.045**, for both panels; **a per-frame
+anchor** — `AboutImage2` keeps `50% 50%`, `AboutImage1` moves toward `50% 100%`.
+Body copy stays at 16px. The head stays at `3svh`, and the eyebrow is not bought
+out of the picture's width.
+
+**The aspect diverges nothing; the anchor does, and that is the whole of it.**
+Both frames are exactly 3:4, so at today's `aspect-ratio: 3 / 4` the box matches
+the source and `object-position` does nothing at all — there is no crop to
+place. At A = 1.045 the box is wider than the source, so cover fits by width and
+crops vertically: the visible band is **0.75 / 1.045 = 71.77% of the frame's
+height**, and 28.23% goes. Where it goes from is the anchor's whole job.
+
+- **`AboutImage2` keeps `50% 50%`.** 14.11% off each end. The frame's first real
+  event above is the **conifer at A = 1.2114**, which puts its crown 19.05% down
+  the frame, so at 1.045 it clears by 4.94 points — a margin of
+  **1.2114 / 1.045 = 15.9%**. The chimney at 1.3915 is a *further* limit, not
+  the nearer one; a margin quoted against it reads 33.2% and is a percentage of
+  the wrong thing.
+- **`AboutImage1` moves toward `50% 100%`, and the reason is at the bottom edge
+  rather than the top.** Centred at 1.045 the lower 14.11% crop cuts through the
+  **Cyprus flag on the tablecloth** — the emblem this frame is on the site to
+  show, against `ART-DIRECTION.md` §5's own description of it. A bottom anchor
+  spends the whole 28.23% on the top instead, and the top is ceiling, the
+  roller-blind box and bare wall: the ArtiCYa banner's top edge is at **36–37%**
+  of the frame and the tallest head at **41%**, so a 28.23% cut stops eight
+  points clear of both. The subject is at the foot of this frame and at the
+  middle of the other one, which is why one number cannot serve both.
+
+**What it buys.** With the panel's total frozen the picture's height stays
+`36svh` and its width goes `27svh` → `37.62svh`: **179.3 → 249.8 CSS px at
+390×664**, +39.3%. That is the item `ART-DIRECTION.md` carries as *an activity
+frame with the people large in the frame*, answered from the slot rather than
+from a photograph.
+
+**Contrast is not a constraint on this item, and that is now measured at 5px.**
+The hardest bound available: every glyph in the block blanked and the picture
+hidden, the **brightest ground pixel anywhere in the band the block occupies**,
+over each block's whole traversal, both panels, at 553, 664, 750 and 844. Any
+lever that moves the paragraph inside the panel can only move it onto ground
+already inside this maximum.
+
+| | 390×553 | 375×553 | 390×664 | 390×750 | 390×844 |
+|---|---|---|---|---|---|
+| brightest ground pixel, L | 0.0937 | 0.0960 | 0.0927 | **0.0992** | 0.0958 |
+| worst possible glyph-core | 5.36 | 5.27 | 5.40 | **5.16** | 5.28 |
+
+**Worst anywhere is 5.16 against a floor of 4.5**, at 390×750, and it holds on
+both panels at every height. Stepped at **1px** on that worst configuration —
+611 frames — the truth is **5.15**, so the 5px step overstates by **0.01**; the
+0.66 of margin is real and is not an artefact of the interval. Widened to every
+scroll position at which any part of the block is in the readable band — the
+entering phase included, where the panel's top rows cross the clearing's and the
+road's ground — both panels converge on the same figures and the worst is still
+**5.16**. Ink is taken at 0.72, which is under `--color-ink`'s own 0.766, so the
+bound is on the conservative side of the paint.
+
+**One instrument note, and it is this file's own defect turned on the
+verifier.** The first widened run reported a hard failure at **2.15**, at
+exactly `--color-amber`'s luminance, 0.3076, at the same value in every
+configuration. It was not ground: the blanking used `.offer-panel-text *`, and
+`*` does not match a pseudo-element, so `.offer-eyebrow-text::before` was still
+painting its amber label inside the measured rect. The bound was reading a glyph
+and calling it a ground. Blank `::before` and `::after` explicitly or the
+number is the eyebrow.
+
+**What a Gate 2 build of this would touch and re-verify.** The
+`object-position` on `AboutImage1` and the `aspect-ratio` on
+`.offer-panel-photo` are the only two declarations that change, and About's
+three story scenes share both classes and take the change with them. What it
+would have to re-verify is everything a changed box touches: **the whole-subject
+audit on `AboutImage1` under its new anchor**, at all four heights and on both
+of its placements, because §2.24's and §2.27's "the crop does not move, so there
+is nothing to re-audit" stops being true the moment the box stops being 3:4;
+**`sizes` re-derived from the new painted width and never carried** — §2.24
+wrote `calc(57vw + 78px)` for its geometry and §2.27 replaced it with `27vh` for
+this one, and a box that is no longer 3:4 no longer paints its own width; **the
+twelve keys**, **the eleven spans** and **the four document heights**, because a
+wider picture is a wider flex item and the identity §2.24 built has to be shown
+to still hold; **`verify:text`** on all four pages; and **`verify:placements`**,
+which exists for exactly this and is what catches a carried `sizes`. None of it
+is begun.
+
 ---
 
 ## 3 · Titles
