@@ -311,7 +311,17 @@ export default function HomePage() {
                       aria-hidden="true"
                       className="stage-rule block h-[1.25px] w-16 bg-amber"
                     />
-                    <div className="stage-mask mt-2">
+                    {/* The row the hero hands over on. The hero block's exit
+                        is registered to this line's middle crossing the foot
+                        of the window, because the heading's own row is one
+                        window plus half a centred block — 0.204 of the window
+                        at 553 and 0.307 at 844 — and an exit keyed to a fixed
+                        fraction of the window empties the screen at the tall
+                        heights and overruns the heading at the short ones.
+                        The mask is what carries the mark rather than the
+                        heading: the heading itself sits 118% below this line
+                        until its scene fires, and this box never moves. */}
+                    <div className="stage-mask mt-2" data-hero-handover="">
                       <h2
                         className="stage-mask-rise type-heading font-display font-semibold tracking-[-0.025em]"
                         style={{ transitionDelay: "80ms" }}

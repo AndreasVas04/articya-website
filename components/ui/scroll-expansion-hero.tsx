@@ -116,6 +116,61 @@ const CARD_SHADE = {
   to: "max(48px, calc(100% - 580px))",
 };
 
+// The hero block's own exit. The lede and the button used to be pushed off the
+// screen by the section behind them: at 664 the clearing's heading is at full
+// strength and wholly inside the window while the lede still has half a screen
+// left to travel, so for 0.38 of a viewport two blocks of cream type — one
+// leaving, one arriving — stand settled on the same frame, and nothing ever
+// *leaves*. It leaves now, and it is gone before the heading is readable.
+//
+// What travels is a boundary, for the reason every text mechanism on this page
+// is a clock or a boundary: 0.30 of a viewport is inside a single flick, and a
+// scrubbed opacity over that distance is a ghost at reading speed. The band is
+// crossed by the same 40%-deep ramp the stage's plates cross on, in the band's
+// own height — every row of it carries the type at its declared ink or carries
+// nothing, and there is no line in the ramp to trace. It clears from the top
+// down, so the sentence is drawn off first and the invitation is the last thing
+// standing.
+//
+// It is a function of `scrollY` alone, so it runs backwards: the reader who
+// scrolls up finds the hero whole again, which a one-shot clock could not give
+// them and the logo's own reset needs.
+//
+// **It is registered to the row it hands over on, not to the top of the
+// document, and that is not a preference.** The clearing's heading enters the
+// window at `headTop - H`, and `headTop` is one window plus half the leftover
+// of a centred block — a fraction of the window with a pixel constant in it. So
+// the heading arrives at 0.204 of the window at 553 and at 0.307 at 844, while
+// the frame it is *readable* on is only 36px later at every height. An exit
+// keyed to a fixed fraction of the window has to land inside that 36px band at
+// all four heights and no fraction does: keyed from scroll 0 it finishes before
+// the heading has arrived at 664, 750 and 844 and leaves the screen with no word
+// on it — 3, 8 and 12 stops of it, measured. This is `DESIGN-SYSTEM.md`'s own
+// rule about a boundary in window fractions meeting type positioned partly in
+// px, and the answer it gives is the offset, not the percentage.
+//
+// So the exit is keyed to the heading's own middle crossing the foot of the
+// window. The block's last row of type goes exactly there — 18px after the
+// heading has entered and 18px before it is whole — and the two blocks change
+// places on one frame.
+const EXIT_SPAN = 0.3;
+const EXIT_FEATHER = 0.4;
+
+// The page marks the row, this component measures it — the same division
+// `PhotoStage` already runs on `data-stage-plate`.
+const EXIT_HANDOVER = "[data-hero-handover]";
+
+// No mask at rest. A no-op mask still costs a compositing pass, and the
+// rounding it brings measured 5.27 -> 5.21 on the headline the last time one
+// was left in place — so the resting hero, which is the state every published
+// reading of this block is taken in, carries nothing at all.
+const exitMask = (progress: number) => {
+  const front = (1 - progress) * (1 + EXIT_FEATHER);
+  const solid = ((front - EXIT_FEATHER) * 100).toFixed(2);
+  const clear = (front * 100).toFixed(2);
+  return `linear-gradient(to top, #000 ${solid}%, transparent ${clear}%)`;
+};
+
 // How the crossing is made, and this is the whole of §2.6. Interpolating the
 // two sets of numbers put the *frame* in the middle register even where its
 // endpoints were out of it: at progress 0.6 the six read 63 / 41 / 51, so
@@ -408,6 +463,131 @@ const ScrollExpandMedia = ({
     checkIfMobile();
     window.addEventListener("resize", checkIfMobile);
     return () => window.removeEventListener("resize", checkIfMobile);
+  }, []);
+
+  // The hero block leaves under the travelling boundary described above.
+  //
+  // Nothing here reads or writes any of the five frozen mechanics: the
+  // expansion's progress, the slideshow, the hydration gate, `scrollRestoration`
+  // and the card's foot dissolve are all untouched, and this listener only
+  // paints.
+  const introRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    const el = introRef.current;
+    const hand = document.querySelector<HTMLElement>(EXIT_HANDOVER);
+    if (!el || !hand) return;
+
+    // Layout metrics rather than rects, throughout, and this is the whole of
+    // why. The intro's own entrance holds the button 56px low until the card
+    // opens, and the clearing's heading sits 118% below its clipped line until
+    // its scene fires — so a rect read off either before those release is the
+    // entrance's state and not the layout's, and the exit lands 65px late.
+    //
+    // The chain is summed to the root and only ever differenced. Which ancestor
+    // is an `offsetParent` is not something to assume: `translate-y-14` on the
+    // button's own wrapper makes that wrapper one, so a single step up lands
+    // inside the band rather than at the top of it.
+    const layoutRow = (node: HTMLElement) => {
+      let y = 0;
+      for (let n: HTMLElement | null = node; n; n = n.offsetParent as HTMLElement | null) {
+        y += n.offsetTop;
+      }
+      return y;
+    };
+
+    // Read when a box changes, never per frame: two of these move while the
+    // card is growing — the collapsed opening is 300px wide and the statement
+    // wraps to twice the lines it holds at full bleed — and none of them moves
+    // as the page scrolls.
+    let handRow = 0;
+    let clears = 1;
+    let released = 1;
+    const measure = () => {
+      handRow = layoutRow(hand) + hand.offsetHeight / 2;
+      const button = el.querySelector("a");
+      const height = el.offsetHeight;
+      if (!button || !height) return;
+      const foot = layoutRow(el) + height;
+      const bottom = layoutRow(button) + button.offsetHeight;
+      const pad = parseFloat(getComputedStyle(button).paddingBottom) || 0;
+      // Where the last row of type sits, as a fraction up from the band's own
+      // foot, and where the ramp's clear edge has passed it. The band carries
+      // 64px of padding under the button, so the words are gone a fifth of the
+      // travel before the boundary is.
+      const ink = (foot - (bottom - pad)) / height;
+      const top = (foot - (bottom - button.offsetHeight)) / height;
+      clears = Math.min(1, Math.max(0.01, 1 - ink / (1 + EXIT_FEATHER)));
+      // The button stops taking taps the frame the boundary reaches it — its
+      // top row gone and its foot under half — because a half-dissolved
+      // control is not a target.
+      released = Math.max(0, 1 - top / (1 + EXIT_FEATHER));
+    };
+
+    let raf = 0;
+    const draw = () => {
+      raf = 0;
+      // The window, live rather than `svh`: this is paint, and the frame the
+      // heading crosses into is the frame the reader is looking at. A key would
+      // take `svh` — it must, or the toolbar moves it — but nothing here is a
+      // key, and on the collapsed state `svh` would put the handover 86px of
+      // scroll after the heading had already settled.
+      const H = window.innerHeight;
+      const span = H * EXIT_SPAN;
+      const p = span > 0
+        ? Math.min(Math.max((window.scrollY - (handRow - H)) / span + clears, 0), 1)
+        : 0;
+      // Nothing at either end, and the far end matters as much as the near
+      // one. A mask is a compositing layer whether or not it is painting
+      // anything, and one left standing for the rest of the page changed how
+      // WebKit rasterised type two thousand pixels below it — the closing
+      // paragraph measured 6.94 against 6.79 with the layer held. Below the
+      // exit there is no mask because the block is whole; above it there is
+      // none because the block is gone, and `visibility` says that without
+      // touching the opacity the hydration gate owns.
+      if (p <= 0 || p >= 1) {
+        el.style.removeProperty("mask-image");
+        el.style.removeProperty("-webkit-mask-image");
+        if (p <= 0) {
+          el.style.removeProperty("visibility");
+          el.style.removeProperty("pointer-events");
+        } else {
+          el.style.visibility = "hidden";
+          el.style.pointerEvents = "none";
+        }
+        return;
+      }
+      const mask = exitMask(p);
+      el.style.removeProperty("visibility");
+      el.style.maskImage = mask;
+      el.style.setProperty("-webkit-mask-image", mask);
+      if (p >= released) el.style.pointerEvents = "none";
+      else el.style.removeProperty("pointer-events");
+    };
+
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(draw);
+    };
+    const onResize = () => {
+      measure();
+      draw();
+    };
+
+    measure();
+    draw();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onResize);
+    // The band and the handover row both move after the first read — the card
+    // grows, and anything above the clearing that reflows carries its heading
+    // with it — so the document is watched rather than a delay guessed.
+    const observer = new ResizeObserver(onResize);
+    observer.observe(el);
+    observer.observe(document.documentElement);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onResize);
+      observer.disconnect();
+      if (raf) cancelAnimationFrame(raf);
+    };
   }, []);
 
   // The slideshow runs on its own clock, independent of scroll progress.
@@ -858,6 +1038,7 @@ const ScrollExpandMedia = ({
               }}
             >
               <div
+                ref={introRef}
                 data-expanded={!mounted || contentVisible ? "" : undefined}
                 className={cn(
                   // The band's corners inherit the clipping parent's radius
