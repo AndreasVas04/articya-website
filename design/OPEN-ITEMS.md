@@ -4361,6 +4361,18 @@ box that changes (see the two mechanisms under the table).
 | `IMG_4582-road\|390x750@3` | 1.179 | 1.046 | as above **and** §2.7's 2880 cap |
 | `IMG_4582-road\|390x844@3` | 1.179 | **1.177** | **§2.7's 2880 cap**, at the reference height |
 
+**Two rows were added on 2026-09-05 and the list is twenty-five.** They arrived
+with the reinstated mosaic, they are at one viewport, and they are a source cap
+rather than a cap or a declaration — the same class as `hero-3`'s six rows
+above. §12.2 has the arithmetic and the ratchet's re-verification; the owner
+column is now carried in `scripts/verify-placements.mjs` itself, one owner per
+group, printed beside any row that fails.
+
+| `KNOWN` key | script | at rest | owner |
+|---|---|---|---|
+| `AboutImage2\|1920x900@2` | 1.163 | 1.163 | **`AboutImage2` is a 1536px master.** The finale's top wide slot is `46.5vw × 20vh` above `md`, which is 892.8 CSS px at 1920 wide, and a 0.75 frame in a 4.96:1 box is fitted by width, so the paint is the box: 1786 device px at DPR 2 against a top rung of 1536. The ladder never emits a rung above a frame's own width, so there is none to add. `PHOTO-MANIFEST.md` §B: no original in the delivery, best candidate 0.75 — a different picture. **Only a different photograph of the same circle closes it** |
+| `home-training\|1920x900@2` | 1.163 | 1.163 | **`home-training` is a 1536px master**, in the bottom wide slot, which is the same box and asks the same 1786 device px against the same source cap. `PHOTO-MANIFEST.md` §B: no original in the delivery, best candidate 0.49. **Only a different photograph of the game closes it** |
+
 **Nothing on the list is unattributed.** Every one of the twenty-three lands on
 one of four things: `hero-3`'s source width, §2.7's 2880 cap, the hero's 3%
 push, or `coverSizes`' single compact reference viewport. The first is
@@ -4553,6 +4565,1941 @@ with `NEW`.
 **The one rule about closing a failure.** Never by lowering `sizes` below the
 paint. That moves the failure off this script and onto the screen, and it is
 exactly what §1.2 spent a section undoing.
+
+---
+
+## 8 · The rhythm of home — Series B, Δ and Ε. Diagnosis only, nothing built
+
+Andreas's two complaints, in his own words:
+
+> Δ · "i do not like at all the transition [hero lede → What we do]… and also
+> why all that space. try to use the space more wisely and smooth as a 10k
+> website"
+>
+> Ε · "i really like that picture and i want more emphasis… the picture to go
+> more down so travel across europe has it as its background"
+
+Everything below is measured on a clean production build at 390 wide, DPR 3,
+Chromium, at **553, 664 and 750**, with 844 carried as a reference column that
+decides nothing. Nothing in the repository was edited: the two forms priced in
+§8.3 are applied to the built page at runtime and the source tree is untouched.
+
+**Two things about the instrument, because the numbers depend on them.**
+Transitions are killed for every sweep, so a clock entrance snaps to its end
+state on the frame its observer fires and the glyph population is a function of
+scroll and nothing else. That is the *generous* reading — it credits the page
+with text a real reader does not see for another 0.2–0.78s — so a wordless run
+found here is a lower bound on the wordless run a reader crosses. And the rects
+are taken after the sweep with everything at rest, not before: an
+`IntersectionObserver` only reports what is intersecting when it checks, so a
+single jump to the foot of the document fires the observers there and nothing
+it passed over, leaving every `Reveal` in the middle of the page at opacity 0
+and 24px low. Measured, that error put the first gain row at document row 2975
+against the 5px sweep's 2950. `settleEntrances()` in the harness steps rather
+than jumps, and every geometry in this section is taken through it.
+
+### 8.1 · The wordless passages, measured
+
+**a · Runs carrying no glyph at all.** The whole of `/` stepped at 5px, every
+rendered glyph of every element counted — DOM text and pseudo-content alike,
+per character, with the hero's scroll lock released by synthetic wheel the way
+§6.1's harness releases it. The fixed header's wordmark is seven glyphs that are
+on the screen at every scroll position; it is counted separately, because "no
+screen without words" is a claim about the page and not about the chrome painted
+over it. The offer panels' ghosted numerals are `ink` at 8% alpha and are
+counted separately too.
+
+| page | height | document | viewports | stops | median content glyphs | fewest | runs with none | runs under 10% of the median |
+|---|---|---|---|---|---|---|---|---|
+| `/` | 553 | 3382 | 6.12 | 567 | 186 | **42** | **0** | **0** |
+| `/` | 664 | 3903 | 5.88 | 649 | 189 | **42** | **0** | **0** |
+| `/` | 750 | 4339 | 5.79 | 719 | 202 | **31** | **0** | **0** |
+| `/` | 844 | 4814 | 5.70 | 795 | 202 | 31 | 0 | 0 |
+| `/contact/` | 553 | 1254 | 2.27 | 141 | 109 | 63 | 0 | 0 |
+| `/contact/` | 664 | 1476 | 2.22 | 164 | 109 | 63 | 0 | 0 |
+| `/contact/` | 750 | 1648 | 2.20 | 181 | 109 | 63 | 0 | 0 |
+| `/contact/` | 844 | 1836 | 2.18 | 200 | 109 | 63 | 0 | 0 |
+| `/about/` | 553 | 3466 | 6.27 | 584 | 275 | **0** | **2** | **2** |
+| `/about/` | 664 | 4132 | 6.22 | 695 | 275 | **0** | **2** | **2** |
+| `/about/` | 750 | 4648 | 6.20 | 781 | 275 | **0** | **2** | **2** |
+| `/about/` | 844 | 5212 | 6.18 | 875 | 275 | 0 | 2 | 2 |
+
+**Home never runs a wordless screen, and never falls under a tenth of its own
+median.** Its emptiest frame carries 31–42 glyphs — "What you gain", two of the
+four gain lines and their numerals — and that is the whole of the page's floor.
+The rule holds at every height and at every one of the 2,730 stops.
+
+**The page that breaks the rule is `/about/`, and it is the wall.**
+
+| height | run | length | share of the window | population |
+|---|---|---|---|---|
+| 553 | 1960–1965 | 10px | 0.018 vp | 0 |
+| 553 | **2410–2860** | **455px** | **0.823 vp** | 0 |
+| 664 | 2325–2370 | 50px | 0.075 vp | 0 |
+| 664 | **2895–3415** | **525px** | **0.791 vp** | 0 |
+| 750 | 2610–2685 | 80px | 0.107 vp | 0 |
+| 750 | **3270–3845** | **580px** | **0.773 vp** | 0 |
+| 844 | 2920–3030 | 115px | 0.136 vp | 0 |
+| 844 | **3680–4315** | **640px** | **0.758 vp** | 0 |
+
+**b · Runs under 10% of the median.** The same two runs on `/about/` and
+nothing else on the site. Widening the band to the tenth catches 35–115px more
+at the head of the shorter run (population 0–21) and nothing new. There is no
+orphaned-word screen anywhere: home's floor of 31 is 15–22% of its own median,
+Contact's 63 is 58%.
+
+**c · Runs where only the ground changes, and runs where not even that does.**
+Taken from the composite: two stops differ if any pixel outside a glyph rect
+differs, glyph rects dilated by 3 CSS px for antialiasing, shot at DPR 3 and
+compared at device pixels. 5px step, every stop of every height.
+
+There are two opposite failures here and home has one of each kind on the site,
+so they are reported separately as the brief asks.
+
+**The wordless-and-moving kind is `/about/`'s**, and it is the milder one: over
+its 0.76–0.82 viewport wordless run the median 5px step changes **63–66%** of
+the unmasked pixels. One stop in a hundred is still; nothing is bit-identical
+except a single stop at 664, 750 and 844. The reader is given no words for
+three quarters of a screen and the picture is doing all of the work — which is
+what the wall is for.
+
+**The still kind is home's, and it is the finding of this whole section.**
+
+| page | height | longest run where under 0.5% of the ground changes per 5px step | where | longest run BIT-IDENTICAL outside the type |
+|---|---|---|---|---|
+| `/` | 553 | **425px · 0.769 vp** | 495–915 | 100px · 0.181 vp (665–760) |
+| `/` | 664 | **485px · 0.730 vp** | 600–1080 | 100px · 0.151 vp (830–925) |
+| `/` | 750 | **545px · 0.727 vp** | 665–1205 | 100px · 0.133 vp (960–1055) |
+| `/` | 844 | 595px · 0.705 vp | 745–1335 | 105px · 0.124 vp (1100–1200) |
+| `/about/` | 553–844 | 155–235px · **0.278–0.280 vp** | its own hero | 0–5px · 0.000–0.008 vp |
+| `/contact/` | 553–844 | 45–105px · **0.090–0.128 vp** | its own hero | **none, at any height** |
+
+`PhotoStage` is a `position: fixed` layer. While a plate is held at 1.00 the
+photograph behind every word on the page **does not move one pixel** as the
+reader scrolls — the only thing changing in the window is type sliding upward,
+and with the type masked out the frame is the same file twice. Through
+**0.73 of a viewport at 664** under 0.5% of the ground changes from stop to
+stop, and through a 100px core of it **nothing changes at all**: 20 stops on
+home are bit-identical to their predecessor at every height, against **zero on
+Contact**.
+
+And the passage is exactly the one Δ names. At 664 it runs **scroll 600 to
+1080** — from the frame where the clearing's heading, lead and ledger have
+finished arriving to the frame where the fall into the panels begins. The
+picture reaches 1.00 at scroll 412 and does not change again until 1080.
+
+**Aggregate, for scale.** Home is not a static page: its median 5px step
+changes 29–37% of the ground, *more* than Contact's 9–14%. The defect is
+contiguous, not aggregate — 15% of home's stops change under 0.5%, 3.4–10.6%
+change under 0.05%, and they are in one place.
+
+**The complement of the same test — runs where no glyph enters or leaves the
+window** — is the site's own "every scroll gesture must advance visible
+content", and on this one home is not the outlier:
+
+| page | 553 | 664 | 750 | 844 |
+|---|---|---|---|---|
+| `/` | 0.461 vp | 0.535 vp | 0.587 vp | 0.634 vp |
+| `/contact/` | 0.416 vp | 0.429 vp | 0.440 vp | 0.444 vp |
+| `/about/` | 0.823 vp | 0.791 vp | 0.773 vp | 0.764 vp |
+
+Home's longest is the second panel's prose (305 glyphs held for 0.535 vp at
+664); Contact's is a channel card (79 glyphs, 0.429); About's is the wall (0
+glyphs, 0.791). All three pages hold a screen of type for about half a viewport
+and that is what reading is. **No run over 0.5 viewport anywhere on home has
+the ground as the only thing changing** — where home stalls, the ground is
+still too.
+
+**d · The passage Andreas names, bounded exactly.** The start is the hero lede's
+last row leaving the window; the end is the first frame at which the "What we
+do" heading is at full opacity. It is `.stage-mask-rise` inside `.stage-lift` —
+the lift carries the opacity, the mask carries the translate, both off the same
+`[data-on]` — so with transitions killed "readable" is the frame its scene
+fires, at `rootMargin: 0 0 -30% 0`.
+
+| | 553 | 664 | 750 | 844 |
+|---|---|---|---|---|
+| lede's last row, document bottom | 419 | 530 | 616 | 710 |
+| "What we do", document rows | 666–702 | 833–869 | 962–998 | 1103–1139 |
+| **A** · the lede leaves the window | 420 | 535 | 620 | 715 |
+| A′ · the lede leaves the header's lower edge (64px) | 360 | 470 | 555 | 650 |
+| **B** · the heading at full opacity, touching the window | 115 | 170 | 215 | 260 |
+| **C** · the heading at full opacity, wholly inside the window | 150 | 205 | 250 | 295 |
+| **A → C** | **−270px** | **−330px** | **−370px** | −420px |
+| as a share of the window | **−0.488 vp** | **−0.497 vp** | **−0.493 vp** | −0.498 vp |
+
+**The passage has negative length at every height, and it is half a viewport of
+negative.** "What we do" is at full opacity and wholly inside the window while
+the hero lede still has half a screen left to travel. There is no gap between
+the two — they **overlap by 0.49 of a viewport**, and for that whole overlap two
+different blocks of cream type, one leaving and one arriving, are on the screen
+at once. §2.2 fixed the *ground's* arrival at this join and fixed it correctly;
+the words were never the problem it was solving, and they are not a gap now.
+
+With the clock running the end moves later but not by enough to close it: the
+lift's opacity is 200ms and the mask's translate is 700ms after an 80ms delay,
+so a stopped reader sees the heading fully out of its mask 0.78s after the
+trigger, and a reader moving at all sees it sooner in document terms.
+
+### 8.2 · The references, same instrument
+
+§7.5's instrument, unchanged: a pixel is photographic content if the luminance
+range over a **9 CSS px** window is 15 or more, with no luminance floor, and the
+mean luminance of the empty region is reported because that is what tells a
+bright sky from a black screen.
+
+**Three departures, all forced by the material and all recorded so the numbers
+are reproducible.**
+
+*The capture is not the reference.* Two of the five stills are Dribbble
+presentations with the page inset in a frame, one is a Pinterest viewer, and
+both sequences are screen recordings of a browser showing the reference inside a
+Pinterest pin — a third of those frames is browser chrome and host ground. Every
+reading below is a share of the **page rectangle**, found per file and written
+into `harness/refboxes.mjs`. The sequences' card is fixed across each recording
+(cabinfever `239,759 2941×1455`; travel `158,808 3104×1406`) and is **clipped at
+the capture's foot**: what is measured is the top **88%** of cabinfever's screen
+and the top **81%** of travel's, so "wordless" there means wordless in that much
+of it.
+
+*Glyphs cannot be painted out of a raster the way §7.5 paints them out of a
+browser, so their pixels are excluded* — dropped from numerator and denominator
+and left passable for the void's connectivity, which is what a painted-out glyph
+does. The excluded share is reported as the glyph share, so an over-generous box
+shows as a bigger glyph share rather than as a quietly wrong photograph figure.
+The boxes are hand-placed **per line** off a grid rendered over each crop; home's
+own figure is a union of **per-character** DOM rects and is the tighter of the
+two by roughly the word gaps. Every comparison below carries that asymmetry.
+
+*The 9px window is 9 CSS px, and a capture is not at CSS scale.* The radius is
+scaled by `captureWidth / cssWidth` per file rather than left at 4 and quietly
+meaning 9px of a phone on one file and 19px of a desktop on another. The assumed
+CSS widths are recorded in the harness.
+
+**The five stills — per frame, and two of them are not frames.**
+
+| still | measured | radius | glyphs | photographic content | largest region carrying neither | its mean luminance |
+|---|---|---|---|---|---|---|
+| `mntn` — **3.67 viewports, a whole-page capture** | 667×1470 | 2 | 11.5% | 29.0% | 60.9% | 0.061 |
+| `ergaki` — **2.56 viewports, a whole-page capture** | 838×1344 | 2 | 19.3% | 23.2% | 50.6% | **0.831** |
+| `trafalgar` — one viewport | 1274×892 | 4 | 14.2% | 24.8% | 64.4% | 0.107 |
+| `grand-canyon` — one viewport | 990×542 | 3 | 9.3% | 31.9% | 44.8% | 0.044 |
+| `forest-excursions` — one viewport | 983×624 | 3 | 5.9% | 55.6% | 21.8% | 0.331 |
+
+`ergaki`'s void at luminance **0.83** is the white band its second section
+stands on — a flat bright surface, not an empty screen, and the luminance
+column is in the table exactly so those two cannot be confused. `mntn` and
+`ergaki` are pages and their 60.9% and 50.6% are fractions of 3.67 and 2.56
+screens; slid as a one-viewport window down each capture, the tallest band
+carrying **no word** is **78% of a screen on `mntn`** (at 8% down the page — the
+hero's own photograph, between "scroll down ↓" and the first section numeral)
+and **64% on `ergaki`**. Neither capture has a single viewport position with no
+glyph in it.
+
+**The two sequences, as sequences.**
+
+| frame | glyphs | photographic content | largest region carrying neither | its mean luminance | tallest wordless band |
+|---|---|---|---|---|---|
+| cabinfever_01 | 9.5% | 46.9% | 38.9% | 0.532 | 48% |
+| cabinfever_02 | 8.5% | 46.0% | 15.6% | 0.752 | 46% |
+| cabinfever_03 | 13.3% | **6.4%** | **92.9%** | **0.0097** | 51% |
+| cabinfever_04 | 13.5% | **7.3%** | **92.5%** | **0.0089** | 48% |
+| cabinfever_05 | 13.3% | **8.1%** | **91.9%** | **0.0088** | 50% |
+| **cabinfever_06** | **0.0%** | **3.1%** | **96.9%** | **0.0143** | **100%** |
+| cabinfever_07 | 9.4% | 47.0% | 27.5% | 0.680 | 48% |
+| cabinfever_08 | 9.4% | 45.7% | 28.8% | 0.698 | 50% |
+| travel_01 | 24.7% | 10.2% | 87.4% | 0.418 | 42% |
+| travel_02 | 26.1% | 10.0% | 87.6% | 0.420 | 41% |
+| travel_03 | 4.2% | 6.9% | 92.9% | 0.501 | **93%** |
+| travel_04 | 28.5% | 9.7% | 89.9% | 0.555 | 55% |
+| travel_05 | 19.7% | 12.2% | 82.2% | 0.505 | 40% |
+| travel_06 | 28.4% | 22.0% | 72.7% | 0.410 | 42% |
+| travel_07 | 28.4% | 25.2% | 38.5% | 0.572 | 42% |
+| travel_08 | 1.4% | 32.3% | 32.7% | 0.044 | 64% |
+| travel_09 | 8.0% | 34.2% | 27.2% | 0.071 | 42% |
+| travel_10 | 8.1% | 34.7% | 32.9% | 0.067 | 50% |
+| travel_11 | 8.0% | 36.2% | 19.9% | 0.577 | 40% |
+| travel_12 | 7.9% | 36.4% | 19.8% | 0.577 | 48% |
+
+**The run of consecutive frames carrying no glyph is one — `cabinfever_06`, one
+frame of eight.** Below its fixed nav the frame is a near-black ground with a
+gold medallion on it: 3.1% photographic content, a 96.9% void at mean luminance
+0.014, and not one word. It is the frame between the second screen leaving and
+the hero returning, and it is in the recording Andreas gave as the *motion*
+reference. `travel` has no wordless frame in twelve, but two frames carry a
+single word — `travel_08` is "SLOVAKIA" alone at 1.4% of the screen, with a
+64% wordless band under it. The frame intervals are not uniform in scroll, so a
+run of frames cannot be converted to viewports and is not.
+
+**Home's own frames beside them, at 664** — same instrument, same exclusion
+rule, per-character rects:
+
+| | glyphs | photographic content | largest region carrying neither | its mean luminance |
+|---|---|---|---|---|
+| the hero at rest (scroll 0) | 11.4% | 44.7% | 24.9% | 0.296 |
+| the clearing full (400) | 30.6% | 42.2% | 26.1% | 0.022 |
+| the ledger read (840) | 23.4% | 44.3% | 32.6% | 0.023 |
+| into the panels (1240) | 31.1% | 25.2% | 72.0% | 0.017 |
+| the road at the join (1680) | 33.1% | 64.2% | 26.7% | 0.037 |
+| the gains arriving (2480) | 33.9% | 28.5% | 68.5% | 0.041 |
+| **the gains at full strength (2680)** | 42.6% | **8.4%** | **91.3%** | 0.045 |
+| **the closing (2960)** | 46.1% | **1.4%** | **98.2%** | **0.031** |
+
+and at 1440×900, because the type's share of a frame is mostly a width effect
+and the references are 1274–1552 CSS px wide against home's 390: the same
+column runs **3.7% to 22.9%** glyphs, and the gains and the closing read
+**0.9–4.5% photographic content against a 95–99% void**.
+
+**The answer, in one paragraph.** The references leave between 40% and 100% of a
+screen wordless per frame and hold it there for whole frames at a time: MNTN's
+hero gives 78% of its viewport to a photograph with no word on it, `travel_03`
+gives 93%, `travel_08` gives 64% to a single word, and `cabinfever_06` gives the
+entire screen below its nav to a near-black ground at luminance 0.014 with no
+word at all — one frame in eight of the recording this project treats as its
+motion reference. Home's tallest wordless band has a median of **37.7%** at 664
+and a worst of **78.6%**, which is the middle of that range at the median and
+equal to MNTN's hero at the worst, and home never reaches the wordless state at
+any of 2,730 stops. **So the references run wordless passages that are longer
+and emptier than anything on home, and that is the more useful finding: Δ is not
+about length and it is not about emptiness.** Two further things separate them
+and neither is a quantity of space. The references' empty screens are *bright* —
+`travel`'s voids sit at luminance 0.42–0.58 and `cabinfever`'s hero at 0.53–0.75
+— where home's are 0.017–0.045 everywhere below the hero, and `cabinfever`'s one
+dark screen is the frame the recording passes through fastest. And every empty
+screen in both sequences is moving film: the ground is video, and between
+`travel_01` and `travel_02` the tree walks across the letters while the letters
+hold still. None of these numbers becomes a rule here — a reference screenshot
+is one viewport of one machine, and two of the five are not even that.
+
+### 8.3 · "What you gain" — where the photograph ends
+
+**a · Where it reaches now.** Two different things end in two different places
+and Ε is about the second.
+
+| | 553 | 664 | 750 | 844 |
+|---|---|---|---|---|
+| the gains section, document rows | 2286–2839 | 2696–3360 | 3045–3795 | 3427–4271 |
+| its own edge-to-edge copy at full strength to row | 2699 | 3220 | 3655 | 4131 |
+| …and gone by row (`--gain-end` 140px) | 2839 | 3360 | 3795 | 4271 |
+| the **stage** plate at ≥0.99, last scroll | 2325 | 2745 | 3100 | 3490 |
+| — the last document row in the window there | 2878 | 3409 | 3850 | 4334 |
+| the stage plate at ≥0.50, last scroll | 2490 | 2940 | 3325 | 3740 |
+| the stage plate at ≥0.01, last scroll | 2655 | 3140 | 3545 | 3970 = maxY |
+
+The section's own copy holds the frame to within 140px of its own foot. The
+**stage** plate under it is a different schedule and it is the one the closing
+stands on: it begins falling at the gains key and is under a hundredth by the
+time the closing's first line is centred.
+
+**And the closing's own key is not reachable at two of the four heights.** It is
+declared at `top-[25svh]` of the closing section, which keys at **3608 at 750
+against a maxY of 3589, and at 4060 at 844 against 3970** — 19px and 90px past
+the end of the document. The run-out from the gains is therefore truncated at
+both: the reader reaches the foot of the page with the declared ramp 3% and 14%
+unfinished. It completes in practice only because the easing has already taken
+the value to 0.005 and 0.010. It is not a contrast defect and it is not what Ε
+is about, but it is a key that does not exist at the heights the device makes,
+and it is the key both forms below would move.
+
+**b, c · What the three blocks are standing on.** Each read at the scroll that
+centres it, with the type painted out so the luminance and the local structure
+are the ground's:
+
+| block | | 553 | 664 | 750 | 844 |
+|---|---|---|---|---|---|
+| **Travel across Europe…** | plate 2 | **0.012** | **0.022** | **0.029** | 0.036 |
+| | mean luminance of its rect | **0.0110** | **0.0110** | **0.0110** | 0.0115 |
+| | photographic content of its rect | **0.0%** | **0.0%** | **0.0%** | 0.0% |
+| **Your adventure starts here.** | plate 2 | 0.000 | 0.000 | 0.001 | 0.019 |
+| | mean luminance | 0.0104 | 0.0104 | 0.0104 | 0.0110 |
+| | photographic content | 0.0% | 0.0% | 0.0% | 0.0% |
+| Real-world skills | plate 2 | 0.942 | 0.963 | 0.972 | 0.979 |
+| | mean luminance | 0.0798 | 0.0816 | 0.0825 | 0.0836 |
+| | photographic content | **0.0%** | **0.0%** | **0.0%** | 0.0% |
+| International friends | plate 2 | 1.000 | 1.000 | 1.000 | 1.000 |
+| | mean luminance | 0.0926 | 0.0922 | 0.0918 | 0.0918 |
+| | photographic content | **0.0%** | **0.0%** | **0.0%** | 0.0% |
+| Certified learning | plate 2 | 0.969 | 0.979 | 0.984 | 0.988 |
+| | mean luminance | 0.0993 | 0.1037 | 0.1047 | 0.1045 |
+| | photographic content | **0.0%** | **0.0%** | **0.0%** | 0.0% |
+| All expenses covered | plate 2 | 0.838 | 0.901 | 0.927 | 0.945 |
+| | mean luminance | 0.0607 | 0.0756 | 0.0829 | 0.0901 |
+| | photographic content | **0.0%** | **0.0%** | **0.0%** | 0.0% |
+
+**Andreas is right about the fact and the mechanism is not the one the words
+suggest.** "Travel across Europe…" stands on a rect at luminance **0.011**
+carrying nothing; the four gain lines stand on one at **0.061–0.105**, six to
+ten times brighter. That is the whole visible difference between the two halves
+of the beat, and it is a difference of *light*, not of subject — **every one of
+the six blocks reads 0.0% identifiable photographic content in its own rect**.
+The gains lines are in the far end of `.gain-frame`'s defocus ramp, where the
+picture has been blurred to 7.5px and dimmed to 0.42 precisely so it can carry
+words; the closing lines are on the dark floor. Neither has a picture behind it.
+Whole-window, the gains frame at full strength reads **8.4% photographic content
+with a 91.3% void at 664** and **1.5–4.5% with a 95–99% void at 1440×900**. The
+frame Andreas likes is doing very little as a picture at the point where his eye
+is: it is the sharp right-hand third that reads, and the words are at the other
+end of the ramp.
+
+**d · What extending the photograph downward would move.** Priced, not chosen.
+Both forms are the same one-marker change plus, for A, one more key.
+
+> **Form A — the gains plate holds to the closing's own key.** The closing's
+> marker (`data-stage-plate="1" data-stage-strength="0"` at `top-[25svh]`)
+> becomes plate 2 at strength 1, and a new key at the foot of the document takes
+> it back to 0.
+>
+> **Form B — the closing zone takes the gains plate.** The same marker change
+> and no new key, so the picture holds at 1.00 to the bottom of the page and the
+> ledger loses its last quiet beat.
+
+*Keys.* **One key changes plate and strength; no key moves.** Removing the
+closing's `plate 1 → 0` is safe on its own terms — plate 1 is already at zero
+from the `h-0` marker after the panels, 691 / 830 / 938 / 1055px earlier at the
+four heights. Form A adds a thirteenth key at the foot.
+
+*Spans.* **Exactly one span changes and it is the run out to the closing.**
+It is a **ramp** now and becomes a **hold**:
+
+| | 553 | 664 | 750 | 844 |
+|---|---|---|---|---|
+| the run out to the closing, now | 414px · 0.749 vp | 498px · 0.750 vp | 563px · 0.751 vp | 633px · 0.750 vp |
+| under A or B — the same distance, held | 414px | 498px | 563px | 633px |
+| **A's new fall, from that key to maxY** | **129px · 0.233 vp** | **45px · 0.068 vp** | **none — the key is 19px past maxY** | **none — 90px past** |
+
+Every other span is untouched: the clearing's rise 0.620, the ledger's hold
+0.880, the handover into the panels 0.720, the panels' and the road's five, and
+the gains' rise 0.500. **Document height does not move at either form** —
+3382 / 3903 / 4339 / 4814, because nothing here is in flow.
+
+*And Form A is not a second option — at two heights it is not even Form A.*
+Its fall has 129px at 553 and 45px at 664 to run in, and at 750 and 844 the
+closing's own key is past maxY, so the foot key necessarily lands **before** it:
+what runs there is the current fall ending 19px and 90px earlier, not a hold.
+Measured, A and B are identical to 0.03 of a ratio at 553 and 664, and at 750
+and 844 A is within 0.6 of the build as it stands (§8.3e). Where the fall does
+exist it is a **fade** — plate 2 declares no `wipe` — of 0.068 of a viewport at
+664, which is **shorter as a share of the screen than the 0.10 §2.3 was opened
+for**; at 553 it is 0.233 and survives, which is the only height at which Form A
+is a form. The only way to give it room anywhere else is to move the closing's
+key up, and that key is the one already unreachable at 750 and 844.
+
+*What both forms cost the ledger.* Reading down, the page is loud, loud, quiet,
+loud, quiet, loud, **quiet**. Both forms delete the last term. The page then
+ends on a photograph at full strength and the footer's dark is the only unlit
+surface left on it.
+
+**e · The contrast cost of each form.** Six named elements, 5px, all four
+heights, glyph cores on the rendered composite: one window shot with the six
+elements' fill on and one with it off per stop, cropped per element. An element
+is scored only at stops where its rect is **wholly inside the window and clear
+of the 130px chrome shade** — stricter than clipping the rect, and stated
+because it is what makes these numbers comparable to each other and not
+automatically to the published set.
+
+| element | floor | | 553 | 664 | 750 | 844 |
+|---|---|---|---|---|---|---|
+| Real-world skills | 3.0 | none / A / B | 6.87 / 6.87 / 6.87 | 6.81 / 6.81 / 6.81 | 6.77 / 6.77 / 6.77 | 6.73 / 6.73 / 6.73 |
+| International friends | 3.0 | | 6.03 / 6.03 / 6.03 | 6.05 / 6.05 / 6.05 | 6.07 / 6.07 / 6.07 | 6.07 / 6.07 / 6.07 |
+| Certified learning | 3.0 | | 5.96 / 5.96 / 5.96 | 5.73 / 5.73 / 5.73 | 5.67 / 5.67 / 5.67 | 5.69 / 5.69 / 5.69 |
+| **All expenses covered** | 3.0 | | 7.61 / 7.60 / 7.60 | 6.85 / 6.85 / 6.85 | 6.45 / 6.45 / 6.45 | 6.16 / 6.16 / 6.16 |
+| **the closing paragraph** | 4.5 | | 9.31 / **4.91** / **4.91** | 8.72 / **4.88** / **4.88** | 8.36 / 8.59† / **4.87** | 7.97 / 9.18† / **4.86** |
+| **the closing line** | 3.0 | | 6.16 / **2.66** / **2.66** | 5.76 / **2.64** / **2.64** | 5.61 / 5.68† / **2.63** | 5.48 / 5.71† / **2.62** |
+
+† *not the form.* At 750 and 844 the closing's own key is past maxY, so A's
+foot key at maxY necessarily lands **before** it: the plate falls as it does
+now, ending 19px and 90px earlier, and the readings improve because the picture
+is gone sooner. Form A is only expressible at 553 and 664, where it is Form B
+with an extra marker.
+
+**The four gain lines do not move under either form**, at any height, to two
+decimal places — they stand 414–633px above the only key that changes.
+**"All expenses covered" is not taken under 4.5 by either form; it is not
+touched by either form.**
+
+**Both forms take the closing line under its floor at every height** — 3.0
+against 2.62–2.66, a fall of 2.82–3.50 — and take the closing paragraph from
+7.97–9.31 to 4.86–4.91, which survives 4.5 by four hundredths at 844.
+
+**What buys it back is the darkening, and it cannot be the strength.** The
+ledger is polarised — 1.00 or 0.00, and the model holds no value in between —
+so the lever is plate 2's own `.plate-shade`, which today is the shared
+52 / 62 / 70 because that plate declares no override. Form B, `--shade-mid`
+stepped, with the cost to the picture priced by §7.5's instrument on the closing
+window at the scroll that centres the closing line:
+
+| `--shade-mid` | closing paragraph | closing line | photographic content of the closing window, 553 / 664 / 750 |
+|---|---|---|---|
+| **62%** (as it would inherit) | 4.87–4.91 | **2.63–2.66** | 5.3% / 4.2% / 3.6% |
+| **70%** | 6.16–6.20 | **3.34–3.37** | 4.5% / 4.1% / 3.6% |
+| 78% | 7.87–7.92 | 4.29–4.31 | 4.3% / 4.1% / 3.6% |
+| 86% | 9.89–9.92 | 5.39–5.41 | 4.3% / 4.1% / 3.6% |
+| 92% | 11.58–11.60 | 6.32–6.34 | 4.3% / 4.1% / 3.6% |
+
+**70% is the smallest step that clears the floor** — 3.34–3.37 against 3.0 —
+and it costs the closing window **0.8 points of photographic content at 553**
+and nothing measurable at 664 or 750.
+
+**And that last column is the number that decides Ε.** With the plate at 1.00
+and no darkening added at all, the closing window carries **3.6% to 5.3%**
+identifiable photographic content. The same instrument reads the gains frame at
+its own full strength at **8.4% at 664** and **1.5–4.5% at 1440×900**, against
+**42–64%** for every other ground on the page: `hero-1` under the clearing
+42.2%, the road at the join 64.2%, the hero's own frame at rest 44.7%. **The valley is by a long
+way the least photographic ground on the site**, and extending it downward
+extends a surface that is 92–96% featureless. The picture Andreas likes is real
+in the sharp right-hand third of `.gain-frame`; the defocus ramp that lets it
+carry words has taken it out from under them, and the plate behind the closing
+is the same frame with none of the sharp part in it.
+
+**A reconciliation this section does not close.** These readings are the mean
+over the glyph core, worst stop per element, with the gate above; the worst
+single pixel per element on the same sweep is 3.41–4.16 for the four gain
+lines, 4.41–4.95 for the closing paragraph and 3.21–3.61 for the closing line.
+Neither statistic reproduces §2.8's **4.69** for "All expenses covered" — it
+reads 6.16–7.61 by the first and 3.64–4.16 by the second — nor the published
+6.75–7.96 for the trail. The differences run in opposite directions for the two
+elements, so this is a difference of instrument and not a regression, and it is
+recorded here rather than resolved: **the deltas between the three forms are
+taken with one instrument on one build and are sound; the absolute levels are
+owed a reconciliation against the reference set before either is used as a
+floor.** Nothing in this section was changed, so nothing has moved.
+
+### 8.4 · Contact sheets
+
+`design/refs/rhythm/`, fifteen sheets — five passages at 553, 664 and 750, ten
+frames each, DPR 3, two rows of five with the scroll, the three plate strengths
+and the content-glyph population under every frame. **Every range is derived
+from the twelve keys at the height being shot**; not one window is carried over
+from another height, and `index.json` carries the ranges and the per-frame
+readings.
+
+| passage | range | 553 | 664 | 750 |
+|---|---|---|---|---|
+| 1 · the hero lede out to "What we do" readable | scroll 0 → the lede's last row leaving the window | 0–423 · 0.765 vp | 0–534 · 0.804 vp | 0–620 · 0.827 vp |
+| 2 · the clearing to the ledger | the clearing's full key → the end of its hold | 343–830 · 0.881 | 412–996 · 0.880 | 465–1125 · 0.880 |
+| 3 · the ledger to the first panel | the handover | 830–1228 · 0.720 | 996–1474 · 0.720 | 1125–1665 · 0.720 |
+| 4 · the second panel to the gains | its quiet key → the gains key | 1821–2286 · 0.841 | 2178–2696 · 0.780 | 2460–3045 · 0.780 |
+| 5 · the gains to the closing | the gains key → the closing's key | 2286–2700 · 0.749 | 2696–3194 · 0.750 | 3045–3589 · 0.725 |
+
+Passage 5 at 750 stops at maxY, not at its key — see §8.3(a).
+
+**Not one of the 150 frames is wordless.** The floor is 53 glyphs, at 664 frame
+5 of passage 4. What the frames read as, at 664, and the other two heights are
+the same shape:
+
+**1 · the hero lede out to "What we do".** Frames 1–3 (y 0, 59, 119) are the
+same composition three times: the top 45% of the window is the poster's shade
+over the valley, the lede and the button sit in the lower third, **and the
+headline is not on the screen at all** — "We are ArtiCYa" belongs to the
+collapsed poster and has dissolved by the time the card is open, so the resting
+first screen of the site carries one 105-character sentence and a nine-character
+button and nothing else. Frame 4 is the wipe crossing the foot of the window;
+frame 5 has hero-1 at 0.70 under the same two blocks. **Frames 6–9 (y 297–475)
+carry the hero lede, the button, "What we do", its lead and the ledger's first
+rows simultaneously** — two centred blocks of cream type, one leaving and one
+arriving, on one screen for 0.27 of a viewport. Frame 10 is the clearing alone.
+
+**2 · the clearing to the ledger.** Frames 4 through 8 (y 607–866) are **the
+same photograph, unchanged, five times**, with the same 177 glyphs sliding
+upward through them; between frames 5 and 6 the window is bit-identical outside
+the type. This is §8.1(c)'s run and it is the only place on the site where a
+contact sheet's frames are literally interchangeable.
+
+**3 · the ledger to the first panel.** The one passage where the ground does the
+work: plate 0 runs 1.00 → 0.00 across the ten frames as a wipe withdrawing
+through the top, and the panel's eyebrow, numeral, title and paragraph arrive
+under it. Frames 5–9 hold 284 glyphs, so no new word arrives for 0.32 of a
+viewport, but 32–58% of the window's pixels change at every 5px step through it.
+
+**4 · the second panel to the gains.** The emptiest run on the page. Frame 3
+(y 2293, 141 glyphs) has the panel's photograph leaving the top and "What you
+gain" entering the foot; **frames 4 and 5 (y 2351 and 2408, 80 and 53 glyphs)
+are a heading and one or two gain lines on a dark ground with a 70–74% wordless
+band**, and the stage is at 0.00 on all three plates for the first five of the
+ten. The valley then rises through frames 6–10.
+
+**5 · the gains to the closing.** Frames 1–3 hold the four gain lines on the
+picture at 0.95–1.00. Frame 4 (y 2862) is the first with "Travel across
+Europe…" on it, at the foot, with the plate at 0.85. By frame 7 (y 3028) the
+plate is at 0.15 and the closing paragraph and line are on bare floor; frames
+9 and 10 are the closing on black. **This is Ε, frame by frame** — and note
+that it is not the picture *ending* that reads, but the picture and the words
+never being in the same part of the window at the same time.
+
+### 8.5 · Which of the two is the larger defect, and what I would change first
+
+**Δ is the larger defect, and none of the three things it was assumed to be
+turns out to be true.** It is not a wordless screen: home carries 31 glyphs at
+its emptiest frame and never falls under a tenth of its own median at any of
+2,730 stops, where `/about/` runs three quarters of a viewport with no word on
+it at all. It is not an unusual amount of empty space: home's tallest wordless
+band has a median of 37.7% of the window at 664, which sits inside the
+references' own 40–100% per frame, and its worst of 78.6% is MNTN's hero exactly.
+And it is not a gap at the join Andreas names — the passage from the hero lede's
+last row to "What we do" at full opacity is **minus half a viewport** at every
+height, because the heading is readable and wholly inside the window while the
+lede still has 0.49 of a screen to travel. What is actually there is one thing,
+and it is the one measurement on which home is worse than both of its own
+siblings and every reference in the set: **for 0.730 of a viewport at 664 the
+ground does not move.** `PhotoStage` is a fixed layer, so while a plate is held
+at 1.00 the photograph behind every word on the page is the same pixels frame
+after frame; through that run under 0.5% of the window changes per 5px step, and
+through a 100px core of it the frame is bit-identical to its predecessor.
+Twenty stops on home are bit-identical at every height; Contact — the page
+Andreas calls the bar — has **zero**, at every height, and its longest
+near-still run is 0.090–0.128 of a viewport against home's 0.705–0.769. The
+passage is not somewhere incidental: it begins where the clearing has finished
+arriving and ends where the fall into the panels begins, which is the stretch Δ
+points at. "Smooth as a 10k website" is, on the evidence, a complaint that the
+picture stops.
+
+**So the first change is that the ground must not stop, and the amplitude is
+45px.** The target is taken from Contact rather than invented: **no contiguous
+run longer than 0.15 of a viewport in which under 0.5% of the ground changes per
+5px step, and no bit-identical stop at any height** — Contact's own numbers.
+Home is at 0.730 and 20. Because the stage is a fixed layer the only lever is a
+transform on the layer itself, and the threshold is arithmetic rather than
+taste: for the ground to change by at least one device pixel per 5px step at
+DPR 3 it must travel at **0.0667 CSS px per CSS px of scroll**. Over the stretch
+that is actually frozen — scroll 412 to 1080 at 664, 668px — that is **45px of
+travel, 6.7% of the window**, which is inside the **1.07** the arrival scale
+already spends: re-base the settle so it runs across the plate's rise *and* its
+hold instead of across the rise alone, and the residue is a translate inside
+over-scale the page has already paid for. Over the whole span a plate is showing
+(plate 0 is non-zero from scroll 0 to 1474 at 664) the same rate is **98px,
+14.8% of the window**, and that would be a new over-scale rather than a
+re-spent one. **The cost is nameable in advance and the current ratchet cannot
+see it:** `verify:placements` computes from `coverSizes()` and models no
+transform, so a persistent over-scale is invisible to it and real on the screen —
+`hero-1`, `hero-2`, `IMG_4582-road` and `IMG_4619-valley` all sit at exactly
+**1.000** rendered-against-fetched at 1440×900 DPR 2, and a 7% magnification
+puts each of them at 1.07 painted-against-fetched. Either the declaration
+carries the scale, which moves four placements a rung up the ladder and costs
+bytes, or the ratchet gains a term for the transform. That trade is the whole of
+the decision and it should be made before anything is built. What this change
+does **not** cost is the part that has broken every previous attempt: it moves
+no key, changes no span, touches no entrance, adds no px to any ramp and leaves
+every document height where it is. It is background, which is the one layer this
+page already allows to read the scrollbar.
+
+**The second half of Δ I would leave alone, and the number is why.** The
+overlap — two centred blocks of cream type on one screen for 0.49 of a viewport —
+cannot be closed from the clearing's side: its content is 336px tall in a 664
+block with 169px above and 159px below, so the furthest it can move down is
+159px, 0.24 of a viewport, and at that point it is flush to its section's foot,
+which is the composition §2 already rejected for reading as having fallen to the
+bottom of the frame. And the frames where both blocks are on screen are the
+**densest on the page** — 259 to 282 glyphs against a median of 189 — so
+whatever "all that space" is, it is not those frames.
+
+**Ε is real, smaller, and the form it asks for is not the one to build.** The
+fact is exactly as Andreas describes it: "Travel across Europe…" is centred on a
+rect at mean luminance **0.011** with the plate at **0.012–0.036**, where the
+four gain lines a screen above stand at **0.061–0.105** with the plate at
+**0.84–1.00**. But the mechanism is not the one the words imply, because
+**every one of the six blocks reads 0.0% identifiable photographic content in
+its own rect** — the gains lines are in the far end of `.gain-frame`'s defocus
+ramp at blur 7.5px and brightness 0.42, which is what lets them be read at all,
+and the closing lines are on the floor. Neither half of the beat has a picture
+behind it; what separates them is six to ten times the light. Both forms are one
+marker, no key moves and no document height changes, and both cost the closing
+line **5.48–6.16 → 2.62–2.66** against a 3.0 floor. `--shade-mid` at **70%**
+buys it back at 3.34–3.37 for 0.8 points of the closing window's photographic
+content. And then the deciding number: with the plate full and the darkening
+untouched, that window carries **3.6–5.3%** photographic content, against 8.4%
+for the gains frame at 664 and **42–64% for every other ground on the page**.
+The valley is the least photographic ground on the site by a factor of five, and
+form B would spend the page's last quiet beat to extend it. If Ε is to be
+answered it should be answered where the picture actually is — the sharp
+right-hand third of `.gain-frame`, which the words never reach — and that is a
+composition question, not a key.
+
+**One thing found on the way that belongs to neither.** The closing zone's key
+is declared at `top-[25svh]` of its section and lands at **3608 against a maxY
+of 3589 at 750, and 4060 against 3970 at 844** — 19px and 90px past the end of
+the document. It is a key that does not exist at two of the four heights, the
+run-out from the gains is truncated at both, and it is the key either form for Ε
+would have to move. Nothing else on the page has this, and §2.26's rule is the
+reason it went unseen: every key is declared now, and this one is declared
+correctly and simply has nowhere to land.
+
+**The constraints, restated so they are not rediscovered.** Text entrances stay
+clock-based and are not touched by anything above. No ramp carries px: the
+travel is a share of the plate's own key-to-key span, and where a px residue
+cannot be removed it goes in a hold. No section grows, so no section passes 1.2
+viewports. Every span is a share of the window, and the first change moves none
+of them. The twelve keys are declared and stay declared — the first change adds
+none and moves none, which is the reason it is first.
+
+---
+
+## 9 · The handover — the references, the mechanisms, and three compositions
+
+`2843cd0` gave the hero block an exit under a travelling boundary and was
+rejected on the phone: *"πολύ παιδικό transition, καθόλου επαγγελματικό… τι
+είναι αυτό, ένα fade;"* — and the same verdict on the poster's own handover. It
+is reverted at `43f5612`; `git diff f031cfd HEAD` is empty and both files hash
+back to the parent byte for byte.
+
+This section is research and a preview. Nothing was built on the site and no
+component, stylesheet, marker, key, span, entrance or crop was touched beyond
+the revert.
+
+**Two premises this work started from are only half true, and the halves that
+are false are the useful part.**
+
+### 9.1 · What the references do at a handover
+
+`design/refs/` holds two sampled traversals — `cabinfever_01..08` and
+`travel_01..12` — and five stills. **Every figure below is a share of the page
+rectangle**, found per file and recorded in `harness/refboxes.mjs`: a third of
+each capture is browser chrome, a Pinterest viewer or a Dribbble presentation.
+The page rectangles are `cabinfever 2941×1455` at an assumed 1470 CSS px and
+`travel 3104×1406` at 1552. The frame intervals are not uniform in scroll, so
+nothing here is converted to viewports.
+
+**a · What happens to the outgoing block. Not one of the four handovers in the
+two sequences is a fade, and only one is even a removal.**
+
+| handover | what the outgoing block does |
+|---|---|
+| `travel` NAMIBIA → MOROCCO (02→03) | the word and its ground **both leave at once**; `travel_03` carries no trace of NAMIBIA and the incoming word is **rising through the frame's bottom edge** — the tops of `MO` alone, occupying rows 91–100% of the frame at **0.84% ink** |
+| `travel` MOROCCO → SLOVAKIA (05→06) | MOROCCO's cap height goes **38% → 23% of the frame** while the horizon rises 14%; the word is cut by the frame and the dune, never faded |
+| `travel` SLOVAKIA display → SLOVAKIA label (07→08→09) | **the same word shrinks by 11.75× and travels to the corner** — cap height 47% → 4% of the frame, left edge 8% → 5% — and the body copy arrives under it |
+| `cabinfever` Cabin Fever → A Pining… (01→02→03) | the type holds its size while **the photograph grows around it**: the cabin's own width goes 48% → 68% of the frame, so by `02` the cabin has moved in front of the words and "Cabin Fever" reads as "Cab". The picture swallows the block; the block does not leave |
+
+**b · What the ground does, per band.** A single similarity transform fits
+several of these pairs badly, and that is the answer rather than a failure: the
+ground is not one plane. The estimate below is a translation fit run on three
+horizontal bands of the page rectangle with the text boxes masked out, reported
+as a share of that rectangle's own height, with the residual of holding the
+frame still beside it. **Where the two residuals are equal the ground is still
+and the displacement is noise.**
+
+| pair | upper third | middle third | lower third | residual | still |
+|---|---|---|---|---|---|
+| cabin 01→02 | −13.9% | −12.7% | **−29.7%** | 0.103 | 0.177 |
+| cabin 02→03 | replaced | replaced | — | 0.278 | 0.488 |
+| cabin 03→04 | −3.8% | +14.6% | +20.9% | **0.009** | **0.014** |
+| cabin 04→05 | 0.0% | +18.4% | +22.8% | **0.004** | **0.004** |
+| cabin 06→07 | replaced | replaced | replaced | 0.114 | 0.563 |
+| travel 01→02 | 0.0% | 0.0% | 0.0% | **0.000** | **0.000** |
+| travel 02→03 | −20.7% | +38.6% | −24.8% | 0.081 | 0.257 |
+| travel 06→07 | −9.7% | −4.8% | −3.4% | 0.041 | 0.091 |
+| travel 07→08 | −11.0% | −32.4% | −29.0% | 0.070 | 0.215 |
+| travel 09→10 | 0.0% | 0.0% | 0.0% | 0.084 | 0.103 |
+| travel 11→12 | 0.0% | 0.0% | 0.0% | **0.001** | **0.001** |
+
+**cabinfever 01→02 is layered parallax with a measured ratio of 2.14** — the
+foreground band travels 29.7% of the frame where the sky travels 13.9%. And
+`travel_01→02` is **bit-identical outside the headline's own box**: the page did
+not move at all and the tree walked across the letters, which is video and not
+scroll.
+
+**The decisive reading is the number of rates on one screen.** For each 8px
+strip of the frame, the vertical displacement that best matches the next frame,
+divided by that pair's own dominant layer, so the unknown scroll interval falls
+out:
+
+| | strips carrying signal | rates found |
+|---|---|---|
+| cabin 1→2 | 16/17 | **−1.0× : 4 · −0.8× : 2 · +1.0× : 10** — two layers in opposite directions |
+| cabin 7→8 | 17/17 | 0.8× : 6 · 1.0× : 6 · 1.2× : 2 · 1.6× : 3 — **four rates** |
+| travel 6→7 | 16/16 | 0.6× : 3 · 0.8× : 5 · 1.0× : 3 · 1.2× : 5 — **four rates** |
+| travel 9→10 | **0/16** | — the reading section is still |
+| `/` scroll 0→66, the hero leaving | 43/53 | **1.0× : 39** — one rate |
+| `/` scroll 264→330, the clearing arriving | 28/53 | **0.0× : 16 · 1.0× : 12** — two rates |
+| `/` scroll 660→726, reading the clearing | **0/53** | — nothing on the screen changes at all |
+
+**So "their grounds move and ours does not" is wrong in both directions, and
+what is true is sharper.** Both hold still while you read — `travel_09→10` and
+our own 660→726 are equally dead. What separates them is the handover: the
+references run **three or four rates on one screen**, ours runs **two**, and at
+the moment the hero block leaves it runs **one** — everything in the window is
+the document scrolling. This page has exactly two behaviours, `0.00×` for the
+fixed stage and `1.00×` for everything in flow, and no third rate anywhere.
+
+**c · Simultaneity.** No sampled frame of either sequence carries two text
+blocks at full presence. `travel_03` is the only frame in the twelve with two
+blocks *present* at all, and the incoming one is 0.84% ink at the frame's foot.
+Ours holds two settled blocks for **0.362 / 0.384 / 0.393 vp** at 553 / 664 /
+750 and **0.439 vp** at 1440×900.
+
+**d · The luminance, frame by frame.** Mean relative luminance of the page
+rectangle below the nav:
+
+| | range |
+|---|---|
+| `travel_01..12` | **0.170 – 0.513** |
+| `cabinfever_01,02,07,08` — the hero | 0.213 – 0.320 |
+| `cabinfever_03..06` — the dark reading section | **0.014 – 0.020** |
+| `/` at 390×664, the whole page | **0.030 – 0.120** |
+
+**The premise that the references' voids are bright is true of `travel` and
+false of `cabinfever`.** Our brightest screen (0.120, the resting hero) is
+darker than `travel`'s darkest (0.170) — that separation is complete and it is a
+real finding. But `cabinfever_03..06` sit at 0.014–0.020, **darker than anything
+on this page**, and that is the recording Andreas gave as the *motion*
+reference. What separates it from us is not the level but the **range**:
+cabinfever swings 0.32 → 0.014 → 0.32 across eight frames, a factor of **23**,
+and that swing is the transition. Our whole page lives inside a factor of 4, and
+the passage Andreas names falls 0.120 → 0.045 and never comes back.
+
+**e · What is continuous. There is one element, and it is not the type.** The
+gold seal sits at **(50%, 32%) of the frame in `cabinfever_01`, `02`, `03` and
+`05`**, at (50%, 41%) in `06` and (50%, 30%) in `07`. It is in **all eight
+frames**, including `cabinfever_06`, which carries no word at all and is 96.9%
+void at luminance 0.014. Its diameter runs 11% → 9% → 7% → 7% → 6% → 10% of the
+frame's width and it dims to almost nothing at the darkest point. **It holds its
+place in the frame while everything else is replaced** — the reader is never let
+go of. `travel` does the same job with the word itself: SLOVAKIA is display type
+in `06` and `07` and the section's label in `08` and `09`, one element at
+11.75× the size, which is `ART-DIRECTION.md` §6's "a title that transforms… as
+one element, not two crossfading" measured in the reference it came from.
+
+**The five stills, and what is inference.** `mntn` (3.67 viewports) and `ergaki`
+(2.56) are whole-page captures, so what is above and below a handover is
+*measured* and what happens between them is *inferred*. MNTN gives its hero
+1.28 viewports and then three alternating sections on a near-black ground; the
+handover is a photographic edge, which our own §2 forbids, and the large ghosted
+numeral `01` at 40% of the page is the only candidate for a continuous mark —
+inference. `ergaki` inverts the luminance at its handover, dark forest to a
+white band whose void reads **0.831** (§8.2) — measured from the still, and the
+only thing about a transition a single frame can establish. `trafalgar`,
+`grand-canyon` and `forest-excursions` are one viewport each and imply nothing
+about a frame before or after; anything said about their motion would be
+invention.
+
+### 9.2 · What this page already has, and what is free
+
+**1 · §2.6's travelling boundary.** Two fixed ramps — 92/66/8 for the poster and
+78/16/100 for the card — with a 40%-deep boundary crossing between them over
+expansion progress **0.35 → 0.85**. Nothing is interpolated at any frame. It is
+built for the hero shade and it is *not* available to this passage: the
+expansion is at progress 1.00 before the reader has scrolled a pixel.
+
+**2 · PhotoStage's luminance wipe. It is already running here.** Measured on the
+built page, plate 0's boundary crosses the whole window over scroll **30 → 412**
+at 664 (30 → 343 at 553, 30 → 465 at 750): front 0.008 at scroll 40, 0.459 at
+200, 0.867 at 280, 1.000 at 412. The claim that neither passage uses the site's
+own mechanisms is false for this one.
+
+**3 · The arrival scale. Also already running, and it is the only travel on the
+page.** Plate 0 settles **1.0700 → 1.0000** across the same span. Its edge
+travel is **19.4 / 23.2 / 26.3 px** at 553 / 664 / 750 — a mean of **0.056 CSS
+px of ground per CSS px of scroll**, just under §8.5's 0.0667 threshold for one
+device pixel per 5px step at DPR 3, and eased, so it is above the threshold
+through the middle of the arrival and below it at both ends.
+
+**What would have to be true for the ground to travel, without touching `fixed`,
+`h-[100dvh]` or §2.21's key basis.** The layer is fixed and full-window and its
+keys read a `100svh` probe; none of that has to move. The scale is written every
+frame onto `.stage-plate-frame` by the same `requestAnimationFrame`, and **that
+same transform can carry a translate**. It is not a key, it is not layout, and
+during an arrival it is free: at 1.07 the frame overhangs the window by 3.5% on
+each side, so **±19.4 / 23.2 / 26.3 px of travel reveal no edge**, and if the
+translate returns to zero as the scale returns to 1.000 then `verify:placements`
+reads exactly what it reads today.
+
+**Outside an arrival there is nothing free, and that decides the shape of every
+composition.** Travel after the settle needs a *held* over-scale, and §8.5
+priced that: `hero-1`, `hero-2`, `IMG_4582-road` and `IMG_4619-valley` all sit
+at exactly **1.000** rendered-against-fetched at 1440×900 DPR 2, and a
+persistent 1.07 puts each at 1.07 painted-against-fetched — either four
+placements move a rung up the ladder, or the ratchet gains a term for the
+transform. The luck is that plate 0's arrival **is** the passage Andreas names:
+scroll 0 → 343/412/465 against a handover that is over by 250.
+
+**The poster's own handover, since he named it too.** Driven by the page's own
+wheel handler, the card grows 300×400 → 390×664 over six wheel events. The
+headline's effective opacity is **1 at the first frame and 0 at the second** —
+`titleExit` runs progress 0.03 → 0.35, so "We are ArtiCYa" is gone inside the
+first third of the opening, by **an opacity fade and a 30px shift** and nothing
+else. The `hero-ridge` layer — the second copy of the plate that puts the type
+inside the depth — rides the same clock, so the one device on the page that the
+reference set actually uses is alive for a third of the opening and then gone.
+That is the same complaint as the one below the fold, in the same words.
+
+### 9.3 · Three compositions
+
+Every one of them holds: text entrances and exits clock-based or
+boundary-based, never scroll-scrubbed; no ramp carrying px; two fixed states
+with a travelling boundary and nothing interpolated from both; plate strength
+polarised; no local shape behind text and no horizontal line where a ground
+ends; the hero's five mechanics untouched; the twelve keys, eleven spans and
+four document heights unmoved, because every amplitude below is paint. Each is
+stated as an idea with its numbers.
+
+**A · The thread.** One amber mark, continuous across the whole handover — the
+cabinfever seal, done with the mark this page already draws twice. It leaves the
+hero block, **holds at its own row in the frame** while everything else moves
+past it, travels **82 → 64px and centre → left**, and arrives as the clearing's
+rule. The hold is `clearingRule − heroRule` = **334 / 390 / 433 px = 0.604 /
+0.587 / 0.577 of the window**, which is a hold and therefore the one place
+§2.26 allows a px residue. The hero block leaves at **2.02×**: its top row is
+413.4px down a 664 window and the heading is wholly inside at 205, so 413.4/205
+is the smallest rate that clears one block before the other settles — and it is
+cabinfever's own 2.14 between its two bands. Three rates, 0.00 / 1.00 / 2.02,
+and **nothing changes opacity anywhere**.
+
+**B · The camera moves.** No exit is built at all. The incoming photograph
+**rises 3.5% of the window** — 19.4 / 23.2 / 26.3 px — inside the over-scale its
+arrival already pays for, at **0.056×**, while the hero's own plate leaves at
+**1.25×**. Two layers separating, which is cabinfever 01→02's signature. It
+costs the ladder nothing because the scale still ends at 1.000. **It does not
+close the overlap** — both blocks are still settled together around 0.5 vp — and
+that is the finding it is worth building: it is what the page looks like when
+only the ground is answered.
+
+**C · The title arrives at the size of the picture.** `travel`'s own move, at
+our scale. "What we do" enters at **2.00×** — the word is 165.2px at rest and
+2.007× makes it 331px, **85% of the frame, which is `travel_06`'s 85.0% and
+`travel_07`'s 84.4%** — and settles to its own row and its own size on the
+700ms clock the scene already runs. One element, continuous, no crossfade:
+§6's title that transforms. **The reference's own 47%-of-the-frame cap height is
+not reachable and the reason is arithmetic**: SLOVAKIA is eight condensed
+uppercase letters in a 1552px window, "What we do" is a three-word sentence in a
+390px one, and 47% would need the word 1640px wide — 4.2 screens. The width is
+the binding axis and 2.00× is its ceiling. The lede does not fade and is not
+masked: once the incoming photograph's front has risen past the block's foot the
+block **rides on it** and is carried off the top, which is boundary-based with
+the boundary the ground already draws.
+
+**Which I would take: C, with B underneath it.** C is the only one of the three
+that changes what the reader *reads* rather than how the ground behaves, it is
+the reference's own move rather than an invention, it needs no new element and
+no new rate, and every part of it is carried by mechanisms already on the page —
+the scene's clock and the plate's wipe front. B is not really a third
+composition; it is the ground layer any of them wants, it is free, and it is
+measured. A is the most beautiful of the three and the most expensive: a 1.25px
+mark held for 0.59 of a viewport is a very quiet thread on a phone, and it is
+the only one that needs an element the page does not have.
+
+### 9.4 · The preview
+
+`design/refs/handover/compositions.html` — one self-contained file, git-excluded
+with the rest of `design/refs/`. The shipped state as the control at the top,
+then the three compositions, each its own scrollable section of **2.5 screens**
+sized in `svh` so Safari's URL bar cannot change the geometry mid-scroll. Real
+photographs (`IMG_4585` and `hero-1`, at the variants the phone actually
+fetches), real type (the built page's own `Bricolage Grotesque` and `Instrument
+Sans` subsets, copied in), real colours, real darkenings, real copy, and the
+clearing's clock entrance reproduced beat for beat — 400 / 200 / 700 / 250 /
+550 / 680 / 810ms. A small tag in the corner names each one and its amplitudes,
+and expands on a tap. Verified in Chromium and WebKit at 553, 664 and 750 with
+no page errors.
+
+Two things it is honest about rather than hiding. The control reproduces the
+defect exactly — both blocks settled on one screen at 0.50 and 0.75 vp — and B
+reproduces it too, because B answers the ground and not the words.
+
+## 10 · The thread, raised — both handovers. Preview only
+
+A is chosen. This section raises its amplitude until it reads at arm's length,
+gives the same treatment to the poster's own handover, and prices every raise
+at 553, 664 and 750. **Nothing was built.** No component, stylesheet, marker,
+key, span, entrance or crop was touched; everything is in
+`design/refs/handover/`, git-excluded, and the only repository write is this
+file. `git status` at every stage of the work: `M design/OPEN-ITEMS.md`, and
+nothing else.
+
+Every figure is measured on the clean production build at 390 wide, DPR 3,
+Chromium and WebKit, at **553, 664 and 750**. Amber is `#c88a3a`, relative
+luminance **0.3076**; cream ink is `#ede2c8`, **0.7565**.
+
+### 10.1 · "1.25px" is not a weight, and that is the first finding
+
+The site's signature accent weight is **1.25px**. `DESIGN-SYSTEM.md` records
+that at 1× it "rasterizes to a crisp single device row." At the phone's DPR it
+does not rasterize to anything in particular: **a background box's edges are
+snapped, and the painted weight is the difference between the two snapped
+edges** — so what a 1.25px declaration paints is decided by where the element
+happens to land, which is decided by the window height.
+
+Painted CSS px for a declared weight, at ten sub-pixel offsets, both engines,
+DPR 2 and DPR 3 (a synthetic page, so nothing else is in the way):
+
+| declared | Chromium, DPR 2 and 3 | WebKit, DPR 2 | WebKit, DPR 3 |
+|---|---|---|---|
+| **1.00** | 1.00 everywhere | 1.00 everywhere | 1.00 everywhere |
+| **1.25** | **1.00 or 2.00** | **1.00 or 1.50** | **1.00 or 1.33** |
+| 1.50 | 1.00 or 2.00 | 1.50 everywhere | 1.33 or 1.67 |
+| 1.75 | 1.00 or 2.00 | 1.50 or 2.00 | 1.67 or 2.00 |
+| **2.00** | 2.00 everywhere | 2.00 everywhere | 2.00 everywhere |
+| 2.50 | 2.00 or 3.00 | 2.50 everywhere | 2.33 or 2.67 |
+| **3.00** | 3.00 everywhere | 3.00 everywhere | 3.00 everywhere |
+| **4.00** | 4.00 everywhere | 4.00 everywhere | 4.00 everywhere |
+
+Chromium snaps to whole **CSS** px, WebKit to **device** px. The conclusion is
+the same in both: **only whole numbers paint what they say.** Everything
+between is a coin flip resolved by layout.
+
+**And it is not hypothetical — it is happening on the built page.** The three
+marks the thread runs through, measured at their real rows:
+
+| | declared | 553 | 664 | 750 |
+|---|---|---|---|---|
+| `.hero-strike`, the eyebrow's rule | 1.25px | **1.00** | **2.00** | **2.00** |
+| the clearing's `.stage-rule` | 1.25px | 2.00 | **1.00** | **1.00** |
+| the hero band's own rule | 1.00px | 1.00 | 1.00 | 1.00 |
+
+At 664 the same declaration paints **2.00px** at the top of the first screen
+and **1.00px** one screen below it. On a phone in Safari the strike paints
+1.00–1.33px. So "a 1.25px mark is very quiet" understates it: **the mark is a
+1px mark four fifths of the time, and it is 1px at the station the reader meets
+first.**
+
+### 10.2 · The thread's three stations, as they ship
+
+The mark A runs is not one mark. It is three, and they are three different
+objects:
+
+| station | where | declared | painted at 664 | colour | length |
+|---|---|---|---|---|---|
+| 1 · `.hero-strike` | the eyebrow, under the label | 1.25px | 2.00px | `amber` **1.00** | 88px |
+| 2 · the intro band's rule | above the lede | 1.00px | 1.00px | `amber` **0.55** | 82px |
+| 3 · `.stage-rule` | above "What we do" | 1.25px | 1.00px | `amber` **1.00** | 64px |
+
+Their rows, measured, and the same at both engines to a pixel:
+
+| | 553 | 664 | 750 |
+|---|---|---|---|
+| station 1, at progress 0 | 110.2 | 153.4 | 189.3 |
+| station 2, resting hero | 322.4 | 433.4 | 519.4 |
+| station 3, document row | 656.5 | 823.0 | 952.0 |
+| **1 → 2 · the poster's leg** | **212.2** | **280.0** | **330.1** |
+| **2 → 3 · the passage's leg** | **334.1** | **389.6** | **432.6** |
+| 2 → 3 as a share of the window | 0.604 | 0.587 | 0.577 |
+
+**Stations 1 and 2 are on the same centre line.** The strike runs x 151–239 and
+the intro rule x 154–236: both centred on 195, exactly. The poster's leg is a
+pure vertical descent, and its length is `0.5825·H − 105.8` — the same
+`a·H − b` law §2.18 placed the headline by.
+
+**The instrument for "how strongly does a line read".** A thin line's
+detectability is its contrast integrated across its width, so the quantity to
+compare is **S = painted width × (L_mark − L_ground)** in luminance·CSS px —
+the number that survives the eye's own blur. Measured pixel-wise at each
+station (ground is the median of the six rows either side of the mark):
+
+| station, at 664 | painted | L mark | L ground | Weber | **S** |
+|---|---|---|---|---|---|
+| 1 · the strike | 2.00 | 0.3076 | 0.086 | 2.57 | **0.444** |
+| 2 · the intro rule | 1.00 | 0.145 | 0.044 | 2.27 | **0.101** |
+| 3 · the clearing's rule | 1.00 | 0.3076 | 0.032 | 8.51 | **0.276** |
+
+**The thread's weakest station carries 23% of its strongest, and it is the
+hinge** — the mark both handovers pass through. That is the number the raise
+has to close before it closes anything else.
+
+### 10.3 · a · The weight, and whether the 3–4px ceiling applies
+
+`DESIGN-SYSTEM.md`: *"at 3–4px the same marks read as heavy blocks and the
+accent starts competing with the type instead of pointing at it."* **That
+ceiling holds, and it was written for a static accent mark that stands beside
+type** — the heading bars, the panels' accents, the nav underline, the chrome's
+hairline. Every one of them has a word next to it in every frame it exists in.
+
+**The same paragraph already exempts one object, and the exemption is the
+thread's own argument.** *"The trail thread is not one of these rules and keeps
+its 2px weight: the gains trail's descending line, its nodes and the lamp's
+line and cone are the signature light source, not decoration, and thinning them
+would break the continuity from the trail into the lamp."* So the system has
+two weights by **job**, not by taste: **1.25px for decoration, 2px for
+continuity.** A mark whose whole purpose is to be the one thing that survives a
+handover is a continuity element by definition — the page already has a class
+for it, and 2px is that class's weight. It is not an exception granted to
+itself; it is the existing rule read on the right axis.
+
+**Which is where it stops.** 3px and 4px are the band the ceiling names, and at
+its two ends this mark *is* the static accent standing beside type — the
+eyebrow over "What we do" in the frame every reader stops and reads. I am not
+willing to spend the ceiling there, and I am not willing to *ramp* the weight
+across the travel either: a weight that scrubs collapses into 200ms on a flick,
+which is the exact failure the site's motion rule exists to prevent.
+
+**So: one weight, 2px, whole-number.** What it buys, with the ground measured
+at each station:
+
+| | station 1 | station 2 | station 3 | mean | spread across stations |
+|---|---|---|---|---|---|
+| **shipped** (2.00 / 1.00 / 1.00 px) | 0.444 | **0.101** | 0.276 | 0.274 | **4.4×** |
+| **2px solid** | 0.444 | **0.528** | 0.552 | 0.508 | **1.24×** |
+| 3px solid | 0.666 | 0.792 | 0.828 | 0.762 | 1.24× |
+| 4px solid | 0.888 | 1.056 | 1.104 | 1.016 | 1.24× |
+
+**2px solid is ×1.85 on the mean and ×5.2 at the hinge, and it is the first
+version of this mark that is one object rather than three.** 3px would be ×2.78
+and 4px ×3.71, and both spend the ceiling.
+
+**The angular check, since the brief is "at arm's length."** 390 CSS px across
+64.0 mm of glass is 0.1641 mm per px; at 350 mm that is **1.612 arcmin per CSS
+px**. So 1.00px = 1.61′, 2.00px = 3.22′, 3.00px = 4.84′, 4.00px = 6.45′. The
+eye's line-summation window is about 4′: below it extra width buys contrast,
+at and above it the line is simply seen at its own contrast. **2px sits inside
+that window and 3px clears it** — which is the honest statement of what the
+third pixel would buy, and it is the only argument for 3 that is not taste. It
+is not enough to spend the ceiling on, because this mark is nowhere near
+threshold: its Weber contrast against its own ground runs 2.3 to 28.
+
+### 10.4 · b · The length, and what length cannot do
+
+**Length cannot do what weight does, and the reason is that S is per unit
+length.** A 160px hairline is a longer hairline: its cross-section is still
+1.61′ and every reading in the table above is unchanged. What length changes is
+not how strongly the mark reads but **what it is** — at 64px it is a tick at
+16% of the window, at 160px a rule at 41%, at 358px the text column's own
+measure and a section divider, which `DESIGN-SYSTEM.md` forbids outright
+("Amber never draws a full-width line between two sections").
+
+Where length does count is **footprint**, and the reference sets the target.
+`cabinfever`'s seal is 11% of the frame's width in diameter at `01`; in a
+1470 CSS px frame that is a 161.7px disc, **20,536 px²**, which scaled to a
+390-wide frame is **1,446 CSS px²**. Against it:
+
+| mark | footprint | vs the seal | vs "What we do"'s own ink (1,520 px², measured) |
+|---|---|---|---|
+| shipped, 64 × 1.00 | 64 px² | **1/23** | 4.2% |
+| 96 × 2 | **192 px²** | 1/7.5 | **12.6%** |
+| 128 × 2 | 256 px² | 1/5.6 | 16.8% |
+| 96 × 3 | 288 px² | 1/5.0 | 18.9% |
+| 128 × 3 | 384 px² | 1/3.8 | 25.3% |
+
+*(footprint against footprint for the seal, footprint against ink for the
+heading — the second comparison is the generous one and it is the one that
+matters, because ink is what competes for the eye.)*
+
+**And this is the ceiling on A, stated as arithmetic.** To reach the seal's
+1,446 px² as a *line* costs either 15px of weight at 96px long — a bar — or
+482px of length at 3px — wider than the window and a divider. **A cannot reach
+the reference's amplitude with a line, at any legal combination**, and that is
+worth saying plainly rather than discovering later. What it can reach is
+**192 px² at 96 × 2** — three times the shipped mark's footprint, an eighth of
+the heading's ink, and a mark that is finally the same object at all three
+stations. 96px is picked to sit inside the family the page already draws: the
+strike is 88 and the chrome's own family runs 48–88.
+
+### 10.5 · c · The travel, and this is the finding that changes A
+
+Shipped, the mark travels **138px horizontally** — x 154 → 16 — over 334 / 390 /
+433px of scroll: **0.413 / 0.354 / 0.319 px of mark per px of finger**, and
+**0.00× vertically**, because it holds its row in the frame.
+
+At two and three times that:
+
+| travel | horizontal | rate at 664 | what it costs |
+|---|---|---|---|
+| **1× (shipped)** | 138px, x 154 → 16 | 0.354× | — |
+| 2× | 276px, x 292 → 16 | 0.708× | the mark starts flush to the window's right edge (292 + 96 = 388 of 390), so it no longer starts where the hero band's rule is |
+| 3× | 414px | 1.062× | **impossible** — 414 > the 390 window; one endpoint has to be off-screen, at which point the mark is a wipe, not a mark |
+
+**Then the reference set, on the same question, and it is unambiguous.**
+`cabinfever`'s seal sits at (50%, 32%) of the frame in `01`, `02`, `03` and
+`05` — **0.0% of travel across four consecutive frames.** `travel`'s SLOVAKIA
+goes from left 8% to left 5% of its frame — **3%** — while scaling 11.75×.
+**Neither reference moves its continuous element. What they change is its
+size.**
+
+Ours moves **138 / 390 = 35.4% of the frame at 1×**, which is **twelve times**
+the largest translation either reference gives a continuous mark, and 70.8% at
+2×. So the answer to "does a longer travel read as one continuous stroke or as
+a mark being moved" is that **the shipped travel is already past that line**,
+and doubling it makes it worse. The axis A should be raised on is weight and
+footprint; the lateral travel is the part of A most likely to read as animation
+rather than as composition, and it is the part that is scroll-scrubbed —
+the same 138px crosses the frame in 0.33s at a 1200px/s flick and in 1.95s at a
+slow scroll.
+
+**I could not remove it, and the reason is composition, not mechanism.** The
+destination is at x=16 because the clearing's block is left-aligned; a centred
+eyebrow rule over a left-aligned heading is worse than a travelling one. The
+preview carries a `travel: 0` toggle so the alternative can be felt rather than
+argued, but it is shown as a diagnostic, not as a proposal.
+
+### 10.6 · d · The luminance, and the mark already carries the swing
+
+§9.1(d) found that `cabinfever` swings ×23 across a handover and that this page
+swings ×4 and never returns. **The second half of that is true of the window's
+mean and false of the row the mark lives on**, and the distinction is the whole
+of this item. Measured at 17 stops across the passage, at the mark's own row and
+over its own columns:
+
+| | 553 | 664 | 750 |
+|---|---|---|---|
+| window mean, start → end | 0.103 → 0.046 | 0.114 → 0.046 | 0.126 → 0.045 |
+| window mean, factor | ×2.26 | ×2.50 | ×2.78 |
+| **local ground under the mark**, start → darkest → end | 0.025 → **0.011** → 0.011 | 0.042 → **0.011** → 0.036 | 0.038 → **0.010** → 0.031 |
+| **the mark's own Weber contrast** | 11.2 → **26.8** | 6.3 → **28.3** → 7.6 | 7.1 → **28.7** → 9.0 |
+| factor, and does it return | ×2.4, no | **×4.5, yes** | **×4.0, yes** |
+
+**The mark can carry the swing, it already does, it costs nothing, and at 664
+and 750 it returns.** A constant-luminance mark on a ground that falls by half
+and comes back *is* a contrast swing — the mark dims where the picture is bright
+and blazes where the picture is dark, which is precisely what the seal does
+across `cabinfever_01..06`. Nothing has to be animated to get it. (Two of the
+51 stops read the median on cream type crossing the strip; they are excluded
+and named here rather than smoothed away.)
+
+**Its one consequence is the argument for §10.3 restated.** The mark is at its
+*weakest* at the two ends — Weber 6.3 arriving and 7.6 leaving at 664 — and
+blazes in the middle. The ends are the frames where it has to be recognised as
+the same object, so the weight has to be picked for the ends and not for the
+middle.
+
+### 10.7 · e · The second rate, and the rate that is actually missing
+
+**A alone adds no vertical rate at all**, and §9.3 overstated this. The mark
+holds its row in the frame, which is **0.00×** — the rate the fixed stage
+already runs. The rate A adds is the hero block's exit. With B underneath:
+
+| | rates on one screen |
+|---|---|
+| shipped | 0.00 · 1.00 |
+| **A** | 0.00 · 1.00 · the block's exit |
+| **A + B** | 0.00 · **0.056** · 1.00 · the block's exit |
+| `cabinfever` 7→8 | 0.8 · 1.0 · 1.2 · 1.6 |
+| `travel` 6→7 | 0.6 · 0.8 · 1.0 · 1.2 |
+
+**Four rates, and they do not read as one move.** The references' four span a
+factor of **2.0**; ours span **27–36** and include a still layer the references
+never use. B's 0.056× is **19.4 / 23.2 / 26.3px of ground over 334 / 390 /
+433px of scroll** — 5.6% of the document's rate, where `cabinfever`'s slowest
+plane is 60–80% of its dominant one. **It does not read as a second rate; it
+reads as the arrival settling, which is what it is.** It is free and it is real
+and it should be kept, but it should not be sold as parallax.
+
+**The rate that is actually missing is one between 0.00 and 1.00, and this page
+has nowhere free to put it.** §8.5 priced the only candidate: travel after the
+settle needs a *held* over-scale, and a persistent 1.07 moves four placements up
+the ladder or gives the ratchet a new term. So the honest statement is: A + B
+gives four rates on one screen for the first time, three of them at the extremes
+and one of them a texture — better than two, and not the reference's continuum.
+
+### 10.8 · The block's exit rate — 2.02× is over-specified, and 1.50× is the number
+
+§9.3 derived **2.02×** as *"the smallest rate that clears one block before the
+other settles"* — 413.4px of band top over the 205px at which the heading is
+wholly inside the window at 664. Measured against what the exit actually has to
+achieve, that is too fast, and it costs the page a rule it has never broken.
+
+Swept at six rates, at all three heights: the **glyph floor** is the fewest
+content glyphs on any frame of the passage (chrome excluded); the **overlap** is
+the run where the hero's statement and the clearing's lead are *both whole
+inside the window* — the defect A exists to remove.
+
+| rate | glyph floor 553 / 664 / 750 | overlap, vp, 553 / 664 / 750 |
+|---|---|---|
+| 1.00× (shipped) | 114 / 114 / 114 | 0.10 / 0.16 / 0.20 |
+| 1.25× | 114 / 114 / 114 | 0.00 / 0.02 / 0.04 |
+| **1.50×** | **114 / 114 / 114** | **0.00 / 0.00 / 0.00** |
+| 1.75× | **17** / **17** / 114 | 0 |
+| 2.02× | **8** / **8** / **17** | 0 |
+| 2.60× | **0** / **0** / **0** | 0 |
+
+**1.50× closes the overlap completely at every height and leaves the glyph floor
+exactly where the shipped page has it.** 2.02× buys nothing further and drops
+the floor to 8 — "What we do" alone on its picture, 5.1% of the passage's own
+median of 156, which is a new sub-10%-of-median run and the brief forbids one.
+2.60× produces a genuinely wordless frame. So the exit rate is **1.50×**, and
+the ladder of rates on the screen becomes **0.00 / 0.056 / 1.00 / 1.50** — which
+also happens to be the first version of it that fits inside the references' own
+factor-of-2 spread above the document.
+
+### 10.9 · The poster's handover, as it ships
+
+Measured by stepping the expansion with one wheel event per frame, at 5% of
+progress, counting every rendered glyph in the window with the header's
+seven-glyph wordmark counted separately:
+
+| progress | 0 | 0.10 | 0.20 | **0.35** | 0.50 | 0.70 | 0.90 | 1.00 |
+|---|---|---|---|---|---|---|---|---|
+| headline + label opacity | 1.000 | 0.781 | 0.469 | **0** | 0 | 0 | 0 | 0 |
+| `hero-ridge` opacity | 1.000 | 0.890 | 0.591 | 0.124 | 0 | 0 | 0 | 0 |
+| **content glyphs** | 26 | 26 | 26 | **0** | **0** | **0** | **0** | 26 |
+| chrome glyphs | 7 | 7 | 7 | 7 | 7 | 7 | 7 | 7 |
+| window mean luminance, 664 | 0.082 | 0.075 | 0.070 | 0.065 | 0.044 | 0.100 | 0.100 | 0.099 |
+
+`titleExit` runs progress **0.03 → 0.35**: an opacity fade to zero and a 30px
+rise, and nothing else. In wheel that is **33 → 389**. **On the glass it is
+6px → 70px of thumb** — the touch handler adds `deltaY × 0.005` and re-bases on
+every move, so the whole opening is **200 CSS px of finger from end to end and
+the handover is 64 px of it**, about ten millimetres, a twentieth of one flick.
+`hero-ridge` — the depth device, and the one thing on this page the reference
+set also does — rides the same clock and is gone at 0.35.
+
+**And then nothing happens for two thirds of the opening.** From progress 0.35
+to 1.00 — **0.65 of the opening — 14 of the 21 sampled stops, 130 CSS px of thumb** — the
+page carries **no content glyph at all**, only the wordmark. `showContent` flips
+at progress ≥ 1, so the lede and the button do not begin their 700ms clock until
+the expansion is over. §8.1 never caught this because it stepped *scroll*, and
+this whole passage runs at `scrollY` 0.
+
+The one thing the opening does have is a swing the passage below it does not:
+**0.082 → 0.044 → 0.099 at 664, ×2.25 down and ×2.25 back.** So the material is
+there; nothing is standing in it.
+
+### 10.10 · The poster's handover, proposed — the thread's first leg
+
+**Nothing fades.** Four changes, all paint, none of them touching the five
+frozen mechanics — the expansion's progress, the slideshow, the hydration gate,
+`scrollRestoration` and the foot dissolve are read by none of this.
+
+**1 · The headline descends behind the land, at full ink.** `titleShift` goes
+from **−30px (up, fading)** to **+154px (down, opaque)**. 154 is not chosen: the
+title block is placed at `41.75% − 154px`, so **the descent that puts its top
+row exactly on the skyline is the same constant that positioned it**, at every
+height — `min(154, 0.4175·H − 80)` = **150.9 / 154 / 154**. The land silhouette
+is a fraction of the window and holds 0.4175 of it at all three heights, so this
+is one number and not three. The headline reaches **zero visible ink at 0.35**,
+exactly as now.
+
+**2 · §2.6's pair is untouched, and by construction rather than by luck.** The
+requirement is that the shade's crossing does not run under readable type; the
+headline's *deadline* is what enforces it, and the deadline does not move. Only
+the route does. (The preview carries the sanctioned alternative as a toggle —
+exit to 0.60 with the crossing following it to 0.60–1.00 — which makes the
+descent 114px of thumb instead of 64 and shrinks the wordless run from 0.65 to
+0.40 of the opening, at the cost of compressing the crossing from 0.50 to 0.40
+of progress. It is the lever `DESIGN-SYSTEM.md` explicitly leaves open.)
+
+**3 · The strike does not go with it.** It detaches at progress 0.03 and
+descends **212.2 / 280.0 / 330.1px** — `0.5825·H − 105.8` — down the centre line
+both stations already share, over the **whole** opening rather than its first
+third, landing on the intro band's rule row on the frame the intro's own clock
+fires. Measured in the preview at every 5% of progress: it lands at 322.8 /
+433.8 / 519.8 against the site's 322.4 / 433.4 / 519.4.
+
+**4 · `hero-ridge` rides the poster's clock instead of the headline's.** It has
+to: it is now the thing the headline hides behind. `opacity: posterOpacity`
+keeps the depth device alive to **0.92** instead of 0.35 — **2.6× longer** — and
+that answers §9.2's complaint directly. **So the thread uses `hero-ridge`
+rather than adding a layer: the proposal introduces no new element at all.**
+The mark is the frontmost layer, in front of the land, because a mark that
+passes *behind* the depth device never comes back out of it — and that also
+satisfies the composite rule in the strictest available way: the type is inside
+the depth, the land is the boundary, the mark is in front of both, and nothing
+is ever inside a travelling mask.
+
+**The wordless run, and the one thing I could not make work for free.** The
+descent as described does not close it: the label goes behind the land with the
+headline, so 0.70 of the opening still carries no word. Measured, at all three
+heights:
+
+| | glyph floor | wordless share of the opening |
+|---|---|---|
+| shipped | 0 | **0.65** |
+| the descent, label leaving with the headline | 0 | **0.65** |
+| the descent, exit lengthened to 0.60 | 0 | 0.40 |
+| **the descent, label riding the mark** | **14** | **0.00** |
+
+**The label riding the mark closes it completely.** The eyebrow — label and
+rule together, in their existing 12px relationship — descends as one unit by the
+same `0.5825·H − 105.8`, so the rule lands as the intro's rule and
+"ArtiCYa · Cyprus" sits 30.2px above it. The DOM is untouched, only the paint
+moves, so `verify:text`'s ordering cannot see it.
+
+**It costs contrast, and the number is the reason it is not simply the
+recommendation.** The label's landing row is **290 / 401 / 487**, above the
+card ramp's fall, where the ground is lighter than at the lede's row. Worst
+glyph-core contrast in the preview's own composite, both engines:
+
+| | 553 | 664 | 750 |
+|---|---|---|---|
+| the descended label | **4.02** | 5.10 | 5.58 |
+| the lede below it, same composite | 7.89 | 8.81 | 9.06 |
+
+**It fails the 4.5 body floor at 553 by 0.48.** Closing it costs one of two
+things: the card's ramp deepened at that row, which is a §2.8 ratchet question
+and has to be re-measured on the built page against `3749c92`; or a landing
+~50px lower, which the lede already occupies. Neither is free and neither is
+decided here.
+
+### 10.11 · What makes the two handovers one idea
+
+Not a metaphor, and not a family resemblance. **The site already draws an amber
+rule on both sides of both handovers, and in both cases it currently deletes one
+and draws the other.** The thread is the refusal to delete it, and the geometry
+says the two are the same move:
+
+- The poster's two rules are **on the same centre line** — x-centre 195 and 195,
+  measured — so its handover is a pure vertical descent of one mark.
+- The passage's two rules are **the same mark again**, station 2 to station 3.
+- Both legs are placed by the same law: the descent is `0.5825·H − 105.8`, the
+  hide is the `154` out of `41.75% − 154px`, and §2.18's `a·H − b` is what makes
+  both hold at every height.
+- **In both, the outgoing block leaves behind a foreground rather than by
+  fading** — the land above, the incoming photograph's own wipe front below.
+  That is `cabinfever` 01→03's single move, done twice with the two foregrounds
+  this page already paints.
+
+One element, three stations, from the first frame the site paints to the second
+screen's heading. That is the claim, and it is checkable: it is one amber mark
+of one weight and one length, and the only thing that changes about it is where
+it is.
+
+### 10.12 · The preview
+
+**`design/refs/handover/thread.html`** — a **second file beside**
+`compositions.html`, not a replacement. Two reasons: `compositions.html` is the
+artefact A was chosen from and overwriting it would destroy the record of that
+choice, and this file carries different sections — both passages, each with its
+shipped control — rather than four variants of one.
+
+Five sections, each its own full scrollable screen or screens, all self-contained
+and offline (the land mask is inlined as a base64 data URI; a `file://` page
+cannot fetch a mask cross-origin, which is why the first build of it silently
+rendered no depth at all):
+
+1. **The opening, as it ships** — and it captures the finger exactly as the site
+   does: `deltaY × 0.005` re-based on every move, `× 0.0009` on a wheel, the page
+   pinned to the section's top while it captures. 200px of thumb from end to end,
+   no momentum. A **replay** chip re-arms it.
+2. **The opening, the thread's first leg.**
+3. **The passage, as it ships.**
+4. **The passage, the thread raised.**
+5. **The passage, the thread raised, with B's ground travel underneath.**
+
+An **AMP** panel at the top right changes weight (1.25 / 2 / 3 / 4), length
+(64 / 96 / 128 / 160), travel (138px / 0), the headline's exit (0.35 / 0.60),
+the label (leaves / descends) and the block's exit rate (1.00 / 1.50 / 2.02 /
+2.60) live, so every number in this section can be felt rather than taken on
+trust. The corner tag names the section and its amplitudes and expands on a tap;
+the readout gives the window height, the mark's box, progress in thumb-px and the
+measured hold.
+
+**It reproduces the built page, and that was verified rather than asserted.**
+Measured in the preview against the site, at 553 / 664 / 750: the strike at
+x 151 w 88 h 1.25, rows **110.2 / 153.4 / 189.3**; the title block's top at
+**80 / 123.2 / 159.1**; the h1 at x 56.1 w 277.7 h 106.28; the intro rule at
+**322 / 433 / 519**; the clearing's rule at **656 / 823 / 952**; the band 251px
+deep; **the hold 334 / 390 / 433 = 0.604 / 0.587 / 0.577 vp** — every one of them
+the site's own figure. The first build was 29px out at every height and the cause
+was the mobile ledger: the site's rows are baseline rows 60px deep, not a 3-up
+grid. Frame-for-frame against the site's own opening, the control is
+indistinguishable.
+
+**Every constraint, checked and stated.**
+
+| constraint | how it is met |
+|---|---|
+| clock-based or boundary-based, never scroll-scrubbed | **Every text entrance and exit is untouched.** The clearing's 400/200/700/250/550/680/810ms clock and the intro's 700ms with its 100/300ms stagger both play exactly as they ship. What is scroll-linked is the mark, the ground and the block's *rate* — none of them type. The one place type moves with scroll is the block's exit, and a rate is not a ramp: at every frame the block is at full ink and it leaves the screen, so its position never has to resolve to a value. |
+| no ramp carries px | The mark's hold is `station 3 − station 2`, which is a hold and therefore §2.26's one sanctioned px residue. Every other span is untouched. |
+| two fixed states and a travelling boundary, checked at the midpoint | §2.6's crossing is reproduced exactly — two fixed ramps, `edge = 140 − 180t`, a 40%-deep boundary, no mask at either end. Checked at progress 0.6: the poster ramp above the boundary and the card ramp below it, no third value anywhere. |
+| polarised plate strength | The plate wipe is `PhotoStage`'s own, `front = s × 1.4`; strength is never held between 0 and 1. |
+| no local shape behind text | Nothing is added behind anything. The mark is a 2px line in front of the picture. |
+| no horizontal line between grounds | The mark is 96px in a 390px window — 25% — and it is never at a ground's edge. This is the constraint that sets the length ceiling; see §10.4. |
+| no screen without words | **The passage: floor 114 at 1.50×, at all three heights.** The opening: 0.65 wordless as it ships, 0.65 with the descent, **0.00 with the label riding the mark** — and that last one costs 4.02 at 553. Named, not hidden. |
+| no new sub-10%-of-median run | **1.50× introduces none** — the floor stays at the shipped 114. 2.02× would introduce one at 8 glyphs against a median of 156. That is why the rate changed. |
+| the twelve keys, eleven spans, four document heights | Nothing was built; the repository is untouched apart from this file. Every amplitude proposed is paint — a weight, a length, a translate, an opacity clock and a mask that already exists. |
+
+### 10.13 · What I would ship, and what I could not make work
+
+**The amplitude: `96 × 2px`, solid amber, at all three stations.** ×1.85 on the
+mean line signal, **×5.2 at the hinge**, ×3.0 on footprint, and the first version
+of this mark that is one object rather than three — 1.24× across the stations
+against the shipped 4.4×. It is a whole number, so it paints 2.00 in both
+engines at every offset and every window height, which 1.25 does not. It is the
+weight `DESIGN-SYSTEM.md` already gives its only other continuity element, so it
+needs no exception. **I would not go to 3px**: it is the ceiling's own band, the
+mark stands beside a 30.4px heading at both ends of its life, and the third pixel
+buys 4.84′ against 3.22′ on a mark whose contrast is already 2.3–28.
+
+**The exit rate: 1.50×, not 2.02×.** It closes the overlap at every height and
+keeps the glyph floor at 114. 2.02× buys nothing more and costs 106 glyphs.
+
+**The travel: 138px, unwillingly.** It is 12× what either reference does with a
+continuous mark and it is the part of A that reads as animation. I could not
+remove it: the destination is at the left margin because the clearing's block is
+left-aligned, and a centred rule over a left-aligned heading is a worse
+composition than a travelling one. Closing it properly costs the clearing's own
+alignment, which is a composition decision and not this brief's.
+
+**The poster: the descent, the strike detached, `hero-ridge` alive to 0.92.**
+No fade anywhere, the depth device doing a job for the whole opening instead of a
+third of it, and §2.6's pair untouched.
+
+**Three things I could not make work, with their price:**
+
+1. **The opening's wordless run.** 0.70 of the opening, 130px of thumb, carrying
+   the wordmark and nothing else. The descent does not close it; **the label
+   riding the mark does, completely**, and lands at 4.02 against a 4.5 floor at
+   553. Price: either the card's ramp deepened at row 290, which is a §2.8
+   ratchet measurement on the built page, or the lengthened exit at 0.60, which
+   cuts the run to 0.40 without closing it and compresses §2.6's crossing by
+   20%. Nothing free closes it.
+2. **A cannot reach the reference's amplitude.** `cabinfever`'s continuous mark
+   is 1,446 CSS px² at our frame size; ours at 96 × 2 is 192. Closing that with a
+   line needs 15px of weight or 482px of length, and both are forbidden by rules
+   this site has already paid for. What A can be is a clear mark; it cannot be a
+   held one.
+3. **The missing rate.** Four rates on one screen, three of them at the extremes.
+   The 0.3–0.7 band the references live in needs a held over-scale on the ground,
+   and §8.5 priced that at four placements up the ladder or a new term in the
+   ratchet. Not attempted.
+
+**Opening it from the phone.** The file is
+`design/refs/handover/thread.html`, with `poster.avif`, `clearing.avif`,
+`display.woff2` and `body.woff2` beside it — all five have to travel together.
+AirDrop the whole `design/refs/handover/` folder to the iPhone, open it in
+**Files**, and tap `thread.html`; Safari opens it and everything runs offline.
+Sections 1 and 2 capture the finger the way the site does, so scroll them with a
+slow drag rather than a flick, and use **replay** to run them again. **AMP** at
+the top right changes the amplitudes live.
+
+---
+
+## 12 · The centre tile, the cable and the amber rule — 2026-09-05
+
+Three items on the reinstated mosaic. **One was taken**; the other two were
+measured first and both hit their own stop condition, so nothing on the tiles
+changed. Every figure below is read off a clean production build — `rm -rf
+.next out` — with the build immediately before it served on a second port as
+the control.
+
+| | outcome |
+|---|---|
+| the centre tile's `sizes` | **taken.** `100vw`, and the climax at 1440×900 goes 3.90 → 1.04 |
+| the two wide slots over 1.0 | **taken.** Two rows join the ratchet, and every row in it now carries an owner |
+| `hero-2`'s overhead cable | **measured, and stopped.** No `object-position` clears it on a phone at any value on either axis |
+| the amber rule at 375×553 | **measured, and stopped.** It is the mark's ground and not its weight, so §10.1's repair does not reach it |
+
+---
+
+### 12.1 · The centre tile declares the window
+
+`GalleryFinale`'s slot 0 declared its resting box like every other tile —
+`(min-width: 768px) 26vw, 76.4vw` out of `coverSizes()`. It now declares
+`100vw`, which is what `b256c30` declared here and what the ladder's top rung
+is at DPR 2.
+
+**Why this tile and no other.** The rule the six outer tiles keep is that a
+declaration is made at rest, because the fan-out takes them to between 4× and
+9× and no rung reaches that — the worst slot asks 8036 device px against a 2880
+cap — so declaring at the peak buys nothing and costs every visitor the
+download. The centre tile is the one place that argument does not hold: it is
+the only tile the fan-out leaves **alone on the window**, held there while the
+mosaic finishes, so its peak is a frame the reader stops on rather than passes
+through. `100vw` is not a declaration at the peak either — the peak is 104vw —
+it is the widest rung that exists.
+
+**The climax, measured.** Scroll driven to stage 0.760, where the scale window
+`0.55 → 0.745` has completed and the centre tile stands at 4×. *Painted* is the
+picture and not the box: the frame is cover-fitted, so on a desktop it is
+fitted by width and paints its box, and on a phone it is fitted by height and
+paints wider than its box.
+
+| | painted | before, fetched | before, ratio | after, fetched | **after, ratio** | vs source 3024 |
+|---|---|---|---|---|---|---|
+| 375×553 DPR 3 | 2344 dev px | `hero-1-1024` | 2.285 | `hero-1-1152` | **2.035** | 0.775 |
+| 390×664 DPR 3 | 2815 | `hero-1-1024` | 2.743 | `hero-1-1366` | **2.061** | 0.931 |
+| 390×750 DPR 3 | 3180 | `hero-1-1024` | 3.099 | `hero-1-1366` | **2.328** | 1.051 |
+| 390×844 DPR 3 | 3578 | `hero-1-1024` | 3.488 | `hero-1-1366` | **2.620** | 1.183 |
+| **1440×900 DPR 2** | **2995** | `hero-1-768` | **3.900** | `hero-1-2880` | **1.040** | **0.990** |
+| 1920×900 DPR 2 | 3994 | `hero-1-1024` | 3.900 | `hero-1-2880` | **1.387** | 1.321 |
+
+*Painted* is each build's own, and the two differ by up to 2.4 CSS px because
+cover-fit multiplies the box by the **variant's** rounded aspect and the two
+builds take different rungs; the column shows the after build's and each ratio
+is computed against its own. Before: 2340 / 2809 / 3173 / 3571 / 2995 / 3994.
+
+**1440×900 reads 1.040 against a prediction of 1.04**, and against source it is
+0.990 — under 1.0, which is the whole reason the 3024 ingest makes this
+affordable and `b256c30` could not have had it. The residual 4% is the peak
+being 104vw against a 100vw declaration on a ladder that stops at 100vw: 2995
+device px asked of a 2880 file, **115 px of overshoot**. It is the same shape
+as the hero push's 86 and it is bounded the same way — one frame of one
+animation, and against source there is nothing wrong with it.
+
+**The phone does not close, and it was never going to.** A 1.356:1 frame
+cover-fitted into a portrait box at 4× paints 305vw at 844, so the climax there
+asks 3578 device px of a 3024-px source: **1.183 against source**, which no
+rung can fix and no declaration can reach. What `100vw` buys on a phone is the
+fall from 3.49 to 2.62 — the fetch stops being three and a half times short and
+becomes two and a half.
+
+**What it costs, off `currentSrc` on the built output.** The centre tile's own
+AVIF, and `/about/`'s whole image payload over a full traversal of the page:
+
+| | tile, before | tile, after | Δ tile | `/about/`, before | `/about/`, after | Δ page |
+|---|---|---|---|---|---|---|
+| 375×553 | 1024, 137.7 KB | 1152, 174.5 KB | **+36.8 KB** | 1635 KB | 1672 KB | **+37 KB, +2.3%** |
+| 390×664 | 1024, 137.7 | 1366, 238.9 | **+101.2** | 1564 | 1665 | **+101, +6.5%** |
+| 390×750 | 1024, 137.7 | 1366, 238.9 | **+101.2** | 1564 | 1665 | **+101, +6.5%** |
+| 390×844 | 1024, 137.7 | 1366, 238.9 | **+101.2** | 1518 | 1619 | **+101, +6.7%** |
+| 1440×900 | 768, 77.7 | 2880, 564.5 | **+486.8** | 1912 | 2399 | **+487, +25.5%** |
+| 1920×900 | 1024, 137.7 | 2880, 564.5 | +426.8 | — | — | — |
+
+**A quarter of the desktop page, and the whole of it is paid before the tile is
+ever large.** `sizes` is one declaration: the browser fetches 2880 while the
+tile is still 459 CSS px wide at rest, which is a 3.1× over-fetch for the whole
+of the gather, the hold and the settle. That is exactly the objection §7.6
+raised against putting a 3072 rung on the ladder — *192 device px carried for
+the whole visit to remove an 86 px overshoot at one frame* — and it is answered
+here rather than dodged: the difference is that this is one tile on one page
+rather than every full-bleed frame on the site, it is 487 KB rather than 1815,
+it touches no encoder setting and hands no `BLEED_WIDTH` back from q50 to q62,
+and the frame it pays for is the one the composition ends on.
+
+**It also corrects the resting grid.** The pre-mount and reduced-motion render
+lays slot 0 out at `col-span-2` / `md:col-span-3` — the full width of the grid
+— and it declared 26vw there. That was an under-declaration of the kind §1.2
+exists to stop, and the same change closes it.
+
+---
+
+### 12.2 · Two rows join the ratchet, and every row now carries an owner
+
+The reinstated mosaic puts two placements over 1.0 that were not there before,
+and both are at one viewport:
+
+```
+NEW  1.163  AboutImage2|1920x900@2    asks 1786px, widest rung 1536   /about/
+NEW  1.163  home-training|1920x900@2  asks 1786px, widest rung 1536   /about/
+     sizes="(min-width: 768px) 46.5vw, 74vw"
+```
+
+**The arithmetic, and it is a source cap rather than a decision.** Both frames
+sit in the mosaic's two wide slots, which are `46.5vw × 20vh` above `md`. At
+1920×900 that is 892.8 CSS px, and a 0.75 frame in a 4.96:1 box is fitted by
+width, so the paint is the box: 892.8 × DPR 2 = **1785.6 device px**. Both
+masters are **1536 px wide**, and `scripts/responsive-images.mjs` never emits a
+rung above a frame's own width, so the top rung is 1536 and 1785.6 / 1536 =
+**1.1625**. There is no rung to add. `PHOTO-MANIFEST.md` §B settles the other
+half: *"`AboutImage2`, `home-training` and `home-youth` have no original in this
+delivery"*, and their best candidates score **0.75** and **0.49** — not
+matches, different pictures. **Only a different photograph closes either one**,
+which puts them in `hero-3`'s class and not in the 2880 cap's.
+
+**Every row now carries its owner, in the file the build runs.** `KNOWN` was a
+map of keys to numbers with a paragraph of prose above it, and §7.6 already made
+the argument against that shape for its own table: twenty-three entries with no
+owner is a laundry list, twenty-three with owners is a punch list. Read a year
+from now, nothing in the script said which line is photography, which is a
+priced decision and which is a declaration deliberately on the safe side. The
+entries are now grouped through an `ownedBy(owner, rows)` helper, each group
+carrying the frame or the cap that owns it **and what would close it**, and the
+owner is printed beside any row that fails. Nothing about the values changed;
+they are still the figures this script computes, comparable run to run.
+
+**Verified in both directions after the change, which is the only thing that
+makes a ratchet a ratchet:**
+
+| test | result |
+|---|---|
+| tighten `hero-3\|1440x900@2` from 1.717 to 1.600 | `WORSE 1.716 against 1.600`, owner printed, **exit 1** |
+| remove `AboutImage2\|1920x900@2` from the list | `NEW 1.163 AboutImage2\|1920x900@2 asks 1786px, widest rung 1536`, **exit 1** |
+
+On the shipped build: **132 placements × 7 viewports, 25 pairs over 1.0, all 25
+recorded, PASS.** Twenty-three of them are §7.6's, unchanged and none worse; the
+two above are the new ones; nothing cleared and nothing else appeared. The
+centre tile's own `100vw` adds no row — at 1440×900 it asks exactly the 2880
+rung, and at 1920×900 it asks 3840 against the same cap `hero-1` was already
+recorded at.
+
+---
+
+### 12.3 · The cable in `hero-2` — measured on the master, and no crop closes it
+
+`ART-DIRECTION.md` §2 forbids overhead cable in a rendered frame by name, and
+§8 carries `hero-2`'s as open. The mosaic reproduces `b256c30`'s crop exactly,
+so the phone tile is a reproduced defect rather than a new one — but the 3024
+decode makes it more legible than the 1536 export did, which is our own
+improvement making it worse. Measured before anything was changed, and nothing
+was.
+
+#### a · The rectangle, on the 3024 master rather than carried
+
+`public/images/hero-2.jpg` is **3024 × 4032** and carries no EXIF orientation,
+so the stored frame is the display frame and no rotation is involved. The cable
+is a single straight line, fitted through its own darkest run at every row:
+
+**x = 783.4 + 0.1856·y px.**
+
+| | |
+|---|---|
+| enters the top edge at | **col 25.91%** — the dark run spans cols 25.17–26.12% at row 0 |
+| last row it is a coherent dark line | **row 35.17%**, at col 34.61% |
+| bounding rectangle | **cols 25.50–34.99%, rows 0.00–35.17%** |
+| thickness | 13–23 px, **0.43–0.76% of the frame's width** |
+| how the end was decided | the 41-row mean of its core luminance rises through 15 at row 35.17% and reaches 38 by row 39%; below that it is not separable from canopy |
+
+**`PHOTO-MANIFEST.md` §D's carried figures do not reproduce, and they are
+corrected there.** §D has it *entering the top edge at col ≈ 21% and running to
+col ≈ 33%, row ≈ 41%*. The entry is **4.9 points right** of 21%; the line does
+reach col 33%, but at **row 29%**, not 41%; and by row 41% it has been gone for
+six points of frame. The measurement was taken in `IMG_2894` and `hero-2` is a
+0.508× downscale of the whole of it, so the proportions are the same and there
+is nothing to reconcile — the older figures were an eye reading rather than a
+fit.
+
+#### b · The band the phone slot opens, at every value of `object-position` y
+
+The tile is slot 5, `w-[20vw] h-[16vh]` below `md`. What decides whether y does
+anything at all is which axis cover fits by, and that flips inside the four
+phone heights:
+
+| viewport | slot | slot aspect | fitted by | what the tile opens | band at `50% 50%` | is y live? |
+|---|---|---|---|---|---|---|
+| 375×553 | 75 × 88.47 | 0.848 | **width** | 88.02% of the height | rows 5.99–94.01% | yes, over 11.98 points |
+| 390×664 | 78 × 106.23 | 0.734 | height | **the whole height**, 98.14% of the width | rows 0–100% | **no** |
+| 390×750 | 78 × 120 | 0.650 | height | **the whole height**, 86.88% of the width | rows 0–100% | **no** |
+| 390×844 | 78 × 135.03 | 0.578 | height | **the whole height**, 77.21% of the width | rows 0–100% | **no** |
+
+**At three of the four phone heights the tile shows the entire height of the
+frame**, so `object-position`'s y is inert: every value from `0%` to `100%`
+opens rows 0–100% and the cable is in the tile. At 553 y is live, and it is not
+enough — the highest band any value can open is `100%`, rows 11.98–100%, and
+the cable runs to 35.17%, so **23.2 points of it are still in the tile**.
+
+**x cannot do it either.** The widest crop any phone height takes off the frame
+is 22.79 points, at 844. The cable's own column is 25.50–34.99%, 9.5 points
+wide, and it sits inside every band x can open at every height: at 844 the
+extremes are cols 0–77.21% and 22.79–100%, and the cable is inside both.
+
+#### c · The desktop slot, and §8's claim about it is half wrong
+
+| viewport | slot | aspect | fitted by | band at `50% 50%` | cable inside it |
+|---|---|---|---|---|---|
+| 1440×900 | 273.59 × 180 | 1.52 | width | rows **25.33–74.67%** | rows 25.33–35.17%, **9.84 points** |
+| 1920×900 | 364.80 × 180 | 2.03 | width | rows 31.52–68.48% | rows 31.52–35.17%, 3.65 points |
+
+**`ART-DIRECTION.md` §8 says the desktop band "is below the cable, so it is
+clean there". It is wrong on the geometry and right on the screen**, and the
+line is corrected to say which. The band is not below the cable — it overlaps
+the last ten points of it. What is true is that the segment inside the desktop
+band is the part that runs behind canopy: over rows 25–35% the fitted line's
+core sits at 4.7–13.9 against a local background median of 38–76 with **no sky
+at all in the flanking window**, where over rows 0–18% the same window is
+15–18% sky and the core is 2.2–6.0 against a 75th-percentile background of
+86–178. Shot at 1440×900 and magnified, the desktop tile shows dense canopy in
+that corner and no line. On a phone, shot at 390×664 and magnified, the cable
+crosses the open sky gap as a straight dark diagonal, which is exactly what §2
+names.
+
+**A value that clears the desktop exists and it buys nothing.** The band starts
+at (1 − 0.4934)·y, so y ≥ **0.694** puts it below row 35.17% at 1440×900, and
+y ≥ 0.558 does at 1920×900. One declaration serves both breakpoints, and even
+split in two the phone cannot be cleared at any value on either axis.
+
+#### The stop
+
+**No `object-position` clears the cable on both breakpoints, so nothing was
+changed** — not the anchor, not the crop, not the photograph, and no softening.
+The tile carries `b256c30`'s own centred default and keeps it. What this closes
+is the question: the answer is that **only a different frame closes it**, which
+is photography and is already the third row of `PHOTO-MANIFEST.md` §D's
+standing debts. The debt is unchanged; what it now has is the rectangle.
+
+---
+
+### 12.4 · The amber rule at 375×553 — the ground, not the weight
+
+#### The breach, stated plainly
+
+**At 375×553 the finale's amber rule is drawn on the `AboutImage2` tile rather
+than on the dark floor, and at the pixels that are its own declared ink it
+reads 1.00 — the mark and its ground are the same luminance.** Both engines.
+Every other viewport reads 4.43–4.66 on the floor.
+
+Stepped through the finale's traversal at 121 stops, scoring only where the
+mark's effective opacity and its own `scaleX` are both 1, and only at pixels
+whose rendered value **is** `#C88A3A`:
+
+| | painted weight, CSS px | worst | at stage | ground | over a tile |
+|---|---|---|---|---|---|
+| **375×553** Chromium | **2.00**, all 42 stops | **1.00** | 0.200 | `rgb(194,135,144)` | **40 of 42** |
+| **375×553** WebKit | **1.333**, all 42 stops | **1.00** | 0.181 | `rgb(181,139,155)` | **40 of 42** |
+| 390×664 Chromium / WebKit | 1.00 | 4.43 / 4.43 | 0.212 | `rgb(51,49,42)` | 0 |
+| 390×750 Chromium / WebKit | 1.00 | 4.47 / 4.44 | 0.212 | `rgb(52,48,40)` | 0 |
+| 390×844 Chromium / WebKit | 1.00 / 1.00 on 25 stops, 1.333 on 17 | 4.47 / 4.44 | 0.225 | `rgb(52,48,40)` | 0 |
+| 1440×900 Chromium / WebKit | **2.00** / 1.00 | 4.61 / 4.66 | 0.219 / 0.188 | `rgb(48,47,31)` | 0 |
+
+**Against what floor.** The mark is `aria-hidden`, carries no glyph and has no
+published floor of its own; the nearest the reference set has is the **3.0**
+large-display floor, and 1.00 is under it. It cannot be recorded under *The
+decorative-glyph exemption* either, because that requires **all four**
+conditions and this fails two: it is fully drawn at **42 of 121 stops, 34.7%**
+of its zone's travel against the 5% ceiling, and in Chromium its ink population
+is **288 pixels** against the 200 ceiling. Three out of four is a repair, and
+this is two out of four.
+
+**19.4's 2.52 / 2.53 is the same finding under a looser gate.** That probe kept
+only pixels within 10% of the frame's maximum delta, which on a mark laid over a
+varying photograph selects the brightest ground it touches rather than the
+worst. Forty-nine pixels survived it at 553 against 576 on the flat floor
+elsewhere, which is the tell. Read at the mark's own ink the number is 1.00.
+
+#### It is not §10.1's finding, and §10.1 is nevertheless confirmed here
+
+§10.1 reproduces on this mark exactly. **1.25px is not a weight**: Chromium
+paints it **2.00 CSS px at 553 and at 1440×900** and **1.00 at 664, 750 and
+844**; WebKit paints **1.333 at 553**, 1.00 at 664 and 750, and at 844 splits
+1.00 on 25 stops and 1.333 on 17 across the same traversal. Only whole numbers
+paint what they say, in both engines, and this mark is a fifth station for that
+table.
+
+**But it is not what fails, and the two move in opposite directions.** 553 is
+the height at which the mark paints its **heaviest** — twice the 1.00 it paints
+at 664, 750 and 844 — and it is the only height at which it reads below floor.
+**Raising the declaration to a whole pixel does not close it.** The ratio is
+fixed by what is under the mark; a 1px or a 2px rule laid across the same
+highlight reads the same at its core, and the only thing weight changes is how
+many pixels read 1.00. So the honest declaration for this mark is still what
+§10.1 says it is — 1.00px or 2.00px, never 1.25 — and making it honest would
+leave 553 exactly where it is.
+
+#### What it actually is: a collision, at one height, and the numbers are monotone
+
+The rule and the top band are children of the same sticky frame, so their
+relative positions do not change once the pin engages — the overlap is the same
+at every stop rather than something the scroll passes through. At 375×553, in
+frame coordinates:
+
+| | |
+|---|---|
+| the text block | 151.38 → 401.63 (250.25 tall) |
+| the rule, its first element | **151.38 → 152.63** |
+| the top band's tile | **76.72 → 165.19** |
+| the rule's position in it | **12.56 px inside the tile's bottom edge** |
+
+The frame is 553 tall and the block is 250.25, so centred the block's top —
+which is the rule — rises to 151.38, while the band's bottom edge is pushed
+down to 165.19. Clearance, block top minus tile bottom, measured in both
+engines and identical in both:
+
+| 375×553 | 390×664 | 390×750 | 390×844 | 1440×900 |
+|---|---|---|---|---|
+| **−13.81 px** | +16.16 | +39.38 | +64.75 | +128.38 |
+
+Monotone in the window's height, and 553 is the only one that fails — the same
+shape as the header-clearance defect the band's inset was written for, at the
+same height. The block's own height is constant at 250.25 across all four
+phone heights, so the whole of the movement is the frame's.
+
+**And that is where it came from.** `GATHER_COMPACT`'s top-band inset was
+rewritten from a bare `-8vh` to `0.07·H + 38 px` so the settled band would stop
+landing under the fixed header at 553, which it did: −1.4 px of clearance became
++12.7. The same constant moves the *gathered* band **13.12 px down** at that
+height. Derived from the measured rect and the exact CSS delta rather than
+shot: under `b256c30`'s own value the tile would sit at 63.60 → 152.07 and the
+rule at 151.38 → 152.63 would clip its last **0.69 px**, with the rest of the
+mark on the dark floor. The clearance the header gained at 553 was spent on the
+paragraph's own first mark at 553.
+
+#### The stop
+
+**It is something else, so it is reported and nothing was changed.** The rule
+keeps its `1.25px`, the band keeps its inset, and the header keeps its
+clearance. Written down so the next pass has all three numbers in one place:
+the collision is 13.81 px at one height, the levers that reach it are the
+band's inset (which is holding the header off), the block's own height at 553,
+and the rule's position inside the block — and each of those moves something
+that was measured and accepted.
+
+---
+
+### 12.5 · Verification, on a clean production build
+
+`rm -rf .next out`, then `npm run build`, with the build immediately before
+these changes served from a copy on a second port as the control.
+
+**a · Home does not move, and neither does anything else.** Every
+`[data-stage-plate]` key, every span between them, the document height and
+**every block rect down to fourteen levels** — 170 boxes on a phone and 183 on
+a desktop — read on both builds at 375×553, 390×664, 390×750, 390×844 and
+1440×900, on all four pages:
+
+| | 375×553 | 390×664 | 390×750 | 390×844 | 1440×900 |
+|---|---|---|---|---|---|
+| home, document | 3409 | 3903 | 4339 | 4814 | 5248 |
+| `/about/`, document | 4019 | 4796 | 5398 | 6056 | 7708 |
+| twelve keys, eleven spans | identical | identical | identical | identical | identical |
+| every block rect | identical | identical | identical | identical | identical |
+| horizontal overflow | 0 | 0 | 0 | 0 | 0 |
+
+**Twenty configurations, four pages, nothing moved in any of them** — and home's
+four document heights are the 3409 / 3903 / 4339 / 4814 the panels' build
+published.
+
+**b · `verify:text` PASS on all four.** home 1303, about 1599, contact 277,
+faq 1993 — the same character counts as the shipped build.
+
+**c · `verify:placements` PASS.** 132 placements × 7 viewports; 25 pairs over
+1.0, all 25 in `KNOWN`, none worse, nothing cleared, and the only two additions
+are §12.2's.
+
+**d · Contrast at 5px on `/about/`, both engines, five viewports — nothing
+moved at all.** 4856 stops per engine per build, **19,424 stops** over the four
+runs, scoring at glyph cores on the rendered composite and only where an
+element's effective opacity is 1. Twenty distinct elements, **168
+element/viewport/engine readings**, and **not one of them differs** — not the
+value and not even the scroll position the worst was found at:
+
+| | before | after | readings that differ |
+|---|---|---|---|
+| Chromium, four phone heights + 1440×900 | 84 readings | 84 | **0** |
+| WebKit, the same five | 84 | 84 | **0** |
+
+**Nothing is newly below its floor**, and the reason it is a flat zero rather
+than a set of small moves is worth stating: the only thing that changed is
+which variant the centre tile fetches, and the centre tile never shares a frame
+with a word. The closing paragraph dissolves over stage 0.40–0.46 on a phone
+and 0.42–0.50 on a desktop, and the centre tile's own entrance does not begin
+until 0.465 and 0.44; by the time it is on the screen there is no text on the
+screen. **The instrument's absolute values are not published as the reference
+set's** — §12.6 has why they read low — and it is used here only against
+itself.
+
+**e · The polarised ledger holds at every midpoint.** Every plate's opacity
+read at every one of the same stops. At all five viewports, in both engines and
+on both builds, there are **exactly two runs** in which any plate sits between
+0.04 and 0.75, they are **monotonic**, and they are the two halves of one
+crossfade — plate 0 falling 0.749 → 0.040 while plate 1 rises 0.040 → 0.749
+over the same 775 / 935 / 1055 / 1190 / 1525 px. No plate is ever *held* at an
+intermediate strength; the only numbers between 0 and 1 are the crossfade
+itself, which is what §F1 allows. Identical before and after, to the pixel of
+the run's start and end.
+
+**f · `/about/` image bytes per viewport** — §12.1's table. +37 KB on the
+shortest phone, +101 on the other three, +487 at 1440×900.
+
+**g · The contact sheet was re-shot** into `design/refs/wall/rebuilt/`, twenty
+frames each at 390×664 and 1440×900 across the finale's reachable traversal,
+so it still sits beside `live/` frame for frame; `paired-*.jpg` puts the two
+rows one above the other. `climax-1440x900-before-after.jpg` is the one frame
+this change is about, the same scroll position on both builds.
+
+---
+
+### 12.6 · A question about the instrument, not about the page
+
+**This session's sweep returns 4.88 for `/about/`'s footer where the published
+set has 8.59, and the difference is which pixels each one calls a glyph core.**
+Mine keeps every pixel where the painted and blanked frames differ by 330 or
+more summed over the three channels — an **absolute** gate — and the published
+set keeps a pixel only where the rendered value **is** the declared ink. Run at
+5px over the footer's whole traversal at 1440×900 and 390×844, both gates on the
+same composite at the same stops: the absolute gate's worst is
+`rgb(135,132,117)` on `rgb(16,22,16)` → **4.88**, and the ink-equality gate's
+worst is `rgb(183,178,160)` on `rgb(20,25,18)` → **8.40**, within 0.19 of the
+published figure. Histogrammed at the worse of the two stops — 24 device rows,
+the footer running past the window's foot there — the population is a core and a
+skirt: **1170 pixels in the 185–194 bucket**, which is the declared
+`rgb(185,180,162)`, and **762 below it spread from 140 to 184**, which are
+**antialiased edge pixels**; the blanked ground is flat at 17–19 across every
+one of the 24 rows, so nothing about the ground explains the spread. The gate is
+an absolute delta, so how much partial coverage it admits is decided by how far
+apart ink and ground are: here the full-coverage delta is about 473 and 330 of
+it is **seven tenths**, where on a lower-contrast element the same threshold
+demands full coverage or admits nothing at all. **It is loosest exactly where
+contrast is highest**, which is where it then under-reads most. **The
+question for a later pass is not which number is right but which one governs**:
+the published set's rule was written to exclude *part-transparent elements*, and
+a fully opaque glyph's own antialiased edge is not that case, yet it is the
+pixel a reader's eye actually averages. Not resolved here, and none of this
+session's absolute contrast values are published as the set's — the sweep is
+used only as a before-and-after against itself.
 
 ---
 

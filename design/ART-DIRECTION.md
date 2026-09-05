@@ -57,6 +57,38 @@ whole thing reads as one continuous world, not a stack of sections.
   the viewport longer than 1.2 viewport heights. No passage over 1.0 viewport
   where only the background changes.
 
+**Three amendments, and all three are scoped to `GalleryFinale` by name.** They
+are decisions taken on the About finale and they do not travel: nothing else on
+the site may cite them, and a second component that wants one asks for it on its
+own evidence.
+
+- **The closing paragraph's entrance is scroll-scrubbed, and it is the one
+  sanctioned scrub on the site.** The three groups complete on the scrollbar
+  while the seven tiles gather around them, and the words hand the frame back on
+  the scrollbar as the ring closes over the place they stood. That is the whole
+  composition: words and tiles share every frame and complete together, and a
+  clock would put the paragraph's last group on the screen at a moment decided
+  by a timer rather than by the reader's thumb. The rule's own reason — a flick
+  collapses a scrub and the text is gone before it can be read — is bought off
+  here by the pin: the paragraph is held on a pinned frame for 0.44 of the
+  section's travel with nothing else moving in the window, which is 0.9 of a
+  viewport on a phone and 1.5 on a desktop of thumb, not 200ms.
+- **The pin runs 2.00 viewports on a phone and 3.40 on a desktop**, against the
+  1.2-viewport ceiling directly above. Accepted. The ceiling exists so a reader
+  is never scrolling against a screen that does not change, and inside this pin
+  something moves at every frame — the tiles arrive staggered, the words
+  complete, the ring closes, the mosaic fans out. What it costs is real and is
+  measured rather than waved at. Stepped at 5px through the whole of `/about/`
+  in both engines, the finale's tail carries **no glyph at all for 1.374 /
+  1.355 / 1.333 / 1.315 viewports** at 553 / 664 / 750 / 844 and **1.894** at
+  1440×900 — 760 / 900 / 1000 / 1110 / 1705 px of scroll where the only words
+  on the screen are the header's. The seven-tile wall it replaces ran one
+  wordless stretch of 0.78–0.84 viewports at the same measurement. This is the
+  larger of the two costs and it is accepted with the composition.
+- **The closing paragraph's fade-out is the finale's own exit** and is exempt
+  from *Text may not* be scroll-linked for the same reason: it is the handover,
+  not an entrance.
+
 **Code**
 - Every class touched in `globals.css` goes inside `@layer components`. An
   unlayered rule has silently beaten a utility four separate times.
@@ -176,32 +208,63 @@ scrolls only ~325px; it does not read as a page at all.
 
 **A photograph appears once per page, twice at most across the site, and never
 in two zones the reader crosses one after the other.** Twelve frames carry
-twenty-one placements: one appears three times, eight twice, three once. A
-frame painted sharp and again out of focus as the same page's ground — every
-inner page — is one placement, not two; so is the home hero's poster and its
-own first slide.
+twenty-one placements. A frame painted sharp and again out of focus as the
+same page's ground — every inner page — is one placement, not two; so is the
+home hero's poster and its own first slide.
+
+**The About finale breaches the rule in both halves, and it is a decision.**
+`AboutImage1`, `AboutImage2` and `home-training` each stand on the wall
+directly beneath the story scene that shows them, so all three appear twice on
+`/about/` and in zones the reader crosses one after the other; with the home
+panels behind them, the first two reach three placements across the site and
+`hero-2` keeps the third it already had. `home-youth` returns from retirement
+to take the seventh slot.
+
+The cost is named rather than implied. **Three photographs are fetched twice on
+one page**, and it is two files rather than one only where the scene and the
+tile resolve to different rungs of the ladder — the tile declares its own
+painted width through `coverSizes()`, and where that lands on the rung the
+scene already took, the second placement costs nothing at all. Measured on the
+built output, the second rungs cost **191 KB at 375×553** (all three frames
+doubled), **46 KB at 390×664 and 390×750** (`AboutImage1` only), **0 KB at
+390×844** (every doubled frame lands on one rung) and **216 KB at 1440×900**
+(`AboutImage2` and `home-training`). The rest of the
+cost is compositional and is the point of the composition: the wall is the
+story's own photographs coming back at the end, and a frame the reader has
+just been shown is what makes it read as a recapitulation instead of as a
+gallery. Substituting seven unseen frames is not available anyway — the set has
+twelve usable pictures and this page alone would need eleven distinct ones.
+
+Scoped to `GalleryFinale`. Everywhere else the two-placement rule stands as
+written.
 
 | File | Subject | Where it is |
 |---|---|---|
-| IMG_4585 | group on a path above the valley | home hero, poster and first slide — settled; About's finale, the **centre tile**, the one frame on the wall that scales, cropped at 35% to the village and the far mountains. At 6048×8064 it is the only strong frame in the set that can be painted at full window coverage and stay under 1.0 against its own source — 0.619 at 1440×900 DPR 2. Its 90% horizontal is a phone decision: on a desktop the frame is narrower than the slot at every scale, so `object-position`'s x does nothing there |
-| IMG_4619 | valley under open sky | as `-valley`: home's "What you gain" and the closing it dissolves into; as `-ridge`, a sub-rectangle of that crop with the sky off the top: About's finale, the upper-left 3.2:1 slot. Its bottom-right cable corner is cropped out of both |
+| IMG_4585 | group on a path above the valley | home hero, poster and first slide, and nowhere else. It was the seven-tile wall's centre tile in the composition that stood here between `9e62d5e` and this one; the finale is back on the scattered mosaic and the mosaic's centre is `hero-1` |
+| IMG_4619 | valley under open sky | as `-valley`: home's "What you gain" and the closing it dissolves into, and nowhere else. Its bottom-right cable corner is cropped out. The `-ridge` sub-rectangle is still published by `scripts/responsive-images.mjs` and is **off the site** — it existed for the wall's upper-left 3.2:1 slot and that slot is gone |
 | IMG_4582 | road between stone walls, overcast | as `-road`: home only, crossed at the panels' join. Fencing across rows 107–507, and no window on it holds a complete subject — see §8 |
 | IMG_4739 | village at blue hour, cobbled lane | **off the site.** Both crops fail §2 from opposite ends: the whole frame carries overhead power cable across the sky, and the crop that removes the cable lands on railings, a satellite dish, a letterbox and a parked car |
-| hero-1 | the group walking the track above the reservoir | the ground under "What we do", and About's finale, the **upper-right 2.13:1 slot**, anchored to the foot of the frame so the walkers keep their legs. Uncropped it shows 84.8% of itself in a 16:10 window and it is a picture of the sentence it stands under. It came out of the centre tile when that tile was given full coverage: a 2048px master is painted at 1.83 against its own source there, and capping the growth at what it could pay for left the tile covering 38.6% of the window |
-| IMG_4735 | cattle on a road at blue hour | as `-road`: the Contact ground, and About's finale, the lower-left 2.13:1 slot at 80% — one whole animal rather than a band across two of them. Cables cross the upper half; the published crop takes the lower two thirds |
+| hero-1 | the group walking the track above the reservoir | the ground under "What we do", and About's finale, the **centre tile** — the last to arrive, in the place the words stood, and the one the fan-out carries furthest. Uncropped it shows 84.8% of itself in a 16:10 window and it is a picture of the sentence it stands under. At 3024×2230 since the 2026-08-30 ingest, so the mosaic's own 4× is paid down to **0.990 against its source** at 1440×900 DPR 2 at the peak, measured. It is the one tile that declares the window rather than its slot — `100vw`, which takes the peak from 3.90 to **1.040** against fetched and costs 487 KB on a desktop; `OPEN-ITEMS.md` §12.1 |
+| IMG_4735 | cattle on a road at blue hour | as `-road`: the Contact ground, and nowhere else. Cables cross the upper half; the published crop takes the lower two thirds |
 | IMG_4721 | cattle under oaks | the About ground, and nowhere else. Cropped at `0% 70%`, which is the one pair that holds the near animal whole in a landscape window and in a portrait one. It carries the h1 there, against this table's older "never behind a heading" — the heading clears its floor at 5.33, so the note is recorded rather than enforced |
-| IMG_4599 | moss-covered wall under trees | About's finale, the left upright slot, cropped low to the wall. The set's one hard-midday frame; graded to match the others. At 1:2.19 it is the only frame that suits an upright slot on a phone — and it is on the wall because the set runs one frame short of the page, not because it earns the slot. See §8 |
-| hero-2 | the group walking a shaded forest road | home hero, second slide; the FAQ ground; About's finale, the right upright slot. **The one frame at three placements**, and it is there because nothing else is left — see §8 |
-| hero-3 | participants talking on mossy rocks | home hero, third slide; About's finale, the lower-right 3.2:1 slot. At 2.14:1 it belongs in a wide slot and nowhere else — in an upright one it showed 13.5% of itself on a phone |
-| home-training | a team-building game during a training course | About's third scene, and nowhere else |
-| AboutImage1 | five young people, Cypriot food, Cyprus + Portugal flags | Youth Exchanges panel on home; About's first scene |
-| AboutImage2 | twenty young people in a circle outside a cabin | Training Courses panel on home; About's second scene |
+| IMG_4599 | moss-covered wall under trees | **off the site.** It was on the seven-tile wall under protest — the set's one hard-midday frame, there because the wall ran a photograph short rather than because it earned a slot — and the mosaic does not need it |
+| hero-2 | the group walking a shaded forest road | home hero, second slide; the FAQ ground; About's finale, the bottom-left small slot. **Three placements**, recorded above |
+| hero-3 | participants talking on mossy rocks | home hero, third slide; About's finale, the right tall slot. At 2.14:1 in a slot that is 1.17:1 on a desktop and 0.45:1 on a phone it is the mosaic's hardest fit — 26% of its width shows there on a phone — and it is the slot the composition gives it |
+| home-training | a team-building game during a training course | About's third scene, and About's finale, the bottom wide slot directly under it |
+| AboutImage1 | five young people, Cypriot food, Cyprus + Portugal flags | Youth Exchanges panel on home; About's first scene; About's finale, the left tall slot |
+| AboutImage2 | twenty young people in a circle outside a cabin | Training Courses panel on home; About's second scene; About's finale, the top wide slot |
+| home-youth | hands joined by a rope web during a group exercise | About's finale, the top-right small slot, and nowhere else |
 
-`home-youth` — hands joined by a rope web — is **off the site**. It was the
-home hero's second slide and a finale tile, and it is a macro in both: no
-place, no horizon, and at the hero's full-window size a close-up of forearms
-reads as a texture. It was also the only tile on the wall that was neither a
-landscape nor people.
+`home-youth` was retired for two reasons and only one of them survives the
+mosaic. It is a macro — no place, no horizon — and at the home hero's
+full-window size a close-up of forearms read as a texture; that is why it is
+not a hero slide and it stays true. The other reason was that on the
+seven-tile *wall*, where the frame filled the window and every tile was equal,
+it was the only one that was neither a landscape nor people. The mosaic is not
+that composition: its tiles are small objects on a field at seven different
+sizes, and this one is 274×180 CSS px on a desktop and 78×106 on a phone,
+where a pair of hands on a rope is a legible thing to put in a small
+rectangle.
 
 `IMG_4564` is excluded. The stock interiors — `About.jpg`, `Contact.jpg`,
 `FAQ.jpg`, `home-hero.jpg` — are retired.
@@ -225,6 +288,15 @@ bolting them on individually has produced worse results than leaving them out.
 - **Eyebrow row** reading left to right: numeral → short rule → tiny wide-tracked
   caps. The rule sits beside the label, not above the heading.
 - **Photographs with no frame.** No border, no ring, no shadow, no radius.
+  **Amended for `GalleryFinale`, and there only.** The seven tiles of About's
+  finale keep a 12px radius and a 1px amber ring at 55%. The reason is what the
+  composition is: seven photographs of seven different sizes floating on the
+  page's own ground with air around each of them, which is a field of objects
+  and not a wall. Unframed, they read as a pile of rectangles dropped on a dark
+  floor; framed, they read as prints laid out on it, which is the thing Andreas
+  approved. The rule stands everywhere a photograph is a *ground* or a single
+  object beside type — every panel, every scene, every plate — and it is those
+  the rule was written for.
 - **Dissolve and rebirth.** A photograph fades toward the dark ground, text
   crosses on the dark, the next photograph rises out of the same dark.
 - **Vertical wipe** between frames rather than a crossfade, bottom to top.
@@ -311,24 +383,58 @@ number was a fraction *of*, and check whether that thing is the same size here.
 Where it is not, carry the ratio the reference's own composition implies, not
 the percentage its markup happened to use.
 
-**The set is one photograph short of the site.** Thirteen frames are usable —
-fourteen less `IMG_4739`, which no crop clears. The About page alone needs
-eleven distinct ones: a ground, three scene objects and seven tiles. Taking out
-the three tiles that did not stand on their own leaves ten. So one slot on the
-wall has no photograph for it, and two compromises pay for that: `hero-2` takes
-a third placement against this section's own two-at-most rule, and `IMG_4599`
-stays on the wall re-cut rather than replaced. Both are photography, not code —
-the wall's geometry is sound and shrinking it would cost the interlock the
-whole composition is built on.
+**The set was one photograph short of the wall, and the finale no longer asks
+the question that way.** The seven-tile wall filled the window with seven equal
+frames, so every one of them had to stand on its own and the page needed eleven
+distinct pictures — a ground, three scene objects and seven tiles — against ten
+that qualified. The scattered mosaic reinstated at `19.0` does not: its tiles
+are objects of seven different sizes on the page's own ground, the smallest
+274×180 CSS px on a desktop, and it takes the three story photographs back plus
+`home-youth`. `IMG_4599` and `IMG_4619-ridge` leave the site with the wall;
+`hero-2`'s third placement stays, now as a decision rather than as a shortage.
+
+What that does not close is the standing debt underneath it. **The set still
+holds no activity frame with the people large in the frame** — the same debt
+`PHOTO-MANIFEST.md` §D carries as its fifth — and the mosaic works around it
+rather than answering it.
 
 What is still open:
 
 - **The lede, "What you gain", the closing** — §4 above. Under-designed, and the
   panels' geometry is now the only part of home that is settled.
-- **Overhead cable in `hero-2`.** It enters the top-left corner and runs down to
-  a pole a third of the way across. The About tile is cropped clear of it; the
-  home hero slide and the FAQ ground are not, and at both viewports it is
-  visible against the canopy. §2, and only a different frame closes it.
+- **Overhead cable in `hero-2`, and it is now a rectangle rather than a
+  description.** Fitted on the 3024 master, which carries no EXIF orientation
+  and so is its own display frame: a single straight line, `x = 783.4 +
+  0.1856·y` px, entering the top edge at **col 25.91%** and coherent down to
+  **row 35.17%** at col 34.61%. Bounding rectangle **cols 25.50–34.99%, rows
+  0–35.17%**, 13–23 px thick. The home hero slide and the FAQ ground carry it,
+  and so does the mosaic's bottom-left tile.
+  **No `object-position` closes that tile, on either axis, at any phone
+  height** — at 664, 750 and 844 the slot is proportionally taller than the
+  frame, so cover fits by height and the tile opens the *whole* of it and y is
+  inert; at 553 y is live over 11.98 points against a cable that runs to 35.17;
+  and the widest crop x can take off the frame anywhere is 22.79 points, which
+  never reaches a column at 25.50–34.99%. The desktop slot is 1.52:1 and takes
+  rows 25.33–74.67%, so it **overlaps the cable by 9.84 points** — the earlier
+  note that the band sits below it was wrong — but the segment inside that band
+  is the part behind canopy, with no sky in the flanking window, and the
+  rendered tile shows no line. The phone tile shows it crossing the open sky
+  gap. The mosaic reproduces `b256c30`'s own centred crop, so this is a
+  reproduced defect rather than a new one, made more legible by the 3024
+  decode. §2, and **only a different frame closes it.** Measured in
+  `OPEN-ITEMS.md` §12.3.
+- **The finale's amber rule at 375×553.** It stands on the `AboutImage2` tile
+  instead of the dark floor and reads **1.00** at its own ink, in both engines,
+  where every other height reads 4.43–4.66 on the floor. The frame is short
+  enough that the centred text block's top — which is the rule — rises to
+  151.38 while the gathered top band's bottom edge sits at 165.19, so the mark
+  is 12.56 px inside the photograph. Clearance is −13.81 / +16.2 / +39.4 /
+  +64.8 px at 553 / 664 / 750 / 844, monotone in the window's height. It is not
+  §10.1's painted-weight finding — 553 is where the mark paints *heaviest* and
+  reads *worst*, and a whole-pixel declaration leaves it exactly there. The
+  levers are the band's inset (which is holding the header off at the same
+  height), the block's height, and the rule's place in the block. Measured in
+  `OPEN-ITEMS.md` §12.4, and open.
 - **Fencing in the road frame.** `IMG_4582-road` carries a chain-link fence
   across rows 107–507 of its 1020, and a 16:10 window shows 854 of them, so no
   pan clears it; the bottom-anchored one in use clears the most. The crop is
