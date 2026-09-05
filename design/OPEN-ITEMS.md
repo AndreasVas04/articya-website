@@ -6503,6 +6503,366 @@ used only as a before-and-after against itself.
 
 ---
 
+## 13 · The finale's run and its exit — 2026-09-05
+
+Two changes on `GalleryFinale`, one commit each, against two complaints:
+*"the scrolling isn't right like the rest of the site, you are feeling stuck"*
+and, standing since before this series, *"i want the footer to be something
+like part of the photo, not separated."* Every figure below is read off a clean
+production build — `rm -rf .next out` — with the build immediately before these
+changes served from a copy on a second port as the control. Home is not touched
+by either of them and that is measured rather than assumed.
+
+| | outcome |
+|---|---|
+| the pin, against §2's 1.2-viewport ceiling | **taken.** 2.00 / 3.40 viewports → **1.200 at both breakpoints** |
+| the photograph's hand-over to the footer | **taken.** The footer stands 148px inside the pinned frame and the frame's foot dissolves; the frame's own base is never inside the window at any stop |
+
+---
+
+### 13.1 · The pin comes down to the ceiling
+
+**The stuck feeling is two numbers and both are the section's height.** The pin
+ran `H − V` where `H` is the section and `V` the pinned frame, so `300vh` gave
+2.00 viewports on a phone and `440vh` gave 3.40 on a desktop — against a
+ceiling of 1.2 that the section's own amendment in `ART-DIRECTION.md` §2 was
+written to excuse. The section is now **`220svh` at both breakpoints**: 2.2
+screens with one of them pinned is 1.2 of pin, and `svh` rather than bare `vh`
+because bare `vh` is `lvh` and sizes the section to the tallest state of a
+phone's chrome.
+
+| | 375×553 | 390×664 | 390×750 | 390×844 | 1440×900 |
+|---|---|---|---|---|---|
+| section, before | 1659 (3.00 vp) | 1992 (3.00) | 2250 (3.00) | 2532 (3.00) | 3960 (4.40) |
+| section, after | 1216.6 (2.20) | 1460.8 (2.20) | 1650 (2.20) | 1856.8 (2.20) | 1980 (2.20) |
+| **pin, before** | 1106 (**2.000 vp**) | 1328 (**2.000**) | 1500 (**2.000**) | 1688 (**2.000**) | 3060 (**3.400**) |
+| **pin, after** | 663.6 (**1.200**) | 796.8 (**1.200**) | 900 (**1.200**) | 1012.8 (**1.200**) | 1080 (**1.200**) |
+
+**The choreography is not re-timed; it is replayed.** Every key in the file is
+still the number the composition was approved at, and `stageKey` puts it on the
+shortened timeline. It is one affine map per breakpoint — read the key as a
+distance from the moment the pin engages, scale that distance by the ratio of
+the two pins, read it back as a fraction of the new travel:
+
+```
+compact   u' = 0.750000·u + 0.125000     old section 3.00 screens, pin 2.00
+wide      u' = 0.595588·u + 0.202206     old section 4.40 screens, pin 3.40
+```
+
+Both send the pin's two ends to the pin's two ends, which is what makes them
+the only maps available: the ratio of any interval to any other is held exactly,
+and every event sits at the same fraction of the pin it was approved at. In
+scroll rather than in progress the phone's run plays at **0.600** of its old
+length and the desktop's at **0.353** — the two pins were different lengths and
+the one ceiling is not.
+
+**Before and after, every key.** The two columns of each pair are the window's
+two ends; `seg` is `0.18 / 3.5` as before, and `TARGET_SCALES`, `GATHER`,
+`GATHER_COMPACT`, the tile offsets and `easeInOutCubic` are untouched.
+
+| key | compact before | compact after | wide before | wide after |
+|---|---|---|---|---|
+| pin engages / releases | 0.2500 – 0.7500 | **0.3125 – 0.6875** | 0.1852 – 0.8148 | **0.3125 – 0.6875** |
+| the amber rule's `scaleX` | 0.0800 – 0.1400 | 0.1850 – 0.2300 | 0.0800 – 0.1400 | 0.2499 – 0.2856 |
+| paragraph group 1 | 0.1300 – 0.2071 | 0.2225 – 0.2804 | 0.1300 – 0.2071 | 0.2796 – 0.3256 |
+| paragraph group 2 | 0.1814 – 0.2586 | 0.2611 – 0.3189 | 0.1814 – 0.2586 | 0.3103 – 0.3562 |
+| paragraph group 3 | 0.2329 – 0.3100 | 0.2996 – 0.3575 | 0.2329 – 0.3100 | 0.3409 – 0.3868 |
+| tile 1 in | 0.1000 – 0.2000 | 0.2000 – 0.2750 | 0.1000 – 0.2000 | 0.2618 – 0.3213 |
+| tile 2 in | 0.1150 – 0.2150 | 0.2112 – 0.2862 | 0.1150 – 0.2150 | 0.2707 – 0.3303 |
+| tile 3 in | 0.1300 – 0.2300 | 0.2225 – 0.2975 | 0.1300 – 0.2300 | 0.2796 – 0.3392 |
+| tile 4 in | 0.1450 – 0.2450 | 0.2337 – 0.3087 | 0.1450 – 0.2450 | 0.2886 – 0.3481 |
+| tile 5 in | 0.1600 – 0.2600 | 0.2450 – 0.3200 | 0.1600 – 0.2600 | 0.2975 – 0.3571 |
+| tile 6 in | 0.1750 – 0.2750 | 0.2562 – 0.3312 | 0.1750 – 0.2750 | 0.3064 – 0.3660 |
+| text-out | 0.4000 – 0.4600 | 0.4250 – 0.4700 | 0.4200 – 0.5000 | 0.4524 – 0.5000 |
+| ring settle | 0.4600 – 0.5450 | 0.4700 – 0.5338 | 0.4200 – 0.5400 | 0.4524 – 0.5238 |
+| centre tile in | 0.4650 – 0.5450 | 0.4738 – 0.5338 | 0.4400 – 0.5200 | 0.4643 – 0.5119 |
+| **scale window** | 0.5500 – 0.7450 | **0.5375 – 0.6837** | 0.5500 – 0.7450 | **0.5298 – 0.6459** |
+
+The zoom still completes just before the pin releases, which is the one relation
+in the table that has to survive: 0.6837 against 0.6875 where it was 0.745
+against 0.750.
+
+**Is 1.2 too fast to read?** Measured on the built page rather than argued —
+the closing paragraph's own spans, their computed opacity read at every 5px
+stop:
+
+| | 375×553 | 390×664 | 390×750 | 390×844 | 1440×900 |
+|---|---|---|---|---|---|
+| carrying ink at all, before | 1.257 vp | 1.258 | 1.267 | 1.262 | 1.906 |
+| carrying ink at all, after | **0.759** | **0.753** | **0.760** | **0.758** | **0.678** |
+| any group at ≥ 0.5, before | 1.049 | 1.047 | 1.047 | 1.049 | 1.578 |
+| any group at ≥ 0.5, after | **0.624** | **0.633** | **0.627** | **0.628** | **0.556** |
+| all three complete and still, before | 0.380 | 0.377 | 0.380 | 0.379 | 0.628 |
+| all three complete and still, after | **0.235** | **0.226** | **0.227** | **0.231** | **0.222** |
+
+**No, and the comparison that settles it is home's own reading.** §8.1 measured
+home's longest hold of a block of type at **0.535 vp** — the second panel's
+prose, 305 glyphs — and Contact's at 0.429. The closing paragraph carries ink
+for **0.68–0.76 of a viewport of thumb**, more than either, and half a viewport
+of that is at half opacity or better. The ratio each figure falls by is the
+squeeze itself (0.600 and 0.353) to three decimals, which is the proportionality
+claim measured rather than asserted.
+
+**The wordless tail, 5px through the whole of `/about/`.** Every rendered glyph
+of every element counted per character, the fixed header's own words counted
+separately:
+
+| | 375×553 | 390×664 | 390×750 | 390×844 | 1440×900 |
+|---|---|---|---|---|---|
+| before | 790px · **1.429 vp** | 930 · **1.401** | 1035 · **1.380** | 1150 · **1.363** | 1770 · **1.967** |
+| after 13.1 | 510 · 0.922 | 590 · 0.889 | 660 · 0.880 | 730 · 0.865 | 690 · 0.767 |
+| after 13.2 as well | 360 · **0.651** | 445 · **0.670** | 510 · **0.680** | 580 · **0.687** | 540 · **0.600** |
+| `/contact/`, the control | 0 · **0.000** | 0 · **0.000** | 0 · **0.000** | 0 · **0.000** | 0 · **0.000** |
+
+Every height is now inside §2's *no passage over 1.0 viewport where only the
+background changes*, where none of them was.
+
+---
+
+### 13.2 · The photograph carries into the footer
+
+**What the last screen was.** The pinned frame is one window tall and the
+footer stood underneath the section, so at the document's end `/about/` showed
+the centre tile from the top of the window down to 148px above its foot, a row,
+and then 148px of dark ground with the site's last words on it. Isolated and
+scanned row by row at the document's end — the chrome, the footer and the fixed
+stage hidden, so only the frame paints — that row is not an argument:
+
+| before, worst row ΔL at the document's end | where it is |
+|---|---|
+| 375×553 · **0.31514** | 148px above the window's foot |
+| 390×664 · **0.34460** | 148px |
+| 390×750 · **0.33233** | 148px |
+| 390×844 · **0.30543** | 148px |
+| 1440×900 · **0.27826** | 148px |
+
+In every one of the five it is also **the worst row anywhere in the window**,
+which is the definition of a line a reader can trace. The frame's own base was
+inside the window at **29–30 of the exit's 151–221 stops**.
+
+**The mechanism is the hero's foot dissolve, and it is used with the arc left
+off.** `.hero-foot-fade` is the class the hero card carries at the top of the
+site for exactly this failure — *"the expanded hero used to stop on a ruled
+line: photograph, hairline and drop shadow all ending in the same row with the
+floor starting underneath it"* — and the finale's frame now carries it at the
+bottom. `.finale-foot` supplies the length, and the length is the hero's own:
+**176px on a phone, 280px above `md`**.
+
+**The arc is not taken and the reason is a rule.** `--hero-foot-arc` clears an
+ellipse 62% of the width out of the picture, centred at the foot — which on the
+hero is behind nothing and here would be directly behind the footer's centred
+type. §2 forbids *rectangle, oval, blob, tile, card fill or frosted panel*
+behind text, and an oval cleared out of a photograph is an oval. The linear ramp
+is full width, spans the frame edge to edge and has no shape in it, which is the
+form the same rule allows.
+
+**`PhotoStage`'s luminance wipe was the other candidate and it is the wrong one
+here.** The wipe exists to take a photograph *off* the window without passing
+through the haze; this handover needs the photograph to still be on the window
+when the footer's words arrive. Wiping it out would put the footer back on a
+ground of its own, which is the complaint.
+
+**The other half is layout and it is not a mechanism at all.** The section
+carries `margin-bottom: -148px` — the footer's own height at every width, and
+it is a constant rather than a measurement because the footer is 32px of
+padding, the 44px circles, a 20px gap, the copyright's 20px row and 32px more of
+padding, and every one of those is frozen. Only the pinned branch takes it; the
+resting render has no full-bleed frame for the words to stand in. What the
+overlap buys is that **the document now ends where the pinned frame ends**, so
+the frame's base is never above the window's foot at any scroll position and
+there is no row to hide.
+
+**The length arrives; it does not stand.** At rest the mosaic's bottom band sits
+129px above the window's foot at 664, so a 176px dissolve waiting there would cut
+it. `--foot-in` drives the length off the zoom's last quarter — `0.68 → 0.745`
+in approved units — by which point every outer tile has fanned past the window's
+edges and the centre tile's own lower edge is within 40px of the window's. In
+scroll that is 103px on a phone and 112px on a desktop, and it lands with the
+footer, which slides into the window over the last 148px of the document. The
+declared length is `calc(1px + 175px * var(--foot-in))` rather than
+`calc(175px * …)` because a zero-length gradient has nothing to interpolate
+over.
+
+**The last screen, both engines, five viewports.** Read at maximum scroll:
+
+| | frame in the window | footer's box | copyright's row | `--foot-in` |
+|---|---|---|---|---|
+| 375×553 | −0.41 → 552.59 | 404.59 → 552.59 | 500.59 → 520.59 | 1 |
+| 390×664 | −0.20 → 663.80 | 515.80 → 663.80 | 611.80 → 631.80 | 1 |
+| 390×750 | 0 → 750 | 602 → 750 | 698 → 718 | 1 |
+| 390×844 | −0.20 → 843.80 | 695.80 → 843.80 | 791.80 → 811.80 | 1 |
+| 1440×900 | 0 → 900 | 752 → 900 | 848 → 868 | 1 |
+
+The frame is the window to within a rounding, the footer's 148px are the frame's
+last 148px, and the copyright stands 32–52px above the frame's base with the
+photograph dissolving through it. WebKit reads the same to 0.07px.
+
+**The seam, after, on the same scan.** Chrome, footer and stage hidden; the
+worst row step inside the dissolve's own band beside the worst row step anywhere
+in the window:
+
+| | frame's base ever in the window | worst row ΔL in the ramp's band | worst row ΔL anywhere |
+|---|---|---|---|
+| Chromium 375×553 | **0 of 151 stops** | **0.00997** | 0.02058 |
+| Chromium 390×664 | **0 of 173** | **0.01173** | 0.02252 |
+| Chromium 390×750 | **0 of 191** | **0.00908** | 0.03232 |
+| Chromium 390×844 | **0 of 209** | **0.01082** | 0.03246 |
+| Chromium 1440×900 | **0 of 221** | **0.01075** | 0.01717 |
+
+Against the before build's 0.278–0.351 in a single row, the ramp's whole band is
+**20 to 35 times quieter**, and in no configuration is the band the worst row in
+the window — the worst is the photograph's own content, which is §7.3's own
+result restated at the other end of the page. The mask string is identical in
+both engines, so `-webkit-mask-image` is doing its work.
+
+**Is the photograph actually behind the footer, or only above it?** Row means
+down the last screen, with `--foot-in` forced to 0 as the control. Each cell is
+the row's mean relative luminance and the row's own light-to-dark spread out of
+255, read at that many CSS px above the frame's base:
+
+| 390×664, Chromium | 240px | 176px | 148px | 120px | 64px | 32px |
+|---|---|---|---|---|---|---|
+| the ramp off | 0.2220 / 248 | 0.0668 / 173 | 0.0698 / **132** | 0.0557 / 98 | 0.0261 / 51 | 0.0176 / 37 |
+| the ramp on | 0.2220 / 248 | 0.0668 / 173 | 0.0585 / **117** | 0.0333 / 64 | 0.0106 / 12 | 0.0082 / **3** |
+
+The two are identical above 176 and diverge below it, which is the ramp doing
+exactly what it declares. At the footer's own top edge — 148px — the picture
+still carries **117 of 255** of spread, so the footer's upper half stands on a
+photograph with structure in it; at the copyright's row, 32px up, the spread is
+**3** and the picture has gone. The footer is inside the picture and the picture
+gives out under the last line, which is the composition. 1440×900 is the same
+shape over the deeper 280px ramp.
+
+---
+
+### 13.3 · Verification, on a clean production build
+
+`rm -rf .next out`, then `npm run build`, with the build immediately before
+these two changes served from a copy on a second port as the control.
+
+**a · Home does not move, and neither does anything else.** Every
+`[data-stage-plate]` key, every span between them, the document height and every
+block rect to fourteen levels — 209 boxes on a phone and 211 on a desktop — read
+on both builds at 375×553, 390×664, 390×750, 390×844 and 1440×900, in Chromium
+and WebKit, on all four pages. **Thirty of the forty configurations are
+identical and the ten that moved are all `/about/`.**
+
+| | 375×553 | 390×664 | 390×750 | 390×844 | 1440×900 |
+|---|---|---|---|---|---|
+| home, document | 3409 | 3903 | 4339 | 4814 | 5248 |
+| home, twelve keys / eleven spans / every rect | identical | identical | identical | identical | identical |
+| `/contact/`, `/faq/`, every figure | identical | identical | identical | identical | identical |
+| `/about/`, document | 4019 → **3429** | 4796 → **4117** | 5398 → **4650** | 6056 → **5233** | 7708 → **5580** |
+| horizontal overflow, all four pages | 0 | 0 | 0 | 0 | 0 |
+
+**Fourteen rects moved on `/about/` and they are the only fourteen there are:**
+`body`, `main`, the `article`, the finale's own `section` and the footer's ten
+boxes. The hero and all three story scenes sit at the same document position
+they sat at before, which is the guard that makes every contrast reading above
+the finale a comparison of the same traversal.
+
+`/about/`'s own plate key moves with the article — 2324 → 2058.4 at 664 — and it
+moves because the section is shorter, not because of the overlap: the article's
+border box is unchanged at the top and shrinks by exactly the section's 531.2px,
+and the negative margin resolves outside it.
+
+**b · `verify:text` PASS on all four.** home 1303, about 1599, contact 277, faq
+1993 — the same character counts as the shipped build.
+
+**c · `verify:placements` PASS.** 132 placements × 7 viewports; 25 pairs over
+1.0, all 25 in `KNOWN`, none worse, nothing cleared, nothing new. Neither change
+touches a `sizes`.
+
+**d · No horizontal line at the footer join.** §13.2's table, and the summary is
+that the frame's base is inside the window at **0 of 151–221 stops** where it was
+inside at 29–30, the single row that carried **0.278–0.351** of ΔL is gone, and
+the ramp's whole 176/280px band reads **0.00908–0.01514** — never the worst row
+in its own window.
+
+**e · The polarised ledger holds at every midpoint.** Every plate's opacity read
+at every 5px stop of `/about/`, both engines, five viewports, both builds. In
+all twenty configurations there is **exactly one run** in which any plate sits
+between 0.04 and 0.75, it is **monotonic**, and it is the two halves of one
+crossfade — plate 0 falling 0.9594 → 0.0406 while plate 1 rises 0.0406 → 0.9594.
+It is the hero's own focus pull and it is the only thing on the page that is not
+1.00 or 0.00. It shortens with the article: 1170 / 1410 / 1590 / 1790 / 2295px
+before, **1040 / 1245 / 1410 / 1585 / 1695** after. The foot's ramp is a spatial
+gradient in a mask, in the class the wipe's own 40% feather and the hero's foot
+already are, not a strength the frame is held at.
+
+**f · Contrast at 5px on `/about/` and the footer, both engines, at 375×553,
+390×844 and 1440×900 — nothing is below its floor.** 2,393 stops per engine, a
+painted frame and a blanked frame at each, scored at glyph pixels on the
+rendered composite and only where an element's effective opacity is 1. Sixteen
+elements on a phone, twenty on a desktop, **104 element/viewport/engine
+readings**. Both of §12.6's gates are reported because the question there is
+still open; the floors are stated against the ink-equality gate, which is the
+published set's rule:
+
+| | worst on the page, ink gate | element | floor |
+|---|---|---|---|
+| Chromium 375×553 | **5.024** | the hero lede | 4.5 |
+| Chromium 390×844 | **5.168** | the `h1` | 3.0 |
+| Chromium 1440×900 | **4.722** | the header's *About* link | 4.5 |
+| WebKit 375×553 | **5.029** | the hero lede | 4.5 |
+| WebKit 390×844 | **4.881** | the hero lede | 4.5 |
+| WebKit 1440×900 | **4.748** | the header's *About* link | 4.5 |
+
+**The footer is the element the second change is about, and it does not move.**
+Its worst reading is found at maximum scroll in every configuration — the last
+screen, over the dissolving centre tile — and it reads **8.242 to 8.590** on the
+ink gate and 4.873–4.893 on the absolute one. §12.6 measured the same element on
+the same page at **8.40** and 4.88 before any of this. **The photograph under
+the footer costs no contrast at all**, so §2's repair — lowering the
+photograph's strength in that zone — is not called for; the ramp has already
+taken the picture to 0.03 of itself by the copyright's row and the footer's
+existing `foot-shade` carries the rest. The closing paragraph's three spans read
+**9.03 to 11.44**.
+
+**g · No `pageerror` and no console error** in Chromium and WebKit, with and
+without `prefers-reduced-motion`, on all four pages at 390×844 and 1440×900,
+traversed to the document's end. About's reduced-motion `useScroll` failure
+stays fixed: the new `useTransform` sits above the early return with the others.
+
+**h · `/about/`'s image bytes over a full traversal do not move**, because
+neither change touches a `sizes` or a rung:
+
+| | 375×553 | 390×664 | 390×750 | 390×844 | 1440×900 |
+|---|---|---|---|---|---|
+| before | 12 files, 1671.9 KB | 10, 1664.9 | 10, 1664.9 | 9, 1618.9 | 11, 2398.6 |
+| after | 12 files, **1671.9 KB** | 10, **1664.9** | 10, **1664.9** | 9, **1618.9** | 11, **2398.6** |
+
+**i · The still composite, which is the measurement that names the complaint.**
+Two stops differ if any pixel outside a glyph rect differs, glyph rects dilated
+by 3 CSS px, shot at DPR 3 (DPR 2 on the desktop) and compared at device pixels;
+5px step, every stop of the page. The longest run in which the composite is
+**bit-identical** to its predecessor:
+
+| | 375×553 | 390×664 | 390×750 | 390×844 | 1440×900 |
+|---|---|---|---|---|---|
+| `/about/`, before | 270px · **0.488 vp** | 330 · **0.497** | 375 · **0.500** | 415 · **0.492** | 700 · **0.778** |
+| `/about/`, after | 160 · **0.289** | 195 · **0.294** | 225 · **0.300** | 250 · **0.296** | 245 · **0.272** |
+| `/contact/`, the control | 0 · **0.000** | 0 · **0.000** | 0 · **0.000** | 0 · **0.000** | 70 · **0.078** |
+| stops identical to their predecessor, `/about/` before | 56 of 695 | 68 / 828 | 79 / 931 | 86 / 1044 | 288 / 1363 |
+| stops identical to their predecessor, `/about/` after | **33 / 577** | **39 / 692** | **46 / 781** | **51 / 879** | **135 / 937** |
+
+**The stuck run is the finale's hold and nothing else.** Before, at 664, it ran
+scroll 2725–3055: the last paragraph group has completed, the last tile has
+arrived, and for 330px of thumb *not one pixel of the window changes*. §8.1
+measured home's own worst at 100–105px and Contact's at nothing, so this was
+three times the site's worst and it is what "you are feeling stuck" is. It is
+now 195px at 664 and 245px at 1440×900 — down from 700 there, which is the
+largest single fall in the table — and the desktop, which was the worst screen
+on the page, is now the best of the five.
+
+It is not zero and it should not be: it is the frame in which the reader is
+being given the completed paragraph to read, and the site's answer to *every
+scroll gesture must advance visible content* has always been that a passage of
+type held still is reading rather than stalling. What was wrong was the length,
+and the length is now 0.27–0.30 of a viewport against home's own 0.12–0.18.
+
+---
+
 ## The contrast reference set — the corrected instrument
 
 §2.8 makes the floor a ratchet: **no change may lower any measured glyph-core

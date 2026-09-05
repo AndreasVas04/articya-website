@@ -1125,6 +1125,33 @@ body {
 .hero-foot-halo {
   --foot-halo: 80px;
 }
+
+/* The finale's exit, and it is the hero's own foot dissolve at the other end of
+   the site. `/about/` now ends on the centre tile at full bleed with the footer
+   pulled up into it, so the photograph must not stop on a row: the same ramp
+   takes it to nothing over a length measured up from the frame's base, and the
+   footer's words stand inside that length.
+
+   The arc is deliberately not taken. An ellipse cleared out of the picture
+   behind centred type is the oval behind text that §2 forbids; the ramp is full
+   width, has no shape in it and is the form the rule allows.
+
+   The length arrives rather than standing: at rest the mosaic's bottom band
+   sits 129px above the window's foot at 664, so a dissolve waiting there would
+   cut it. `--foot-in` is driven off the zoom's last quarter, by which point
+   every outer tile has fanned past the window's edges. 1px rather than 0 is the
+   floor so the gradient always has a length to interpolate over. */
+@layer components {
+  .finale-foot {
+    --foot-in: 0;
+    --hero-foot: calc(1px + 279px * var(--foot-in));
+  }
+  @media (max-width: 767px) {
+    .finale-foot {
+      --hero-foot: calc(1px + 175px * var(--foot-in));
+    }
+  }
+}
 /* The foot is not a ruled edge either. A second mask on the frame inside the
    ramp lifts the picture higher at the centre than at the corners, so what is
    left reads as a shallow arc. Nesting the two masks multiplies them, which is

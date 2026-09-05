@@ -86,9 +86,11 @@ own evidence.
   **The cost comes down with it.** Stepped at 5px through the whole of
   `/about/`, the finale's tail carried **no glyph at all for 1.429 / 1.401 /
   1.380 / 1.363 viewports** at 553 / 664 / 750 / 844 and **1.967** at
-  1440×900; it now carries none for **0.922 / 0.889 / 0.880 / 0.865** and
-  **0.767** — every one of them inside the 1.0-viewport bound directly above,
-  where the seven-tile wall this replaced ran 0.78–0.84.
+  1440×900; it now carries none for **0.651 / 0.670 / 0.680 / 0.687** and
+  **0.600** — every one of them inside the 1.0-viewport bound directly above,
+  and shorter than the 0.78–0.84 the seven-tile wall this replaced ran. Half of
+  the fall is the shorter pin and half is the footer standing 148px inside the
+  frame, which brings the site's last words into the window that much sooner.
 - **The closing paragraph's fade-out is the finale's own exit** and is exempt
   from *Text may not* be scroll-linked for the same reason: it is the handover,
   not an entrance.
@@ -386,6 +388,24 @@ The general form, for the next number taken off a screenshot: record what the
 number was a fraction *of*, and check whether that thing is the same size here.
 Where it is not, carry the ratio the reference's own composition implies, not
 the percentage its markup happened to use.
+
+**The finale ends on the photograph rather than above it.** The pinned frame
+was one window tall and the footer stood underneath the section, so `/about/`
+closed on 405px of centre tile, a row, and 148px of dark ground with the site's
+last words on it — the horizontal line at the top of §2, measured at **0.278 to
+0.351 of row-to-row ΔL** and the worst row anywhere in that window. The section
+now carries a **−148px bottom margin**, the footer's own height, so the document
+ends where the pinned frame ends and the frame's base is never above the
+window's foot at any scroll position; and the frame carries the **hero's foot
+dissolve** — `.hero-foot-fade` at the hero's own 176/280px, brought in over the
+zoom's last quarter — so the picture goes to nothing through the footer instead
+of stopping at it. The ramp's whole band reads 0.009–0.015 and is never the
+worst row in its own window. **`--hero-foot-arc` is deliberately not taken**:
+an ellipse cleared out of the picture, centred at the foot, would be an oval
+behind the footer's centred type, and §2 forbids that shape whichever side of
+the photograph it is cut from. The footer's contrast does not move — 8.24–8.59
+at glyph cores against 8.40 before — so nothing was spent to buy it.
+`OPEN-ITEMS.md` §13.2.
 
 **The set was one photograph short of the wall, and the finale no longer asks
 the question that way.** The seven-tile wall filled the window with seven equal

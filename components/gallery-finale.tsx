@@ -7,6 +7,7 @@ import {
   useReducedMotion,
   useScroll,
   useTransform,
+  type MotionStyle,
 } from "framer-motion";
 import { ResponsiveImage } from "@/components/responsive-image";
 import { coverSizes, type SizeBox } from "@/lib/images";
@@ -54,6 +55,16 @@ const TARGET_SCALES = [4, 5, 6, 5, 6, 8, 9];
 // longer than the section at each end's own definition: section top at the
 // window's foot to section bottom at its head, so 3.2 screens.
 const SECTION_SVH = 2.2;
+
+// How far the footer stands inside the finale, and it is the footer's own
+// height at every width: 32px of padding, the 44px circles, the 20px gap, the
+// copyright's 20px row and 32px more of padding. Pulled up by exactly that, the
+// document ends where the pinned frame ends — so the last screen of `/about/`
+// is the centre tile filling the window with the site's last words inside its
+// foot, and the photograph carries through into the footer instead of stopping
+// above a ground of its own. Only the pinned branch takes it; the resting
+// render has no full-bleed frame for the words to stand in.
+const FOOTER_OVERLAP = 148;
 
 // What the choreography was approved against: 3.00 screens on a phone and 4.40
 // on a desktop, keyed on one shared set of numbers because the two pins were
@@ -206,6 +217,16 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
     () => -24 * stageWindow(stage.get(), fadeFrom, fadeTo)
   );
 
+  // The frame's foot, brought in over the zoom's last quarter. By 0.68 the six
+  // outer tiles have fanned past the window's edges and the centre tile's own
+  // lower edge is within 40px of the window's, so the ramp never crosses a
+  // tile's amber ring while that ring is anywhere but the screen's edge. It
+  // lands with the footer, which slides into the window over the last 148px of
+  // the document.
+  const footIn = useTransform(() =>
+    stageWindow(stage.get(), key(0.68), key(0.745))
+  );
+
   useEffect(() => {
     const query = window.matchMedia("(min-width: 768px)");
     const update = () => setCompact(!query.matches);
@@ -253,7 +274,11 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
   }
 
   return (
-    <section ref={container} className="relative h-[220svh]">
+    <section
+      ref={container}
+      className="relative h-[220svh]"
+      style={{ marginBottom: -FOOTER_OVERLAP }}
+    >
       {/* The pinned frame's job is to cover the window, so it names `dvh` — the
           same correction 2.19 made to the stage, recorded there and made here.
           At `svh` it was sized to the smallest viewport while the tiles inside
@@ -261,9 +286,10 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
           750 inside a frame that is 664, leaving a band of ground under it as
           soon as the URL bar collapses. It is sticky inside a fixed-height
           section, so it sets no document height and moves no key. */}
-      <div
+      <motion.div
         key={compact ? "compact" : "wide"}
-        className="sticky top-0 h-[100dvh] overflow-hidden"
+        className="finale-foot hero-foot-fade sticky top-0 h-[100dvh] overflow-hidden"
+        style={{ "--foot-in": footIn } as MotionStyle}
       >
         <motion.div
           className="absolute inset-0 z-10 flex items-center justify-center px-4"
@@ -297,7 +323,7 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
             compact={compact}
           />
         ))}
-      </div>
+      </motion.div>
     </section>
   );
 }
