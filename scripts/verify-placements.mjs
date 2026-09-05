@@ -50,51 +50,122 @@ const VIEWPORTS = [
 const ASSERTED = new Set(["avif", "webp"]);
 
 // A ratchet, not a gate, and for the same reason 2.8's contrast floor is one:
-// the site does not start from zero. Two standing debts put placements over 1.0
-// today, both of them recorded in OPEN-ITEMS and neither of them drift:
+// the site does not start from zero.
 //
-//   * `hero-3` is a 2316px source. 1.2 has the arithmetic — it is 3.1 MP where
-//     the Portugal set is 48, it is upscaled, and PHOTO-MANIFEST's survey says
-//     no incoming file improves it. Photography, not code.
-//   * `BLEED_WIDTH` is 2880, which is 1440 CSS at DPR 2. 2.7 declined 3200 on
-//     an LCP argument with the bytes measured. Every window wider than that,
-//     and every phone box tall enough that a landscape frame cover-fits to
-//     nearly three times the window's width, asks for more than the ladder
-//     carries.
+// Every entry carries its own owner and what would close it, because a list of
+// keys and numbers with a paragraph of prose above it is a laundry list: read a
+// year from now nobody can tell which line is photography, which is a priced
+// decision and which is a declaration deliberately on the safe side. 7.6 makes
+// the same point about its own table and this is that column, in the file the
+// build actually runs. `owner` is printed beside any row that fails.
 //
-// Each entry is the worst value measured when it was written. The build fails
-// if any of them gets worse, and fails on anything not on the list. Values are
-// the ones this script computes, so they are comparable run to run.
+// `worst` is the value this script computed when the row was written. The build
+// fails if a row gets worse, and fails on anything not on the list.
 const KNOWN = {
-  // hero-3, source-capped at 2316px — 1.2, carried
-  "hero-3|375x553@3": 2.32,
-  "hero-3|390x664@3": 2.414,
-  "hero-3|390x750@3": 2.414,
-  "hero-3|390x844@3": 2.414,
-  "hero-3|1440x900@2": 1.717,
-  "hero-3|1920x900@2": 2.289,
-  // full-bleed frames on a window wider than the 2880 cap — 2.7, by decision
-  "IMG_4585|1920x900@2": 1.374,
-  "hero-2|1920x900@2": 1.374,
-  "IMG_4721|1920x900@2": 1.334,
-  "IMG_4735-road|1920x900@2": 1.334,
-  "hero-1|1920x900@2": 1.334,
-  "IMG_4582-road|1920x900@2": 1.334,
-  "IMG_4619-valley|1920x900@2": 1.334,
-  // the two 103vw slides at 1440 DPR 2 — 2966 asked against the 2880 cap
-  "IMG_4585|1440x900@2": 1.031,
-  "hero-2|1440x900@2": 1.031,
-  // landscape frames cover-fitted into a phone's tall box: the paint is ~2.9x
-  // the window, so DPR 3 asks past 2880 whatever the window's own width is
-  "hero-1|375x553@3": 1.147,
-  "hero-1|390x664@3": 1.193,
-  "hero-1|390x750@3": 1.193,
-  "hero-1|390x844@3": 1.193,
-  "IMG_4582-road|375x553@3": 1.133,
-  "IMG_4582-road|390x664@3": 1.179,
-  "IMG_4582-road|390x750@3": 1.179,
-  "IMG_4582-road|390x844@3": 1.179,
+  // hero-3 — every one of its six rows is the same photograph, and only a
+  // photograph closes them.
+  ...ownedBy(
+    "`hero-3` is a 2316px source and its top rung is that same 2316. 1.2 has " +
+      "the arithmetic — 3.1 MP against the Portugal set's 48 — and " +
+      "PHOTO-MANIFEST §B closes the delivery: the frame is itself upscaled " +
+      "and no incoming file improves it. Only re-shooting it closes it.",
+    {
+      "hero-3|375x553@3": 2.32,
+      "hero-3|390x664@3": 2.414,
+      "hero-3|390x750@3": 2.414,
+      "hero-3|390x844@3": 2.414,
+      "hero-3|1440x900@2": 1.717,
+      "hero-3|1920x900@2": 2.289,
+    }
+  ),
+  // The finale's two wide slots. Both frames are at their own source width and
+  // the ladder cannot carry a rung above it, so this is the same class as
+  // hero-3's rows rather than a cap or a declaration.
+  ...ownedBy(
+    "`AboutImage2` is a 1536px master and the finale's top wide slot paints " +
+      "1786 device px at 1920x900 DPR 2, so the widest rung that exists is " +
+      "the frame's own width. PHOTO-MANIFEST §B: it has no original in the " +
+      "delivery and its best candidate scores 0.75, which is a different " +
+      "picture. Only a different photograph of the same circle closes it.",
+    { "AboutImage2|1920x900@2": 1.163 }
+  ),
+  ...ownedBy(
+    "`home-training` is a 1536px master and the finale's bottom wide slot is " +
+      "the same box, so it asks the same 1786 device px against the same " +
+      "source cap. PHOTO-MANIFEST §B: no original in the delivery, best " +
+      "candidate 0.49. Only a different photograph of the game closes it.",
+    { "home-training|1920x900@2": 1.163 }
+  ),
+  // Full-bleed frames on a window wider than the cap.
+  ...ownedBy(
+    "2.7's `BLEED_WIDTH` of 2880 — 1440 CSS at DPR 2 — plus the hero's own " +
+      "`HERO_PUSH`, which makes the declaration 103vw. A 1920 window is " +
+      "outside the envelope 2880 was chosen for. A 3072 rung closes it and " +
+      "7.6 priced it: +1815 KB on home, because 2880 hands q50 back to q62.",
+    {
+      "IMG_4585|1920x900@2": 1.374,
+      "hero-2|1920x900@2": 1.374,
+    }
+  ),
+  ...ownedBy(
+    "2.7's `BLEED_WIDTH` of 2880, by decision: 3200 was declined on an LCP " +
+      "argument with the bytes measured. A 1920 window at DPR 2 asks 3840 of " +
+      "a 100vw frame. The same 3072 rung closes it at the same price.",
+    {
+      "IMG_4721|1920x900@2": 1.334,
+      "IMG_4735-road|1920x900@2": 1.334,
+      "hero-1|1920x900@2": 1.334,
+      "IMG_4582-road|1920x900@2": 1.334,
+      "IMG_4619-valley|1920x900@2": 1.334,
+    }
+  ),
+  // The one pair on this list that is paint rather than declaration.
+  ...ownedBy(
+    "`HERO_PUSH = 0.03` over-*paints*: the card is scaled past the window and " +
+      "back as it opens, so at the middle of the opening a 1440x900 DPR 2 " +
+      "window paints 2966 device px out of a 2880 file. Against source " +
+      "nothing is wrong. 7.6 owns it; every lever that reaches it — the push, " +
+      "the ladder, the encoder — is frozen.",
+    {
+      "IMG_4585|1440x900@2": 1.031,
+      "hero-2|1440x900@2": 1.031,
+    }
+  ),
+  // Landscape frames cover-fitted into a phone's tall box.
+  ...ownedBy(
+    "`coverSizes`' single compact reference viewport, 390x844. A cover-fitted " +
+      "frame's overscale is set by the box's aspect and one `sizes` string " +
+      "cannot carry four phone heights, so the declaration is the paint at " +
+      "844 and an overstatement at every shorter window — 0.77 and 0.94 on " +
+      "the screen at 553 and 664. Nothing to close: this is the safe side of " +
+      "1.2, and it is over-fetching rather than under-fetching.",
+    {
+      "hero-1|375x553@3": 1.147,
+      "hero-1|390x664@3": 1.193,
+      "IMG_4582-road|375x553@3": 1.133,
+      "IMG_4582-road|390x664@3": 1.179,
+    }
+  ),
+  ...ownedBy(
+    "`coverSizes`' 390x844 reference and 2.7's 2880 cap together. At 750 " +
+      "and 844 the paint is genuinely over the rung — 1.06 and 1.19 on the " +
+      "screen — because a 1.356:1 frame cover-fitted into a phone's box " +
+      "paints 2.93x the window's width. The 3072 rung closes these too.",
+    {
+      "hero-1|390x750@3": 1.193,
+      "hero-1|390x844@3": 1.193,
+      "IMG_4582-road|390x750@3": 1.179,
+      "IMG_4582-road|390x844@3": 1.179,
+    }
+  ),
 };
+
+/** Tag a group of recorded values with the one owner they share. */
+function ownedBy(owner, rows) {
+  return Object.fromEntries(
+    Object.entries(rows).map(([key, worst]) => [key, { worst, owner }])
+  );
+}
 
 // Slack on a recorded value, so a rounding difference is not a build failure.
 const DRIFT = 0.005;
@@ -256,9 +327,11 @@ for (const p of placements) {
 const unlisted = [];
 const worse = [];
 for (const [key, row] of over) {
-  const recorded = KNOWN[key];
-  if (recorded === undefined) unlisted.push(row);
-  else if (row.ratio > recorded + DRIFT) worse.push({ ...row, recorded });
+  const known = KNOWN[key];
+  if (known === undefined) unlisted.push(row);
+  else if (row.ratio > known.worst + DRIFT) {
+    worse.push({ ...row, recorded: known.worst, owner: known.owner });
+  }
 }
 const cleared = Object.keys(KNOWN).filter((k) => !over.has(k));
 
@@ -295,7 +368,8 @@ if (unlisted.length || worse.length) {
   }
   for (const r of worse.sort((a, b) => b.ratio - a.ratio)) {
     console.error(
-      `  WORSE  ${r.ratio.toFixed(3)} against ${r.recorded.toFixed(3)}  ${r.key}  asks ${r.requested}px, widest rung ${r.chosen}`
+      `  WORSE  ${r.ratio.toFixed(3)} against ${r.recorded.toFixed(3)}  ${r.key}  asks ${r.requested}px, widest rung ${r.chosen}\n` +
+        `         owner: ${r.owner}`
     );
   }
   console.error(
@@ -303,7 +377,8 @@ if (unlisted.length || worse.length) {
       "placement is painting larger than it should. Do not close it by lowering\n" +
       "`sizes` below the paint — that is the 1.2 defect, and it moves the failure\n" +
       "from this script to the screen. A value that is genuinely a decision goes\n" +
-      "in KNOWN with the item that decided it, and never without one."
+      "in KNOWN through `ownedBy`, with the frame or the cap that owns it and\n" +
+      "with what would close it, and never without both."
   );
   process.exit(1);
 }
