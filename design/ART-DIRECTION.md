@@ -70,21 +70,25 @@ own evidence.
   clock would put the paragraph's last group on the screen at a moment decided
   by a timer rather than by the reader's thumb. The rule's own reason — a flick
   collapses a scrub and the text is gone before it can be read — is bought off
-  here by the pin: the paragraph is held on a pinned frame for 0.44 of the
-  section's travel with nothing else moving in the window, which is 0.9 of a
-  viewport on a phone and 1.5 on a desktop of thumb, not 200ms.
-- **The pin runs 2.00 viewports on a phone and 3.40 on a desktop**, against the
-  1.2-viewport ceiling directly above. Accepted. The ceiling exists so a reader
-  is never scrolling against a screen that does not change, and inside this pin
-  something moves at every frame — the tiles arrive staggered, the words
-  complete, the ring closes, the mosaic fans out. What it costs is real and is
-  measured rather than waved at. Stepped at 5px through the whole of `/about/`
-  in both engines, the finale's tail carries **no glyph at all for 1.374 /
-  1.355 / 1.333 / 1.315 viewports** at 553 / 664 / 750 / 844 and **1.894** at
-  1440×900 — 760 / 900 / 1000 / 1110 / 1705 px of scroll where the only words
-  on the screen are the header's. The seven-tile wall it replaces ran one
-  wordless stretch of 0.78–0.84 viewports at the same measurement. This is the
-  larger of the two costs and it is accepted with the composition.
+  here by the pin: the paragraph carries ink for 0.75 of a viewport of thumb on
+  a phone and 0.68 on a desktop, and it stands complete and still for 0.23 of
+  one. That is more scroll than any reading passage on home is given — §8.1's
+  longest is 0.535 — and it is not 200ms.
+- **The second amendment is withdrawn: the pin stands at the ceiling.** It ran
+  **2.00 viewports on a phone and 3.40 on a desktop** and it now runs **1.200 at
+  both**, measured at 553 / 664 / 750 / 844 and 1440×900. The section is
+  `220svh` at either breakpoint and one screen of it is the pinned frame; every
+  key of the choreography was carried onto the shorter timeline by the one
+  affine map per breakpoint that sends the pin's two ends to the pin's two ends,
+  so each event keeps the fraction of the pin it was approved at and every
+  interval keeps its ratio to every other. It is the same choreography played at
+  0.600 of its old length on a phone and 0.353 on a desktop.
+  **The cost comes down with it.** Stepped at 5px through the whole of
+  `/about/`, the finale's tail carried **no glyph at all for 1.429 / 1.401 /
+  1.380 / 1.363 viewports** at 553 / 664 / 750 / 844 and **1.967** at
+  1440×900; it now carries none for **0.922 / 0.889 / 0.880 / 0.865** and
+  **0.767** — every one of them inside the 1.0-viewport bound directly above,
+  where the seven-tile wall this replaced ran 0.78–0.84.
 - **The closing paragraph's fade-out is the finale's own exit** and is exempt
   from *Text may not* be scroll-linked for the same reason: it is the handover,
   not an entrance.

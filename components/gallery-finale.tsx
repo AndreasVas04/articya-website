@@ -47,6 +47,35 @@ const TILES = [
 
 const TARGET_SCALES = [4, 5, 6, 5, 6, 8, 9];
 
+// The section's own height, in screens, and it is the same number at both
+// breakpoints. A sticky frame one screen tall inside it pins for `SECTION_SVH
+// - 1`, so 2.2 is 1.2 screens of pin — §2's ceiling exactly — where 3.00 and
+// 4.40 were 2.00 and 3.40. The timeline `useScroll` measures is one screen
+// longer than the section at each end's own definition: section top at the
+// window's foot to section bottom at its head, so 3.2 screens.
+const SECTION_SVH = 2.2;
+
+// What the choreography was approved against: 3.00 screens on a phone and 4.40
+// on a desktop, keyed on one shared set of numbers because the two pins were
+// different lengths and the keys never had to tell them apart.
+const APPROVED_SVH = { compact: 3, wide: 4.4 };
+
+// Every key in this file is still the number the composition was approved at.
+// `stageKey` is what puts it on the shortened timeline, and it is one affine
+// map per breakpoint: read the key as a distance from the moment the pin
+// engages, scale that distance by the ratio of the two pins, and read it back
+// as a fraction of the new travel. It sends the pin's two ends to the pin's two
+// ends, holds the ratio of every interval to every other exactly, and leaves
+// each event at the same fraction of the pin it was approved at. In scroll
+// rather than in progress the phone's run is played at 0.600 of its old length
+// and the desktop's at 0.353 — the ceiling is one number and the two pins were
+// not.
+const stageKey = (value: number, compact: boolean) => {
+  const was = compact ? APPROVED_SVH.compact : APPROVED_SVH.wide;
+  const squeeze = (SECTION_SVH - 1) / (was - 1);
+  return (squeeze * (value * (was + 1) - 1) + 1) / (SECTION_SVH + 1);
+};
+
 // Each tile's slot, in fractions of the viewport, matching TILES above — the
 // mobile box first and the md: box second, because this mosaic is the one on
 // the site whose bands change at the breakpoint.
@@ -152,20 +181,24 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
 
   // One travel-based timeline (section top at viewport bottom → section
   // bottom at viewport top), so the words are already arriving while the
-  // last scene releases and the frame is never empty. The pin engages at
-  // ~0.19 desktop / 0.25 mobile and releases at ~0.82 / 0.75; the zoom
-  // completes just before release and holds full-bleed for a beat.
+  // last scene releases and the frame is never empty. The section is 2.2
+  // screens at both breakpoints now, so the pin engages at 0.3125 and
+  // releases at 0.6875 on either — the zoom completes just before release and
+  // holds full-bleed for a beat, as it did at 0.745 against 0.75.
   const { scrollYProgress: stage } = useScroll({
     target: container,
     offset: ["start end", "end start"],
   });
+  const key = (value: number) => stageKey(value, compact);
 
   // Text: three groups complete shortly after the pin engages while the
   // outer tiles gather, hold among them, then hand the frame over as the
   // ring closes. On compact screens the words dissolve completely before
   // the ring starts moving, so the closing tiles never cross live text.
   const seg = 0.18 / (groups.length + 0.5);
-  const [fadeFrom, fadeTo] = compact ? [0.4, 0.46] : [0.42, 0.5];
+  const [fadeFrom, fadeTo] = compact
+    ? [key(0.4), key(0.46)]
+    : [key(0.42), key(0.5)];
   const textOut = useTransform(
     () => 1 - stageWindow(stage.get(), fadeFrom, fadeTo)
   );
@@ -220,10 +253,7 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
   }
 
   return (
-    <section
-      ref={container}
-      className="relative h-[300vh] md:h-[440vh]"
-    >
+    <section ref={container} className="relative h-[220svh]">
       {/* The pinned frame's job is to cover the window, so it names `dvh` — the
           same correction 2.19 made to the stage, recorded there and made here.
           At `svh` it was sized to the smallest viewport while the tiles inside
@@ -240,10 +270,15 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
           style={{ opacity: textOut, y: textDrift }}
         >
           <div className="max-w-2xl text-center">
-            <TextBar stage={stage} />
+            <TextBar stage={stage} start={key(0.08)} end={key(0.14)} />
             <p className="mt-8 text-xl leading-[1.55] text-ink">
               {groups.map((group, i) => (
-                <FinaleGroup key={i} stage={stage} start={0.13 + i * seg} end={0.13 + i * seg + seg * 1.5}>
+                <FinaleGroup
+                  key={i}
+                  stage={stage}
+                  start={key(0.13 + i * seg)}
+                  end={key(0.13 + i * seg + seg * 1.5)}
+                >
                   {group}
                   {i < groups.length - 1 ? " " : ""}
                 </FinaleGroup>
@@ -267,8 +302,16 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
   );
 }
 
-function TextBar({ stage }: { stage: ReturnType<typeof useScroll>["scrollYProgress"] }) {
-  const scaleX = useTransform(() => stageWindow(stage.get(), 0.08, 0.14));
+function TextBar({
+  stage,
+  start,
+  end,
+}: {
+  stage: ReturnType<typeof useScroll>["scrollYProgress"];
+  start: number;
+  end: number;
+}) {
+  const scaleX = useTransform(() => stageWindow(stage.get(), start, end));
   return (
     <motion.span
       aria-hidden="true"
@@ -314,15 +357,21 @@ function FinaleTile({
   // waits for the settle — and the band tiles above the words rise in from
   // above so their entrance also stays clear of the text.
   const center = index === 0;
-  const inStart = center
+  const key = (value: number) => stageKey(value, compact);
+  const approachStart = center
     ? compact
       ? 0.465
       : 0.44
     : 0.1 + (index - 1) * 0.015;
-  const inEnd = inStart + (center ? 0.08 : 0.1);
+  const inStart = key(approachStart);
+  const inEnd = key(approachStart + (center ? 0.08 : 0.1));
   const [gatherX, gatherY] = (compact ? GATHER_COMPACT : GATHER)[index];
   const gatherPx = compact ? GATHER_COMPACT_PX[index] : 0;
-  const [settleFrom, settleTo] = compact ? [0.46, 0.545] : [0.42, 0.54];
+  const [settleFrom, settleTo] = compact
+    ? [key(0.46), key(0.545)]
+    : [key(0.42), key(0.54)];
+  const zoomFrom = key(0.55);
+  const zoomTo = key(0.745);
   const riseDirection = compact && gatherY < 0 ? -1 : 1;
 
   const opacity = useTransform(() => stageWindow(stage.get(), inStart, inEnd));
@@ -338,7 +387,7 @@ function FinaleTile({
   });
   const scale = useTransform(
     () =>
-      1 + (TARGET_SCALES[index] - 1) * stageWindow(stage.get(), 0.55, 0.745)
+      1 + (TARGET_SCALES[index] - 1) * stageWindow(stage.get(), zoomFrom, zoomTo)
   );
 
   return (
