@@ -143,9 +143,13 @@ const posterOpacity = (progress: number) =>
 // what made the opening read as a box.
 //
 // The poster's ramp carries the headline on open sky; the card's carries the
-// nav across the top and the intro at the foot. The poster's is untouched —
-// the headline's measured 5.27 / 5.34 is this ramp — and the card's differs
-// from it in one number.
+// nav across the top and the intro at the foot. The poster's mid is 76, not
+// the 66 the headline was measured at (5.27 / 5.34): the amber strike under
+// the label is a mark on the same sky, and at 66 it read 2.31–2.59 at its own
+// ink over the whole of its leg at 553, 664 and 1440×900, against a 3.0
+// floor. 74 lands on 3.01 at 664; 76 reads 3.20 / 3.38 / 3.42 and takes the
+// headline to 7.3 with it. The sky in that band keeps 0.24 of itself where it
+// kept 0.34. The card's ramp differs from the poster's in one number.
 //
 // **The card's top was 34.** That is the middle register: at 0.34 the picture
 // under it reads at 0.66, which is neither a photograph nor a ground, and
@@ -184,7 +188,7 @@ const posterOpacity = (progress: number) =>
 // card is inside `--hero-foot`'s dissolve, where the picture has already gone
 // to the floor, so the extra six points land on rows that are the floor
 // already. This is §2.8's argument for the gains base, on the other frame.
-const POSTER_SHADE = { top: 92, mid: 66, base: 8, from: "8%", to: "64%" };
+const POSTER_SHADE = { top: 92, mid: 76, base: 8, from: "8%", to: "64%" };
 const CARD_SHADE = {
   top: 78,
   mid: 16,
