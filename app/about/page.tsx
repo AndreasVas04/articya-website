@@ -61,7 +61,7 @@ export default function AboutPage() {
     <>
       <SmoothScroll />
       <PhotoStage plates={plates} />
-      <PageHero heading={hero.heading} text={hero.text} />
+      <PageHero heading={hero.heading} text={hero.text} compactTitle />
 
       <article data-stage-plate="1" data-stage-strength="1" className="relative">
         {story.map((scene, i) => (
