@@ -242,7 +242,7 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
     return (
       <section ref={container} className="pt-16 md:pt-24">
         <div className="mx-auto max-w-6xl px-4 pb-16 md:pb-24">
-          <span aria-hidden="true" className="block h-[1.25px] w-16 bg-amber" />
+          <span aria-hidden="true" className="block h-[2px] w-16 bg-amber" />
           <p className="mt-6 max-w-3xl leading-[1.7] text-ink md:mt-8 md:text-xl md:leading-[1.55]">
             {groups.join(" ")}
           </p>
