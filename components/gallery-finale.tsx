@@ -348,7 +348,7 @@ function TextBar({
   return (
     <motion.span
       aria-hidden="true"
-      className="finale-rule mx-auto block h-[1.25px] w-16 bg-amber"
+      className="finale-rule mx-auto block h-[2px] w-16 bg-amber"
       style={{ scaleX }}
     />
   );
