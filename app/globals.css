@@ -652,6 +652,19 @@ body {
     }
   }
 
+  /* Register A at 0.82 of itself. The FAQ heading was brought down and is
+     right at its size; the two short titles are matched to it by scaling the
+     ramp's constants, not by a second ramp — the same clamp, every number
+     multiplied by 0.82. */
+  .type-title-compact {
+    font-size: clamp(2.788rem, 9.84vw, 4.1rem);
+  }
+  @media (min-width: 768px) {
+    .type-title-compact {
+      font-size: 11.48vw;
+    }
+  }
+
   /* Register A again, sized to the measure instead of to the window.
    *
    * "Frequently Asked Questions" is 26 characters. At 14vw it cannot set in

@@ -9,6 +9,8 @@ interface PageHeroProps {
    *  of the 11ch one, which only exists to stop a short heading running the
    *  width of the window. */
   longHeading?: boolean;
+  /** The title at 0.82 of the register — `.type-title-compact`. */
+  compactTitle?: boolean;
 }
 
 // The inner pages open on the photograph full-bleed with the type centred over
@@ -31,7 +33,7 @@ interface PageHeroProps {
 // else; the strength is per page and lives on the plate now, because a shaded
 // forest road arrives most of the way down on its own and a sunlit track
 // between a hillside and a reservoir arrives blown out.
-export function PageHero({ heading, text, longHeading }: PageHeroProps) {
+export function PageHero({ heading, text, longHeading, compactTitle }: PageHeroProps) {
   return (
     <section
       data-index-section=""
@@ -48,7 +50,8 @@ export function PageHero({ heading, text, longHeading }: PageHeroProps) {
           <h1
             className={cn(
               "type-title mx-auto mt-6 text-balance font-display font-semibold tracking-[-0.025em] text-ink",
-              longHeading ? "type-title-long max-w-none" : "max-w-[11ch]"
+              longHeading ? "type-title-long max-w-none" : "max-w-[11ch]",
+              compactTitle && "type-title-compact"
             )}
           >
             {heading}

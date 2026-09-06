@@ -135,7 +135,7 @@ export default function ContactPage() {
   return (
     <>
       <PhotoStage plates={plates} />
-      <PageHero heading={hero.heading} text={hero.text} />
+      <PageHero heading={hero.heading} text={hero.text} compactTitle />
 
       <section
         data-index-section=""
