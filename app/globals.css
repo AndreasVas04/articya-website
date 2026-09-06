@@ -973,8 +973,8 @@ body {
     opacity: 1;
     transform: none;
     transition:
-      opacity 700ms var(--ease-out-quart),
-      transform 700ms var(--ease-out-quart);
+      opacity 400ms var(--ease-out-quart),
+      transform 400ms var(--ease-out-quart);
   }
 }
 

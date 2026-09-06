@@ -199,7 +199,14 @@ export default function HomePage() {
               dissolving foot rather than off a fixed lower edge, and at 24 the
               travel finished before the eye had picked up that anything was
               moving. The band is clipped to the card, so the first part of each
-              rise plays inside the dissolve and the words surface out of it. */}
+              rise plays inside the dissolve and the words surface out of it.
+
+              400ms, staggered 0 / 60 / 150, not 700 and 0 / 100 / 300. The
+              entrance is a clock and the exit is the scrollbar: at a real
+              flick the block was still arriving while the same gesture was
+              already carrying it off at 1.5x, and the statement completed 180px
+              up the screen. Faster in, the words are standing while the
+              crossing's last rows finish, and the release reads as one move. */}
           {/* The thread's second station, and the mark that paints it is
               the clearing's rule holding this row in the frame. The span is
               laid out where it has always been — it is what the hero measures
@@ -208,7 +215,7 @@ export default function HomePage() {
           <span
             aria-hidden="true"
             data-hero-rule=""
-            className="block h-0.5 w-24 translate-y-14 bg-amber opacity-0 duration-[700ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] motion-reduce:translate-y-0"
+            className="block h-0.5 w-24 translate-y-14 bg-amber opacity-0 duration-[400ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] motion-reduce:translate-y-0"
           />
           {/* The statement is body copy now, on the body step and in the body
               face: the display-face "hero statement" was its own size, its own
@@ -219,10 +226,10 @@ export default function HomePage() {
               the foot of the window, so the pixel would have moved the rule's
               own row rather than the statement's. Given back here, the station
               stands exactly where it stood. */}
-          <p className="mt-[19px] max-w-[44ch] translate-y-14 text-balance text-center text-[clamp(1rem,1.3vw,1.16rem)] leading-[1.66] text-ink opacity-0 duration-[700ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] group-data-[expanded]:delay-100 motion-reduce:translate-y-0">
+          <p className="mt-[19px] max-w-[44ch] translate-y-14 text-balance text-center text-[clamp(1rem,1.3vw,1.16rem)] leading-[1.66] text-ink opacity-0 duration-[400ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] group-data-[expanded]:delay-[60ms] motion-reduce:translate-y-0">
             {hero.text}
           </p>
-          <div className="mt-5 translate-y-14 opacity-0 duration-[700ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] group-data-[expanded]:delay-300 motion-reduce:translate-y-0">
+          <div className="mt-5 translate-y-14 opacity-0 duration-[400ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] group-data-[expanded]:delay-150 motion-reduce:translate-y-0">
             <ButtonLink href={hero.cta.href} variant="gold">
               {hero.cta.label}
             </ButtonLink>
