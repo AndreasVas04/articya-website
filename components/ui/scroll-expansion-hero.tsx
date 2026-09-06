@@ -8,7 +8,7 @@ import {
   type CSSProperties,
   type ReactNode,
 } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { cubicBezier, motion, useReducedMotion } from "framer-motion";
 import { ResponsiveImage } from "@/components/responsive-image";
 import { coverSizes, HERO_PUSH, HERO_VIEWPORT } from "@/lib/images";
 import { cn, withBasePath } from "@/lib/utils";
@@ -35,6 +35,28 @@ const POSTER_RIDGE = "/images/pt/IMG_4585-ridge.svg";
 const RIDGE_SKYLINE = 0.4175;
 
 const clamp01 = (n: number) => Math.min(Math.max(n, 0), 1);
+
+// The opening completes itself. Once it has started and the input stops, the
+// reader is not left mid-way between the poster and the clearing: after
+// SETTLE_IDLE ms with no wheel or touch delta the progress is carried on to
+// the release — or back to the poster if it had barely begun — through the
+// same `applyProgress` a wheel event feeds, so the release fires exactly as it
+// does under the reader's own hand. Any new delta cancels the settle and hands
+// progress back to the input from wherever it is.
+//
+// The gains, the box ramps, the thresholds and the release are not read by
+// any of this; it only supplies deltas.
+const SETTLE_IDLE_MS = 120;
+const SETTLE_FORWARD_FROM = 0.2;
+const settleEase = cubicBezier(0.22, 1, 0.36, 1);
+const settleTarget = (p: number) => (p >= SETTLE_FORWARD_FROM ? 1 : 0);
+const settleDuration = (p: number) => (p >= SETTLE_FORWARD_FROM ? 400 + 500 * (1 - p) : 300);
+interface Settle {
+  from: number;
+  to: number;
+  start: number;
+  duration: number;
+}
 
 // The whole section breathes forward and settles back as the card opens: one
 // number, read by the poster, by the copy masked to the land and by the window
@@ -242,6 +264,14 @@ const ScrollExpandMedia = ({
   // How far the headline block goes down behind the land. Measured; see the
   // effect below.
   const [descent, setDescent] = useState(0);
+  // The settle in flight, if any, and the idle clock that starts one. Refs,
+  // because the handlers below are re-bound on every progress step and a
+  // settle has to survive that; `settleRun` is what wakes the effect when one
+  // starts from the idle timer.
+  const settle = useRef<Settle | null>(null);
+  const idleTimer = useRef<number | null>(null);
+  const progressRef = useRef(0);
+  const [settleRun, setSettleRun] = useState(0);
 
   // Under reduced motion the component renders its resting state: media
   // expanded, content visible, no scroll hijacking, first slide only. The
@@ -381,6 +411,7 @@ const ScrollExpandMedia = ({
     if (reducedMotion || skipCapture.current) return;
 
     const expandInstantly = () => {
+      settle.current = null;
       setScrollProgress(1);
       setMediaFullyExpanded(true);
       setShowContent(true);
@@ -388,6 +419,7 @@ const ScrollExpandMedia = ({
 
     const applyProgress = (delta: number) => {
       const newProgress = Math.min(Math.max(scrollProgress + delta, 0), 1);
+      progressRef.current = newProgress;
       setScrollProgress(newProgress);
       if (newProgress >= 1) {
         setMediaFullyExpanded(true);
@@ -397,12 +429,37 @@ const ScrollExpandMedia = ({
       }
     };
 
+    const clearIdle = () => {
+      if (idleTimer.current !== null) window.clearTimeout(idleTimer.current);
+      idleTimer.current = null;
+    };
+
+    // Start a settle from wherever progress is, if it is anywhere between the
+    // two ends. Under reduced motion it would be one step rather than a
+    // travel; the capture is off there, so it never runs at all.
+    const startSettle = () => {
+      clearIdle();
+      const p = progressRef.current;
+      if (p <= 0 || p >= 1 || settle.current) return;
+      settle.current = { from: p, to: settleTarget(p), start: performance.now(), duration: settleDuration(p) };
+      setSettleRun((n) => n + 1);
+    };
+
+    // Input, of any size: it cancels a settle in flight and re-arms the idle
+    // clock. A zero delta counts — it is still the reader's hand.
+    const onInput = () => {
+      settle.current = null;
+      clearIdle();
+      idleTimer.current = window.setTimeout(startSettle, SETTLE_IDLE_MS);
+    };
+
     const handleWheel = (e: globalThis.WheelEvent) => {
       if (mediaFullyExpanded && e.deltaY < 0 && window.scrollY <= 5) {
         setMediaFullyExpanded(false);
         e.preventDefault();
       } else if (!mediaFullyExpanded) {
         e.preventDefault();
+        onInput();
         applyProgress(e.deltaY * 0.0009);
       }
     };
@@ -436,14 +493,19 @@ const ScrollExpandMedia = ({
         // Once progress hits 1 this branch stops matching, so touch events
         // are no longer intercepted and native scrolling resumes.
         e.preventDefault();
+        onInput();
         const scrollFactor = deltaY < 0 ? 0.008 : 0.005;
         applyProgress(deltaY * scrollFactor);
         setTouchStartY(touchY);
       }
     };
 
+    // The finger lifting is the end of the input, so the settle starts there
+    // rather than waiting out the idle clock; a finger that stops on the
+    // glass is caught by the clock.
     const handleTouchEnd = () => {
       setTouchStartY(0);
+      if (!mediaFullyExpanded) startSettle();
     };
 
     const handleScroll = () => {
@@ -451,6 +513,22 @@ const ScrollExpandMedia = ({
         window.scrollTo(0, 0);
       }
     };
+
+    // One step of the settle in flight, fed through `applyProgress` from this
+    // effect's own closure: the step re-renders, the effect re-runs and books
+    // the next one, so a settle advances one frame at a time on the page's
+    // own clock and never through a stale closure.
+    let settleFrame = 0;
+    if (settle.current) {
+      settleFrame = requestAnimationFrame(() => {
+        const s = settle.current;
+        if (!s) return;
+        const u = clamp01((performance.now() - s.start) / s.duration);
+        const target = u >= 1 ? s.to : s.from + (s.to - s.from) * settleEase(u);
+        if (u >= 1) settle.current = null;
+        applyProgress(target - scrollProgress);
+      });
+    }
 
     window.addEventListener("wheel", handleWheel, { passive: false });
     // Safari does not default window `scroll`/`touchstart` to passive the way
@@ -464,6 +542,7 @@ const ScrollExpandMedia = ({
     window.addEventListener("touchend", handleTouchEnd);
 
     return () => {
+      cancelAnimationFrame(settleFrame);
       window.removeEventListener("wheel", handleWheel);
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("keydown", handleKeyDown);
@@ -471,7 +550,16 @@ const ScrollExpandMedia = ({
       window.removeEventListener("touchmove", handleTouchMove);
       window.removeEventListener("touchend", handleTouchEnd);
     };
-  }, [scrollProgress, mediaFullyExpanded, touchStartY, reducedMotion]);
+  }, [scrollProgress, mediaFullyExpanded, touchStartY, reducedMotion, settleRun]);
+
+  // The idle clock must not outlive the capture.
+  useEffect(
+    () => () => {
+      if (idleTimer.current !== null) window.clearTimeout(idleTimer.current);
+      settle.current = null;
+    },
+    []
+  );
 
   // Clicking the logo while already on home fires this instead of navigating
   // (Next would not remount the route, so the state below would persist). It
@@ -482,6 +570,10 @@ const ScrollExpandMedia = ({
   useEffect(() => {
     const reset = () => {
       skipCapture.current = false;
+      settle.current = null;
+      if (idleTimer.current !== null) window.clearTimeout(idleTimer.current);
+      idleTimer.current = null;
+      progressRef.current = 0;
       setScrollProgress(0);
       setMediaFullyExpanded(false);
       setShowContent(false);
