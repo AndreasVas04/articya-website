@@ -5,15 +5,18 @@ import { StageScene } from "@/components/stage-entrance";
 import { OfferPanel } from "@/components/offer-panel";
 import { GainTrail } from "@/components/gain-trail";
 import { PhotoStage, type StagePlate } from "@/components/photo-stage";
+import { ResponsiveImage } from "@/components/responsive-image";
 import { SectionIndex } from "@/components/edge-furniture";
 import { IntroExit } from "@/components/intro-exit";
 import { ButtonLink } from "@/components/ui/button";
-import { coverSizes, HERO_VIEWPORT, imagePreload } from "@/lib/images";
+import { coverSizes, FULL_VIEWPORT, HERO_VIEWPORT, imagePreload } from "@/lib/images";
 import { hero, whatWeDo, gain } from "@/content/home";
 
-// The photograph "What you gain" is built on: the valley under open sky, the
-// ridge running the width of it and the village under the ridge. It is the
-// stage's own plate for this zone and for the closing that comes out of it.
+// The photograph "What you gain" is built on, sharp at one end and defocused
+// under the words at the other: the valley under open sky, the ridge running
+// the width of it. It is also the plate this section and the closing stand on,
+// so the frame's two masked ends dissolve into their own picture rather than
+// into a different one.
 const gainImage = "/images/pt/IMG_4619-valley.jpg";
 
 // The three photographs the page stands on, and the only grounds below the hero.
@@ -105,31 +108,19 @@ const plates: StagePlate[] = [
     wipe: true,
     shade: { top: 60, mid: 70, base: 76, from: "22%", to: "62%" },
   },
-  // The gains and the closing: the valley at full strength, and it is the
-  // split. On a desktop the plate is clipped to the right of a hard vertical
-  // seam at 48% and the words stand on the page's own floor to its left —
-  // the Contact page's construction, with the floor where Contact has the
-  // defocused half, because nothing may stand on this frame: it is the
-  // brightest in the set by 20 L*, and the one place its darkened copy carried
-  // words was the one place on the site that never cleared 4.5. On a phone it
-  // is a band across the top of the window and the words rise over it on a
-  // block of floor. `.gain-plate` in globals.css is both boxes.
+  // The gains and the closing: the valley, the same frame the gains section
+  // lays edge to edge over it — so the finale is that picture arriving at full
+  // strength out of its own defocused copy.
   //
-  // `50% 100%`: a 16:10 window keeps 61% of this frame's height, and the
-  // ridge is the last third of it. Anchored to the foot the plate shows the
-  // ridge across the middle of the window with the village under it and the
-  // sky over it; at 88% the village went under the fold.
-  //
-  // The darkening is the top alone, under the chrome, and the picture is
-  // released through the whole of the rest: no word stands on it, so there is
-  // nothing for a mid or a base to carry, and a plate that carries no text is
-  // painted at its own strength.
-  {
-    src: gainImage,
-    position: "50% 100%",
-    className: "gain-plate",
-    shade: { top: 46, mid: 0, base: 0, from: "20%", to: "100%", color: "var(--color-sky-anchor)" },
-  },
+  // The crop is the gains frame's own, and it has to be, or the two are not
+  // the same picture at all: `.gain-photo` takes the lower part of the frame
+  // at 88% and this plate was taking the middle at 70%. A 16:10 window keeps
+  // 61.1% of this frame's height and the ridge is the last third of it, so at
+  // 70% the band ran 27.2%–88.3% and the plate was open sky with a strip of
+  // hills along the bottom — no subject in it at all, and the crossfade into
+  // the gains was a pan as well as a focus pull. At 88% both layers show the
+  // ridge running the width of the frame with the village under it.
+  { src: gainImage, position: "50% 88%" },
 ];
 
 // The first hero slide is the LCP; the backdrop reuses the same variant, so
@@ -140,6 +131,13 @@ const plates: StagePlate[] = [
 // would land under the width the frame is painted at through the middle of it.
 const heroSizes = coverSizes(hero.slides[0], HERO_VIEWPORT);
 const heroPreload = imagePreload(hero.slides[0], heroSizes);
+
+// The gains frame runs edge to edge in a full-viewport section, sharp under
+// one end and defocused under the other. Every copy of it declares this: the
+// soft ones are rasterized at a quarter of the frame, but they are the same
+// photograph at the same crop, so sharing the sharp one's declaration keeps
+// the whole stack on a single download.
+const gainSizes = coverSizes(gainImage, FULL_VIEWPORT);
 
 // The panel's last sentence used to be lifted out of its paragraph and stood
 // on a screen of its own between the two panels. It is back where it was
@@ -520,6 +518,17 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* The trail walks out of the clearing: the stage crossfades here to
+            the reservoir vista at half strength — the picture the page opened
+            on — and holds it under the four gains. The section carries no
+            bottom padding: the lamp's descent owns the gap below, so the
+            trail's line runs straight on into the thread rather than stopping
+            short of a section edge. */}
+        {/* No top padding on mobile, like "What we do": the panel above closes
+            on its own `pb-10`, so the section's own padding stacked a second
+            beat on top of a gap the panel had already opened — 113px from the
+            last line of the panel to this heading. The accent rule sits on the
+            section's top edge instead and the join reads as one beat. */}
         {/* Holds the ground quiet until the last panel has actually finished.
             A zone is keyed at its own middle, so without this the climb toward
             the next zone starts at the panel's midpoint and runs across the
@@ -532,28 +541,9 @@ export default function HomePage() {
           className="h-0"
         />
 
-        {/* "What you gain" is the split: the valley at full strength on one
-            side of a hard seam and the four gains on the page's own floor on
-            the other. The photograph is the stage's plate and this section
-            paints nothing over it on a desktop — the plate is clipped to the
-            right of 48% and the floor shows through to its left, so the words
-            never stand on the picture and the seam is the plate's own edge,
-            with no line drawn on it.
-
-            Below `md` the split stacks. The plate is a band across the top of
-            the window, fixed with the stage, and the words rise over it on a
-            block of floor whose top dissolves into the picture — so at rest
-            the ridge and the village hold the upper register and the four
-            lines the lower, and as the reader scrolls the block slides up
-            over the picture rather than the picture ending on a row. The
-            section is exactly one screen at every height: the band takes what
-            the block's 332px leaves, floored at 40svh.
-
-            No line crosses the seam. On a desktop the column stops at 42%;
-            on a phone every word is below the block's 80px dissolve. */}
         <section
           data-index-section=""
-          className="gain-frame relative flex min-h-svh flex-col overflow-hidden text-ink md:flex-row md:items-center"
+          className="gain-frame relative isolate flex min-h-svh items-center overflow-hidden text-ink"
         >
           {/* Declared rather than inherited, like every other key on the page.
               The section measures exactly a screen at all four heights, so this
@@ -564,53 +554,113 @@ export default function HomePage() {
             data-stage-strength="1"
             className="absolute inset-x-0 top-[50svh] h-0"
           />
-          {/* The upper register on a phone: a window onto the band. */}
-          <div aria-hidden="true" className="gain-window w-full shrink-0 md:hidden" />
-
-          {/* The words, on the floor. One scene, fired once at -14%: the rule
-              and the column lift together, the heading surfaces out of its
-              clipped line, the hairline follows and the four rows land last,
-              90ms apart — the last at 1.2s. */}
-          <StageScene className="gain-copy relative flex w-full flex-1 flex-col justify-center px-6 pb-2 pt-[84px] md:w-[48%] md:flex-none md:px-[6%] md:py-24">
-            <div className="stage-lift">
-              <span aria-hidden="true" className="block h-0.5 w-16 bg-amber" />
-              <div className="stage-mask mt-2 md:mt-3">
-                <h2
-                  className="stage-mask-rise type-heading font-display font-semibold tracking-[-0.025em]"
-                  style={{ transitionDelay: "80ms" }}
-                >
-                  {gain.title}
-                </h2>
-              </div>
-            </div>
-            {/* The rule under the heading, at 62% of the text column — the
-                one mark Grand Canyon puts between a heading and what hangs
-                off it. It is a rule, not a divider: it stops well short of
-                the column's edge so it reads as underlining the words rather
-                than as a border. */}
-            <span
-              aria-hidden="true"
-              className="stage-rise mt-3 block h-px w-[62%] bg-hairline md:mt-6"
-              style={{ transitionDelay: "160ms" }}
+          {/* One photograph, edge to edge, and it goes out of focus across
+              itself: the sharp frame with four softer copies of the same frame
+              masked over its left, each fading into the next. There is no
+              second picture, no divider and no box — what the words stand on
+              is the far end of a gradient, so the ground under them can only
+              ever read as this photograph, defocused. */}
+          <div aria-hidden="true" className="gain-ground absolute inset-0 -z-10">
+            <ResponsiveImage
+              src={gainImage}
+              alt=""
+              fill
+              sizes={gainSizes}
+              className="gain-photo"
             />
-            <div className="mt-1 md:mt-4">
+            {/* Softest last, and that is load-bearing. Each copy is opaque out
+                to its own hold and only then fades, so the last one painted is
+                the one the reader sees over that whole stretch: in DOM order
+                1→4 the gentlest step covered the other three and the left of
+                the frame rendered at blur 6px / brightness 0.86 instead of
+                30px / 0.42 — the ramp existed in the stylesheet and nowhere on
+                the page. It was invisible while this section stood on a
+                blue-hour lane, which was dark enough to carry the words on its
+                own; under an open sky it measured 1.22. */}
+            <div className="gain-defocus">
+              {[4, 3, 2, 1].map((step) => (
+                <div key={step} className={`gain-soft gain-soft-${step}`}>
+                  <ResponsiveImage
+                    src={gainImage}
+                    alt=""
+                    fill
+                    sizes={gainSizes}
+                    className="gain-photo"
+                  />
+                </div>
+              ))}
+            </div>
+            {/* The frame's own darkening, and the whole of it. Full width, so
+                it has no horizontal extent to read as a shape behind anything;
+                it carries the picture where the chrome crosses it and releases
+                it through the middle, and it rides inside the masked layer so
+                it dissolves at the two ends along with the photograph.
+
+                The middle held 6%, which is what a blue-hour lane needed. This
+                frame is a valley under open sky and the words stand on the sky
+                end of the defocus ramp: the trail items measured 1.60–2.64
+                against a 3.0 floor. The release is now 44%, and it darkens
+                toward `sky-anchor` — the sky owns this frame's chroma (its own
+                hue is −109.5°/−98.4°, the green-black's is 152.5°), so the
+                default took it 28° off its hue at this strength where the
+                sky's own dark takes it 4.4°.
+
+                The base is 84 and not 70, and one line is the whole reason.
+                The four gains stand between 44% and 71% of this frame, so the
+                first three are in the flat 44% band and the last one is in the
+                fall toward the base — and the last one is also the only place
+                on the site that has never cleared 4.5, at 4.47 since before
+                Section 1. It is not the darkening that is thin there; it is
+                the picture, which is the bright valley floor by that row. The
+                fall from 60% now reaches 84 instead of 70, which puts the line
+                at 4.69 and leaves the other three untouched, because they are
+                above the stop it moves. The base itself is inside
+                `--gain-end`'s dissolve, so nothing new is painted at the
+                frame's bottom edge. */}
+            <div className="plate-shade pointer-events-none absolute inset-0 [--shade-bottom:84%] [--shade-color:var(--color-sky-anchor)] [--shade-mid:44%] [--shade-mid-from:20%] [--shade-mid-to:60%] [--shade-top:70%]" />
+          </div>
+
+          <div className="relative w-full px-6 py-20 md:w-[46%] md:px-12 md:py-24">
+            <Reveal>
+              <span
+                aria-hidden="true"
+                className="block h-[1.25px] w-16 bg-amber"
+              />
+              <h2 className="mt-3 type-heading font-display font-semibold tracking-[-0.025em]">
+                {gain.title}
+              </h2>
+              {/* The rule under the heading, at 62% of the text column — the
+                  one mark Grand Canyon puts between a heading and what hangs
+                  off it. It is a rule, not a divider: it stops well short of
+                  the column's edge so it reads as underlining the words rather
+                  than as a border. */}
+              <span
+                aria-hidden="true"
+                className="mt-6 block h-px w-[62%] bg-hairline"
+              />
+            </Reveal>
+
+            <div className="mt-2 md:mt-4">
               <GainTrail items={gain.items} />
             </div>
-          </StageScene>
+          </div>
         </section>
 
         {/* The closing beat, on clean dark: the page's last quiet zone, coming
-            out of the valley as the plate leaves. The lamp is gone — its line,
-            cone, node and ignition were a light fixture drawn on the page, and
-            what the section is actually for is three pieces of type. They
-            stand on the floor itself and the closing line keeps the one place
-            the accent carries text.
+            out of the valley the gains frame dissolves into. The lamp is gone —
+            its line, cone, node and ignition were a light fixture drawn on the
+            page, and what the section is actually for is three pieces of type.
+            They stand on the floor itself and the closing line keeps the one
+            place the accent carries text.
 
-            On a desktop the three stand in the split's own floor column,
-            left-aligned under the gains, and the valley withdraws on the other
-            side of the seam while they are read: centred, the statement
-            crossed the seam and stood on the picture. On a phone the column is
-            the whole width and centred, as it was. */}
+            It is quiet rather than loud, and the picture decided that. The
+            valley is the brightest frame in the set by 20 L*, and at full
+            strength the closing line measured 1.00 against a 3.0 floor on it;
+            the lane is the darkest and still only carries the words by being
+            darkened back to the haze the ledger exists to remove. So the
+            alternation closes the way it opens — a photograph, then nothing —
+            and the last screen of the page is the floor with three lines on
+            it. */}
         {/* The breathing marker that stood here is gone, and taking it out is
             what buys the finale its dissolve. Keyed half a viewport above
             itself it sat 450px below the gains, so the climb into the closing
@@ -620,7 +670,7 @@ export default function HomePage() {
 
         <section
           data-index-section=""
-          className="relative overflow-hidden px-4 pb-24 pt-16 text-ink md:px-0 md:pb-32 md:pt-24"
+          className="relative overflow-hidden px-4 pb-24 pt-16 text-ink md:pb-32 md:pt-24"
         >
           {/* The ground's last key. The section's own middle put it half its
               height in, and that height is 395px of padding and three blocks of
@@ -634,7 +684,7 @@ export default function HomePage() {
             data-stage-strength="0"
             className="absolute inset-x-0 top-[25svh] h-0"
           />
-          <Reveal className="mx-auto flex max-w-6xl flex-col items-center text-center md:mx-0 md:w-[48%] md:max-w-none md:items-start md:px-[6%] md:text-left">
+          <Reveal className="mx-auto flex max-w-6xl flex-col items-center text-center">
             <p className="max-w-[44ch] text-[clamp(1rem,1.3vw,1.16rem)] leading-[1.66] text-ink">
               {gain.text}
             </p>
