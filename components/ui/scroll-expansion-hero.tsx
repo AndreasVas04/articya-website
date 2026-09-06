@@ -46,7 +46,16 @@ const clamp01 = (n: number) => Math.min(Math.max(n, 0), 1);
 //
 // The gains, the box ramps, the thresholds and the release are not read by
 // any of this; it only supplies deltas.
+// The idle is read against the hand's own cadence. A trackpad delivers an
+// event every frame, so 120 ms of silence after one is a stop; a mouse wheel
+// turned slowly delivers a notch every 200–300 ms, and 120 ms of silence after
+// one of those is the middle of the reader's gesture — measured, the settle
+// started between every notch, ran back toward the poster, and 400 notches of
+// deltaY 4 never got the opening past 0.02. So the wait is one and a half
+// gaps, floored at the 120 the trackpad was tuned on and capped at 600.
 const SETTLE_IDLE_MS = 120;
+const SETTLE_IDLE_MAX_MS = 600;
+const SETTLE_IDLE_GAPS = 1.5;
 const SETTLE_FORWARD_FROM = 0.2;
 // The settle follows the hand. Its target used to be read off progress alone
 // — toward the release from 0.20 up — so a reader scrolling back up from the
@@ -64,14 +73,29 @@ const SETTLE_BACK_HOLD_FROM = 0.8;
 // 0.0025 is a 400-unit opening, and the touch gains below are untouched.
 const WHEEL_GAIN = 0.0025;
 
-// A trackpad's momentum tail is a run of tiny deltas that can go on for most
-// of a second after the finger has left the glass, and the idle clock never
-// fires while it lasts. Three consecutive events under this delta are that
-// tail, and the settle starts there rather than waiting the tail out. A delta
-// at or above it is the hand again, and cancels a settle the way any input
-// does; the tail's own remaining events do not.
-const MOMENTUM_DELTA = 3;
-const MOMENTUM_EVENTS = 3;
+// A trackpad's momentum tail is a run of deltas that shrink event by event,
+// arriving every frame, and it can go on for most of a second after the
+// finger has left the glass — the idle clock never fires while it lasts. Four
+// consecutive events no more than TAIL_GAP_MS apart, each strictly smaller
+// than the one before, are that tail, and the settle starts there rather than
+// waiting the tail out. Once a settle is running, the tail's own remaining
+// events — still every frame, never growing — leave it alone; anything else is
+// the hand again and cancels it.
+//
+// It used to be three consecutive events under |deltaY| 3, with no clock on
+// them at all. A reader turning the wheel slowly and deliberately produces
+// exactly that — deltaY 1 every 80 ms — so at 0.20 the settle took the
+// opening out of their hands and ran it to the release in 770 ms while the
+// rest of their input was swallowed. The spacing and the shrinking are what a
+// tail has and a slow hand does not.
+const TAIL_GAP_MS = 20;
+const TAIL_EVENTS = 4;
+// A tail that has started a settle is allowed a dropped frame between its
+// events before it counts as the hand again; past this gap it is the hand.
+const COAST_GAP_MS = 40;
+// After the hand cancels a settle, no new one starts for this long, whatever
+// the idle clock says.
+const SETTLE_REFRACTORY_MS = 250;
 const settleEase = cubicBezier(0.22, 1, 0.36, 1);
 const settleTarget = (p: number, dir: number) =>
   dir < 0 ? (p >= SETTLE_BACK_HOLD_FROM ? 1 : 0) : p >= SETTLE_FORWARD_FROM ? 1 : 0;
@@ -308,8 +332,13 @@ const ScrollExpandMedia = ({
   const idleTimer = useRef<number | null>(null);
   const progressRef = useRef(0);
   const [settleRun, setSettleRun] = useState(0);
-  // Consecutive wheel events under MOMENTUM_DELTA.
-  const tail = useRef(0);
+  // The wheel's recent shape: how many consecutive events have qualified as a
+  // tail, when the last one landed and how big it was.
+  const tail = useRef({ count: 0, at: 0, size: 0 });
+  // No settle may start before this time; set when the hand cancels one.
+  const refractoryUntil = useRef(0);
+  // When the last wheel or touch delta landed, for the idle's cadence.
+  const lastInputAt = useRef(0);
   // The sign of the last non-zero wheel or touch delta; the settle reads it.
   const lastDir = useRef(1);
 
@@ -481,6 +510,11 @@ const ScrollExpandMedia = ({
       clearIdle();
       const p = progressRef.current;
       if (p <= 0 || p >= 1 || settle.current) return;
+      const wait = refractoryUntil.current - performance.now();
+      if (wait > 0) {
+        idleTimer.current = window.setTimeout(startSettle, wait);
+        return;
+      }
       const to = settleTarget(p, lastDir.current);
       settle.current = { from: p, to, start: performance.now(), duration: settleDuration(p, to) };
       setSettleRun((n) => n + 1);
@@ -489,9 +523,16 @@ const ScrollExpandMedia = ({
     // Input, of any size: it cancels a settle in flight and re-arms the idle
     // clock. A zero delta counts — it is still the reader's hand.
     const onInput = () => {
+      const now = performance.now();
+      if (settle.current) refractoryUntil.current = now + SETTLE_REFRACTORY_MS;
       settle.current = null;
       clearIdle();
-      idleTimer.current = window.setTimeout(startSettle, SETTLE_IDLE_MS);
+      // The first delta has no cadence yet and is read as the slowest hand:
+      // a stream corrects it on its next event, a single nudge waits 600 ms.
+      const gap = lastInputAt.current ? now - lastInputAt.current : SETTLE_IDLE_MAX_MS;
+      lastInputAt.current = now;
+      const idle = Math.min(Math.max(gap * SETTLE_IDLE_GAPS, SETTLE_IDLE_MS), SETTLE_IDLE_MAX_MS);
+      idleTimer.current = window.setTimeout(startSettle, idle);
     };
 
     const handleWheel = (e: globalThis.WheelEvent) => {
@@ -501,15 +542,21 @@ const ScrollExpandMedia = ({
         e.preventDefault();
       } else if (!mediaFullyExpanded) {
         e.preventDefault();
-        const small = Math.abs(e.deltaY) < MOMENTUM_DELTA;
+        const now = performance.now();
+        const size = Math.abs(e.deltaY);
+        const since = now - tail.current.at;
+        // A tail shrinks; a plateau of equal deltas is still the same tail
+        // running out, but it is not evidence of one starting.
+        const shrinking = since <= TAIL_GAP_MS && size > 0 && size < tail.current.size;
+        const coasting = since <= COAST_GAP_MS && size <= tail.current.size;
+        tail.current = { count: shrinking ? tail.current.count + 1 : 1, at: now, size };
         // The tail that started a settle does not also cancel it.
-        if (small && settle.current) return;
+        if (coasting && settle.current) return;
         onInput();
         applyProgress(e.deltaY * WHEEL_GAIN);
-        tail.current = small ? tail.current + 1 : 0;
         if (
-          small &&
-          tail.current >= MOMENTUM_EVENTS &&
+          shrinking &&
+          tail.current.count >= TAIL_EVENTS &&
           progressRef.current >= SETTLE_FORWARD_FROM
         ) {
           startSettle();
@@ -628,7 +675,9 @@ const ScrollExpandMedia = ({
       if (idleTimer.current !== null) window.clearTimeout(idleTimer.current);
       idleTimer.current = null;
       progressRef.current = 0;
-      tail.current = 0;
+      tail.current = { count: 0, at: 0, size: 0 };
+      refractoryUntil.current = 0;
+      lastInputAt.current = 0;
       lastDir.current = 1;
       setScrollProgress(0);
       setMediaFullyExpanded(false);
