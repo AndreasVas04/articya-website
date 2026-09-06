@@ -124,17 +124,10 @@ const plates: StagePlate[] = [
   // released through the whole of the rest: no word stands on it, so there is
   // nothing for a mid or a base to carry, and a plate that carries no text is
   // painted at its own strength.
-  //
-  // It arrives as the clearing's plate does — a luminance wipe welling up from
-  // the foot of the window on the stage's own ease — under the second panel
-  // as it leaves, and it withdraws upward the same way under the closing. No
-  // frame of either holds the picture at a strength between the two poles,
-  // and nothing on the glass moves except the boundary.
   {
     src: gainImage,
     position: "50% 100%",
     className: "gain-plate",
-    wipe: true,
     shade: { top: 46, mid: 0, base: 0, from: "20%", to: "100%", color: "var(--color-sky-anchor)" },
   },
 ];
@@ -527,6 +520,18 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* Holds the ground quiet until the last panel has actually finished.
+            A zone is keyed at its own middle, so without this the climb toward
+            the next zone starts at the panel's midpoint and runs across the
+            back half of its pin — which put the second panel's prose back on a
+            bright picture. */}
+        <div
+          aria-hidden="true"
+          data-stage-plate="1"
+          data-stage-strength="0"
+          className="h-0"
+        />
+
         {/* "What you gain" is the split: the valley at full strength on one
             side of a hard seam and the four gains on the page's own floor on
             the other. The photograph is the stage's plate and this section
@@ -550,29 +555,9 @@ export default function HomePage() {
           data-index-section=""
           className="gain-frame relative flex min-h-svh flex-col overflow-hidden text-ink md:flex-row md:items-center"
         >
-          {/* The arrival's two keys. The valley wells up from the foot of the
-              window over 0.62 of a viewport of scroll — from the moment this
-              section's top is 0.62 of the window above the foot until it is at
-              the top — which is the range the clearing's own plate was
-              approved with (its keys are −50svh and 12svh of a section that
-              stands a screen below the hero: 0 to 0.62H). The first key held
-              the ground quiet until the last panel had finished; it did, from
-              a marker at the section's own top, so the rise ran 0.50 of a
-              viewport and the boundary crossed the window a quarter faster
-              than the one the reader had already seen. The second panel's
-              prose is above the window before the first key at both widths,
-              so the boundary never passes under a word of it.
-
-              Declared rather than inherited, like every other key on the page:
-              the section measures exactly a screen at all four heights, so the
-              second lands where the section's own middle did — but it says
-              so. */}
-          <span
-            aria-hidden="true"
-            data-stage-plate="1"
-            data-stage-strength="0"
-            className="absolute inset-x-0 -top-[12svh] h-0"
-          />
+          {/* Declared rather than inherited, like every other key on the page.
+              The section measures exactly a screen at all four heights, so this
+              lands where the section's own middle did — but it says so. */}
           <span
             aria-hidden="true"
             data-stage-plate="2"

@@ -69,8 +69,11 @@ export interface StagePlate {
   priority?: boolean;
   /** Arrive and leave as a full-bleed luminance wipe rather than as a fade,
    *  so no frame of the transition holds the picture at a strength between
-   *  0.05 and 0.74. Every plate on home takes it. Assumes one rise and one
-   *  fall, which is what every plate on this page has. */
+   *  0.05 and 0.74. A plate wants this wherever its own ramp is the thing the
+   *  reader is looking at; the gains frame lays its own edge-to-edge copy of
+   *  its photograph over the stage, so that plate's ramp is never seen and it
+   *  keeps the fade. Assumes one rise and one fall, which is what every plate
+   *  on this page has. */
   wipe?: boolean;
   /** A class on the plate's layer, for a plate whose box is not the window:
    *  the gains plate is clipped to one side of a seam on a desktop and is a
