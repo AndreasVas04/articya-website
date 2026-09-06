@@ -635,11 +635,14 @@ const ScrollExpandMedia = ({
       <section
         className="gold-field gold-field-chrome-top gold-field-open-bottom hero-drop-scope hero-plate relative isolate flex min-h-svh flex-col items-center justify-start overflow-hidden"
       >
-        <motion.div
+        {/* The push and the fade are written inline, on the same clock as the
+            card's window below: one wheel event, one frame, all three copies
+            of the picture at the same scale. They used to ride a 200ms tween
+            while the window did not, and after a fast burst the two copies of
+            the skyline stood up to 5px apart for a fifth of a second. */}
+        <div
           className="absolute inset-0 z-0"
-          initial={false}
-          animate={{ opacity: posterOpacity(progress), scale: heroPush(progress) }}
-          transition={{ duration: 0.2, ease: EASE_IN_OUT_CUBIC }}
+          style={{ opacity: posterOpacity(progress), scale: heroPush(progress) }}
         >
           {/* The backdrop is the collapsed opening's presence: the graded
               home-hero vista at full photographic strength — a place, not a
@@ -688,7 +691,7 @@ const ScrollExpandMedia = ({
               another. Below progress 0.35 they are exactly the values that
               used to be written here. */}
           <HeroShade progress={progress} />
-        </motion.div>
+        </div>
 
         <div className="relative z-10 mx-auto flex w-full flex-col items-center">
           {/* The stage the card is centred in. A phone-only drop used to sink
@@ -1026,9 +1029,10 @@ const ScrollExpandMedia = ({
             pixel the layer they came from, and the split shows up only where
             the words cross the ridge, which is the point.
 
-            It rides the poster's own clock, not the headline's, and that is
-            what the descent needs from it: the headline goes down behind this
-            layer, so the layer has to outlive it. It is the same picture at
+            It rides the poster's own clock, not the headline's — the same
+            inline number, on the same frame, as the poster and the card's
+            window — and that is what the descent needs from it: the headline
+            goes down behind this layer, so the layer has to outlive it. It is the same picture at
             the same crop and the same registration as the card growing under
             it, so where the two overlap they composite to one frame; and at
             0.92 the card covers the window, which is why the poster's clock is
@@ -1038,18 +1042,17 @@ const ScrollExpandMedia = ({
             Paint order is all this is. The expansion, the slideshow, the
             hydration gate, the scroll restoration and the card's foot dissolve
             are untouched — nothing here reads a state or writes one. */}
-        <motion.div
+        <div
           ref={ridgeRef}
           aria-hidden="true"
           className="hero-ridge pointer-events-none absolute inset-0 z-20"
           style={
             {
               "--ridge-mask": `url(${withBasePath(POSTER_RIDGE)})`,
+              opacity: posterOpacity(progress),
+              scale: heroPush(progress),
             } as CSSProperties
           }
-          initial={false}
-          animate={{ opacity: posterOpacity(progress), scale: heroPush(progress) }}
-          transition={{ duration: 0.2, ease: EASE_IN_OUT_CUBIC }}
         >
           <ResponsiveImage
             src={bgImageSrc}
@@ -1061,7 +1064,7 @@ const ScrollExpandMedia = ({
             style={{ objectPosition: "50% var(--hero-poster-y)" }}
           />
           <HeroShade progress={progress} />
-        </motion.div>
+        </div>
 
         {/* The mark, and it is the last thing this section paints. It stands
             where it has always stood — 30.2px under the block's own top row,
