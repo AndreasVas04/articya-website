@@ -940,44 +940,6 @@ body {
 .stage[data-on] .stage-mask-rise {
   transition: translate 700ms var(--ease-out-quart);
 }
-/* The clearing's accent rule used to draw itself left-to-right at the head of
-   the scene, and it no longer does: it is the thread's mark, and it reaches
-   this row by travelling to it on the reader's own scroll. The scene fires
-   most of a screen before the mark gets here, so a drawn rule would have stood
-   waiting at the destination while the same mark was still on its way.
-
-   `components/thread.tsx` sets the flag below when it takes the mark over.
-   Only one station is ever painted: the hero band's own rule stands down and
-   becomes the row the clearing's rule holds against the scroll. Without JS,
-   and under reduced motion, the flag never lands and each station paints where
-   it stands. */
-.thread-live [data-hero-rule] {
-  background-color: transparent;
-}
-
-/* The clearing's rule arrives at the release the way the intro band's own
-   rule was built to — rising 56px and fading in on the intro's clock, with the
-   statement and the button behind it — because from the release on it is that
-   rule. Nothing hands over to it: the eyebrow's strike leaves behind the land
-   with the words, so the row the mark arrives on carries nothing until this
-   plays. `hero-open` is the hero's own release flag, and the inline translate
-   `components/thread.tsx` writes is a different property from this transform,
-   so the two compose. Without JS, and under reduced motion, `thread-live`
-   never lands and the mark simply stands. */
-@layer components {
-  .thread-live [data-thread-mark] {
-    opacity: 0;
-    transform: translateY(56px);
-  }
-  .thread-live.hero-open [data-thread-mark] {
-    opacity: 1;
-    transform: none;
-    transition:
-      opacity 400ms var(--ease-out-quart),
-      transform 400ms var(--ease-out-quart);
-  }
-}
-
 /* The finale's rule, at the one height it lands on a photograph. The text
    block is centred in the pinned frame and the top band settles at
    0.07·H + 38 under its slot, so the clearance between the rule and the

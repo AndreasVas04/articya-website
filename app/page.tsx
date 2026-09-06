@@ -7,7 +7,7 @@ import { GainTrail } from "@/components/gain-trail";
 import { PhotoStage, type StagePlate } from "@/components/photo-stage";
 import { ResponsiveImage } from "@/components/responsive-image";
 import { SectionIndex } from "@/components/edge-furniture";
-import { Thread } from "@/components/thread";
+import { IntroExit } from "@/components/intro-exit";
 import { ButtonLink } from "@/components/ui/button";
 import { coverSizes, FULL_VIEWPORT, HERO_VIEWPORT, imagePreload } from "@/lib/images";
 import { hero, whatWeDo, gain } from "@/content/home";
@@ -184,10 +184,9 @@ export default function HomePage() {
             behind the content and the hero's own stacking is untouched. */}
         <PhotoStage plates={plates} />
         <SectionIndex />
-        {/* The amber mark that crosses the handover below the hero. It renders
-            nothing of its own: it drives the two stations the markup already
-            carries, and the block the first of them leaves. */}
-        <Thread />
+        {/* The intro block's exit below the release. It renders nothing of
+            its own: it drives the block the markup already carries. */}
+        <IntroExit />
 
         <ScrollExpandMedia
           slides={hero.slides}
@@ -207,11 +206,11 @@ export default function HomePage() {
               already carrying it off at 1.5x, and the statement completed 180px
               up the screen. Faster in, the words are standing while the
               crossing's last rows finish, and the release reads as one move. */}
-          {/* The thread's second station, and the mark that paints it is
-              the clearing's rule holding this row in the frame. The span is
-              laid out where it has always been — it is what the hero measures
-              the station by, and what paints it with the thread off — so it
-              carries the same 96 x 2 as the other two. */}
+          {/* The band's own rule. It arrives with the statement on the
+              band's clock and leaves with the band at its exit rate: it is
+              part of this block and belongs to nothing below it. The hero
+              measures the band's row by it, which is what the attribute is
+              for. */}
           <span
             aria-hidden="true"
             data-hero-rule=""
@@ -222,10 +221,10 @@ export default function HomePage() {
               family and its own weight for a single sentence, which is a step
               the ramp does not need. */}
           {/* `mt-[19px]`, not `mt-5`: the rule above gained a pixel of box
-              when it went to the thread's weight, and the band is anchored to
-              the foot of the window, so the pixel would have moved the rule's
-              own row rather than the statement's. Given back here, the station
-              stands exactly where it stood. */}
+              when it went to 2px, and the band is anchored to the foot of the
+              window, so the pixel would have moved the rule's own row rather
+              than the statement's. Given back here, the row stands exactly
+              where it stood. */}
           <p className="mt-[19px] max-w-[44ch] translate-y-14 text-balance text-center text-[clamp(1rem,1.3vw,1.16rem)] leading-[1.66] text-ink opacity-0 duration-[400ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] group-data-[expanded]:delay-[60ms] motion-reduce:translate-y-0">
             {hero.text}
           </p>
@@ -239,9 +238,7 @@ export default function HomePage() {
         {/* Clipped on one axis, not both. `overflow-clip` (not hidden) is
             what stops the offer panels' ghosted numerals, which overflow their
             own row by design, opening a horizontal scrollbar on a narrow
-            desktop window — but the thread's mark holds its row in the frame
-            for most of a screen above this section's own top edge, and a
-            vertical clip here would cut it. */}
+            desktop window. */}
         <section className="relative overflow-x-clip text-ink">
           {/* No top padding on either viewport. Mobile spends the lever on
               the fold decision — the accent rule sits on the section's own
@@ -333,18 +330,18 @@ export default function HomePage() {
               <div className="relative md:grid md:grid-cols-12 md:items-start md:gap-x-12 xl:gap-x-20">
                 <div className="relative md:col-span-6 md:self-center">
                   <div className="relative">
-                    {/* The thread's third station, and the object that paints
-                        the mark from the second onward. It stands outside the
-                        column's lift because it arrives on the reader's own
-                        scroll rather than on the scene's clock: the column
-                        rises when the scene fires, and the rule is still most
-                        of a screen above this row at that moment. */}
-                    <span
-                      aria-hidden="true"
-                      data-thread-mark=""
-                      className="block h-0.5 w-24 bg-amber"
-                    />
                     <div className="stage-lift">
+                      {/* The clearing's own rule, at its own row. It used to
+                          be the hero band's rule travelling down to this row
+                          on the reader's scroll; a mark seen crossing from one
+                          section into the next is the one thing this handover
+                          must not show, so the two are two marks now, each
+                          laid out in its block. Same 96 x 2 as the band's, and
+                          it rises with the column on the scene's clock. */}
+                      <span
+                        aria-hidden="true"
+                        className="block h-0.5 w-24 bg-amber"
+                      />
                       {/* `mt-[7.25px]`, not `mt-2`, and for the same reason
                           the hero band's statement carries 19: the rule above
                           went from 1.25px to 2, and this column is centred in
