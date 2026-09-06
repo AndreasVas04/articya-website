@@ -12,6 +12,15 @@ const easeInOutCubic = cubicBezier(0.65, 0, 0.35, 1);
 // image never reads as moving on its own — it settles as it takes the stage.
 const ARRIVE_SCALE = 0.07;
 
+// The other half of that arrival, and it is free. At 1.07 the frame overhangs
+// the window by half the over-scale on each side, so the picture can rise by
+// exactly that much on its way in without uncovering an edge, and it returns
+// to nothing as the scale returns to 1.000 — the placement ladder reads what
+// it read before. It is 19-26 CSS px of ground over 334-433px of scroll:
+// 0.056 px of picture per px of finger, which is the arrival settling rather
+// than a second plane, and it is the only travel this page has room for.
+const ARRIVE_RISE = ARRIVE_SCALE / 2;
+
 // How deep the wipe's ramp is, as a fraction of the window. A photograph that
 // has to get from being the whole ground to being no ground at all cannot do
 // it by fading: at 0.5 the frame is a picture at half strength over the floor,
@@ -142,6 +151,10 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
 
     let raf = 0;
     let frames: StageFrame[] = [];
+    // The layer's own height, read with the rest of the layout: the rise is a
+    // share of the window and a rect inside the scroll handler is a layout on
+    // every frame.
+    let stageHeight = 0;
     // Where each plate ramps up for the first time, so the settle plays on
     // arrival only and holds at rest afterwards rather than swelling again
     // every time the plate fades back out.
@@ -190,7 +203,8 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
                 Math.min(Math.max((scroll - arrival.from) / reach, 0), 1)
               )
             : 1;
-        images[i].style.transform = `scale(${(
+        const rise = stageHeight * ARRIVE_RISE * (1 - settled);
+        images[i].style.transform = `translate3d(0, ${rise.toFixed(2)}px, 0) scale(${(
           1 + ARRIVE_SCALE * (1 - settled)
         ).toFixed(4)})`;
       }
@@ -200,6 +214,7 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
     // scroll handler forces a layout on every event, and nothing under this
     // layer moves as the page scrolls.
     const measure = () => {
+      stageHeight = root.getBoundingClientRect().height || window.innerHeight;
       const zones = Array.from(
         document.querySelectorAll<HTMLElement>("[data-stage-plate]")
       )

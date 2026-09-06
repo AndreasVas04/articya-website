@@ -7,6 +7,7 @@ import { GainTrail } from "@/components/gain-trail";
 import { PhotoStage, type StagePlate } from "@/components/photo-stage";
 import { ResponsiveImage } from "@/components/responsive-image";
 import { SectionIndex } from "@/components/edge-furniture";
+import { Thread } from "@/components/thread";
 import { ButtonLink } from "@/components/ui/button";
 import { coverSizes, FULL_VIEWPORT, HERO_VIEWPORT, imagePreload } from "@/lib/images";
 import { hero, whatWeDo, gain } from "@/content/home";
@@ -183,6 +184,10 @@ export default function HomePage() {
             behind the content and the hero's own stacking is untouched. */}
         <PhotoStage plates={plates} />
         <SectionIndex />
+        {/* The amber mark that crosses the handover below the hero. It renders
+            nothing of its own: it drives the two stations the markup already
+            carries, and the block the first of them leaves. */}
+        <Thread />
 
         <ScrollExpandMedia
           slides={hero.slides}
@@ -195,15 +200,26 @@ export default function HomePage() {
               travel finished before the eye had picked up that anything was
               moving. The band is clipped to the card, so the first part of each
               rise plays inside the dissolve and the words surface out of it. */}
+          {/* The thread's second station, and the mark that paints it is
+              the clearing's rule holding this row in the frame. The span is
+              laid out where it has always been — it is what the hero measures
+              the station by, and what paints it with the thread off — so it
+              carries the same 96 x 2 as the other two. */}
           <span
             aria-hidden="true"
-            className="block h-px w-[82px] translate-y-14 bg-amber/55 opacity-0 duration-[700ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] motion-reduce:translate-y-0"
+            data-hero-rule=""
+            className="block h-0.5 w-24 translate-y-14 bg-amber opacity-0 duration-[700ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] motion-reduce:translate-y-0"
           />
           {/* The statement is body copy now, on the body step and in the body
               face: the display-face "hero statement" was its own size, its own
               family and its own weight for a single sentence, which is a step
               the ramp does not need. */}
-          <p className="mt-5 max-w-[44ch] translate-y-14 text-balance text-center text-[clamp(1rem,1.3vw,1.16rem)] leading-[1.66] text-ink opacity-0 duration-[700ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] group-data-[expanded]:delay-100 motion-reduce:translate-y-0">
+          {/* `mt-[19px]`, not `mt-5`: the rule above gained a pixel of box
+              when it went to the thread's weight, and the band is anchored to
+              the foot of the window, so the pixel would have moved the rule's
+              own row rather than the statement's. Given back here, the station
+              stands exactly where it stood. */}
+          <p className="mt-[19px] max-w-[44ch] translate-y-14 text-balance text-center text-[clamp(1rem,1.3vw,1.16rem)] leading-[1.66] text-ink opacity-0 duration-[700ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] group-data-[expanded]:delay-100 motion-reduce:translate-y-0">
             {hero.text}
           </p>
           <div className="mt-5 translate-y-14 opacity-0 duration-[700ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] group-data-[expanded]:delay-300 motion-reduce:translate-y-0">
@@ -213,10 +229,13 @@ export default function HomePage() {
           </div>
         </ScrollExpandMedia>
 
-        {/* overflow-clip (not hidden) so the offer panels' ghosted numerals,
-            which overflow their own row by design, cannot open a horizontal
-            scrollbar on a narrow desktop window. */}
-        <section className="relative overflow-clip text-ink">
+        {/* Clipped on one axis, not both. `overflow-clip` (not hidden) is
+            what stops the offer panels' ghosted numerals, which overflow their
+            own row by design, opening a horizontal scrollbar on a narrow
+            desktop window — but the thread's mark holds its row in the frame
+            for most of a screen above this section's own top edge, and a
+            vertical clip here would cut it. */}
+        <section className="relative overflow-x-clip text-ink">
           {/* No top padding on either viewport. Mobile spends the lever on
               the fold decision — the accent rule sits on the section's own
               top edge, exactly at the fold. Desktop used to keep pt-24, but
@@ -306,26 +325,40 @@ export default function HomePage() {
             >
               <div className="relative md:grid md:grid-cols-12 md:items-start md:gap-x-12 xl:gap-x-20">
                 <div className="relative md:col-span-6 md:self-center">
-                  <div className="stage-lift relative">
+                  <div className="relative">
+                    {/* The thread's third station, and the object that paints
+                        the mark from the second onward. It stands outside the
+                        column's lift because it arrives on the reader's own
+                        scroll rather than on the scene's clock: the column
+                        rises when the scene fires, and the rule is still most
+                        of a screen above this row at that moment. */}
                     <span
                       aria-hidden="true"
-                      className="stage-rule block h-[1.25px] w-16 bg-amber"
+                      data-thread-mark=""
+                      className="block h-0.5 w-24 bg-amber"
                     />
-                    <div className="stage-mask mt-2">
-                      <h2
-                        className="stage-mask-rise type-heading font-display font-semibold tracking-[-0.025em]"
-                        style={{ transitionDelay: "80ms" }}
+                    <div className="stage-lift">
+                      {/* `mt-[7.25px]`, not `mt-2`, and for the same reason
+                          the hero band's statement carries 19: the rule above
+                          went from 1.25px to 2, and this column is centred in
+                          its own screen, so three quarters of a pixel there
+                          moves every row of the clearing by half of it. */}
+                      <div className="stage-mask mt-[7.25px]">
+                        <h2
+                          className="stage-mask-rise type-heading font-display font-semibold tracking-[-0.025em]"
+                          style={{ transitionDelay: "80ms" }}
+                        >
+                          {whatWeDo.title}
+                        </h2>
+                      </div>
+                      <div
+                        className="stage-rise"
+                        style={{ transitionDelay: "250ms" }}
                       >
-                        {whatWeDo.title}
-                      </h2>
-                    </div>
-                    <div
-                      className="stage-rise"
-                      style={{ transitionDelay: "250ms" }}
-                    >
-                      <p className="mt-2 max-w-[44ch] text-[clamp(1rem,1.3vw,1.16rem)] leading-[1.66] text-ink-soft md:mt-8">
-                        {whatWeDo.lead}
-                      </p>
+                        <p className="mt-2 max-w-[44ch] text-[clamp(1rem,1.3vw,1.16rem)] leading-[1.66] text-ink-soft md:mt-8">
+                          {whatWeDo.lead}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>

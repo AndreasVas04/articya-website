@@ -229,6 +229,7 @@ const ScrollExpandMedia = ({
   const [isMobile, setIsMobile] = useState(false);
   const [activeSlide, setActiveSlide] = useState(0);
   const [mounted, setMounted] = useState(false);
+  const introRef = useRef<HTMLDivElement | null>(null);
 
   // Under reduced motion the component renders its resting state: media
   // expanded, content visible, no scroll hijacking, first slide only. The
@@ -270,6 +271,67 @@ const ScrollExpandMedia = ({
       history.scrollRestoration = "auto";
     };
   }, []);
+
+  // The row the intro band's rule rests on, published for the thread that
+  // holds it. It is measured rather than derived. The band is anchored to the
+  // foot of the window and its own height is a stack of px plus a sentence
+  // that wraps, so nothing above it predicts the row; but because it is
+  // anchored to the foot, the row *is* the foot less the rule's own distance
+  // from the band's bottom, and that distance depends on one thing only — the
+  // width the sentence wraps at. So the overlay is widened to the width it
+  // settles on for the read and nothing else about it is touched. The walk
+  // goes through `offsetTop`, which the band's own entrance transform does not
+  // reach.
+  useIsomorphicLayoutEffect(() => {
+    const measure = () => {
+      const overlay = introRef.current;
+      const band = overlay?.querySelector<HTMLElement>(".hero-intro");
+      const rule = band?.querySelector<HTMLElement>("[data-hero-rule]");
+      if (!overlay || !band || !rule) return;
+      const width = overlay.parentElement?.offsetWidth ?? 0;
+      const height = overlay.parentElement?.offsetHeight ?? 0;
+      const w = overlay.style.width;
+      overlay.style.width = `${width}px`;
+      let fromBandTop = 0;
+      for (
+        let n: HTMLElement | null = rule;
+        n && n !== band;
+        n = n.offsetParent as HTMLElement | null
+      ) {
+        fromBandTop += n.offsetTop;
+      }
+      // The band is inside a size container, and reading from inside that
+      // subtree does not always settle a width just written to the subtree's
+      // own ancestor: measured, some of these reads came back with the band
+      // still laid out at the card's 300px, which publishes a row 26px out.
+      // The read is checked rather than trusted, and a read that did not take
+      // is retried rather than published — by the time the card is the window
+      // there is no width to force at all.
+      const took = Math.round(band.getBoundingClientRect().width) === width;
+      const fromFoot = band.offsetHeight - fromBandTop;
+      overlay.style.width = w;
+      if (!took) {
+        requestAnimationFrame(measure);
+        return;
+      }
+      document.documentElement.style.setProperty(
+        "--hero-station-2",
+        `${height - fromFoot}px`
+      );
+    };
+    measure();
+    // The sentence wraps differently once the body face has landed.
+    document.fonts?.ready.then(measure);
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
+
+  // The frame the card becomes the window is the frame the block below it
+  // exists, and the thread's mark has a block to have left only from there on.
+  useEffect(() => {
+    document.documentElement.classList.toggle("hero-open", contentVisible);
+    return () => document.documentElement.classList.remove("hero-open");
+  }, [contentVisible]);
 
   // A visitor who has already scrolled by the time hydration lands is reading
   // somewhere below this hero, and the choreography has no screen left to play
@@ -849,6 +911,7 @@ const ScrollExpandMedia = ({
                 document order. Children opt into the stagger via
                 group-data-[expanded] classes. */}
             <div
+              ref={introRef}
               className="pointer-events-none absolute left-1/2 top-1/2 z-10 isolate -translate-x-1/2 -translate-y-1/2 overflow-hidden"
               style={{
                 width: mediaWidth,
