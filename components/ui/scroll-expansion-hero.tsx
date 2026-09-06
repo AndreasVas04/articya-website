@@ -387,19 +387,6 @@ const ScrollExpandMedia = ({
     };
   }, []);
 
-  // The two numbers this section's own handover is made of, out of one read:
-  // the row the intro band's rule rests on — published for the thread that
-  // holds it — and the descent that takes the block behind the land.
-  //
-  // The row is measured rather than derived. The band is anchored to the
-  // foot of the window and its own height is a stack of px plus a sentence
-  // that wraps, so nothing above it predicts the row; but because it is
-  // anchored to the foot, the row *is* the foot less the rule's own distance
-  // from the band's bottom, and that distance depends on one thing only — the
-  // width the sentence wraps at. So the overlay is widened to the width it
-  // settles on for the read and nothing else about it is touched. The walk
-  // goes through `offsetTop`, which the band's own entrance transform does not
-  // reach.
   useIsomorphicLayoutEffect(() => {
     const measure = () => {
       const overlay = introRef.current;
@@ -408,33 +395,6 @@ const ScrollExpandMedia = ({
       if (!overlay || !band || !rule) return;
       const width = overlay.parentElement?.offsetWidth ?? 0;
       const height = overlay.parentElement?.offsetHeight ?? 0;
-      const w = overlay.style.width;
-      overlay.style.width = `${width}px`;
-      let fromBandTop = 0;
-      for (
-        let n: HTMLElement | null = rule;
-        n && n !== band;
-        n = n.offsetParent as HTMLElement | null
-      ) {
-        fromBandTop += n.offsetTop;
-      }
-      // The band is inside a size container, and reading from inside that
-      // subtree does not always settle a width just written to the subtree's
-      // own ancestor: measured, some of these reads came back with the band
-      // still laid out at the card's 300px, which publishes a row 26px out.
-      // The read is checked rather than trusted, and a read that did not take
-      // is retried rather than published — by the time the card is the window
-      // there is no width to force at all.
-      const took = Math.round(band.getBoundingClientRect().width) === width;
-      const fromFoot = band.offsetHeight - fromBandTop;
-      overlay.style.width = w;
-      if (!took) {
-        requestAnimationFrame(measure);
-        return;
-      }
-      const row = height - fromFoot;
-      document.documentElement.style.setProperty("--hero-station-2", `${row}px`);
-
       // The descent, out of the same read. The block goes down until its top
       // row is on the skyline, which is where the land in front of it starts.
       const ridge = ridgeRef.current;
@@ -449,8 +409,6 @@ const ScrollExpandMedia = ({
       setDescent(skyline - title.offsetTop);
     };
     measure();
-    // The sentence wraps differently once the body face has landed.
-    document.fonts?.ready.then(measure);
     window.addEventListener("resize", measure);
     return () => window.removeEventListener("resize", measure);
   }, []);
