@@ -137,14 +137,15 @@ const CARD_SHADE = {
 // or the other, and the top stop is 92 falling to 78 — inside the upper pole
 // at every frame, never in 0.04–0.75.
 //
-// It runs 0.35 -> 0.85 and not from zero, and the window is the argument: the
-// headline is gone by 0.35 and the intro does not arrive until 1.00, so the
+// It runs 0.60 -> 1.00 and not from zero, and the window is the argument: the
+// headline is gone by 0.60 and the intro does not arrive until 1.00, so the
 // crossing plays over the one stretch of the expansion with no text on the
-// glass at all.
+// glass at all — and it ends on the release, so the opening never has a
+// stretch where the crossing is over and nothing else has begun.
 const SHADE_FEATHER = 40;
 
 const shadeLayers = (progress: number) => {
-  const t = clamp01((progress - 0.35) / 0.5);
+  const t = clamp01((progress - 0.60) / 0.40);
   // 140 -> -40, so the boundary starts a feather below the foot and ends a
   // feather above the head: both ends are a clean single state.
   const edge = 140 - 180 * t;
@@ -568,14 +569,20 @@ const ScrollExpandMedia = ({
   // the expansion, so the opening *becomes* the gallery. The old split-and-
   // slide whipped the two lines 180vw apart on mobile inside a single flick,
   // which read as an instant vanish rather than a transition (see the brief).
-  const titleExit = Math.min(Math.max((progress - 0.03) / 0.32, 0), 1);
+  const titleExit = Math.min(Math.max((progress - 0.03) / 0.57, 0), 1);
   // Nothing fades. The block goes *down*, at full ink, until its top row is on
   // the skyline — and the land in front of the plate is what takes it, which
-  // is `cabinfever`'s own move rather than an invention. Its deadline does not
-  // move: it is out of the frame by progress 0.35, so §2.6's crossing still
-  // runs 0.35 - 0.85 with no readable type under it, by construction. The step
+  // is `cabinfever`'s own move rather than an invention. Its deadline is
+  // progress 0.60, and §2.6's crossing starts there and runs to the release,
+  // so no readable type is ever under the crossing, by construction. The step
   // to zero at the end of the descent is taken on a frame where the block is
   // already behind the land, so there is nothing on the glass to see it.
+  //
+  // 0.60 rather than 0.35: at 0.35 the last 0.65 of the opening carried no
+  // word at all, and its final 0.15 — after the crossing had finished — moved
+  // nothing but this 2px strike. The words now stay for 0.60 of the opening
+  // and the crossing runs to the release, so nothing in the opening is ever
+  // still.
   const titleOpacity = titleExit < 1 ? 1 : 0;
   const titleShift = titleExit * descent.block;
   // The strike goes down with the block and then does not stop. It holds its
@@ -585,12 +592,12 @@ const ScrollExpandMedia = ({
   // row on the frame that band's clock fires. From there the thread has it.
   //
   // It cannot simply descend the opening at one rate. The block covers 154px
-  // in a third of the opening and the mark covers 280 in all of it, so the
+  // in 0.57 of the opening and the mark covers 280 in all of it, so the
   // block outruns it: measured, the rule crossed the label's own letters
   // between progress 0.116 and 0.164, which is a strikethrough. Two rates,
   // meeting where the block stops, and neither of them is interpolated with
   // the other.
-  const strikeExit = Math.min(Math.max((progress - 0.35) / 0.65, 0), 1);
+  const strikeExit = Math.min(Math.max((progress - 0.60) / 0.40, 0), 1);
   const strikeShift = titleShift + strikeExit * (descent.strike - descent.block);
 
   // The gold-wash veil that used to sit inside the card is gone. It held 0.75
@@ -598,7 +605,7 @@ const ScrollExpandMedia = ({
   // at the card's edges it was a lighter rectangle standing on the poster —
   // the single loudest reason a growing frame read as a box. What carries the
   // headline is the section's own travelling ramp, which has no edges at all,
-  // and below 0.35 that ramp is the poster's ramp to the number.
+  // and below 0.60 that ramp is the poster's ramp to the number.
   const firstWord = title ? title.split(" ")[0] : "";
   const restOfTitle = title ? title.split(" ").slice(1).join(" ") : "";
 
@@ -688,7 +695,7 @@ const ScrollExpandMedia = ({
               The six numbers are the section's now rather than this layer's,
               because the card's copy of them has to be the same six at every
               frame or the card is a rectangle of one darkening inside
-              another. Below progress 0.35 they are exactly the values that
+              another. Below progress 0.60 they are exactly the values that
               used to be written here. */}
           <HeroShade progress={progress} />
         </div>
@@ -841,8 +848,8 @@ const ScrollExpandMedia = ({
                     over the same rectangle as the poster's and out of the same
                     numbers, so at every progress the two are one gradient and
                     there is no edge where one ends. It settles on the values
-                    written here by progress 0.85, which is where the intro was
-                    measured. */}
+                    written here by progress 1.00, the release, which is where
+                    the intro was measured. */}
                   <HeroShade progress={progress} />
                 </div>
               </div>
