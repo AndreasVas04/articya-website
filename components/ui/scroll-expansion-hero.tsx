@@ -48,6 +48,21 @@ const clamp01 = (n: number) => Math.min(Math.max(n, 0), 1);
 // any of this; it only supplies deltas.
 const SETTLE_IDLE_MS = 120;
 const SETTLE_FORWARD_FROM = 0.2;
+
+// Progress per wheel unit: one trackpad flick opens the poster. At 0.0009 the
+// opening took 1111 units — three flicks on a laptop where a phone's thumb
+// does it in one 200px drag — and the laptop read as late beside the phone.
+// 0.0025 is a 400-unit opening, and the touch gains below are untouched.
+const WHEEL_GAIN = 0.0025;
+
+// A trackpad's momentum tail is a run of tiny deltas that can go on for most
+// of a second after the finger has left the glass, and the idle clock never
+// fires while it lasts. Three consecutive events under this delta are that
+// tail, and the settle starts there rather than waiting the tail out. A delta
+// at or above it is the hand again, and cancels a settle the way any input
+// does; the tail's own remaining events do not.
+const MOMENTUM_DELTA = 3;
+const MOMENTUM_EVENTS = 3;
 const settleEase = cubicBezier(0.22, 1, 0.36, 1);
 const settleTarget = (p: number) => (p >= SETTLE_FORWARD_FROM ? 1 : 0);
 const settleDuration = (p: number) => (p >= SETTLE_FORWARD_FROM ? 400 + 500 * (1 - p) : 300);
@@ -283,6 +298,8 @@ const ScrollExpandMedia = ({
   const idleTimer = useRef<number | null>(null);
   const progressRef = useRef(0);
   const [settleRun, setSettleRun] = useState(0);
+  // Consecutive wheel events under MOMENTUM_DELTA.
+  const tail = useRef(0);
 
   // Under reduced motion the component renders its resting state: media
   // expanded, content visible, no scroll hijacking, first slide only. The
@@ -470,8 +487,19 @@ const ScrollExpandMedia = ({
         e.preventDefault();
       } else if (!mediaFullyExpanded) {
         e.preventDefault();
+        const small = Math.abs(e.deltaY) < MOMENTUM_DELTA;
+        // The tail that started a settle does not also cancel it.
+        if (small && settle.current) return;
         onInput();
-        applyProgress(e.deltaY * 0.0009);
+        applyProgress(e.deltaY * WHEEL_GAIN);
+        tail.current = small ? tail.current + 1 : 0;
+        if (
+          small &&
+          tail.current >= MOMENTUM_EVENTS &&
+          progressRef.current >= SETTLE_FORWARD_FROM
+        ) {
+          startSettle();
+        }
       }
     };
 
@@ -585,6 +613,7 @@ const ScrollExpandMedia = ({
       if (idleTimer.current !== null) window.clearTimeout(idleTimer.current);
       idleTimer.current = null;
       progressRef.current = 0;
+      tail.current = 0;
       setScrollProgress(0);
       setMediaFullyExpanded(false);
       setShowContent(false);
