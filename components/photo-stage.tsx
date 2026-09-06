@@ -75,6 +75,11 @@ export interface StagePlate {
    *  keeps the fade. Assumes one rise and one fall, which is what every plate
    *  on this page has. */
   wipe?: boolean;
+  /** A class on the plate's layer, for a plate whose box is not the window:
+   *  the gains plate is clipped to one side of a seam on a desktop and is a
+   *  band across the top of the window on a phone. Paint only — the wipe, the
+   *  arrival and the darkening are untouched by it. */
+  className?: string;
   /** Overrides the shared stage darkening, in percent, and the dark it is
    *  made of. One number cannot serve three photographs, and one *colour*
    *  cannot either: a darkening only darkens what shares its hue, so a
@@ -356,7 +361,7 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
         <div
           key={`${plate.src}-${i}`}
           data-plate-layer=""
-          className="stage-plate absolute inset-0"
+          className={cn("stage-plate absolute inset-0", plate.className)}
           style={{ opacity: 0 }}
         >
           <div

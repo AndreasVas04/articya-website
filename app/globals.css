@@ -712,94 +712,55 @@ body {
    it lands 0.06 ΔE76 off the mean of IMG_4582 and IMG_4619, and one encode
    carries it instead of a filter running on every paint. */
 
-/* "What you gain" — one photograph, edge to edge, going out of focus across
-   itself. There is no second picture and no panel: the same frame is drawn
-   again at four blur radii, each masked to a band that fades into the next, so
-   what crosses the frame is a continuous ramp — 30px of defocus at the left
-   edge to none at `--gain-soft`, with the brightness falling 0.42 → 1.0 over
-   the same span. The words stand on the soft end. Because every stop is a
-   gradient there is no vertical edge anywhere in it, and because the ramp runs
-   the full height of the frame there is no shape behind the type either.
+/* "What you gain" — the split. One photograph at full strength on one side of
+   a hard vertical seam and the words on the page's own floor on the other:
+   the Contact page's construction with the floor where Contact has the
+   defocused half. The photograph is the stage's plate, so it arrives and
+   leaves as the stage does; the section paints the block the words stand on
+   and nothing else.
 
-   The whole soft stack is rasterized at a quarter of the frame and magnified
-   back: a blur is priced by the area it rasterizes and not by its radius, so
-   the four radii are quartered with it. */
+   Below `md` the split stacks. The plate becomes a band across the top of the
+   window — the frame's own box, so cover fits it by width and it shows the
+   ridge and the village, where a full-window box fits this near-square frame
+   by height and shows sky — and the words rise over it on an opaque block of
+   floor whose top dissolves into the picture over 80px. The band's own foot
+   dissolves over 64px. Neither edge is ever a line, and both are lengths.
+
+   The band and the block share one number: the block is 332px of rule,
+   heading, hairline and four rows, so the band takes the rest of the screen,
+   floored at 40svh, and the section is exactly one screen at every height —
+   which is what keeps every key below it where it is. */
 @layer components {
-  /* The frame's two ends are masked away rather than painted over. What is on
-     the other side of them is the page's own stage — another photograph, at
-     whatever strength the scroll has it at — so a ramp to a flat colour can
-     only ever land a shade off it and draw back the line it was meant to
-     erase: measured, a 27–37 channel step at the exact boundary row. A mask
-     resolves to the real ground, which can never differ from itself. */
-  .gain-ground {
-    --gain-end: 140px;
-    --gain-end-mask: linear-gradient(
+  .gain-plate > .stage-plate-frame {
+    height: max(40svh, calc(100svh - 332px));
+    -webkit-mask-image: linear-gradient(to top, transparent 0, #000 64px);
+    mask-image: linear-gradient(to top, transparent 0, #000 64px);
+  }
+  .gain-window {
+    height: max(40svh, calc(100svh - 332px));
+  }
+  .gain-copy {
+    background: linear-gradient(
       to bottom,
-      transparent 0,
-      #000 var(--gain-end),
-      #000 calc(100% - var(--gain-end)),
-      transparent 100%
+      var(--color-gold-wash-0) 0,
+      var(--color-gold-wash) 80px
     );
-    -webkit-mask-image: var(--gain-end-mask);
-    mask-image: var(--gain-end-mask);
   }
   @media (min-width: 768px) {
-    .gain-ground {
-      --gain-end: 220px;
+    /* The seam. The plate's own clipped edge, and nothing is drawn on it. */
+    .gain-plate {
+      clip-path: inset(0 0 0 48%);
+    }
+    .gain-plate > .stage-plate-frame {
+      height: auto;
+      -webkit-mask-image: none;
+      mask-image: none;
+    }
+    .gain-copy {
+      background: none;
     }
   }
-  /* Every copy of the frame is cropped identically, or the soft layers would
-     drift against the sharp one under them. Each viewport reads one half of
-     this and ignores the other: desktop fits the crop by its width and takes
-     the lower part of it, so the ridge runs across the frame with the sky over
-     it rather than sky alone; a phone fits it by its height and takes the
-     middle column, where the ridge is at its highest. */
-  .gain-photo {
-    object-position: 50% 88%;
-  }
-  .gain-defocus {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 25%;
-    height: 25%;
-    scale: 4;
-    transform-origin: 0 0;
-    will-change: transform;
-  }
-  .gain-soft {
-    position: absolute;
-    inset: 0;
-    /* Each layer holds full strength to its own start, then hands over to the
-       next softer one by the stop where that one is already full. */
-    --gain-mask: linear-gradient(
-      to right,
-      #000 calc(var(--gain-soft) * var(--gain-hold)),
-      transparent calc(var(--gain-soft) * var(--gain-fade))
-    );
-    -webkit-mask-image: var(--gain-mask);
-    mask-image: var(--gain-mask);
-  }
-  .gain-soft-1 {
-    --gain-hold: 0;
-    --gain-fade: 0.25;
-    filter: blur(7.5px) brightness(0.42);
-  }
-  .gain-soft-2 {
-    --gain-hold: 0.25;
-    --gain-fade: 0.5;
-    filter: blur(5px) brightness(0.56);
-  }
-  .gain-soft-3 {
-    --gain-hold: 0.5;
-    --gain-fade: 0.75;
-    filter: blur(3px) brightness(0.72);
-  }
-  .gain-soft-4 {
-    --gain-hold: 0.75;
-    --gain-fade: 1;
-    filter: blur(1.5px) brightness(0.86);
-  }
+
   /* The four gains as an ordered list. Numerals are pseudo-content, like the
      panels' — the site's visible text is frozen and these are marks. They sit
      in their own column so every line hangs off one left edge, and a hairline
@@ -820,7 +781,7 @@ body {
     content: counter(gain, decimal-leading-zero);
     position: absolute;
     left: 0;
-    top: 1.6rem;
+    top: 0.85rem;
     font-family: var(--font-sans);
     font-size: 0.7rem;
     font-weight: 600;
@@ -833,19 +794,6 @@ body {
     }
     .gain-row::before {
       top: 2.15rem;
-    }
-  }
-
-  /* The ramp ends at 52% of the frame on desktop, where the words occupy the
-     left 46% of it. A phone has no room for a column beside a picture, so the
-     ramp there is spent across the whole width instead and the words sit in
-     the soft end of it — the same gradient across the same one picture. */
-  .gain-frame {
-    --gain-soft: 120%;
-  }
-  @media (min-width: 768px) {
-    .gain-frame {
-      --gain-soft: 52%;
     }
   }
 }
