@@ -6,9 +6,10 @@ import { useEffect } from "react";
 //
 // The page draws an amber rule on both sides of this handover and, until now,
 // deleted one and drew the other. This is the refusal to delete it: the mark
-// leaves the block it belongs to, holds its row in the frame while the page
-// travels under it, crosses from the centre to the left margin, and comes to
-// rest as the clearing's own rule. Nothing changes opacity anywhere.
+// arrives on the intro's clock at the release, holds its row in the frame
+// while the page travels under it, crosses from the centre to the left margin,
+// and comes to rest as the clearing's own rule. Past its arrival nothing
+// changes opacity anywhere.
 //
 // Both stations are laid out in the markup where they have always been. Only
 // one of them paints: the clearing's rule is the object that travels, and the

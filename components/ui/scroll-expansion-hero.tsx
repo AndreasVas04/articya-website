@@ -239,9 +239,9 @@ const ScrollExpandMedia = ({
   const introRef = useRef<HTMLDivElement | null>(null);
   const ridgeRef = useRef<HTMLDivElement | null>(null);
   const titleRef = useRef<HTMLDivElement | null>(null);
-  // How far the headline goes down behind the land, and how far the strike
-  // goes on past it. Both are measured; see the effect below.
-  const [descent, setDescent] = useState({ block: 0, strike: 0 });
+  // How far the headline block goes down behind the land. Measured; see the
+  // effect below.
+  const [descent, setDescent] = useState(0);
 
   // Under reduced motion the component renders its resting state: media
   // expanded, content visible, no scroll hijacking, first slide only. The
@@ -284,9 +284,9 @@ const ScrollExpandMedia = ({
     };
   }, []);
 
-  // The three numbers this section's own handover is made of, all out of one
-  // read: the row the intro band's rule rests on — published for the thread
-  // that holds it — and the two descents that reach it.
+  // The two numbers this section's own handover is made of, out of one read:
+  // the row the intro band's rule rests on — published for the thread that
+  // holds it — and the descent that takes the block behind the land.
   //
   // The row is measured rather than derived. The band is anchored to the
   // foot of the window and its own height is a stack of px plus a sentence
@@ -332,20 +332,18 @@ const ScrollExpandMedia = ({
       const row = height - fromFoot;
       document.documentElement.style.setProperty("--hero-station-2", `${row}px`);
 
-      // The two descents, out of the same read. The headline goes down until
-      // its top row is on the skyline, which is where the land in front of it
-      // starts; the strike goes with it and then on down to the row above.
+      // The descent, out of the same read. The block goes down until its top
+      // row is on the skyline, which is where the land in front of it starts.
       const ridge = ridgeRef.current;
       const title = titleRef.current;
-      const strike = ridge?.parentElement?.querySelector<HTMLElement>(".hero-strike");
-      if (!ridge || !title || !strike) return;
+      if (!ridge || !title) return;
       // `mask-size: cover` on the frame's own 3:4 box, and `mask-position`'s
       // own share of whatever that leaves over.
       const mask = Math.max(height, (width * 4) / 3);
       const anchor =
         parseFloat(getComputedStyle(ridge).getPropertyValue("--hero-poster-y")) / 100;
       const skyline = (height - mask) * anchor + RIDGE_SKYLINE * mask;
-      setDescent({ block: skyline - title.offsetTop, strike: row - strike.offsetTop });
+      setDescent(skyline - title.offsetTop);
     };
     measure();
     // The sentence wraps differently once the body face has landed.
@@ -580,25 +578,10 @@ const ScrollExpandMedia = ({
   //
   // 0.60 rather than 0.35: at 0.35 the last 0.65 of the opening carried no
   // word at all, and its final 0.15 — after the crossing had finished — moved
-  // nothing but this 2px strike. The words now stay for 0.60 of the opening
-  // and the crossing runs to the release, so nothing in the opening is ever
-  // still.
+  // nothing at all. The words now stay for 0.60 of the opening and the
+  // crossing runs to the release, so nothing in the opening is ever still.
   const titleOpacity = titleExit < 1 ? 1 : 0;
-  const titleShift = titleExit * descent.block;
-  // The strike goes down with the block and then does not stop. It holds its
-  // own 30.2px under the label for the whole descent — the eyebrow stays an
-  // eyebrow — and where the land takes the words it carries on alone, down the
-  // centre line both stations already share, landing on the band's own rule
-  // row on the frame that band's clock fires. From there the thread has it.
-  //
-  // It cannot simply descend the opening at one rate. The block covers 154px
-  // in 0.57 of the opening and the mark covers 280 in all of it, so the
-  // block outruns it: measured, the rule crossed the label's own letters
-  // between progress 0.116 and 0.164, which is a strikethrough. Two rates,
-  // meeting where the block stops, and neither of them is interpolated with
-  // the other.
-  const strikeExit = Math.min(Math.max((progress - 0.60) / 0.40, 0), 1);
-  const strikeShift = titleShift + strikeExit * (descent.strike - descent.block);
+  const titleShift = titleExit * descent;
 
   // The gold-wash veil that used to sit inside the card is gone. It held 0.75
   // over the whole card while the headline crossed it, and because it stopped
@@ -900,15 +883,32 @@ const ScrollExpandMedia = ({
                 span (individual `translate`), so the two channels never
                 fight. */}
             {(title || hintLabel) && (
-              // The opacity sits on the label and the headline rather than on
-              // this wrapper. The wrapper is what descends, and the strike
-              // reads the same descent from outside it — a shared opacity here
-              // would have taken the mark with the words.
+              // The whole eyebrow-and-headline block descends as one object and
+              // leaves as one: the translate and the step to zero both sit on
+              // this wrapper, and the strike inside it goes where the words go.
               <div
                 ref={titleRef}
                 className="pointer-events-none absolute inset-x-0 top-[max(calc(41.75%-154px),5rem)] z-10 flex flex-col items-center px-4 md:top-[15%]"
-                style={{ transform: `translateY(${titleShift}px)` }}
+                style={{ transform: `translateY(${titleShift}px)`, opacity: titleOpacity }}
               >
+                {/* The mark, under the label where an eyebrow's rule stands:
+                    30.2px below the block's top row, which is the label's 18.2
+                    and the 12 that used to be the gap. It is placed rather than
+                    stacked so the margin below the label still carries its
+                    stack — §2.18 placed the headline by that stack — and it is
+                    inside this block so it descends with the words, goes
+                    behind the land with them, and is gone at the same deadline.
+                    It used to be drawn in front of the land and carried on
+                    alone to the intro band's rule row; a mark seen travelling
+                    down the frame is the one thing the opening must not show,
+                    so there is no second leg. The clearing's rule arrives on
+                    the intro's own clock at the release, from nothing. */}
+                {hintLabel && (
+                  <span
+                    aria-hidden="true"
+                    className="hero-strike pointer-events-none absolute left-1/2 top-[30.2px] -ml-12 h-0.5 w-24 bg-amber"
+                  />
+                )}
                 {/* The label reads above the headline, where the reference set
                     puts an eyebrow, and that placement is load-bearing here:
                     the headline is the lowest thing in this block, so it is the
@@ -926,20 +926,11 @@ const ScrollExpandMedia = ({
                   // is now allowed to be — the label stands on the picture's
                   // own darkening like everything else.
                   //
-                  // The strike used to stand under the label in this stack,
-                  // 12px below it. It keeps that 12px for the whole descent
-                  // and then goes on alone, and a mark that passes *behind*
-                  // the land never comes out of it again — so it is drawn in
-                  // front of that layer instead of inside this block, at the
-                  // foot of this section. What it used to occupy here is
-                  // 18.2 + 12 + 2 = 32.2px of stack, and §2.18 placed the
-                  // headline by that stack, so the margin below the label
-                  // carries it: 37.25 = 55.45 - 18.2, and the headline stands
-                  // where it stood.
-                  <p
-                    className="hero-pill mb-[37.25px] text-[0.8125rem] font-semibold leading-[1.4] text-ink"
-                    style={{ opacity: titleOpacity }}
-                  >
+                  // The strike is placed under the label rather than stacked
+                  // in flow, so the 18.2 + 12 + 2 = 32.2px it would occupy
+                  // here is carried by this margin instead: 37.25 = 55.45 -
+                  // 18.2, and the headline stands where it stood.
+                  <p className="hero-pill mb-[37.25px] text-[0.8125rem] font-semibold leading-[1.4] text-ink">
                     {hintSeparator ? (
                       <>
                         {hintBefore}
@@ -952,10 +943,7 @@ const ScrollExpandMedia = ({
                   </p>
                 )}
                 {title && (
-                  <h1
-                    className="flex flex-col items-center gap-1 text-center font-display text-[clamp(3.4rem,11vw,10rem)] font-semibold leading-[0.94] tracking-[-0.025em] text-ink md:gap-2"
-                    style={{ opacity: titleOpacity }}
-                  >
+                  <h1 className="flex flex-col items-center gap-1 text-center font-display text-[clamp(3.4rem,11vw,10rem)] font-semibold leading-[0.94] tracking-[-0.025em] text-ink md:gap-2">
                     <span className="hero-mask block">
                       <span className="hero-word block">{firstWord}</span>
                     </span>
@@ -1072,33 +1060,6 @@ const ScrollExpandMedia = ({
           />
           <HeroShade progress={progress} />
         </div>
-
-        {/* The mark, and it is the last thing this section paints. It stands
-            where it has always stood — 30.2px under the block's own top row,
-            which is the label's 18.2 and the 12 that used to be the gap — and
-            it is the one element of the opening that does not leave with the
-            words: it goes down with them to the skyline, and where the land
-            takes them it carries on alone to the row the intro band's rule
-            rests on, arriving on the frame that band's clock fires. From there
-            the thread has it.
-
-            In front of the land rather than behind it. A mark that passes
-            behind the depth device never comes back out of it, and the block
-            it left is going exactly there.
-
-            The row is declared rather than measured so the static HTML and a
-            visitor without JS get it right; only the descent is measured, and
-            it is zero until it is. */}
-        {hintLabel && (
-          <span
-            aria-hidden="true"
-            className="hero-strike pointer-events-none absolute left-1/2 top-[calc(max(calc(41.75%-154px),5rem)+30.2px)] z-30 -ml-12 h-0.5 w-24 bg-amber md:top-[calc(15%+30.2px)]"
-            style={{
-              translate: `0 ${strikeShift}px`,
-              opacity: progress < 1 ? 1 : 0,
-            }}
-          />
-        )}
       </section>
     </div>
   );

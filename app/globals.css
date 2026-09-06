@@ -955,6 +955,29 @@ body {
   background-color: transparent;
 }
 
+/* The clearing's rule arrives at the release the way the intro band's own
+   rule was built to — rising 56px and fading in on the intro's clock, with the
+   statement and the button behind it — because from the release on it is that
+   rule. Nothing hands over to it: the eyebrow's strike leaves behind the land
+   with the words, so the row the mark arrives on carries nothing until this
+   plays. `hero-open` is the hero's own release flag, and the inline translate
+   `components/thread.tsx` writes is a different property from this transform,
+   so the two compose. Without JS, and under reduced motion, `thread-live`
+   never lands and the mark simply stands. */
+@layer components {
+  .thread-live [data-thread-mark] {
+    opacity: 0;
+    transform: translateY(56px);
+  }
+  .thread-live.hero-open [data-thread-mark] {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity 700ms var(--ease-out-quart),
+      transform 700ms var(--ease-out-quart);
+  }
+}
+
 /* The finale's rule, at the one height it lands on a photograph. The text
    block is centred in the pinned frame and the top band settles at
    0.07·H + 38 under its slot, so the clearance between the rule and the
