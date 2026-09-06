@@ -338,10 +338,17 @@ function TextBar({
   end: number;
 }) {
   const scaleX = useTransform(() => stageWindow(stage.get(), start, end));
+  // `.finale-rule` carries the one height this mark collides at. The block
+  // is centred in the frame and the top band settles at 0.07·H + 38 below
+  // its slot, so the clearance between the two is 0.27·H − 163.1: +16px at
+  // 664 and −13.8 at 553, where the mark sat 12.6px inside the AboutImage2
+  // tile and read 1.00 on it. The block cannot go down — its foot already
+  // touches the bottom band at 553 — so the mark alone is shifted, by paint,
+  // and only where the clearance is short. See globals.css.
   return (
     <motion.span
       aria-hidden="true"
-      className="mx-auto block h-[1.25px] w-16 bg-amber"
+      className="finale-rule mx-auto block h-[1.25px] w-16 bg-amber"
       style={{ scaleX }}
     />
   );

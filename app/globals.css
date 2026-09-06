@@ -955,6 +955,26 @@ body {
   background-color: transparent;
 }
 
+/* The finale's rule, at the one height it lands on a photograph. The text
+   block is centred in the pinned frame and the top band settles at
+   0.07·H + 38 under its slot, so the clearance between the rule and the
+   band's foot is 0.27·H − 163.1: +16px at 664, +39 at 750, −13.8 at 553. The
+   block cannot move down (its foot already meets the bottom band at 553), so
+   the mark alone takes a·H − b — 176.1 − 0.27·H, which is 26.8px at 553 and
+   puts it 13px under the tile — clamped to nothing from 652 up, where it never
+   collided. Paint only: no box in the frame changes size or place. The wide
+   gather carries no px and never crosses the header, so md+ is left alone. */
+@layer components {
+  .finale-rule {
+    translate: 0 max(0px, calc(176.125px - 27svh));
+  }
+  @media (min-width: 768px) {
+    .finale-rule {
+      translate: none;
+    }
+  }
+}
+
 /* Evening shadow: under framed prints, and as the raised state of
    interactive cards (open accordion, hovered contact card) — defined as a
    utility so hover/open variants reuse the same shadow. */
