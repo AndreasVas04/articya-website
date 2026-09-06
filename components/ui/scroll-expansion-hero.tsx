@@ -164,10 +164,21 @@ const CARD_SHADE = {
 // crossing plays over the one stretch of the expansion with no text on the
 // glass at all — and it ends on the release, so the opening never has a
 // stretch where the crossing is over and nothing else has begun.
+//
+// The boundary moves on the plate wipe's own curve rather than at one rate.
+// Linear, it started in one event and stopped in one event, and because the
+// feather is wholly outside the window at both ends, the first and last
+// fifths of it moved nothing the eye could see. Eased, the rate is zero on
+// the frame the words go, peaks at the middle of the stretch where the
+// boundary is in the middle of the window, and is zero again on the release
+// — the shape the clearing's own wipe was approved with below this section.
+// The ends stay clean single states: the feather is the same 40%, and the
+// edge still reaches 140 and -40 exactly at 0.60 and 1.00.
 const SHADE_FEATHER = 40;
+const crossingEase = cubicBezier(0.65, 0, 0.35, 1);
 
 const shadeLayers = (progress: number) => {
-  const t = clamp01((progress - 0.60) / 0.40);
+  const t = crossingEase(clamp01((progress - 0.60) / 0.40));
   // 140 -> -40, so the boundary starts a feather below the foot and ends a
   // feather above the head: both ends are a clean single state.
   const edge = 140 - 180 * t;
