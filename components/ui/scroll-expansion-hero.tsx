@@ -28,6 +28,12 @@ const EXPAND_KEYS = ["ArrowDown", "PageDown", "End", " "];
 // carries no pixels of its own — see the plate that uses it below.
 const POSTER_RIDGE = "/images/pt/IMG_4585-ridge.svg";
 
+// Where the traced skyline sits in the mask's own 3:4 box. It is the mask's
+// fraction and not the window's, so it holds at every height a phone can show;
+// §2.18 placed the headline by it and this is the same number read the other
+// way round — the descent that hides the block is the one that positioned it.
+const RIDGE_SKYLINE = 0.4175;
+
 const clamp01 = (n: number) => Math.min(Math.max(n, 0), 1);
 
 // The whole section breathes forward and settles back as the card opens: one
@@ -230,6 +236,11 @@ const ScrollExpandMedia = ({
   const [activeSlide, setActiveSlide] = useState(0);
   const [mounted, setMounted] = useState(false);
   const introRef = useRef<HTMLDivElement | null>(null);
+  const ridgeRef = useRef<HTMLDivElement | null>(null);
+  const titleRef = useRef<HTMLDivElement | null>(null);
+  // How far the headline goes down behind the land, and how far the strike
+  // goes on past it. Both are measured; see the effect below.
+  const [descent, setDescent] = useState({ block: 0, strike: 0 });
 
   // Under reduced motion the component renders its resting state: media
   // expanded, content visible, no scroll hijacking, first slide only. The
@@ -272,8 +283,11 @@ const ScrollExpandMedia = ({
     };
   }, []);
 
-  // The row the intro band's rule rests on, published for the thread that
-  // holds it. It is measured rather than derived. The band is anchored to the
+  // The three numbers this section's own handover is made of, all out of one
+  // read: the row the intro band's rule rests on — published for the thread
+  // that holds it — and the two descents that reach it.
+  //
+  // The row is measured rather than derived. The band is anchored to the
   // foot of the window and its own height is a stack of px plus a sentence
   // that wraps, so nothing above it predicts the row; but because it is
   // anchored to the foot, the row *is* the foot less the rule's own distance
@@ -314,10 +328,23 @@ const ScrollExpandMedia = ({
         requestAnimationFrame(measure);
         return;
       }
-      document.documentElement.style.setProperty(
-        "--hero-station-2",
-        `${height - fromFoot}px`
-      );
+      const row = height - fromFoot;
+      document.documentElement.style.setProperty("--hero-station-2", `${row}px`);
+
+      // The two descents, out of the same read. The headline goes down until
+      // its top row is on the skyline, which is where the land in front of it
+      // starts; the strike goes with it and then on down to the row above.
+      const ridge = ridgeRef.current;
+      const title = titleRef.current;
+      const strike = ridge?.parentElement?.querySelector<HTMLElement>(".hero-strike");
+      if (!ridge || !title || !strike) return;
+      // `mask-size: cover` on the frame's own 3:4 box, and `mask-position`'s
+      // own share of whatever that leaves over.
+      const mask = Math.max(height, (width * 4) / 3);
+      const anchor =
+        parseFloat(getComputedStyle(ridge).getPropertyValue("--hero-poster-y")) / 100;
+      const skyline = (height - mask) * anchor + RIDGE_SKYLINE * mask;
+      setDescent({ block: skyline - title.offsetTop, strike: row - strike.offsetTop });
     };
     measure();
     // The sentence wraps differently once the body face has landed.
@@ -542,8 +569,29 @@ const ScrollExpandMedia = ({
   // slide whipped the two lines 180vw apart on mobile inside a single flick,
   // which read as an instant vanish rather than a transition (see the brief).
   const titleExit = Math.min(Math.max((progress - 0.03) / 0.32, 0), 1);
-  const titleOpacity = 1 - titleExit;
-  const titleShift = -titleExit * (isMobile ? 30 : 40);
+  // Nothing fades. The block goes *down*, at full ink, until its top row is on
+  // the skyline — and the land in front of the plate is what takes it, which
+  // is `cabinfever`'s own move rather than an invention. Its deadline does not
+  // move: it is out of the frame by progress 0.35, so §2.6's crossing still
+  // runs 0.35 - 0.85 with no readable type under it, by construction. The step
+  // to zero at the end of the descent is taken on a frame where the block is
+  // already behind the land, so there is nothing on the glass to see it.
+  const titleOpacity = titleExit < 1 ? 1 : 0;
+  const titleShift = titleExit * descent.block;
+  // The strike goes down with the block and then does not stop. It holds its
+  // own 30.2px under the label for the whole descent — the eyebrow stays an
+  // eyebrow — and where the land takes the words it carries on alone, down the
+  // centre line both stations already share, landing on the band's own rule
+  // row on the frame that band's clock fires. From there the thread has it.
+  //
+  // It cannot simply descend the opening at one rate. The block covers 154px
+  // in a third of the opening and the mark covers 280 in all of it, so the
+  // block outruns it: measured, the rule crossed the label's own letters
+  // between progress 0.116 and 0.164, which is a strikethrough. Two rates,
+  // meeting where the block stops, and neither of them is interpolated with
+  // the other.
+  const strikeExit = Math.min(Math.max((progress - 0.35) / 0.65, 0), 1);
+  const strikeShift = titleShift + strikeExit * (descent.strike - descent.block);
 
   // The gold-wash veil that used to sit inside the card is gone. It held 0.75
   // over the whole card while the headline crossed it, and because it stopped
@@ -842,12 +890,14 @@ const ScrollExpandMedia = ({
                 span (individual `translate`), so the two channels never
                 fight. */}
             {(title || hintLabel) && (
+              // The opacity sits on the label and the headline rather than on
+              // this wrapper. The wrapper is what descends, and the strike
+              // reads the same descent from outside it — a shared opacity here
+              // would have taken the mark with the words.
               <div
+                ref={titleRef}
                 className="pointer-events-none absolute inset-x-0 top-[max(calc(41.75%-154px),5rem)] z-10 flex flex-col items-center px-4 md:top-[15%]"
-                style={{
-                  opacity: titleOpacity,
-                  transform: `translateY(${titleShift}px)`,
-                }}
+                style={{ transform: `translateY(${titleShift}px)` }}
               >
                 {/* The label reads above the headline, where the reference set
                     puts an eyebrow, and that placement is load-bearing here:
@@ -859,37 +909,43 @@ const ScrollExpandMedia = ({
                     Its position in the source is unchanged. The frozen visible-
                     text order is "ArtiCYa · Cyprus" then "We are ArtiCYa" (it
                     was the card's pill, ahead of the headline, in the
-                    original), and that order is content: the strike and the
-                    label swap by `flex-col-reverse`, which moves only the
-                    paint, so the rule carries the eye down out of the label and
-                    into the words. */}
+                    original), and that order is content. */}
                 {hintLabel && (
-                  <div className="mb-6 flex flex-col-reverse items-center gap-3">
-                    {/* A short strike of the same amber, carrying the eye down
-                        out of the label and into the headline. */}
-                    <span
-                      aria-hidden="true"
-                      className="hero-strike h-[1.25px] w-[88px] bg-amber"
-                    />
-                    {/* No pill. The rounded fill and its border were a shape
-                        behind text, which is the one thing nothing on this
-                        site is now allowed to be — the label stands on the
-                        picture's own darkening like everything else. */}
-                    <p className="hero-pill text-[0.8125rem] font-semibold leading-[1.4] text-ink">
-                      {hintSeparator ? (
-                        <>
-                          {hintBefore}
-                          <span className="text-amber">{hintSeparator}</span>
-                          {hintAfter}
-                        </>
-                      ) : (
-                        hintLabel
-                      )}
-                    </p>
-                  </div>
+                  // No pill. The rounded fill and its border were a shape
+                  // behind text, which is the one thing nothing on this site
+                  // is now allowed to be — the label stands on the picture's
+                  // own darkening like everything else.
+                  //
+                  // The strike used to stand under the label in this stack,
+                  // 12px below it. It keeps that 12px for the whole descent
+                  // and then goes on alone, and a mark that passes *behind*
+                  // the land never comes out of it again — so it is drawn in
+                  // front of that layer instead of inside this block, at the
+                  // foot of this section. What it used to occupy here is
+                  // 18.2 + 12 + 2 = 32.2px of stack, and §2.18 placed the
+                  // headline by that stack, so the margin below the label
+                  // carries it: 37.25 = 55.45 - 18.2, and the headline stands
+                  // where it stood.
+                  <p
+                    className="hero-pill mb-[37.25px] text-[0.8125rem] font-semibold leading-[1.4] text-ink"
+                    style={{ opacity: titleOpacity }}
+                  >
+                    {hintSeparator ? (
+                      <>
+                        {hintBefore}
+                        <span className="text-amber">{hintSeparator}</span>
+                        {hintAfter}
+                      </>
+                    ) : (
+                      hintLabel
+                    )}
+                  </p>
                 )}
                 {title && (
-                  <h1 className="flex flex-col items-center gap-1 text-center font-display text-[clamp(3.4rem,11vw,10rem)] font-semibold leading-[0.94] tracking-[-0.025em] text-ink md:gap-2">
+                  <h1
+                    className="flex flex-col items-center gap-1 text-center font-display text-[clamp(3.4rem,11vw,10rem)] font-semibold leading-[0.94] tracking-[-0.025em] text-ink md:gap-2"
+                    style={{ opacity: titleOpacity }}
+                  >
                     <span className="hero-mask block">
                       <span className="hero-word block">{firstWord}</span>
                     </span>
@@ -970,16 +1026,20 @@ const ScrollExpandMedia = ({
             pixel the layer they came from, and the split shows up only where
             the words cross the ridge, which is the point.
 
-            It rides the headline's own exit rather than the poster's. The card
-            grows into this space as the poster leaves, and the land held at the
-            poster's opacity would lie across it; on the headline's clock the
-            layer is gone by the time the card has any size, which is the same
-            moment the words it is there for have gone.
+            It rides the poster's own clock, not the headline's, and that is
+            what the descent needs from it: the headline goes down behind this
+            layer, so the layer has to outlive it. It is the same picture at
+            the same crop and the same registration as the card growing under
+            it, so where the two overlap they composite to one frame; and at
+            0.92 the card covers the window, which is why the poster's clock is
+            the one that can be shared. The depth device is now alive for the
+            whole opening instead of its first third.
 
             Paint order is all this is. The expansion, the slideshow, the
             hydration gate, the scroll restoration and the card's foot dissolve
             are untouched — nothing here reads a state or writes one. */}
         <motion.div
+          ref={ridgeRef}
           aria-hidden="true"
           className="hero-ridge pointer-events-none absolute inset-0 z-20"
           style={
@@ -988,7 +1048,7 @@ const ScrollExpandMedia = ({
             } as CSSProperties
           }
           initial={false}
-          animate={{ opacity: titleOpacity, scale: heroPush(progress) }}
+          animate={{ opacity: posterOpacity(progress), scale: heroPush(progress) }}
           transition={{ duration: 0.2, ease: EASE_IN_OUT_CUBIC }}
         >
           <ResponsiveImage
@@ -1002,6 +1062,33 @@ const ScrollExpandMedia = ({
           />
           <HeroShade progress={progress} />
         </motion.div>
+
+        {/* The mark, and it is the last thing this section paints. It stands
+            where it has always stood — 30.2px under the block's own top row,
+            which is the label's 18.2 and the 12 that used to be the gap — and
+            it is the one element of the opening that does not leave with the
+            words: it goes down with them to the skyline, and where the land
+            takes them it carries on alone to the row the intro band's rule
+            rests on, arriving on the frame that band's clock fires. From there
+            the thread has it.
+
+            In front of the land rather than behind it. A mark that passes
+            behind the depth device never comes back out of it, and the block
+            it left is going exactly there.
+
+            The row is declared rather than measured so the static HTML and a
+            visitor without JS get it right; only the descent is measured, and
+            it is zero until it is. */}
+        {hintLabel && (
+          <span
+            aria-hidden="true"
+            className="hero-strike pointer-events-none absolute left-1/2 top-[calc(max(calc(41.75%-154px),5rem)+30.2px)] z-30 -ml-12 h-0.5 w-24 bg-amber md:top-[calc(15%+30.2px)]"
+            style={{
+              translate: `0 ${strikeShift}px`,
+              opacity: progress < 1 ? 1 : 0,
+            }}
+          />
+        )}
       </section>
     </div>
   );
