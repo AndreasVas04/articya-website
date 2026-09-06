@@ -9,7 +9,7 @@ import { ResponsiveImage } from "@/components/responsive-image";
 import { SectionIndex } from "@/components/edge-furniture";
 import { IntroExit } from "@/components/intro-exit";
 import { ButtonLink } from "@/components/ui/button";
-import { coverSizes, FULL_VIEWPORT, HERO_VIEWPORT, imagePreload } from "@/lib/images";
+import { coverSizes, HERO_VIEWPORT, imagePreload } from "@/lib/images";
 import { hero, whatWeDo, gain } from "@/content/home";
 
 // The photograph "What you gain" is built on, sharp at one end and defocused
@@ -132,12 +132,20 @@ const plates: StagePlate[] = [
 const heroSizes = coverSizes(hero.slides[0], HERO_VIEWPORT);
 const heroPreload = imagePreload(hero.slides[0], heroSizes);
 
-// The gains frame runs edge to edge in a full-viewport section, sharp under
-// one end and defocused under the other. Every copy of it declares this: the
-// soft ones are rasterized at a quarter of the frame, but they are the same
-// photograph at the same crop, so sharing the sharp one's declaration keeps
-// the whole stack on a single download.
-const gainSizes = coverSizes(gainImage, FULL_VIEWPORT);
+// The gains frame runs edge to edge across its screen and a fifth of one
+// more below it, sharp under one end and defocused under the other. Every
+// copy of it declares this: the soft ones are rasterized at a quarter of the
+// frame, but they are the same photograph at the same crop, so sharing the
+// sharp one's declaration keeps the whole stack on a single download.
+//
+// Written out rather than through `coverSizes`, and for one number. On a
+// phone cover fits this near-square frame by height, so the taller window
+// paints it 1.2× wider than a screen would — 2337 device px at 390×664 and
+// 2971 at 390×844 — and the ladder ends at 2880. `coverSizes` would declare
+// 254vw against the 844 reference and ask for a rung that does not exist;
+// 246vw asks for the widest one there is, which is the file the browser
+// chooses either way. Above `md` the window fits by width and is 100vw.
+const gainSizes = "(min-width: 768px) 100vw, 246vw";
 
 // The panel's last sentence used to be lifted out of its paragraph and stood
 // on a screen of its own between the two panels. It is back where it was
@@ -541,9 +549,11 @@ export default function HomePage() {
           className="h-0"
         />
 
+        {/* Clipped on x only: the ground runs a fifth of a screen past the
+            section's foot. */}
         <section
           data-index-section=""
-          className="gain-frame relative isolate flex min-h-svh items-center overflow-hidden text-ink"
+          className="gain-frame relative isolate flex min-h-svh items-center overflow-x-clip text-ink"
         >
           {/* Declared rather than inherited, like every other key on the page.
               The section measures exactly a screen at all four heights, so this
@@ -559,8 +569,16 @@ export default function HomePage() {
               masked over its left, each fading into the next. There is no
               second picture, no divider and no box — what the words stand on
               is the far end of a gradient, so the ground under them can only
-              ever read as this photograph, defocused. */}
-          <div aria-hidden="true" className="gain-ground absolute inset-0 -z-10">
+              ever read as this photograph, defocused.
+
+              The window is a fifth of a screen taller than the section. The
+              photograph starts where the section does and runs on under the
+              closing's first lines, dissolving there on the same masked end
+              it always had, instead of ending on the section's own foot. */}
+          <div
+            aria-hidden="true"
+            className="gain-ground absolute inset-x-0 top-0 -bottom-[20svh] -z-10"
+          >
             <ResponsiveImage
               src={gainImage}
               alt=""
@@ -616,8 +634,16 @@ export default function HomePage() {
                 at 4.69 and leaves the other three untouched, because they are
                 above the stop it moves. The base itself is inside
                 `--gain-end`'s dissolve, so nothing new is painted at the
-                frame's bottom edge. */}
-            <div className="plate-shade pointer-events-none absolute inset-0 [--shade-bottom:84%] [--shade-color:var(--color-sky-anchor)] [--shade-mid:44%] [--shade-mid-from:20%] [--shade-mid-to:60%] [--shade-top:70%]" />
+                frame's bottom edge.
+
+                The stops are fractions of the shade's own box, and that box is
+                now the taller window, so the two mid stops are carried onto it
+                by the map that keeps them on the rows they were tuned for:
+                20% and 60% of a screen are 16.667% and 50% of a screen and a
+                fifth. The flat band renders where it did; the fall to 84 runs
+                on to the window's foot, which is a fifth of a screen further,
+                and so takes the same rows a little more gently. */}
+            <div className="plate-shade pointer-events-none absolute inset-0 [--shade-bottom:84%] [--shade-color:var(--color-sky-anchor)] [--shade-mid:44%] [--shade-mid-from:16.667%] [--shade-mid-to:50%] [--shade-top:70%]" />
           </div>
 
           <div className="relative w-full px-6 py-20 md:w-[46%] md:px-12 md:py-24">
