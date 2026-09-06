@@ -48,6 +48,15 @@ const clamp01 = (n: number) => Math.min(Math.max(n, 0), 1);
 // any of this; it only supplies deltas.
 const SETTLE_IDLE_MS = 120;
 const SETTLE_FORWARD_FROM = 0.2;
+// The settle follows the hand. Its target used to be read off progress alone
+// — toward the release from 0.20 up — so a reader scrolling back up from the
+// lede into the poster had the opening carried forward again the moment the
+// input paused or ran out into a momentum tail: the card reopened against the
+// gesture, and the screen read as a lag. The target now takes the sign of the
+// last non-zero delta as well. Positive input settles forward from 0.20;
+// negative input settles back to the poster from anywhere short of 0.80, and
+// forward only from there, where the opening is nearly whole.
+const SETTLE_BACK_HOLD_FROM = 0.8;
 
 // Progress per wheel unit: one trackpad flick opens the poster. At 0.0009 the
 // opening took 1111 units — three flicks on a laptop where a phone's thumb
@@ -64,8 +73,9 @@ const WHEEL_GAIN = 0.0025;
 const MOMENTUM_DELTA = 3;
 const MOMENTUM_EVENTS = 3;
 const settleEase = cubicBezier(0.22, 1, 0.36, 1);
-const settleTarget = (p: number) => (p >= SETTLE_FORWARD_FROM ? 1 : 0);
-const settleDuration = (p: number) => (p >= SETTLE_FORWARD_FROM ? 400 + 500 * (1 - p) : 300);
+const settleTarget = (p: number, dir: number) =>
+  dir < 0 ? (p >= SETTLE_BACK_HOLD_FROM ? 1 : 0) : p >= SETTLE_FORWARD_FROM ? 1 : 0;
+const settleDuration = (p: number, to: number) => (to === 1 ? 400 + 500 * (1 - p) : 300);
 interface Settle {
   from: number;
   to: number;
@@ -300,6 +310,8 @@ const ScrollExpandMedia = ({
   const [settleRun, setSettleRun] = useState(0);
   // Consecutive wheel events under MOMENTUM_DELTA.
   const tail = useRef(0);
+  // The sign of the last non-zero wheel or touch delta; the settle reads it.
+  const lastDir = useRef(1);
 
   // Under reduced motion the component renders its resting state: media
   // expanded, content visible, no scroll hijacking, first slide only. The
@@ -469,7 +481,8 @@ const ScrollExpandMedia = ({
       clearIdle();
       const p = progressRef.current;
       if (p <= 0 || p >= 1 || settle.current) return;
-      settle.current = { from: p, to: settleTarget(p), start: performance.now(), duration: settleDuration(p) };
+      const to = settleTarget(p, lastDir.current);
+      settle.current = { from: p, to, start: performance.now(), duration: settleDuration(p, to) };
       setSettleRun((n) => n + 1);
     };
 
@@ -482,6 +495,7 @@ const ScrollExpandMedia = ({
     };
 
     const handleWheel = (e: globalThis.WheelEvent) => {
+      if (e.deltaY !== 0) lastDir.current = e.deltaY > 0 ? 1 : -1;
       if (mediaFullyExpanded && e.deltaY < 0 && window.scrollY <= 5) {
         setMediaFullyExpanded(false);
         e.preventDefault();
@@ -524,6 +538,7 @@ const ScrollExpandMedia = ({
 
       const touchY = e.touches[0].clientY;
       const deltaY = touchStartY - touchY;
+      if (deltaY !== 0) lastDir.current = deltaY > 0 ? 1 : -1;
 
       if (mediaFullyExpanded && deltaY < -20 && window.scrollY <= 5) {
         setMediaFullyExpanded(false);
@@ -614,6 +629,7 @@ const ScrollExpandMedia = ({
       idleTimer.current = null;
       progressRef.current = 0;
       tail.current = 0;
+      lastDir.current = 1;
       setScrollProgress(0);
       setMediaFullyExpanded(false);
       setShowContent(false);
