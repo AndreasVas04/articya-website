@@ -685,6 +685,14 @@ const ScrollExpandMedia = ({
   // crossing runs to the release, so nothing in the opening is ever still.
   const titleOpacity = titleExit < 1 ? 1 : 0;
   const titleShift = titleExit * descent;
+  // The block recedes as it descends: 1.00 -> 0.85 over the same exit, about
+  // its own top edge, so the top row still lands exactly on the skyline at
+  // 0.60 — the descent and the frame §2.6 holds on are untouched — while the
+  // feet rise toward it and go behind the land sooner. The words go *into*
+  // the depth rather than under it, and the shrink is a second, slower rate
+  // beside the descent's. The strings do not change and nothing fades on the
+  // way down; the step to zero at the deadline is as it was.
+  const titleScale = 1 - 0.15 * titleExit;
 
   // The gold-wash veil that used to sit inside the card is gone. It held 0.75
   // over the whole card while the headline crossed it, and because it stopped
@@ -992,7 +1000,11 @@ const ScrollExpandMedia = ({
               <div
                 ref={titleRef}
                 className="pointer-events-none absolute inset-x-0 top-[max(calc(41.75%-154px),5rem)] z-10 flex flex-col items-center px-4 md:top-[15%]"
-                style={{ transform: `translateY(${titleShift}px)`, opacity: titleOpacity }}
+                style={{
+                  transform: `translateY(${titleShift}px) scale(${titleScale})`,
+                  transformOrigin: "50% 0",
+                  opacity: titleOpacity,
+                }}
               >
                 {/* The mark, under the label where an eyebrow's rule stands:
                     30.2px below the block's top row, which is the label's 18.2
