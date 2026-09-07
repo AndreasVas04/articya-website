@@ -808,11 +808,37 @@ A boundary travels in two ways and only one of them looks like motion. The hero
 carries both, and it was the still one that broke.
 
 *The moving boundary is the easy case, and it is already clean.* §2.6's shade
-crossing runs progress 0.35 → 0.85, and the headline reaches opacity 0 at
-exactly 0.35 — measured, the headline's glyph population is 205 pixels at
-progress 0.297 and 0 by 0.35. The two clocks meet on one number. That is now a
+crossing runs progress **0.60 → 1.00** on the plate wipe's own curve,
+`cubic-bezier(0.65, 0, 0.35, 1)`, and the headline block — descending at full
+ink and receding to 0.85 — steps to opacity 0 at exactly 0.60, on a frame
+where it is already behind the land (headline and label ink 0 px at every
+p ≥ 0.60, both heights). The two clocks meet on one number, and that is a
 requirement rather than a coincidence: **if the headline's exit is ever
-lengthened, the crossing's start moves with it.**
+lengthened, the crossing's start moves with it.** (It ran 0.35 → 0.85 until
+`9c851e9`.)
+
+**The opening's range and its settle, as they stand at 2026-09-07.** The
+wheel gain is 0.0025, so the poster opens in **400 wheel units**; the touch
+gains (0.005 / 0.008, 200 finger px) and every box ramp and threshold are
+frozen. The settle completes an opening the input has left mid-way: it starts
+after an idle read against the hand's own cadence (1.5 × the last gap,
+floored at 120 ms, capped at 600), or at once on a trackpad's momentum tail —
+four events ≤ 20 ms apart with strictly shrinking deltas — or on touchend. It
+runs to 1 from p ≥ 0.20 over 400 + 500·(1 − p) ms, or back to 0 over 300 ms,
+on `cubic-bezier(0.22, 1, 0.36, 1)`; the target takes the sign of the last
+input (negative settles back unless p ≥ 0.80). Any input that is not the tail
+coasting cancels it, and no new settle starts for 250 ms after a cancel. A
+deliberate slow scroll — deltaY 1 every 80 ms, or a notch every 200–300 ms —
+is never taken over.
+
+**The strike, and marks generally.** The amber strike under the label is a
+mark and answers to the **3.0** floor at its own ink; the poster plate's mid
+darkening is 76 (from 66) so that it reads 3.20 / 3.25 / 3.38 over the sky at
+664 / 553 / 1440×900 across the whole of its leg. The gains' amber numerals
+are pseudo-content and marks too — **display marks, floor 3.0**, never body
+text. The thread — the mark that travelled from the hero's block into the
+clearing — was removed at `984e9ff`: each block draws its own 96 × 2 rule
+where it stands, and the strike goes behind the land with the words.
 
 *The still boundary is the one that bit.* A mask sitting at a fixed place in the
 frame still travels relative to the type whenever the two are registered to

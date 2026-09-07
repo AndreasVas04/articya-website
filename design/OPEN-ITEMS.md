@@ -746,7 +746,8 @@ It applies on all four pages; `PhotoStage` is the ground everywhere.
 - **Every arrival still settles on `scale(1)` exactly**, read off the inline
   string, at the key and at +40, +200 and +800px past it.
 - The computed height is `innerHeight` at every viewport, which is the check
-  `CLAUDE.md` requires whenever a utility and `globals.css` both touch a box:
+  the project's Tailwind rule requires whenever a utility and `globals.css`
+  both touch a box:
   `.photo-stage` is unlayered and declares only `z-index`, so there is nothing
   for the new utility to lose to. WebKit resolves `100dvh` at an 844 window to
   **843.984375** — a 1/64px quantisation, and a bottom-row scan shows it as a ±1
@@ -7214,3 +7215,51 @@ and the identical reading on the build before this change. It is published under
 *The decorative-glyph exemption*, which sets the four conditions an element has
 to meet before it may be recorded rather than repaired, and the dot meets all
 four.
+
+---
+
+## 14 · The week's close — 2026-09-07
+
+Fourteen commits on `9a612e4`, each measured in `design/refs/2026-09-07-run.md`
+(kept out of the repository with the rest of `design/refs/`). What they close:
+
+- **The opening's slow-scroll blink.** Two causes, neither the one expected: the
+  momentum-tail rule took a slow trackpad stream over at 0.20, and the 120 ms
+  idle settled back to the poster between the notches of a slow mouse wheel, so
+  the poster never opened. The tail is now four shrinking events ≤ 20 ms
+  apart, the idle reads the hand's cadence, and a cancel is followed by 250 ms
+  of quiet. `43c934e`.
+- **The strike's first-leg contrast**, 2.31–2.59 → 3.20–3.38 at the mark's
+  ink, by the poster plate's mid (66 → 76). The sky in that band keeps 0.24 of
+  itself where it kept 0.34 — for the device. `84031e0`.
+- The dead `--hero-station-2` write and the finale twin's 1.25 px rule.
+  `dc2eb17`, `b1420a6`.
+- **"What you gain"**, enriched and not replaced: its rule at 96 × 2
+  (`45cd089`), the column arriving as one clock event with the numerals leading
+  their lines (`50a53e1`), and the valley wiping in under the departing panel
+  from 12svh above the section, with its departure under the closing left as
+  the fade it was measured on (`bad08f6` — the one key that moved this week).
+- **Contact on a phone**: the seam stands at 78% below `md`, so no row crosses
+  it; desktop is byte-identical. `54d1706`.
+- The social card, FAQPage JSON-LD, two alt texts, the logo as WebP, plain
+  punctuation in comments, and a content-keyed variant cache with a CI cache
+  step. `b7b3c86`, `b578afd`, `e7d32b5`, `8c6c220`, `92fa805`, `24b4b6a`.
+
+What remains, and none of it is new:
+
+- The gains ground shows **50–58%** of its frame on a phone (34.7% at 750):
+  cover fits the 120svh box by height and no `object-position` changes the
+  fraction. Only the box's aspect or a different frame closes it.
+- `hero-2`'s overhead cable; the fence in `IMG_4582-road`; a landscape ground
+  for About and FAQ; an activity frame with the people large in it — all
+  photography.
+- The home h1 under reduced motion (renders at opacity 0); pre-existing.
+- The About hero's rule and the three scene rules are still 1.25 px
+  declarations (the finale's two are 2 px).
+- A real device pass on everything above, and a real Actions run of the cache
+  step: nothing has been pushed since `b256c30`.
+- Deploy weight is **112 MB** at `build:pages` (WebP 57, AVIF 35, JPEG 17, the
+  rest under 2), against the 65 MB live; the ten heaviest files are the 2880 /
+  2560 / 1984 / 1920 WebP rungs of `hero-2`, `IMG_4585`, `IMG_4721` and
+  `IMG_4582-road`, 1.7–3.4 MB each. §5.3's decision on the WebP tier stands.
+
