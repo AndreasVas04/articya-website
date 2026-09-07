@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { nav } from "@/content/shared";
 import { cn, withBasePath } from "@/lib/utils";
@@ -101,14 +100,23 @@ export function SiteHeader() {
           }}
           className="flex shrink-0 items-center gap-2.5"
         >
-          <Image
-            src={withBasePath(nav.logo.src)}
-            alt={nav.logo.alt}
-            width={358}
-            height={309}
-            className="h-11 w-auto md:h-14"
-            priority
-          />
+          {/* WebP with the PNG behind it, same pixels (lossless), 49KB against
+              63; the box and the rendered size are unchanged. */}
+          <picture>
+            <source
+              srcSet={withBasePath(nav.logo.src.replace(/\.png$/, ".webp"))}
+              type="image/webp"
+            />
+            <img
+              src={withBasePath(nav.logo.src)}
+              alt={nav.logo.alt}
+              width={358}
+              height={309}
+              fetchPriority="high"
+              decoding="async"
+              className="h-11 w-auto md:h-14"
+            />
+          </picture>
           <span className="font-display text-lg font-semibold tracking-[-0.025em] text-ink md:text-xl">
             ArtiCYa
           </span>
