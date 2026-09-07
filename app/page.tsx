@@ -10,7 +10,7 @@ import { ResponsiveImage } from "@/components/responsive-image";
 import { SectionIndex } from "@/components/edge-furniture";
 import { IntroExit } from "@/components/intro-exit";
 import { ButtonLink } from "@/components/ui/button";
-import { coverSizes, HERO_VIEWPORT, imagePreload } from "@/lib/images";
+import { coverSizes, FULL_VIEWPORT, HERO_VIEWPORT, imagePreload } from "@/lib/images";
 import { hero, whatWeDo, gain } from "@/content/home";
 
 // The photograph "What you gain" is built on, sharp at one end and defocused
@@ -142,20 +142,18 @@ const plates: StagePlate[] = [
 const heroSizes = coverSizes(hero.slides[0], HERO_VIEWPORT);
 const heroPreload = imagePreload(hero.slides[0], heroSizes);
 
-// The gains frame runs edge to edge across its screen and a fifth of one
-// more below it, sharp under one end and defocused under the other. Every
-// copy of it declares this: the soft ones are rasterized at a quarter of the
-// frame, but they are the same photograph at the same crop, so sharing the
-// sharp one's declaration keeps the whole stack on a single download.
-//
-// Written out rather than through `coverSizes`, and for one number. On a
-// phone cover fits this near-square frame by height, so the taller window
-// paints it 1.2× wider than a screen would - 2337 device px at 390×664 and
-// 2971 at 390×844 - and the ladder ends at 2880. `coverSizes` would declare
-// 254vw against the 844 reference and ask for a rung that does not exist;
-// 246vw asks for the widest one there is, which is the file the browser
-// chooses either way. Above `md` the window fits by width and is 100vw.
-const gainSizes = "(min-width: 768px) 100vw, 246vw";
+// The gains frame runs edge to edge across its screen, and on a desktop a
+// fifth of one more below it, sharp under one end and defocused under the
+// other. Every copy of it declares this: the soft ones are rasterized at a
+// quarter of the frame, but they are the same photograph at the same crop, so
+// sharing the sharp one's declaration keeps the whole stack on a single
+// download. The box is the window plus the extension above `md` and the
+// window alone below it, and the declaration follows the box: on a phone
+// cover fits this near-square frame by height and paints it 2.12x the
+// window's width at the 844 reference, which is 2477 device px and lands on
+// the 2560 rung. The extension used to run at every width and asked for a
+// rung past the ladder's end.
+const gainSizes = coverSizes(gainImage, { vw: 1, vh: 1.2 }, FULL_VIEWPORT);
 
 // The panel's last sentence used to be lifted out of its paragraph and stood
 // on a screen of its own between the two panels. It is back where it was
@@ -587,13 +585,19 @@ export default function HomePage() {
               is the far end of a gradient, so the ground under them can only
               ever read as this photograph, defocused.
 
-              The window is a fifth of a screen taller than the section. The
-              photograph starts where the section does and runs on under the
-              closing's first lines, dissolving there on the same masked end
-              it always had, instead of ending on the section's own foot. */}
+              Above `md` the window is a fifth of a screen taller than the
+              section: the photograph starts where the section does and runs
+              on under the closing's first lines, dissolving there on the same
+              masked end it always had. Below `md` it ends on the section's
+              own foot. The frame is 0.978:1 and a phone's box is fitted by
+              its height, so the box's aspect is the whole of how much of the
+              picture shows: at 120svh it showed 57.8% / 50.1% of its width
+              at 553 / 664, under the 60% floor; at 100svh it shows 69.3% /
+              60.1%. A desktop box is wider than the frame and shows 73.4% of
+              its height with the extension, so the extension stays there. */}
           <div
             aria-hidden="true"
-            className="gain-ground absolute inset-x-0 top-0 -bottom-[20svh] -z-10"
+            className="gain-ground absolute inset-x-0 top-0 bottom-0 -z-10 md:-bottom-[20svh]"
           >
             <ResponsiveImage
               src={gainImage}
@@ -652,14 +656,16 @@ export default function HomePage() {
                 `--gain-end`'s dissolve, so nothing new is painted at the
                 frame's bottom edge.
 
-                The stops are fractions of the shade's own box, and that box is
-                now the taller window, so the two mid stops are carried onto it
-                by the map that keeps them on the rows they were tuned for:
-                20% and 60% of a screen are 16.667% and 50% of a screen and a
-                fifth. The flat band renders where it did; the fall to 84 runs
-                on to the window's foot, which is a fifth of a screen further,
-                and so takes the same rows a little more gently. */}
-            <div className="plate-shade pointer-events-none absolute inset-0 [--shade-bottom:84%] [--shade-color:var(--color-sky-anchor)] [--shade-mid:44%] [--shade-mid-from:16.667%] [--shade-mid-to:50%] [--shade-top:70%]" />
+                The stops are fractions of the shade's own box. Above `md`
+                that box is the taller window, so the two mid stops are carried
+                onto it by the map that keeps them on the rows they were tuned
+                for: 20% and 60% of a screen are 16.667% and 50% of a screen
+                and a fifth. The flat band renders where it did; the fall to 84
+                runs on to the window's foot, which is a fifth of a screen
+                further, and so takes the same rows a little more gently. Below
+                `md` the box is the screen and the stops are the 20% and 60%
+                they were tuned at. */}
+            <div className="plate-shade pointer-events-none absolute inset-0 [--shade-bottom:84%] [--shade-color:var(--color-sky-anchor)] [--shade-mid:44%] [--shade-mid-from:20%] [--shade-mid-to:60%] [--shade-top:70%] md:[--shade-mid-from:16.667%] md:[--shade-mid-to:50%]" />
           </div>
 
           {/* The column arrives as one event on the clock, the way the
