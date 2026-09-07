@@ -13,7 +13,7 @@ function isActive(pathname: string, href: string) {
 
 // The home logo when already on home. Next does not remount a route you are
 // already on, so the hero keeps its expansion state and manual
-// scrollRestoration leaves the scroll where it is — the click reads as dead.
+// scrollRestoration leaves the scroll where it is - the click reads as dead.
 // Reset to the fresh-load view instead: scroll to the top (instant, so it
 // never fights the hero's own scroll pin) and fire the event the hero resets
 // on. preventDefault drops the no-op navigation, adding no history entry, so
@@ -24,7 +24,7 @@ const HOME_RESET_EVENT = "home:reset";
 
 // The chrome is not a bar. There is no fill behind it, no blur, no rule under
 // it: the nav sits directly on the photograph, in cream, with amber on the
-// item you are on. What carries the labels is the picture's own darkening —
+// item you are on. What carries the labels is the picture's own darkening - 
 // the stage plates and the hero plate each hold flat gold for the bar's height
 // at the top of the window, so a label never lands on open picture whatever
 // the scroll position. A bar would have been a panel behind text, which is the
@@ -38,7 +38,7 @@ export function SiteHeader() {
   // Close paths for the open mobile panel, attached only while it is open:
   // scrolling away (past a small threshold so touch jitter doesn't count),
   // pointing anywhere outside the panel and its toggle, Escape (which also
-  // hands focus back to the toggle), and the viewport crossing to desktop —
+  // hands focus back to the toggle), and the viewport crossing to desktop - 
   // where the panel becomes static nav and an orphaned open state would
   // reappear on the next narrow resize.
   useEffect(() => {
@@ -78,7 +78,7 @@ export function SiteHeader() {
 
   return (
     <header className="fixed inset-x-0 top-0 z-50">
-      {/* The darkening the labels are carried by — see `.chrome-shade`. It is
+      {/* The darkening the labels are carried by - see `.chrome-shade`. It is
           a layer of the window, not a background of this element: the header
           itself has none, and this ramp reaches nothing at its lower end. */}
       <div
@@ -138,7 +138,7 @@ export function SiteHeader() {
         <ul
           ref={panelRef}
           className={cn(
-            // The open panel carries no surface either — it is the same cream
+            // The open panel carries no surface either - it is the same cream
             // type, one step further down the same photograph.
             "absolute inset-x-0 top-full flex-col gap-1 px-4 pb-6 pt-2 md:static md:flex md:flex-row md:items-center md:gap-8 md:p-0",
             open ? "flex" : "hidden"

@@ -9,13 +9,13 @@ import { cn } from "@/lib/utils";
 const easeInOutCubic = cubicBezier(0.65, 0, 0.35, 1);
 
 // How far a plate is over-scaled before it arrives. Small enough that the
-// image never reads as moving on its own — it settles as it takes the stage.
+// image never reads as moving on its own - it settles as it takes the stage.
 const ARRIVE_SCALE = 0.07;
 
 // The other half of that arrival, and it is free. At 1.07 the frame overhangs
 // the window by half the over-scale on each side, so the picture can rise by
 // exactly that much on its way in without uncovering an edge, and it returns
-// to nothing as the scale returns to 1.000 — the placement ladder reads what
+// to nothing as the scale returns to 1.000 - the placement ladder reads what
 // it read before. It is 19-26 CSS px of ground over 334-433px of scroll:
 // 0.056 px of picture per px of finger, which is the arrival settling rather
 // than a second plane, and it is the only travel this page has room for.
@@ -50,7 +50,7 @@ const wipeMask = (strength: number, rising: boolean) => {
 
 // A plate carries no per-image correction. The saturation and brightness
 // hooks that used to sit here were a second grade running on every paint, and
-// a filter chain has only saturation, hue and level to give — it cannot reach
+// a filter chain has only saturation, hue and level to give - it cannot reach
 // what a tone error actually is. Tone is decided once, in the pixels, by the
 // grade.
 export interface StagePlate {
@@ -58,11 +58,11 @@ export interface StagePlate {
   src: string;
   /** object-position for the cover crop. */
   position?: string;
-  /** The same frame again, out of focus — the ground a reading page stands on. */
+  /** The same frame again, out of focus - the ground a reading page stands on. */
   soft?: boolean;
   /** The split: one photograph, two treatments, a hard vertical seam at this
    *  percent of the width. Defocused to the left of it, sharp to the right,
-   *  and the picture runs straight through — the clip is on a full-size copy,
+   *  and the picture runs straight through - the clip is on a full-size copy,
    *  so the two sides cannot fall out of register. */
   split?: number;
   /** Where the seam stands below `md`, if not at `split`. A phone has no
@@ -102,12 +102,12 @@ interface StageFrame {
 // The photographic ground the whole page below the hero stands on: one fixed
 // full-viewport layer holding every plate, crossfading as the reader scrolls.
 // Sections paint no ground of their own, so there is no edge anywhere for a
-// seam to fall on — what changes is which photograph is showing, not what
+// seam to fall on - what changes is which photograph is showing, not what
 // surface a band of the page is made of, and a crossfade has no boundary.
 //
 // Opacity is read off the scrollbar, which every text entrance on this page is
 // forbidden to do. That rule is about text: an entrance scrubbed by scroll
-// elapses inside a flick and reads as nothing. This is background — the reader
+// elapses inside a flick and reads as nothing. This is background - the reader
 // is meant to feel the ground turning under them at exactly their own rate,
 // and a clock here would put the wrong photograph behind the words whenever
 // the scroll speed and the clock disagreed.
@@ -129,7 +129,7 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
     );
     if (layers.length !== plates.length) return;
 
-    // Under reduced motion the crossfade stays — it is the ground telling the
+    // Under reduced motion the crossfade stays - it is the ground telling the
     // reader where they are, and a fade carries no travel to be sensitive to.
     // The arrival scale is motion and does not.
     const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -138,7 +138,7 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
     // at `zoneTop + zoneHeight/2 - basis/2`; everything else in that expression
     // is now `svh` and therefore the same at both of a phone's chrome states,
     // so a basis that tracked the visible viewport would put the toolbar back
-    // into every key on its own — the whole document would hold still and the
+    // into every key on its own - the whole document would hold still and the
     // twelve keys would still slide 43px as the bar animated under the
     // reader's finger. The small viewport is the one height the device
     // guarantees at every moment, so it is what the page is keyed by. The cost
@@ -244,7 +244,7 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
       }
 
       // A zone owns the stage when its own middle is at the middle of the
-      // window — the one scroll position where the reader is unambiguously
+      // window - the one scroll position where the reader is unambiguously
       // inside it, whether it is a short band or a pinned panel.
       const basis = keyBasis();
       const keyed = zones
@@ -263,8 +263,8 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
       // The run-up: the stage is nothing until the first zone starts arriving,
       // so the hero hands over to the dark ground and the ground brings the
       // first photograph up under it. It only exists where there is room for
-      // it. A page whose first zone is its own first screen — every inner
-      // page, where the zone is the hero — has nothing above it to run up
+      // it. A page whose first zone is its own first screen - every inner
+      // page, where the zone is the hero - has nothing above it to run up
       // from, and its photograph is the first thing the page paints rather
       // than something that arrives.
       //
@@ -274,7 +274,7 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
       // 0 then sat above that key with the plate at nothing, and scroll 0
       // landed on the bottom of the ramp. FAQ's heading wrapped to a third line
       // and pushed its hero to 911px in a 900px window, which was the whole of
-      // it — 11px of overflow, and the page opened on bare floor.
+      // it - 11px of overflow, and the page opened on bare floor.
       const runUp = Math.min(...zones.map((z) => z.top)) - basis;
       if (runUp > 0 && runUp < frames[0].scroll) {
         frames.unshift({ scroll: runUp, values: plates.map(() => 0) });
@@ -324,7 +324,7 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
   // `h-[100dvh]` rather than `inset-0`, and the unit is the whole of it. A
   // fixed box with no height of its own resolves against the initial
   // containing block, and a phone browser holds that at the *large* viewport
-  // while the visible one shrinks under the URL bar — so this layer, which is
+  // while the visible one shrinks under the URL bar - so this layer, which is
   // every photograph below the hero, was painted 86px taller than the screen
   // at 390 wide whenever the bar was showing, 13% of its height below the fold,
   // and the shade's bottom hold went off the bottom with it. `svh` would fix
@@ -334,8 +334,8 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
   // layers that have to cover the window now name the same thing while the
   // content sections keep `svh` and go on fitting inside the smallest of them.
   //
-  // No emulator can show the difference — headless has no browser chrome, so
-  // `svh`, `lvh`, `dvh` and the fixed box all resolve to `innerHeight` — which
+  // No emulator can show the difference - headless has no browser chrome, so
+  // `svh`, `lvh`, `dvh` and the fixed box all resolve to `innerHeight` - which
   // is why this is a change no measurement moves.
   return (
     <div
@@ -357,7 +357,7 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
       {plates.map((plate, i) => {
         // One declaration per plate, shared by every copy of it. A soft copy
         // is rasterized at a quarter of the frame and would fetch a quarter
-        // rung on its own — but it is the same photograph at the same crop, so
+        // rung on its own - but it is the same photograph at the same crop, so
         // asking for the sharp one's width costs nothing (one URL, one
         // download) where asking for its own costs a second request.
         const sizes = coverSizes(plate.src, FULL_VIEWPORT);
@@ -417,7 +417,7 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
           {/* The plate's own darkening, and the whole of it: one shape on
               every plate, carrying the picture where the chrome crosses it and
               releasing it through the whole middle. Because it rides inside
-              the plate it fades with it — there is no scrim, veil or wash
+              the plate it fades with it - there is no scrim, veil or wash
               anywhere else on the page. */}
           <div
             className="plate-shade stage-plate-shade absolute inset-0"

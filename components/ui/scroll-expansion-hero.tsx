@@ -25,13 +25,13 @@ const EXPAND_KEYS = ["ArrowDown", "PageDown", "End", " "];
 
 // The poster's own land silhouette, traced off the frame: everything below the
 // skyline, in the frame's 3:4 box. It is a mask rather than a picture, so it
-// carries no pixels of its own — see the plate that uses it below.
+// carries no pixels of its own - see the plate that uses it below.
 const POSTER_RIDGE = "/images/pt/IMG_4585-ridge.svg";
 
 // Where the traced skyline sits in the mask's own 3:4 box. It is the mask's
 // fraction and not the window's, so it holds at every height a phone can show;
 // §2.18 placed the headline by it and this is the same number read the other
-// way round — the descent that hides the block is the one that positioned it.
+// way round - the descent that hides the block is the one that positioned it.
 const RIDGE_SKYLINE = 0.4175;
 
 const clamp01 = (n: number) => Math.min(Math.max(n, 0), 1);
@@ -39,7 +39,7 @@ const clamp01 = (n: number) => Math.min(Math.max(n, 0), 1);
 // The opening completes itself. Once it has started and the input stops, the
 // reader is not left mid-way between the poster and the clearing: after
 // SETTLE_IDLE ms with no wheel or touch delta the progress is carried on to
-// the release — or back to the poster if it had barely begun — through the
+// the release - or back to the poster if it had barely begun - through the
 // same `applyProgress` a wheel event feeds, so the release fires exactly as it
 // does under the reader's own hand. Any new delta cancels the settle and hands
 // progress back to the input from wherever it is.
@@ -49,7 +49,7 @@ const clamp01 = (n: number) => Math.min(Math.max(n, 0), 1);
 // The idle is read against the hand's own cadence. A trackpad delivers an
 // event every frame, so 120 ms of silence after one is a stop; a mouse wheel
 // turned slowly delivers a notch every 200–300 ms, and 120 ms of silence after
-// one of those is the middle of the reader's gesture — measured, the settle
+// one of those is the middle of the reader's gesture - measured, the settle
 // started between every notch, ran back toward the poster, and 400 notches of
 // deltaY 4 never got the opening past 0.02. So the wait is one and a half
 // gaps, floored at the 120 the trackpad was tuned on and capped at 600.
@@ -58,7 +58,7 @@ const SETTLE_IDLE_MAX_MS = 600;
 const SETTLE_IDLE_GAPS = 1.5;
 const SETTLE_FORWARD_FROM = 0.2;
 // The settle follows the hand. Its target used to be read off progress alone
-// — toward the release from 0.20 up — so a reader scrolling back up from the
+// - toward the release from 0.20 up - so a reader scrolling back up from the
 // lede into the poster had the opening carried forward again the moment the
 // input paused or ran out into a momentum tail: the card reopened against the
 // gesture, and the screen read as a lag. The target now takes the sign of the
@@ -68,23 +68,23 @@ const SETTLE_FORWARD_FROM = 0.2;
 const SETTLE_BACK_HOLD_FROM = 0.8;
 
 // Progress per wheel unit: one trackpad flick opens the poster. At 0.0009 the
-// opening took 1111 units — three flicks on a laptop where a phone's thumb
-// does it in one 200px drag — and the laptop read as late beside the phone.
+// opening took 1111 units - three flicks on a laptop where a phone's thumb
+// does it in one 200px drag - and the laptop read as late beside the phone.
 // 0.0025 is a 400-unit opening, and the touch gains below are untouched.
 const WHEEL_GAIN = 0.0025;
 
 // A trackpad's momentum tail is a run of deltas that shrink event by event,
 // arriving every frame, and it can go on for most of a second after the
-// finger has left the glass — the idle clock never fires while it lasts. Four
+// finger has left the glass - the idle clock never fires while it lasts. Four
 // consecutive events no more than TAIL_GAP_MS apart, each strictly smaller
 // than the one before, are that tail, and the settle starts there rather than
 // waiting the tail out. Once a settle is running, the tail's own remaining
-// events — still every frame, never growing — leave it alone; anything else is
+// events - still every frame, never growing - leave it alone; anything else is
 // the hand again and cancels it.
 //
 // It used to be three consecutive events under |deltaY| 3, with no clock on
 // them at all. A reader turning the wheel slowly and deliberately produces
-// exactly that — deltaY 1 every 80 ms — so at 0.20 the settle took the
+// exactly that - deltaY 1 every 80 ms - so at 0.20 the settle took the
 // opening out of their hands and ran it to the release in 770 ms while the
 // rest of their input was swallowed. The spacing and the shrinking are what a
 // tail has and a slow hand does not.
@@ -111,7 +111,7 @@ interface Settle {
 // number, read by the poster, by the copy masked to the land and by the window
 // inside the card, so the three can never fall out of register at any frame.
 // It is 1.000 at both ends, so neither the collapsed opening nor the resting
-// hero is moved by it, and 1.030 at the middle — 43px of width at 1440, which
+// hero is moved by it, and 1.030 at the middle - 43px of width at 1440, which
 // is the shared vector the two plates cross on. The poster used to carry no
 // transform at any frame of the expansion, so the eye had nothing to follow
 // and the growth read as a mechanism working rather than as space opening.
@@ -129,7 +129,7 @@ const heroPush = (progress: number) => 1 + HERO_PUSH * Math.sin(Math.PI * progre
 // The card covers the window at progress 0.912 on a desktop and 0.873 on a
 // phone (width 300 + 1250p against 1440; height 400 + 568.75p against 900).
 // 0.92 clears both, and across the 0.08 of progress that is left the poster is
-// behind an opaque full-bleed frame, so its own fade is never seen — what it
+// behind an opaque full-bleed frame, so its own fade is never seen - what it
 // buys is the resting state, where the card's dissolving foot has to open onto
 // the floor rather than onto a second copy of its own picture.
 const POSTER_LEAVES = 0.92;
@@ -158,19 +158,19 @@ const posterOpacity = (progress: number) =>
 // at the poster and 168 there. `.chrome-shade` carries the nav on its own
 // (86% falling to nothing over 130px), so the number could have gone either
 // way; it goes up rather than down because §2.8's ratchet forbids lowering any
-// measured value and the nav stands on this. 78 is a hood — the picture at
-// 0.22, a ground — and it clears 0.75 with room.
+// measured value and the nav stands on this. 78 is a hood - the picture at
+// 0.22, a ground - and it clears 0.75 with room.
 //
 // **The card's foot is registered to the block it carries, not to the card.**
 // `.hero-intro` is `bottom-0` with a fixed 251px height, so the lede's top row
-// — which is where its worst glyph pixel is, measured at **191-203px above the
-// card's foot at every height and on every slide** — is a constant distance
+// - which is where its worst glyph pixel is, measured at **191-203px above the
+// card's foot at every height and on every slide** - is a constant distance
 // from the bottom of the frame. The ramp under it ran to 94% *from 36% of the
 // card*, and the card is the viewport: at 844 that put the row at 65.8% of the
 // darkening and at 553 at 51.0%, which is 5.09 against 3.13 on a 4.5 floor.
 // A px block inside a vh ramp, which is §2.18's mechanism a fourth time.
 //
-// The fall is therefore anchored to the foot in px — `calc(100% - 580px)` —
+// The fall is therefore anchored to the foot in px - `calc(100% - 580px)` - 
 // which is the one change that makes the value under that row the same number
 // at 553 as at 844. It is also the unit the layer above it already uses: the
 // card's foot dissolve is `--hero-foot: 280px` and `--hero-foot-arc: 340px`,
@@ -180,8 +180,8 @@ const posterOpacity = (progress: number) =>
 // The `max(48px, ...)` is what keeps the stops in order on a card too short to
 // hold both ends. Below a 628px window the fall wants to start above the hood;
 // floored at 48px the hood still resolves inside the fixed header's own 65px,
-// so the top stays polarised at 78 — composited with `.chrome-shade` the
-// wordmark measures 8.27 at 553, against 4.5 — and the fall simply starts
+// so the top stays polarised at 78 - composited with `.chrome-shade` the
+// wordmark measures 8.27 at 553, against 4.5 - and the fall simply starts
 // there instead.
 //
 // The base goes 94 -> 100 and costs nothing that is painted: the bottom of the
@@ -200,7 +200,7 @@ const CARD_SHADE = {
 // How the crossing is made, and this is the whole of §2.6. Interpolating the
 // two sets of numbers put the *frame* in the middle register even where its
 // endpoints were out of it: at progress 0.6 the six read 63 / 41 / 51, so
-// every row of the window was between 41% and 63% at once — one flat veil over
+// every row of the window was between 41% and 63% at once - one flat veil over
 // the whole picture, the exact state the polarised ledger exists to forbid,
 // held for a fifth of the expansion.
 //
@@ -209,13 +209,13 @@ const CARD_SHADE = {
 // reason: the card's ramp wells up from the foot of the window and the
 // poster's withdraws upward and leaves through the top, over a 40%-deep
 // gradient with no line in it to trace. Every row of every frame is one ramp
-// or the other, and the top stop is 92 falling to 78 — inside the upper pole
+// or the other, and the top stop is 92 falling to 78 - inside the upper pole
 // at every frame, never in 0.04–0.75.
 //
 // It runs 0.60 -> 1.00 and not from zero, and the window is the argument: the
 // headline is gone by 0.60 and the intro does not arrive until 1.00, so the
 // crossing plays over the one stretch of the expansion with no text on the
-// glass at all — and it ends on the release, so the opening never has a
+// glass at all - and it ends on the release, so the opening never has a
 // stretch where the crossing is over and nothing else has begun.
 //
 // The boundary moves on the plate wipe's own curve rather than at one rate.
@@ -224,7 +224,7 @@ const CARD_SHADE = {
 // fifths of it moved nothing the eye could see. Eased, the rate is zero on
 // the frame the words go, peaks at the middle of the stretch where the
 // boundary is in the middle of the window, and is zero again on the release
-// — the shape the clearing's own wipe was approved with below this section.
+// - the shape the clearing's own wipe was approved with below this section.
 // The ends stay clean single states: the feather is the same 40%, and the
 // edge still reaches 140 and -40 exactly at 0.60 and 1.00.
 const SHADE_FEATHER = 40;
@@ -237,7 +237,7 @@ const shadeLayers = (progress: number) => {
   const edge = 140 - 180 * t;
   const solid = (edge - SHADE_FEATHER).toFixed(2);
   const clear = edge.toFixed(2);
-  // Neither end carries a mask at all. A fully-opaque mask is not free — it
+  // Neither end carries a mask at all. A fully-opaque mask is not free - it
   // pushes the layer through its own compositing pass, and the rounding that
   // costs is visible in the measurement: the headline's worst glyph pixel went
   // 5.27 -> 5.21 with a no-op mask on it. Both ends must be pixel-identical to
@@ -247,7 +247,7 @@ const shadeLayers = (progress: number) => {
       key: "poster",
       shade: POSTER_SHADE,
       // Sky owns this frame's chroma: a green-black over open blue turns it
-      // rather than lowering it — 43.6° of hue and half the chroma, against
+      // rather than lowering it - 43.6° of hue and half the chroma, against
       // 0.5° for the same stops on the sky's own dark.
       color: "var(--color-sky-anchor)",
       mask: t > 0 ? `linear-gradient(to bottom, #000 ${solid}%, transparent ${clear}%)` : undefined,
@@ -360,15 +360,15 @@ const ScrollExpandMedia = ({
   // Re-arm the pre-hydration veil for client-side navigation. The page's
   // inline script sets `hero-js` before the hero parses on a hard load, but
   // that script does not run when home is entered through the client router,
-  // so on that path the intro — rendered in its expanded state until `mounted`
-  // flips below — would otherwise flash inside the collapsed card. Adding the
+  // so on that path the intro - rendered in its expanded state until `mounted`
+  // flips below - would otherwise flash inside the collapsed card. Adding the
   // class in a layout effect lands it before the first paint on a route change
   // too; on a hard load it is already present and this is a no-op.
   useIsomorphicLayoutEffect(() => {
     document.documentElement.classList.add("hero-js");
   }, []);
 
-  // The veil then hands over to React's own hidden state — removed only after
+  // The veil then hands over to React's own hidden state - removed only after
   // the mounted re-render has applied it, so no frame shows the intro in
   // between.
   useEffect(() => {
@@ -423,7 +423,7 @@ const ScrollExpandMedia = ({
   // A visitor who has already scrolled by the time hydration lands is reading
   // somewhere below this hero, and the choreography has no screen left to play
   // on. The inline script pins the page to 0 during parse, so any offset here
-  // is their own scrolling in the gap between first paint and hydration — on a
+  // is their own scrolling in the gap between first paint and hydration - on a
   // slow connection, seconds of it. Arming the wheel/touch lock at that point
   // consumes their swipes from a screen they cannot see, with no feedback at
   // all, so the hero skips its capture and opens straight into the expanded
@@ -483,7 +483,7 @@ const ScrollExpandMedia = ({
     };
 
     // Input, of any size: it cancels a settle in flight and re-arms the idle
-    // clock. A zero delta counts — it is still the reader's hand.
+    // clock. A zero delta counts - it is still the reader's hand.
     const onInput = () => {
       const now = performance.now();
       if (settle.current) refractoryUntil.current = now + SETTLE_REFRACTORY_MS;
@@ -626,7 +626,7 @@ const ScrollExpandMedia = ({
 
   // Clicking the logo while already on home fires this instead of navigating
   // (Next would not remount the route, so the state below would persist). It
-  // returns the hero to its collapsed opening — the same view a fresh load
+  // returns the hero to its collapsed opening - the same view a fresh load
   // shows. The header has already scrolled to the top; the collapsed state
   // then re-pins scroll there via the handler above. Under reduced motion the
   // resting state keeps the hero expanded regardless, matching a fresh load.
@@ -668,7 +668,7 @@ const ScrollExpandMedia = ({
   }, [reducedMotion, slides.length]);
 
   // The desktop ramp used to end on a flat 1550px (300 + 1250). That is
-  // 1.0764 × the 1440 window it was tuned on — past the edge there, short of
+  // 1.0764 × the 1440 window it was tuned on - past the edge there, short of
   // it on anything wider, so above ~1550 the card stopped growing before it
   // reached the sides and left a gold strip down each one. The end value is
   // the same *fraction* of the stage now rather than the same number of
@@ -678,8 +678,8 @@ const ScrollExpandMedia = ({
   // nothing to re-render on resize, and it stays a percentage so a classic
   // scrollbar cannot push the card into horizontal overflow.
   //
-  // At 1440 the expression resolves to 300 + 1250 × progress — the ramp it
-  // replaces, to the pixel — so the pace there is not merely preserved but
+  // At 1440 the expression resolves to 300 + 1250 × progress - the ramp it
+  // replaces, to the pixel - so the pace there is not merely preserved but
   // identical, and the card still reaches the sides at progress 0.912.
   const stageEnd = ((1550 / 1440) * 100).toFixed(3);
   const mediaWidth = isMobile
@@ -691,7 +691,7 @@ const ScrollExpandMedia = ({
   // expanded, the card was 765px of a 900px window and 600px of an 844px one,
   // centred, so 68px and 194px of the top of the screen held no photograph at
   // all. What the chrome then crossed was bare floor, and a nav on bare floor
-  // above a picture is a bar whatever it is made of — the one thing this
+  // above a picture is a bar whatever it is made of - the one thing this
   // header has never had. Full bleed on both axes, and the picture runs to
   // every edge of the window the way the width already made it run to the
   // sides.
@@ -700,7 +700,7 @@ const ScrollExpandMedia = ({
   // The card cross-dissolves out of the poster as it grows. The collapsed
   // opening is the full-bleed photograph itself, so a small frame sitting on
   // top of it would read as a photo-in-photo; instead the card is hidden until
-  // the growth begins and is full by the time it has any size — the poster
+  // the growth begins and is full by the time it has any size - the poster
   // becomes the gallery rather than floating a second picture over it.
   const cardOpacity = Math.min(Math.max((progress - 0.02) / 0.28, 0), 1);
 
@@ -708,7 +708,7 @@ const ScrollExpandMedia = ({
   // clock is untouched and keeps running underneath; what is re-based is which
   // slide the card *shows*, so its first visible change lands after full bleed
   // rather than in the middle of the expansion. Measured before this: at wheel
-  // 1050 — three quarters of the way open — the card was already on the third
+  // 1050 - three quarters of the way open - the card was already on the third
   // slide, so the picture changed identity while the frame was still growing.
   const slideOrigin = useRef<number | null>(null);
   useEffect(() => {
@@ -728,7 +728,7 @@ const ScrollExpandMedia = ({
   // which read as an instant vanish rather than a transition (see the brief).
   const titleExit = Math.min(Math.max((progress - 0.03) / 0.57, 0), 1);
   // Nothing fades. The block goes *down*, at full ink, until its top row is on
-  // the skyline — and the land in front of the plate is what takes it, which
+  // the skyline - and the land in front of the plate is what takes it, which
   // is `cabinfever`'s own move rather than an invention. Its deadline is
   // progress 0.60, and §2.6's crossing starts there and runs to the release,
   // so no readable type is ever under the crossing, by construction. The step
@@ -736,14 +736,14 @@ const ScrollExpandMedia = ({
   // already behind the land, so there is nothing on the glass to see it.
   //
   // 0.60 rather than 0.35: at 0.35 the last 0.65 of the opening carried no
-  // word at all, and its final 0.15 — after the crossing had finished — moved
+  // word at all, and its final 0.15 - after the crossing had finished - moved
   // nothing at all. The words now stay for 0.60 of the opening and the
   // crossing runs to the release, so nothing in the opening is ever still.
   const titleOpacity = titleExit < 1 ? 1 : 0;
   const titleShift = titleExit * descent;
   // The block recedes as it descends: 1.00 -> 0.85 over the same exit, about
   // its own top edge, so the top row still lands exactly on the skyline at
-  // 0.60 — the descent and the frame §2.6 holds on are untouched — while the
+  // 0.60 - the descent and the frame §2.6 holds on are untouched - while the
   // feet rise toward it and go behind the land sooner. The words go *into*
   // the depth rather than under it, and the shrink is a second, slower rate
   // beside the descent's. The strings do not change and nothing fades on the
@@ -752,7 +752,7 @@ const ScrollExpandMedia = ({
 
   // The gold-wash veil that used to sit inside the card is gone. It held 0.75
   // over the whole card while the headline crossed it, and because it stopped
-  // at the card's edges it was a lighter rectangle standing on the poster —
+  // at the card's edges it was a lighter rectangle standing on the poster - 
   // the single loudest reason a growing frame read as a box. What carries the
   // headline is the section's own travelling ramp, which has no edges at all,
   // and below 0.60 that ramp is the poster's ramp to the number.
@@ -770,8 +770,8 @@ const ScrollExpandMedia = ({
   return (
     <div className="overflow-hidden">
       {/* The bottom edge paints nothing at either viewport. Nothing below this
-          hero carries a ground of its own any more — the page's photographic
-          stage runs behind all of it — so there is no second edge for the
+          hero carries a ground of its own any more - the page's photographic
+          stage runs behind all of it - so there is no second edge for the
           anchor to meet, and an opaque ramp ending on the hero's last row is a
           ruled line straight across the page. Open, the stage runs up under
           the card's own dissolving foot and the two pictures hand over. */}
@@ -785,7 +785,7 @@ const ScrollExpandMedia = ({
           It costs the hero nothing, because the state it is composed for is
           the state `svh` names. The expansion holds the page at scroll 0 and
           iOS only collapses the bar on a scroll the hero is preventing, so
-          every frame of the opening plays at the small viewport — which is
+          every frame of the opening plays at the small viewport - which is
           exactly what this now measures. Past the opening the hero's foot
           becomes a fixed document row instead of one that moves by 86px
           whenever the bar does. */}
@@ -802,7 +802,7 @@ const ScrollExpandMedia = ({
           style={{ opacity: posterOpacity(progress), scale: heroPush(progress) }}
         >
           {/* The backdrop is the collapsed opening's presence: the graded
-              home-hero vista at full photographic strength — a place, not a
+              home-hero vista at full photographic strength - a place, not a
               texture. It reads as the poster the page opens on, and fades out
               as the card grows so the poster becomes the gallery. Same src and
               sizes as the first slide, so the browser picks the identical
@@ -838,7 +838,7 @@ const ScrollExpandMedia = ({
               0.5° and buy the identical ratio.
 
               The mid holds from 8%, which is inside the header's own height at
-              both viewports — so the top ramp lives entirely under the bar and
+              both viewports - so the top ramp lives entirely under the bar and
               the picture emerges below the chrome already flat, with no step
               on the join.
 
@@ -855,27 +855,27 @@ const ScrollExpandMedia = ({
               the whole stage as the card grew, spending the gold that the
               600px card left stranded under itself. The card fills the window
               now, so there is no gold under it to spend and the drop is gone
-              with it — held, it would have put 72px of the old band straight
+              with it - held, it would have put 72px of the old band straight
               back at the top of the screen. */}
           {/* `hero-window-scope` makes this the size container the card's own
               window layer measures itself against. It is the window's box
-              exactly — the section's content width, so a classic scrollbar
+              exactly - the section's content width, so a classic scrollbar
               cannot push it out of register with the poster the way `100vw`
               would. */}
-          {/* This box is what actually sets the section's height — it is the
-              section's only in-flow child with a height — so it takes the
+          {/* This box is what actually sets the section's height - it is the
+              section's only in-flow child with a height - so it takes the
               same `svh` for the same reason. It is also the size container the
               card's own window measures itself against, so the card, the
               poster and the mask all stay registered to one number. */}
           <div className="hero-window-scope relative flex h-svh w-full flex-col items-center justify-center">
-            {/* The gallery card — hidden while the opening is the full-bleed
+            {/* The gallery card - hidden while the opening is the full-bleed
                 poster, cross-dissolved in as it grows so it never reads as a
                 second picture floating over the first.
 
                 The width cap is the stage's own width, not a fraction of it.
                 The growth ramp overshoots the stage at every width, so the cap
                 is what the expanded card actually measures, and at 95% it left
-                a gold strip down each side — with the foot dissolved, the two
+                a gold strip down each side - with the foot dissolved, the two
                 hardest lines on the page. `100%` rather than `100vw` so a
                 classic scrollbar cannot push the card past the stage and into
                 horizontal overflow. */}
@@ -890,7 +890,7 @@ const ScrollExpandMedia = ({
                 // No shadow. A 50px spread of `gold-anchor` at 55% around a
                 // growing frame is a halo drawn on the picture behind it, and
                 // it is the second half of what made the opening read as a box
-                // — the first half being the hairline ring below.
+                // - the first half being the hairline ring below.
               }}
             >
               {/* Square corners, deliberately: expanded, this frame is as wide
@@ -913,7 +913,7 @@ const ScrollExpandMedia = ({
                     differently-framed one: at 300x400 a 3:4 box cover-fits the
                     whole of a 3:4 photograph while the window shows a wide
                     slice of it, which is why one frame read as two pictures.
-                    Matching `object-position` alone could not close that —
+                    Matching `object-position` alone could not close that - 
                     the field of view is set by the box's aspect, and the box
                     is what changes.
 
@@ -972,13 +972,13 @@ const ScrollExpandMedia = ({
                 {/* The card's own darkening: strong at the top, where the
                     transparent nav crosses the picture at full expansion, and
                     strong again at the base, where the intro stands. Full
-                    width, top to bottom, inside the plate — the local pool
+                    width, top to bottom, inside the plate - the local pool
                     that used to sit under the intro's block is gone.
 
                     The base runs to 94% from 36% of the card, and it has to,
                     because this ramp is inside the foot mask and is multiplied
                     by it. While the card stopped short of the window the intro
-                    sat at mask alpha 0.4 falling to 0.02 — standing on the dark
+                    sat at mask alpha 0.4 falling to 0.02 - standing on the dark
                     floor with the photograph almost entirely dissolved away
                     behind it. Full bleed, the same words sit at 0.9 falling to
                     0.2, which is the picture itself, and on a phone the lede
@@ -1010,7 +1010,7 @@ const ScrollExpandMedia = ({
                 and lightest part of this frame, and low enough that the second
                 line's feet are in the hills, which is where the plate's second
                 half runs across them. The two viewports need different numbers
-                for the same relationship — the poster overflows the window's
+                for the same relationship - the poster overflows the window's
                 height on a desktop and is fitted to it on a phone, so only one
                 of them can move the picture under the words, and the other
                 moves the words down the frame instead.
@@ -1018,16 +1018,16 @@ const ScrollExpandMedia = ({
                 On a phone the offset is `a·H − b` and it has to be. `cover`
                 fits the land mask by its height at every window a phone can
                 show, so the skyline sits at a fixed **fraction** of the window
-                — 0.4175, measured within 0.0002 at 664, 700 and 844. What
+               - 0.4175, measured within 0.0002 at 664, 700 and 844. What
                 stands between this block's top and the second line's box is
-                **110.6px of pure px** — the label, its strike, `gap-3`, `mb-6`,
-                the first line's 51.1px and `gap-1` — one number at every
+                **110.6px of pure px** - the label, its strike, `gap-3`, `mb-6`,
+                the first line's 51.1px and `gap-1` - one number at every
                 window. A flat `23.5%` therefore holds the relationship at
                 exactly one height: the clearance runs `0.1825·H − 110.6`, which
                 is 43.5px at 844 and 10.6 at 664, and the ink of "are ArtiCYa"
                 occupies rows 5.1 to 46.4 of its 51.1px box. Measured, the
-                skyline crossed at 0.93 of the ink at 844 — the feet, as
-                designed — at 0.55 at 750, at 0.20 at 664, and above the box
+                skyline crossed at 0.93 of the ink at 844 - the feet, as
+                designed - at 0.55 at 750, at 0.20 at 664, and above the box
                 entirely at 553, where the whole line was behind the land. 844
                 is the iPhone's screen and Safari never gives a page its screen.
 
@@ -1038,7 +1038,7 @@ const ScrollExpandMedia = ({
                 everything measured on it do not move. The `5rem` floor binds
                 below 560px of window, where the expression would put the label
                 under the fixed 65px header; at 553 it leaves the crossing at
-                0.85 of the ink, which is still the feet. Desktop keeps `15%` —
+                0.85 of the ink, which is still the feet. Desktop keeps `15%` - 
                 above 768px the mask is fitted by *width* and the law is a
                 different one.
 
@@ -1066,7 +1066,7 @@ const ScrollExpandMedia = ({
                     30.2px below the block's top row, which is the label's 18.2
                     and the 12 that used to be the gap. It is placed rather than
                     stacked so the margin below the label still carries its
-                    stack — §2.18 placed the headline by that stack — and it is
+                    stack - §2.18 placed the headline by that stack - and it is
                     inside this block so it descends with the words, goes
                     behind the land with them, and is gone at the same deadline.
                     It used to be drawn in front of the land and carried on
@@ -1081,7 +1081,7 @@ const ScrollExpandMedia = ({
                   />
                 )}
                 {/* The label reads above the headline, where the reference set
-                    puts an eyebrow, and that placement is load-bearing here:
+                    puts an eyebrow, and the placement matters here:
                     the headline is the lowest thing in this block, so it is the
                     headline the land in front of the plate runs across. With
                     the label under it, the label sat below the skyline and the
@@ -1094,7 +1094,7 @@ const ScrollExpandMedia = ({
                 {hintLabel && (
                   // No pill. The rounded fill and its border were a shape
                   // behind text, which is the one thing nothing on this site
-                  // is now allowed to be — the label stands on the picture's
+                  // is now allowed to be - the label stands on the picture's
                   // own darkening like everything else.
                   //
                   // The strike is placed under the label rather than stacked
@@ -1165,7 +1165,7 @@ const ScrollExpandMedia = ({
                 )}
               >
                 {/* The intro stands on the card's own bottom darkening and on
-                    nothing else — the block-anchored pool and the warm pocket
+                    nothing else - the block-anchored pool and the warm pocket
                     that used to sit under it are gone with every other lift on
                     the site. */}
                 <div className="relative flex w-full flex-col items-center">
@@ -1175,7 +1175,7 @@ const ScrollExpandMedia = ({
               {/* The gold frame that used to ring this overlay is gone. It
                   worked when the card stood inside gold: three sides drawn,
                   the fourth dissolved at the foot. Full-bleed there are no
-                  side gutters for it to sit in — its verticals land on the
+                  side gutters for it to sit in - its verticals land on the
                   first and last column of the window and its top edge passes
                   under the chrome, so all that is left of a frame is two lines
                   pinned to the screen edges, which read as a viewport artifact
@@ -1188,16 +1188,16 @@ const ScrollExpandMedia = ({
 
         {/* The plate's second half, and the headline is between them. This is
             the same photograph, the same crop and the same darkening as the
-            layer at the top of this section — drawn again over the words and
+            layer at the top of this section - drawn again over the words and
             masked to its own land, so the skyline, the hills and everything
             below them pass in front of the type instead of behind it. Nothing
             about the picture changes: at rest the two layers are pixel for
             pixel the layer they came from, and the split shows up only where
             the words cross the ridge, which is the point.
 
-            It rides the poster's own clock, not the headline's — the same
+            It rides the poster's own clock, not the headline's - the same
             inline number, on the same frame, as the poster and the card's
-            window — and that is what the descent needs from it: the headline
+            window - and that is what the descent needs from it: the headline
             goes down behind this layer, so the layer has to outlive it. It is the same picture at
             the same crop and the same registration as the card growing under
             it, so where the two overlap they composite to one frame; and at
@@ -1207,7 +1207,7 @@ const ScrollExpandMedia = ({
 
             Paint order is all this is. The expansion, the slideshow, the
             hydration gate, the scroll restoration and the card's foot dissolve
-            are untouched — nothing here reads a state or writes one. */}
+            are untouched - nothing here reads a state or writes one. */}
         <div
           ref={ridgeRef}
           aria-hidden="true"

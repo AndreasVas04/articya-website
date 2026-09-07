@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 // A time-based, once-per-load section entrance. The scene arms after mount
 // (never under reduced motion, so those visitors keep everything in place)
 // and fires the first time it crosses into view; from that moment the
-// choreography plays on the clock, not the scrollbar — a flick and a slow
+// choreography plays on the clock, not the scrollbar - a flick and a slow
 // scroll get the same performance, and a scroller who blasts past still
 // finds every element settled where it belongs, because the transitions run
 // to their end states regardless of where the viewport went. Layer styling

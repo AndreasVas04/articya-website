@@ -15,12 +15,12 @@ export const metadata = pageMetadata({
 // The page's ground: the shaded forest road, sharp under the hero and out of
 // focus under the questions. Dark already through the trees, but the longest
 // headline on the site crosses the whole frame, including the gap of open sky
-// the road runs toward — at 83/68/70 the lede measures 4.57 desktop and 4.38
+// the road runs toward - at 83/68/70 the lede measures 4.57 desktop and 4.38
 // mobile against a 4.5 floor.
 //
 // The sharp plate's mid and base are 79/80 rather than 73/74, and the reason
 // is the state no sweep used to reach: with a <details> open, its answer is
-// `ink-soft` — the dimmest text on the site — and it crosses this plate low in
+// `ink-soft` - the dimmest text on the site - and it crosses this plate low in
 // the window while the crossfade to the soft plate is barely under way, so
 // this plate is 92-97% of the ground under it. The first two answers measured
 // 3.94 and 4.16 there against a 4.5 floor, in both engines and at all five
@@ -56,7 +56,7 @@ const faqJsonLd = JSON.stringify({
 
 // Native details/summary keeps every answer in the exported markup and
 // working without JS; the open animation lives in globals.css. The whole
-// page sits on one gold ground — hierarchy between question groups
+// page sits on one gold ground - hierarchy between question groups
 // comes from the header rail, hairlines and spacing, not painted zones.
 export default function FaqPage() {
   return (

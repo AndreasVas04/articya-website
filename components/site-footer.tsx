@@ -26,7 +26,7 @@ const icons: Record<string, React.ReactNode> = {
 // height at the bottom of the window, so the cream type here always closes on
 // one value; on the inner pages the body's own dark floor does the same job.
 //
-// `relative` is not layout — it is paint order. The home page's photographic
+// `relative` is not layout - it is paint order. The home page's photographic
 // stage is a fixed layer, and a fixed layer paints after every static block on
 // the page, so without a position here the footer renders under the picture.
 export function SiteFooter() {

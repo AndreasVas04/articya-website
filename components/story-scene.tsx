@@ -33,10 +33,10 @@ interface StorySceneProps {
 // on a desktop and the same 1.11 box below it, the same -12svh lift, one
 // viewport, never pinned. It shares the panels' classes and their
 // components/panel-photo.ts rather than restating their numbers, so the two
-// cannot drift apart — see design/REFERENCE-LANGUAGE.md §A.
+// cannot drift apart - see design/REFERENCE-LANGUAGE.md §A.
 //
-// What it used to be is what this replaces. The photograph sat in a mat —
-// `bg-gold-card`, a 1px amber ring and a 24px drop shadow — which is a card
+// What it used to be is what this replaces. The photograph sat in a mat - 
+// `bg-gold-card`, a 1px amber ring and a 24px drop shadow - which is a card
 // fill behind a picture, the one treatment §2 rules out and the one the offer
 // panels never had. Two languages on one site, and this was the older of them.
 // The scenes also alternated their own flat grounds, chrome and anchor, which

@@ -14,19 +14,19 @@ export const metadata = pageMetadata({
 // The page's ground: the two cattle on the road into the village at blue hour,
 // sharp under the hero and out of focus under the channels. It replaces the
 // walk out to the reservoir, which was this page's hero and also the ground
-// under "What we do" and the finale's centre tile — three zones on one
+// under "What we do" and the finale's centre tile - three zones on one
 // photograph.
 //
 // Both numbers moved with the frame and both were measured. The darkening was
 // 84/69/71, set for a sunlit track whose highlights clip at 255; a blue-hour
 // frame arrives most of the way down on its own, and on those numbers the lede
-// measured 7.26 desktop / 7.31 mobile against a 4.5 floor — a full stop of
+// measured 7.26 desktop / 7.31 mobile against a 4.5 floor - a full stop of
 // darkening spent on nothing. At 68/55/57 it measures 5.01 / 5.04 and the
 // picture keeps 54% more luminance and 31% more chroma.
 //
 // The dark is `sky-anchor` rather than `land-anchor`, and that is the larger of
 // the two. This frame's own hue is −142.5°; the warm anchor took the composite
-// to +80.3° — it does not darken a blue hour, it turns it — where the sky's own
+// to +80.3° - it does not darken a blue hour, it turns it - where the sky's own
 // dark lands at −146.6°, 4.1° off, and leaves 11.56 of chroma against 6.57.
 const plates: StagePlate[] = [
   // The mid is 58 and not 55, and the ladder's new rung is why. This ground is
@@ -38,7 +38,7 @@ const plates: StagePlate[] = [
   //
   // 58 was the mid until the sampler was fixed. The invitation crosses this
   // plate's middle band at every height, and stepped at 5px it reads 4.08 at
-  // 390x844 in WebKit and 4.38 at 1440x900 in Chromium — under floor in seven
+  // 390x844 in WebKit and 4.38 at 1440x900 in Chromium - under floor in seven
   // of the ten configurations, where the coarse sweep saw it under in one. The
   // reading below that set 58 was taken at whatever positions that sampler
   // happened to land on, so it was never the invitation's worst.
@@ -56,8 +56,8 @@ const plates: StagePlate[] = [
   // The mid is 66 for the same reason the hero plate's is 64, and it is the
   // email address that asks for it: on the three shortest phones it stands in
   // this plate's middle band and reads 4.21 at 390x553 in WebKit. Raising the
-  // hero plate alone does not touch it — measured with this one left at 62 the
-  // address stays at 4.21 / 4.40 / 4.47 — because by the time it is on screen
+  // hero plate alone does not touch it - measured with this one left at 62 the
+  // address stays at 4.21 / 4.40 / 4.47 - because by the time it is on screen
   // the crossfade has finished and this plate is the whole ground. At 54/66/72
   // it reads 4.87 and 5.06 at the two heights that failed.
   //
@@ -129,7 +129,7 @@ function ChannelCard({
         </span>
         {/* Body weight, not semibold: at 16/600 the value sat 3px from its
             own 13/600 label and the two read as one clump. The label keeps
-            the weight and the uppercase tracking, the value reads as text —
+            the weight and the uppercase tracking, the value reads as text - 
             the same eyebrow-and-value pairing the stats ledger uses. */}
         <span className="mt-1 block max-w-[44ch] break-words text-[clamp(1rem,1.3vw,1.16rem)] leading-[1.66] text-ink transition-colors duration-200 ease-out-quart group-hover:text-resin-deep md:mt-2">
           {value}
@@ -163,12 +163,12 @@ export default function ContactPage() {
             <h2 className="mt-4 type-heading font-display font-semibold tracking-[-0.025em] text-ink">
               {details.heading}
             </h2>
-            {/* The rule under the heading at 62% of the text column — the same
+            {/* The rule under the heading at 62% of the text column - the same
                 mark the gains carry, from the same reference frame. */}
             <span aria-hidden="true" className="mt-6 block h-px w-[62%] bg-hairline" />
           </Reveal>
           {/* No fills: the three channels are separated by one amber
-              hairline — horizontal between the stacked rows on mobile,
+              hairline - horizontal between the stacked rows on mobile,
               vertical between the columns on desktop. */}
           {/* No fills, and one hairline between the rows: the three channels
               stack down the soft column rather than sitting in three cells. */}

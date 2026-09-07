@@ -19,7 +19,7 @@ const FADE: CSSProperties = { opacity: 0 };
 const DRAW: CSSProperties = { scale: "0 1" };
 
 // The eyebrow label, one per panel, in the order the panels appear. Like the
-// numerals it is pseudo-content and never enters the DOM — the site's visible
+// numerals it is pseudo-content and never enters the DOM - the site's visible
 // text is frozen, and both of these are marks rather than strings. CSS
 // uppercases them.
 //
@@ -45,8 +45,8 @@ interface OfferPanelProps {
 //
 // One viewport, scrolled through, never pinned. The panel used to hold the
 // frame stuck for a full viewport of scroll inside a 200svh section, which
-// bought nothing the composition was not already doing — the photograph's
-// -12svh lift and the numeral's overlap are what break the horizontal band —
+// bought nothing the composition was not already doing - the photograph's
+// -12svh lift and the numeral's overlap are what break the horizontal band - 
 // and cost two screens of scrolling in which the picture did not move. The
 // reference sections are 1.0 viewport and pass straight through.
 //
@@ -54,7 +54,7 @@ interface OfferPanelProps {
 // clean dark ground with empty floor around it. That emptiness is the point:
 // the stage is held at nothing under the panel, so what the reader sees is a
 // dark room with one lit picture in it, and the picture is the brightest thing
-// in the section by design — no plate behind it, no dimming, no filter. The
+// in the section by design - no plate behind it, no dimming, no filter. The
 // words fire once on the first in-view crossing and play on the clock; before
 // mount and under reduced motion everything is visible, so the exported HTML
 // is the resting state.
@@ -117,9 +117,9 @@ export function OfferPanel({
 
   return (
     <section ref={ref} data-index-section="" className="relative">
-      {/* The panel carries no stage key of its own. It used to carry two — the
+      {/* The panel carries no stage key of its own. It used to carry two - the
           section itself, which keys at its own middle, and a marker at 60% of
-          it — and both of those are the panel's height, which on a phone is a
+          it - and both of those are the panel's height, which on a phone is a
           stack of px. The page places all four keys for this stretch instead,
           in `svh` off the panel's top row, so the spans they bound are shares
           of the window rather than shares of a photograph's aspect ratio. */}
@@ -127,7 +127,7 @@ export function OfferPanel({
         {/* The foot is the last px band to go. At 64 it was 9.6% of a 664
             screen and 11.6% of a 553 one; at 3svh it is 3% of both, and it
             matches the head and the gap. `min-h-svh` now binds on a phone at
-            664, 750 and 844 — the content is 636px at 664 — so the panel is
+            664, 750 and 844 - the content is 636px at 664 - so the panel is
             one screen and the block centres in it, which is what the head was
             originally written to correct for. */}
         <div className="relative flex min-h-svh w-full items-center px-4 pb-[3svh] md:px-0 md:py-0">

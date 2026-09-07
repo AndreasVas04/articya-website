@@ -29,15 +29,15 @@ const gainImage = "/images/pt/IMG_4619-valley.jpg";
 // A plate is either the whole photograph or it is nothing: 1.00 or 0.00, and
 // no value in between is held anywhere on the page. The ledger reading down
 // from the hero is loud, loud, quiet, loud, quiet, loud, quiet, and the only
-// numbers between the two are the crossfades themselves. At 0.16–0.18 — or at
-// 0.90 — a picture is neither a picture nor a clean ground; it is a haze with
+// numbers between the two are the crossfades themselves. At 0.16–0.18 - or at
+// 0.90 - a picture is neither a picture nor a clean ground; it is a haze with
 // shapes in it, which is what every zone below used to render.
 //
 // `IMG_4739-lane` used to stand here as the panels' ground, held at nothing by
 // every marker that named it: the browser fetched `IMG_4739-lane-1600.avif` on
 // every visit to the home page and never painted a pixel of it. It is gone,
 // and it could not have taken the screen it was nearest to. The frame is a
-// village street and its two crops fail the same rule from opposite ends — the
+// village street and its two crops fail the same rule from opposite ends - the
 // whole plate carries overhead power cable across the sky, and the crop that
 // removes the cable lands on railings, a satellite dish, a letterbox and a
 // parked car.
@@ -58,7 +58,7 @@ const plates: StagePlate[] = [
   // It is also the only one that is a picture of the sentence under it. "We
   // work with young people in Cyprus and across Europe" stands on young people
   // walking in Europe, where a landscape would have said nothing about what
-  // this organization does — §3's rule about the object beside a programme
+  // this organization does - §3's rule about the object beside a programme
   // section, applied to a ground.
   //
   // It carries its own darkening, and it needs to. The stage's shared numbers
@@ -79,7 +79,7 @@ const plates: StagePlate[] = [
   },
   // The join between the two panels: the road between the stone walls under
   // flat overcast light, crossed rather than stopped on. It used to carry a
-  // screen of its own, and that is what made its top-left fencing a problem —
+  // screen of its own, and that is what made its top-left fencing a problem - 
   // §8 flagged it because the passage put it in front of the reader longer
   // than anything else on the page. Here it is on full for about a third of a
   // screen of scroll and gone, which is the shortest hold on the page rather
@@ -90,7 +90,7 @@ const plates: StagePlate[] = [
   // It carries its own darkening now, and the shared numbers are why it had to.
   // On 52/62/70 this plate is the whole ground under both offer panels' prose,
   // and stepped at 5px across their traversal the Youth Exchanges bullets run
-  // to 3.70 at 1440x900 in both engines — the panel's four sentences sitting in
+  // to 3.70 at 1440x900 in both engines - the panel's four sentences sitting in
   // the top fifth of the window, where the shared ramp is at its weakest 52%.
   // The Training Courses prose crosses the foot of the window in the same
   // passage and runs to 4.29 there. Nothing moved them onto it; the sampler
@@ -101,7 +101,7 @@ const plates: StagePlate[] = [
   // 56/66/72 the worst two are still under at 4.23, at 58/68/74 they scrape
   // 4.56, and at 60/70/76 the whole set lands 4.91-6.11 in Chromium and
   // 4.91-6.07 in WebKit. `from`/`to` are declared rather than left to the
-  // prop's own defaults, which are 30%/78% — the ramp's geometry is unchanged
+  // prop's own defaults, which are 30%/78% - the ramp's geometry is unchanged
   // and only its three strengths move.
   {
     src: "/images/pt/IMG_4582-road.jpg",
@@ -110,12 +110,12 @@ const plates: StagePlate[] = [
     shade: { top: 60, mid: 70, base: 76, from: "22%", to: "62%" },
   },
   // The gains and the closing: the valley, the same frame the gains section
-  // lays edge to edge over it — so the finale is that picture arriving at full
+  // lays edge to edge over it - so the finale is that picture arriving at full
   // strength out of its own defocused copy.
   //
   // It arrives on the wipe and leaves on the fade. The arrival plays under the
   // second panel's tail, where a fade held the valley at 0.03–0.9 across the
-  // strip of floor above the incoming section's top edge — the haze the
+  // strip of floor above the incoming section's top edge - the haze the
   // ledger forbids, on the one stretch where the stage is bare. As a wipe the
   // strip is floor, then boundary, then picture, on the clearing's own curve.
   // The departure under the closing keeps the fade: the closing's words were
@@ -127,14 +127,14 @@ const plates: StagePlate[] = [
   // at 88% and this plate was taking the middle at 70%. A 16:10 window keeps
   // 61.1% of this frame's height and the ridge is the last third of it, so at
   // 70% the band ran 27.2%–88.3% and the plate was open sky with a strip of
-  // hills along the bottom — no subject in it at all, and the crossfade into
+  // hills along the bottom - no subject in it at all, and the crossfade into
   // the gains was a pan as well as a focus pull. At 88% both layers show the
   // ridge running the width of the frame with the village under it.
   { src: gainImage, position: "50% 88%", wipe: "in" },
 ];
 
 // The first hero slide is the LCP; the backdrop reuses the same variant, so
-// this one preload covers both — which only holds while the preload and the
+// this one preload covers both - which only holds while the preload and the
 // markup declare the same `sizes`, so both read it from the same box. That box
 // is the window plus the hero's own push, not the window: the section breathes
 // 3% forward and back as the card opens, and a declaration made at the window
@@ -150,8 +150,8 @@ const heroPreload = imagePreload(hero.slides[0], heroSizes);
 //
 // Written out rather than through `coverSizes`, and for one number. On a
 // phone cover fits this near-square frame by height, so the taller window
-// paints it 1.2× wider than a screen would — 2337 device px at 390×664 and
-// 2971 at 390×844 — and the ladder ends at 2880. `coverSizes` would declare
+// paints it 1.2× wider than a screen would - 2337 device px at 390×664 and
+// 2971 at 390×844 - and the ladder ends at 2880. `coverSizes` would declare
 // 254vw against the 844 reference and ask for a rung that does not exist;
 // 246vw asks for the widest one there is, which is the file the browser
 // chooses either way. Above `md` the window fits by width and is 100vw.
@@ -159,9 +159,9 @@ const gainSizes = "(min-width: 768px) 100vw, 246vw";
 
 // The panel's last sentence used to be lifted out of its paragraph and stood
 // on a screen of its own between the two panels. It is back where it was
-// written. On its own it read as a fragment that had lost its paragraph — one
+// written. On its own it read as a fragment that had lost its paragraph - one
 // sentence spending a screen and a half of scroll, with a wordless screen at
-// either end of it — and the paragraph it left behind was a sentence short.
+// either end of it - and the paragraph it left behind was a sentence short.
 // Nothing moved in the document either time: the split was a re-wrapping of
 // the same characters in the same order, which is the only kind of move the
 // parity check allows, and undoing it is the same operation backwards.
@@ -259,7 +259,7 @@ export default function HomePage() {
             desktop window. */}
         <section className="relative overflow-x-clip text-ink">
           {/* No top padding on either viewport. Mobile spends the lever on
-              the fold decision — the accent rule sits on the section's own
+              the fold decision - the accent rule sits on the section's own
               top edge, exactly at the fold. Desktop used to keep pt-24, but
               the hero already leaves 68px under its card and the left
               column's self-centering adds ~90px more: with the padding on
@@ -269,14 +269,14 @@ export default function HomePage() {
               card block, so the entrance starts while the card is still
               leaving the viewport and the two moments overlap. */}
           {/* The whole clearing arrives as one event: a single scene wraps the
-              text and the stats ledger, fires once at -30% — deep enough that
-              a real share of the composition is on screen — and plays a single
+              text and the stats ledger, fires once at -30% - deep enough that
+              a real share of the composition is on screen - and plays a single
               rising wave with internal order on the clock: the rule draws and
               the text column lifts, the heading surfaces out of its clipped
               line a beat in, and the ledger rows land last, left to right. */}
           {/* The clearing stands on a photograph now, and that is the whole of
               this zone's change. It was the one screen on the site made of flat
-              colour with no image on it — the page opened on strong pictures
+              colour with no image on it - the page opened on strong pictures
               and then dropped into a plain one, which broke the run at the
               first place the reader stops to read. The mechanism was never the
               problem: the rule draws, the heading surfaces out of its clipped
@@ -289,21 +289,21 @@ export default function HomePage() {
               whole zone. The rise lands under the hero card's own dissolving
               foot, so the two pictures hand over the way that foot was built to
               let them. The plate's own darkening is what makes the type
-              readable — the pools that used to sit under each block are gone,
+              readable - the pools that used to sit under each block are gone,
               and this plate carries its own numbers because one darkening
               cannot serve an overcast road and a blue hour. */}
           <div className="relative" data-index-section="">
             {/* The picture rises as the floor appears, not half a screen after
                 it. A zone is keyed half a viewport above its own middle, so
                 these two put the plate at nothing on the frame where the hero
-                still fills the window and full 0.62 of a viewport later — the
+                still fills the window and full 0.62 of a viewport later - the
                 rise runs from scroll 0 to 558px at 1440x900 and to 523px at
                 390x844.
 
                 It used to start at 10svh of this section and finish at 32svh,
                 which keys at 540 and 738: the hero's foot clears the bottom of
-                the window at scroll 0, so 540px of scroll — 0.60 of a viewport
-                at both sizes — passed with the incoming ground bare, and the
+                the window at scroll 0, so 540px of scroll - 0.60 of a viewport
+                at both sizes - passed with the incoming ground bare, and the
                 clearing's own clock entrance fired and finished inside it. The
                 complaint is that exact stretch.
 
@@ -325,8 +325,8 @@ export default function HomePage() {
               className="absolute inset-x-0 top-[12svh] h-0"
             />
             {/* `top-[100svh]`, not `bottom-0`. The two resolve to the same row
-                while this block is exactly a screen tall — measured, it is, at
-                553, 664, 750 and 844 — but one of them says so and the other
+                while this block is exactly a screen tall - measured, it is, at
+                553, 664, 750 and 844 - but one of them says so and the other
                 inherits it from whatever the content happens to measure. Every
                 key on this page is declared now. */}
             <span
@@ -339,7 +339,7 @@ export default function HomePage() {
                 middle of it. It used to open flush against the hero's foot,
                 which put the heading and the ledger in the bottom quarter of
                 the screen the reader lands on with three empty quarters of
-                photograph above them — the block read as having fallen to the
+                photograph above them - the block read as having fallen to the
                 bottom of the frame rather than as standing in it. */}
             <StageScene
               fireMargin="-30%"
@@ -391,7 +391,7 @@ export default function HomePage() {
                   never draws, so the mobile rows structure themselves on the
                   numeral/label baseline alone. The rows are the wave's last
                   beats, and each counter still starts its 700ms count only
-                  when it crosses into view — the ledger writes itself. */}
+                  when it crosses into view - the ledger writes itself. */}
               <div className="relative mt-2 md:mt-12">
                 <div className="relative grid md:grid-cols-3 md:divide-x md:divide-hairline">
                   {whatWeDo.stats.map((stat, i) => (
@@ -410,14 +410,14 @@ export default function HomePage() {
 
           {/* The marker that used to stand here is gone, and it was a bug
               rather than a decision. It declared plate 0 at nothing and sat at
-              document row 1800 — the same row as the clearing's own last
+              document row 1800 - the same row as the clearing's own last
               marker, which declares it full. A zone is keyed at its middle less
               half a viewport, so both keyed at 1350 at 1440x900 and at 1266 at
               390x844, and `PhotoStage` computes the blend as
               `(scroll - a) / (b - a)`: with the two keys equal the span is
               zero, the ratio is forced to 1 and the layer changes in a single
               frame. Measured across that one 20px step, 81.3% of the window's
-              pixels changed on a desktop and 87.9% on a phone — the largest
+              pixels changed on a desktop and 87.9% on a phone - the largest
               step anywhere on the site, and the whole of why entering the
               panels read as the photograph being switched off.
 
@@ -426,7 +426,7 @@ export default function HomePage() {
               0.607 of a viewport; 1266 to 1753 on a phone, 487px and 0.577.
               And it runs the right way round. The ledger's last row leaves the
               top of the window at 1640 / 1511, so the ground is still a
-              photograph for 256px / 242px after the numerals have gone —
+              photograph for 256px / 242px after the numerals have gone - 
               where before it went out 290px / 245px while they were still
               being read.
 
@@ -435,15 +435,15 @@ export default function HomePage() {
               window to meet them, rather than the whole photograph dimming to
               a haze across the middle of the fall. */}
 
-          {/* The panels open onto the dark the stats hand over to — the stage
-              goes quiet under them — so this margin is a beat of breathing,
+          {/* The panels open onto the dark the stats hand over to - the stage
+              goes quiet under them - so this margin is a beat of breathing,
               not a gap between two surfaces.
 
               It is the first term of the handover below it, which is why it is
               a share of the window rather than 40px. `mt-10` measured 40 at
               every height, so the handover it opens was 6.0% of a 664 screen
               and 4.7% of an 844 one; at `6svh` it is 6.0% of both. Desktop
-              takes 10svh — 90px against the 96 it replaces, inside a head the
+              takes 10svh - 90px against the 96 it replaces, inside a head the
               panel's own centring already makes 250px deep. */}
           <div className="mt-[6svh] md:mt-[10svh]">
             {whatWeDo.cards.map((card, i) => (
@@ -452,7 +452,7 @@ export default function HomePage() {
                     the window measured from the panel's own top row. They used
                     to be a mixture: the panel's `takes the frame` key was the
                     section's own middle and its `quiet` key was 60% of the
-                    section, both of which are the panel's height — and a
+                    section, both of which are the panel's height - and a
                     stacked panel's height is a stack of px. The road's two keys
                     were the only ones written in `svh`, and they were anchored
                     to the join, which is that same px height measured from the
@@ -461,7 +461,7 @@ export default function HomePage() {
                     So of the eleven spans on this page, six changed length as a
                     share of the screen and the worst of them changed by 0.31 of
                     a viewport between 553 and 844. The handover into the panels
-                    ran 0.892 / 0.733 / 0.649 / 0.577 — one distance of 487px,
+                    ran 0.892 / 0.733 / 0.649 / 0.577 - one distance of 487px,
                     doing a different amount of work at every height a phone can
                     actually be.
 
@@ -469,7 +469,7 @@ export default function HomePage() {
                     of the eleven outright. The two it cannot fix are the ones
                     that start inside one panel and end inside the next, because
                     the distance between those two points *is* the panel's own
-                    height — and while a panel is taller than the screen there
+                    height - and while a panel is taller than the screen there
                     is no expression that makes it a share of one. What can be
                     chosen is which two spans carry it, and both of them are
                     holds: the road's full hold, and the quiet run from the
@@ -486,8 +486,8 @@ export default function HomePage() {
                     this page is either a photograph or it is nothing.
 
                     **The two panels' first key is not the same number, and it
-                    was the mistake worth catching.** It reads like one key —
-                    "the panel takes the frame" — but the two are the ends of
+                    was the mistake worth catching.** It reads like one key - 
+                    "the panel takes the frame" - but the two are the ends of
                     two different withdrawals. The first panel's is where the
                     *clearing's* photograph finishes leaving, and it has to
                     outlast the ledger's last numeral, so it is late: 66%. The
@@ -495,7 +495,7 @@ export default function HomePage() {
                     be gone before the panel's own prose is read, so it is
                     early: 50%. Putting both at 66 cost the second panel's prose
                     0.26 to 0.63 of contrast on a desktop, measured at a 6px
-                    step across the whole traversal — the eight-stop sweep never
+                    step across the whole traversal - the eight-stop sweep never
                     saw it, because the element does not move and only the
                     ground's schedule under it does. */}
                 <span
@@ -537,14 +537,14 @@ export default function HomePage() {
         </section>
 
         {/* The trail walks out of the clearing: the stage crossfades here to
-            the reservoir vista at half strength — the picture the page opened
-            on — and holds it under the four gains. The section carries no
+            the reservoir vista at half strength - the picture the page opened
+            on - and holds it under the four gains. The section carries no
             bottom padding: the lamp's descent owns the gap below, so the
             trail's line runs straight on into the thread rather than stopping
             short of a section edge. */}
         {/* No top padding on mobile, like "What we do": the panel above closes
             on its own `pb-10`, so the section's own padding stacked a second
-            beat on top of a gap the panel had already opened — 113px from the
+            beat on top of a gap the panel had already opened - 113px from the
             last line of the panel to this heading. The accent rule sits on the
             section's top edge instead and the join reads as one beat. */}
         {/* Clipped on x only: the ground runs a fifth of a screen past the
@@ -556,7 +556,7 @@ export default function HomePage() {
           {/* The quiet key the valley rises from. It stood at the section's
               own top row (a zero-height marker just before it), which gave the
               rise half a viewport; at 12svh above the section it has 0.62 of
-              one, the range the clearing's own plate was approved with — its
+              one, the range the clearing's own plate was approved with - its
               keys are -50svh and 12svh of a section that starts where the
               hero ends. The boundary then leads the section's own top edge up
               the window instead of trailing it, and the second panel's last
@@ -573,7 +573,7 @@ export default function HomePage() {
           />
           {/* Declared rather than inherited, like every other key on the page.
               The section measures exactly a screen at all four heights, so this
-              lands where the section's own middle did — but it says so. */}
+              lands where the section's own middle did - but it says so. */}
           <span
             aria-hidden="true"
             data-stage-plate="2"
@@ -583,7 +583,7 @@ export default function HomePage() {
           {/* One photograph, edge to edge, and it goes out of focus across
               itself: the sharp frame with four softer copies of the same frame
               masked over its left, each fading into the next. There is no
-              second picture, no divider and no box — what the words stand on
+              second picture, no divider and no box - what the words stand on
               is the far end of a gradient, so the ground under them can only
               ever read as this photograph, defocused.
 
@@ -602,12 +602,12 @@ export default function HomePage() {
               sizes={gainSizes}
               className="gain-photo"
             />
-            {/* Softest last, and that is load-bearing. Each copy is opaque out
+            {/* Softest last, and the order matters. Each copy is opaque out
                 to its own hold and only then fades, so the last one painted is
                 the one the reader sees over that whole stretch: in DOM order
                 1→4 the gentlest step covered the other three and the left of
                 the frame rendered at blur 6px / brightness 0.86 instead of
-                30px / 0.42 — the ramp existed in the stylesheet and nowhere on
+                30px / 0.42 - the ramp existed in the stylesheet and nowhere on
                 the page. It was invisible while this section stood on a
                 blue-hour lane, which was dark enough to carry the words on its
                 own; under an open sky it measured 1.22. */}
@@ -634,7 +634,7 @@ export default function HomePage() {
                 frame is a valley under open sky and the words stand on the sky
                 end of the defocus ramp: the trail items measured 1.60–2.64
                 against a 3.0 floor. The release is now 44%, and it darkens
-                toward `sky-anchor` — the sky owns this frame's chroma (its own
+                toward `sky-anchor` - the sky owns this frame's chroma (its own
                 hue is −109.5°/−98.4°, the green-black's is 152.5°), so the
                 default took it 28° off its hue at this strength where the
                 sky's own dark takes it 4.4°.
@@ -642,7 +642,7 @@ export default function HomePage() {
                 The base is 84 and not 70, and one line is the whole reason.
                 The four gains stand between 44% and 71% of this frame, so the
                 first three are in the flat 44% band and the last one is in the
-                fall toward the base — and the last one is also the only place
+                fall toward the base - and the last one is also the only place
                 on the site that has never cleared 4.5, at 4.47 since before
                 Section 1. It is not the darkening that is thin there; it is
                 the picture, which is the bright valley floor by that row. The
@@ -691,7 +691,7 @@ export default function HomePage() {
               <h2 className="mt-[11.25px] type-heading font-display font-semibold tracking-[-0.025em]">
                 {gain.title}
               </h2>
-              {/* The rule under the heading, at 62% of the text column — the
+              {/* The rule under the heading, at 62% of the text column - the
                   one mark Grand Canyon puts between a heading and what hangs
                   off it. It is a rule, not a divider: it stops well short of
                   the column's edge so it reads as underlining the words rather
@@ -709,7 +709,7 @@ export default function HomePage() {
         </section>
 
         {/* The closing beat, on clean dark: the page's last quiet zone, coming
-            out of the valley the gains frame dissolves into. The lamp is gone —
+            out of the valley the gains frame dissolves into. The lamp is gone - 
             its line, cone, node and ignition were a light fixture drawn on the
             page, and what the section is actually for is three pieces of type.
             They stand on the floor itself and the closing line keeps the one
@@ -720,14 +720,14 @@ export default function HomePage() {
             strength the closing line measured 1.00 against a 3.0 floor on it;
             the lane is the darkest and still only carries the words by being
             darkened back to the haze the ledger exists to remove. So the
-            alternation closes the way it opens — a photograph, then nothing —
+            alternation closes the way it opens - a photograph, then nothing - 
             and the last screen of the page is the floor with three lines on
             it. */}
         {/* The breathing marker that stood here is gone, and taking it out is
             what buys the finale its dissolve. Keyed half a viewport above
             itself it sat 450px below the gains, so the climb into the closing
             ran in two steps with the steep one first. Without it the ramp is
-            one run from the gains zone to the closing — 0.81 viewports at
+            one run from the gains zone to the closing - 0.81 viewports at
             1440×900, 0.74 at 390×844. */}
 
         <section
@@ -736,7 +736,7 @@ export default function HomePage() {
         >
           {/* The ground's last key. The section's own middle put it half its
               height in, and that height is 395px of padding and three blocks of
-              type — so the ground left over 0.857 of a screen at 553 and 0.735
+              type - so the ground left over 0.857 of a screen at 553 and 0.735
               at 844. At 25svh the run out of the valley is 0.750 of the window
               at every height, which is the figure the move was signed off at on
               a phone. */}

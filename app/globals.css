@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  /* Resin & Pine palette — see /design/DESIGN-SYSTEM.md for roles and contrast rules */
+  /* Resin & Pine palette - see /design/DESIGN-SYSTEM.md for roles and contrast rules */
   --color-pine-950: #22301c;
   --color-pine-900: #2d4024;
   --color-pine-800: #3e5433;
@@ -16,7 +16,7 @@
   --color-plaster-bright: #faf8f2;
   --color-plaster-muted: #e0e4cd;
 
-  /* The site's own palette — the living-atmosphere world, now a dark one.
+  /* The site's own palette - the living-atmosphere world, now a dark one.
      Roles in /design/DESIGN-SYSTEM.md. One rule: ink carries every piece of
      text, amber is the only accent, pine is small structural marks only.
      The token names are the gold world's and are kept: the values below are
@@ -33,7 +33,7 @@
      laid on thin, so on a dark ground it is cream rather than ink. */
   --color-hairline: rgba(237, 226, 200, 0.14);
 
-  /* The page's three grounds. `gold-wash` is the visible floor — every
+  /* The page's three grounds. `gold-wash` is the visible floor - every
      section shows it, so no stretch of the page reads as untreated. The
      others are the same pine a shade either side of it: `gold-anchor` is the
      deepest, what every section fades to at its top and bottom edges and what
@@ -52,11 +52,11 @@
   --color-gold-wash-0: rgb(20 28 22 / 0);
   /* `gold-anchor` turned onto the hue of the sky it darkens, at the same
      lightness and the same chroma (L* 6.07 against 6.03, C* 4.11 against
-     4.21) — one hue rotation and nothing else. A darkening only darkens what
+     4.21) - one hue rotation and nothing else. A darkening only darkens what
      shares its hue: `gold-anchor` is a green-black, so over the poster's blue
      sky it rotates the hue instead of dropping the level. Measured on the
      rendered composite at the strength the headline needs, the green-black
-     took the sky 43.6° off its own hue and left 44% of its chroma — an
+     took the sky 43.6° off its own hue and left 44% of its chroma - an
      olive-teal band, not sky; this one holds the hue to 0.5° and 64%, at the
      same text contrast to within 0.03 of a ratio. It also darkens "What you
      gain", whose frame is a valley under open sky and whose chroma the sky
@@ -65,11 +65,11 @@
   --color-sky-anchor: #0f1419;
   /* The same rotation the other way, for the pictures that are neither sky nor
      the green-black's own green: the three inner-page hero photographs measure
-     95.5°, 98.9° and 105° over their frames — yellow-greens, where
+     95.5°, 98.9° and 105° over their frames - yellow-greens, where
      `gold-anchor` is a blue-green at 152.5°. At the strength their headlines
      need, the green-black took them 11.8°, 15.1° and 26.3° off their own hue;
      this one holds all three inside 4.6° and returns 2–5 points of chroma at
-     the same stops. Derived exactly as `sky-anchor` was — `gold-anchor`'s
+     the same stops. Derived exactly as `sky-anchor` was - `gold-anchor`'s
      lightness and chroma on the pictures' hue (L* 5.87 against 6.03, C* 4.29
      against 4.22, h 98°). */
   --color-land-anchor: #15130b;
@@ -116,15 +116,15 @@ body {
 /* The one thing allowed between a photograph and the words on it: a
    full-width, top-to-bottom darkening built into the photo plate itself.
    It has no horizontal extent of its own, so it can never read as a panel,
-   a pool or a soft-edged rectangle behind a block of type — the whole
+   a pool or a soft-edged rectangle behind a block of type - the whole
    apparatus of local lifts it replaces did exactly that. Every use tunes the
    three strengths and the two mid stops; nothing else about it varies.
 
    `gold-anchor` rather than black: the page's own deepest ground, so a
    darkened picture and the ground beside it are the same colour family. A
-   plate whose subject is the sky overrides `--shade-color` — see
+   plate whose subject is the sky overrides `--shade-color` - see
    `--color-sky-anchor`, which is that same anchor on the sky's own hue. */
-/* Declared in `components` rather than unlayered, and that is load-bearing:
+/* Declared in `components` rather than unlayered, and it has to be:
    every use tunes this through `[--shade-*]` utilities, and an unlayered rule
    beats a layered utility at equal specificity. Unlayered, the defaults below
    silently won and all three plates rendered the same shade no matter what
@@ -149,8 +149,8 @@ body {
   }
 }
 
-/* The chrome carries no bar, so what keeps a cream nav label off the picture —
-   and off the page's own text scrolling up past it — is a darkening rather than
+/* The chrome carries no bar, so what keeps a cream nav label off the picture - 
+   and off the page's own text scrolling up past it - is a darkening rather than
    a surface. One full-width top-to-bottom ramp pinned to the top of the window,
    falling to nothing well below the bar: no edge, no box, nothing local to the
    labels, and no row anywhere in it where the value steps.
@@ -178,7 +178,7 @@ body {
   }
 }
 /* Open, the ramp has four labels to carry instead of one row of them, so it
-   both grows and holds its strength further down before falling away — the
+   both grows and holds its strength further down before falling away - the
    last item sits at about 64% of this height. Measured over the brightest
    ground each page can put behind an open menu, the weakest label (the active
    one, in amber) goes from 4.27 to 6.28. */
@@ -211,12 +211,12 @@ body {
   }
 }
 
-/* Inner-page hero photograph — a slow scale-from-in on load, so the frame
+/* Inner-page hero photograph - a slow scale-from-in on load, so the frame
    arrives by settling rather than snapping on. The parent clips the overscan,
    so the picture eases from 6% in to flush; opacity is untouched, so the LCP
    paint is never held back. Under reduced motion the global reduce block
    collapses the duration and the frame rests flush. The gentle continuous
-   breath keeps the largest still image on the page alive while it is read —
+   breath keeps the largest still image on the page alive while it is read - 
    scale only, compositor-cheap, and it too stops under reduced motion. */
 .page-hero-photo-rise {
   animation:
@@ -245,7 +245,7 @@ body {
 
 /* The gold a section stands in. Its top and bottom edges are `gold-anchor`,
    falling to that gold at zero alpha toward the middle, where the page's
-   `gold-wash` floor carries the colour instead — so the section is gold end to
+   `gold-wash` floor carries the colour instead - so the section is gold end to
    end. Two of these meeting make one continuous band across the seam, which is
    why no section carries a rule at its edge. */
 .gold-field {
@@ -296,23 +296,23 @@ body {
   --gold-top-0: transparent;
 }
 /* The same, downward: below the hero the page has no section grounds left for
-   an edge to meet — the photographic stage runs behind all of it, unbroken. */
+   an edge to meet - the photographic stage runs behind all of it, unbroken. */
 .gold-field-open-bottom {
   --gold-bottom: transparent;
   --gold-bottom-0: transparent;
 }
 /* The floor under a gold field on the inner pages. Declared after .gold-field
-   because the field's background shorthand resets background-color — a utility
+   because the field's background shorthand resets background-color - a utility
    would lose the same fight. */
 .gold-floor {
   background-color: var(--color-gold-wash);
 }
 
-/* The photographic stage — one fixed layer behind the whole page below the
+/* The photographic stage - one fixed layer behind the whole page below the
    hero, holding every plate. Sections paint no ground of their own, so there
    is no edge for a seam to land on: what changes down the page is which
    photograph is showing, and a crossfade has no boundary. Sits under all
-   content and over the body's own floor, on paint order alone — it is the
+   content and over the body's own floor, on paint order alone - it is the
    first positioned element in the page wrapper, so nothing needs a z-index to
    stay in front of it and the hero's stacking is untouched. */
 .photo-stage {
@@ -321,7 +321,7 @@ body {
 /* A wiping plate is masked by a gradient the size of the window, written per
    frame by the layer itself. Stated here rather than left to the initial
    value: a mask image defaults to repeating, and a gradient whose stops run
-   past the box — which every frame of the wipe's two ends does — would tile
+   past the box - which every frame of the wipe's two ends does - would tile
    its own overflow back into the frame. */
 .stage-plate {
   -webkit-mask-repeat: no-repeat;
@@ -341,14 +341,14 @@ body {
    crosses it, and released through the middle.
 
    The middle used to release to 16%, and that was right while the stage was
-   scenery — no plate on this page ever had a word standing on it. It does
+   scenery - no plate on this page ever had a word standing on it. It does
    now. With the ledger polarised the stage is only ever *visible* in one
    place, the loud passage between the two offer panels, and that passage
    carries the sentence the panel above it ends on. Measured on the rendered
    composite at 16%, cream on the brightest pixel of that road ran 1.31
    against a 4.5 floor: the picture is an overcast frame and its road is very
    nearly white. The release is 62% instead, which is what the worst pixel in
-   the whole traversal needs — a scrolling block passes through every row of
+   the whole traversal needs - a scrolling block passes through every row of
    the window, so the darkening has to carry it everywhere, not only where it
    comes to rest. It is the plate's own full-width, top-to-bottom ramp doing
    it, which is the one device allowed between a photograph and the words on
@@ -361,7 +361,7 @@ body {
    the dissolve meet closer than they did. */
 /* It is the same construction `.plate-shade` already is, so it is that class
    with the stage's own numbers on it rather than a second gradient that has to
-   be kept in step by hand. A plate may override any of them inline — the
+   be kept in step by hand. A plate may override any of them inline - the
    inner-page heroes do, because one number cannot serve three photographs. */
 @layer components {
   .stage-plate-shade {
@@ -376,7 +376,7 @@ body {
      below their heroes: the hero photograph does not end anywhere, it goes
      soft, so there is no junction to soften because there is no junction. The
      four hard cuts this replaces dropped mean row luminance by 47-79% in a
-     single row — the rule is that no horizontal line exists where one
+     single row - the rule is that no horizontal line exists where one
      background meets the next, and a cut that steep is the worst case of it.
 
      Rasterized at a quarter of the frame and magnified back, like the gains
@@ -385,8 +385,8 @@ body {
   /* The text column of the split: everything Contact says stands to the left
      of the seam. 48% of the viewport less the page's own margin, so the words
      stop short of the line rather than running up to it. Below the breakpoint
-     there is no seam and no split — a phone has no room for a column beside a
-     picture — and the block is the full width. */
+     there is no seam and no split - a phone has no room for a column beside a
+     picture - and the block is the full width. */
   .contact-split {
     max-width: 100%;
   }
@@ -399,8 +399,8 @@ body {
     }
   }
 
-  /* Where the seam stands. The plate declares two positions inline — one for
-     the wide layout, one for below `md` — and the layer picks by breakpoint,
+  /* Where the seam stands. The plate declares two positions inline - one for
+     the wide layout, one for below `md` - and the layer picks by breakpoint,
      so the soft copy's clip and the seam can never disagree. */
   .stage-plate {
     --split: var(--split-compact);
@@ -413,7 +413,7 @@ body {
   .stage-plate-split {
     clip-path: inset(0 calc(100% - var(--split)) 0 0);
   }
-  /* The seam of the split — 1px of cream at 30%, top to bottom. It is the one
+  /* The seam of the split - 1px of cream at 30%, top to bottom. It is the one
      vertical line on the site and it is meant to be seen: the reference draws
      it rather than feathering the join, so the frame reads as one photograph
      given two treatments instead of two photographs butted together. */
@@ -438,22 +438,22 @@ body {
   }
 }
 
-/* The offer panels' composition, measured off the reference set — see
+/* The offer panels' composition, measured off the reference set - see
    design/REFERENCE-LANGUAGE.md section A. Five tracks across the viewport,
    and the two outer ones are the margins: 17% on the text's side, 12% on the
    photograph's, with 32% of text and 29% of picture either side of a 10% gap.
    The sides alternate between the two panels, so the whole geometry mirrors
    and the margins swap with it.
    Everything here is layered, so a Tailwind utility on the same element still
-   wins — which is why each property below has exactly one owner and the
+   wins - which is why each property below has exactly one owner and the
    markup carries no width, gap or margin utility of its own. */
 @layer components {
   /* Mobile stacks: a narrow screen cannot afford side placement. The block is
-     centred in the frame below the chrome rather than in the whole frame —
+     centred in the frame below the chrome rather than in the whole frame - 
      the header is fixed and carries no fill, so a row centred against the
      window's own middle lands the eyebrow level with the wordmark. */
   /* Every band of a stacked panel is a share of the window. The head was 20%
-     of the panel's *width* — a length, because a width is not a height — so it
+     of the panel's *width* - a length, because a width is not a height - so it
      stood at 8.5% of an 844 screen and 12.4% of a 553 one, growing as a share
      of every shorter phone. The gap was 3rem flat, which does the same thing
      more quietly.
@@ -462,7 +462,7 @@ body {
      head has nothing left to correct for: the 4rem it descends from was a
      correction for centring a block against a window whose top 65px the fixed
      header covers, and that centring only happens once the block fits the
-     screen — which, as of this pass, it does. */
+     screen - which, as of this pass, it does. */
   .offer-panel-grid {
     display: flex;
     flex-direction: column;
@@ -481,8 +481,8 @@ body {
       padding-top: 6svh;
     }
     /* Both on row 1 explicitly. Auto-placement packs sparsely and never moves
-       back up a row, so on the flipped panel — where the photograph's column
-       comes before the text's but the text comes first in the DOM — the
+       back up a row, so on the flipped panel - where the photograph's column
+       comes before the text's but the text comes first in the DOM - the
        picture would drop to a second row of its own. */
     .offer-panel-grid > .offer-panel-text,
     .offer-panel-grid > .offer-panel-photo {
@@ -505,19 +505,19 @@ body {
     }
   }
 
-  /* The photograph carries no border, ring, shadow or radius — the reference
+  /* The photograph carries no border, ring, shadow or radius - the reference
      frame is the picture and nothing else. It starts 12% of the section above
      the text block's top edge: the two columns are aligned to one line and
      this margin lifts the picture off it, which is what stops the pair reading
      as a row of a grid. The desktop width cap is the height rule turned around
-     — 86% of the section, at 3:4 — so on a window wide enough for the column to
+    - 86% of the section, at 3:4 - so on a window wide enough for the column to
      outgrow it the picture stops instead of overrunning the frame. Below about
      a 2.2:1 window the column is the narrower of the two and the cap never
      binds. */
   /* The picture is sized against the window it has to fit inside, which is the
      only quantity that answers the complaint. A height derived from a width is
-     a fixed length however it is written — `calc(57% + 96px)` at 3:4 gave
-     400.1px of picture at 553, 664, 750 and 844 alike — so the panel it sat in
+     a fixed length however it is written - `calc(57% + 96px)` at 3:4 gave
+     400.1px of picture at 553, 664, 750 and 844 alike - so the panel it sat in
      could only fit one of those screens, and it fitted the one the device
      never makes.
 
@@ -525,7 +525,7 @@ body {
      is 0.45 of the window plus its paragraph, and the paragraph is the whole of
      what is left: 337.6px of frozen copy at a reading size that does not scale,
      which is 50.8% of a 664 screen. That is the ceiling on this composition,
-     and it binds the *height* only — which is why the height is what is
+     and it binds the *height* only - which is why the height is what is
      declared here.
 
      The width is 1.11 of that height, so below `md` the box is no longer the
@@ -535,7 +535,7 @@ body {
      ground and starts reading as a band. 36svh × 1.11 is 337.3px at 390 × 844,
      which is 26.4px of ground each side against a 25.3px band.
 
-     `height` rather than `aspect-ratio`, and that is load-bearing: with a ratio
+     `height` rather than `aspect-ratio`, and it matters: with a ratio
      alive, `max-width` clamps the width and the ratio shortens the height with
      it, which moves the panel's total and takes all twelve of the page's keys
      with it. Declared as a height, no width can be heard below it.
@@ -561,7 +561,7 @@ body {
 
   /* The eyebrow row: numeral, rule, label, left to right on one line, sitting
      above the heading. The rule used to sit under the heading, which is the
-     wrong axis — it belongs beside the words it labels. */
+     wrong axis - it belongs beside the words it labels. */
   .offer-eyebrow {
     position: relative;
     /* In front of the heading. The numeral overlaps it, and an element that
@@ -572,8 +572,8 @@ body {
     gap: 14px;
   }
   /* The numeral is a zero-height box, so it contributes its own advance width
-     to the row — which is what keeps the reading order numeral → rule → label
-     — and nothing at all to the row's height. The glyph overflows it, centred
+     to the row - which is what keeps the reading order numeral → rule → label
+    - and nothing at all to the row's height. The glyph overflows it, centred
      on the row, and falls across the heading below. */
   .offer-numeral {
     display: grid;
@@ -603,7 +603,7 @@ body {
   }
   /* Both marks are pseudo-content: the site's visible text is frozen and
      checked character for character, and these are marks rather than strings.
-     Amber carries the label here — the ceiling that forbids it text was
+     Amber carries the label here - the ceiling that forbids it text was
      measured on the cream ground; on this floor it reads at 5.98. */
   .offer-eyebrow-text::before {
     content: var(--eyebrow, "");
@@ -618,7 +618,7 @@ body {
   }
 
   /* A measure narrow enough that both frozen titles break onto exactly two
-     lines at either viewport — never one, never three. The size is register B
+     lines at either viewport - never one, never three. The size is register B
      (see `.type-heading`); the numeral is locked to it by ratio rather than by
      a second clamp, so the two cannot drift apart when either moves. */
   .offer-panel-text {
@@ -640,7 +640,7 @@ body {
  *
  * The site ran one: 11.0% of viewport width at the h1, then 5.9%, 5.56%,
  * 3.33%, 1.29%. Every reference runs two, about 4x apart with nothing between
- * them — a *title bound to a photograph* (Cabin Fever 14%, Namibia 20%,
+ * them - a *title bound to a photograph* (Cabin Fever 14%, Namibia 20%,
  * Slovakia 28%) and a *heading beside a paragraph* (MNTN cap 16px in a 683px
  * capture, ~3.2% as a font size; Cabin Fever's dark passage 3.5%; Grand Canyon
  * 4.8%; Forest 5.0%). A single ramp leaves the h1 stranded: too large to be a
@@ -650,13 +650,13 @@ body {
  * Coming down to 3.5% is not §3's rejected "display type at normal website
  * scale", and the measurement is the argument: at 1440 register B is 50px,
  * 2.7x the body copy, and register A is 202px. Nobody would call either
- * normal. The home hero is exempt and stays at 11% — it is signed off.
+ * normal. The home hero is exempt and stays at 11% - it is signed off.
  *
  * Both live here rather than in a `text-[clamp(...)]` utility because two
  * registers are a system, and a system with its numbers spread across nine
  * call sites is not one. */
 @layer components {
-  /* Register A — a title bound to a photograph. */
+  /* Register A - a title bound to a photograph. */
   .type-title {
     font-size: clamp(3.4rem, 12vw, 5rem);
     line-height: 0.94;
@@ -669,7 +669,7 @@ body {
 
   /* Register A at 0.82 of itself. The FAQ heading was brought down and is
      right at its size; the two short titles are matched to it by scaling the
-     ramp's constants, not by a second ramp — the same clamp, every number
+     ramp's constants, not by a second ramp - the same clamp, every number
      multiplied by 0.82. */
   .type-title-compact {
     font-size: clamp(2.788rem, 9.84vw, 4.1rem);
@@ -684,7 +684,7 @@ body {
    *
    * "Frequently Asked Questions" is 26 characters. At 14vw it cannot set in
    * fewer than three lines at any desktop width, and three lines of register A
-   * is 568px of a 900px window — 63% of the screen given to one heading, which
+   * is 568px of a 900px window - 63% of the screen given to one heading, which
    * is a wall rather than a title. Every title in the reference set sets in one
    * line or two.
    *
@@ -695,7 +695,7 @@ body {
    * cannot push the heading back to three lines.
    *
    * The cap is in pixels because the column stops growing at `max-w-6xl` and
-   * `vw` does not — at 1920 the 14vw heading overflowed its own column by
+   * `vw` does not - at 1920 the 14vw heading overflowed its own column by
    * 111px on each side. Below 768 nothing changes: there the shared clamp
    * already holds the heading at its floor and three lines is 18% of the
    * screen, which is a heading, not a wall. */
@@ -705,7 +705,7 @@ body {
     }
   }
 
-  /* Register B — a heading beside, above or under a paragraph. */
+  /* Register B - a heading beside, above or under a paragraph. */
   .type-heading {
     font-size: clamp(1.9rem, 5.6vw, 2.6rem);
     line-height: 1.06;
@@ -719,7 +719,7 @@ body {
 
 /* `.photo-midday` stood here: a `saturate(0.82) hue-rotate(-4deg)` chain on
    IMG_4599, the one frame in the Portugal set shot under a hard midday sun. It
-   is gone because the correction moved into the pixels — see MATCH in
+   is gone because the correction moved into the pixels - see MATCH in
    scripts/grade-photos.mjs. A filter chain has only saturation and hue to give
    and cannot touch the luminance without a `brightness` that dims the whole
    frame, so it closed the chroma and left the real error untouched: the frame's
@@ -727,10 +727,10 @@ body {
    it lands 0.06 ΔE76 off the mean of IMG_4582 and IMG_4619, and one encode
    carries it instead of a filter running on every paint. */
 
-/* "What you gain" — one photograph, edge to edge, going out of focus across
+/* "What you gain" - one photograph, edge to edge, going out of focus across
    itself. There is no second picture and no panel: the same frame is drawn
    again at four blur radii, each masked to a band that fades into the next, so
-   what crosses the frame is a continuous ramp — 30px of defocus at the left
+   what crosses the frame is a continuous ramp - 30px of defocus at the left
    edge to none at `--gain-soft`, with the brightness falling 0.42 → 1.0 over
    the same span. The words stand on the soft end. Because every stop is a
    gradient there is no vertical edge anywhere in it, and because the ramp runs
@@ -741,8 +741,8 @@ body {
    the four radii are quartered with it. */
 @layer components {
   /* The frame's two ends are masked away rather than painted over. What is on
-     the other side of them is the page's own stage — another photograph, at
-     whatever strength the scroll has it at — so a ramp to a flat colour can
+     the other side of them is the page's own stage - another photograph, at
+     whatever strength the scroll has it at - so a ramp to a flat colour can
      only ever land a shade off it and draw back the line it was meant to
      erase: measured, a 27–37 channel step at the exact boundary row. A mask
      resolves to the real ground, which can never differ from itself. */
@@ -816,7 +816,7 @@ body {
     filter: blur(1.5px) brightness(0.86);
   }
   /* The four gains as an ordered list. Numerals are pseudo-content, like the
-     panels' — the site's visible text is frozen and these are marks. They sit
+     panels' - the site's visible text is frozen and these are marks. They sit
      in their own column so every line hangs off one left edge, and a hairline
      runs between the rows: the reference puts rules and numbers here and
      nothing else, which is the opposite of the trail with its glow and its
@@ -867,7 +867,7 @@ body {
   /* The ramp ends at 52% of the frame on desktop, where the words occupy the
      left 46% of it. A phone has no room for a column beside a picture, so the
      ramp there is spent across the whole width instead and the words sit in
-     the soft end of it — the same gradient across the same one picture. */
+     the soft end of it - the same gradient across the same one picture. */
   .gain-frame {
     --gain-soft: 120%;
   }
@@ -878,7 +878,7 @@ body {
   }
 }
 
-/* Edge furniture — the section index down the right margin. Desktop only:
+/* Edge furniture - the section index down the right margin. Desktop only:
    below 860px the screen is the content and there is no margin to stand
    anything in. It is fixed, vertically centred and inert, so it never takes a
    tap or a scroll.
@@ -922,11 +922,11 @@ body {
   }
 }
 
-/* Stage entrance — time-based, once per load. A StageScene arms after
+/* Stage entrance - time-based, once per load. A StageScene arms after
    hydration (never under reduced motion) and fires the first time it enters
    view; from that instant every layer plays on the clock, not the
    scrollbar, so a flick and a crawl get the same performance. Hidden states
-   exist only between arming and the trigger — the exported HTML carries
+   exist only between arming and the trigger - the exported HTML carries
    everything at rest. All movement is the individual translate/scale/rotate
    properties, never `transform`, so a layer can share an element with
    Tailwind transform utilities or inline transforms without a fight. */
@@ -942,7 +942,7 @@ body {
 .stage-rise {
   --stage-rise: 72px;
 }
-/* The block that carries a whole column into the scene — the text column
+/* The block that carries a whole column into the scene - the text column
    lifts as one object while the heading additionally surfaces out of its
    mask, so every line travels well past the mask's own height. */
 .stage[data-armed]:not([data-on]) .stage-lift {
@@ -973,8 +973,8 @@ body {
    0.07·H + 38 under its slot, so the clearance between the rule and the
    band's foot is 0.27·H − 163.1: +16px at 664, +39 at 750, −13.8 at 553. The
    block cannot move down (its foot already meets the bottom band at 553), so
-   the mark alone takes a·H − b — 176.1 − 0.27·H, which is 26.8px at 553 and
-   puts it 13px under the tile — clamped to nothing from 652 up, where it never
+   the mark alone takes a·H − b - 176.1 − 0.27·H, which is 26.8px at 553 and
+   puts it 13px under the tile - clamped to nothing from 652 up, where it never
    collided. Paint only: no box in the frame changes size or place. The wide
    gather carries no px and never crosses the header, so md+ is left alone. */
 @layer components {
@@ -989,7 +989,7 @@ body {
 }
 
 /* Evening shadow: under framed prints, and as the raised state of
-   interactive cards (open accordion, hovered contact card) — defined as a
+   interactive cards (open accordion, hovered contact card) - defined as a
    utility so hover/open variants reuse the same shadow. */
 @utility print-shadow {
   box-shadow: 0 24px 48px -24px rgb(4 8 5 / 0.55);
@@ -997,7 +997,7 @@ body {
 
 /* The home hero's static HTML carries its intro in the visible resting
    state (no-JS and reduced-motion visitors keep it), but with JS enabled
-   hydration re-hides it a beat after first paint — a visible flash. An
+   hydration re-hides it a beat after first paint - a visible flash. An
    inline script on the home page sets the flag before the hero parses so
    the intro is hidden from the first frame; the hero removes the flag
    once React's own hidden state has taken over. */
@@ -1007,12 +1007,12 @@ body {
   }
 }
 
-/* Hero first-load title card — once per load, on the clock. The same inline
+/* Hero first-load title card - once per load, on the clock. The same inline
    script adds `hero-load` before the hero parses, so the choreography runs
    from the very first paint; without JS the class never lands and the hero
    renders at rest. The poster settles in on the page's one long master curve
    and the headline words rise out of clipped lines, the strike and pill last.
-   Movement is the individual translate/scale properties, never `transform` —
+   Movement is the individual translate/scale properties, never `transform` - 
    the expansion writes inline transforms on these elements or their parents,
    and the two must compose rather than fight. */
 .hero-mask {
@@ -1070,8 +1070,8 @@ body {
 }
 
 /* Type inside the depth. The hero's poster is drawn twice with the headline
-   between the two, and the copy in front is masked to the frame's own land —
-   the traced skyline and everything under it — so the hills run across the
+   between the two, and the copy in front is masked to the frame's own land - 
+   the traced skyline and everything under it - so the hills run across the
    words rather than behind them.
 
    The mask has to land on the picture, not on the window, or the ridge in it
@@ -1097,7 +1097,7 @@ body {
      what sits inside it is painted at the window's own size and centred on the
      window; the card's box only clips. `cq` units and not `vw`/`vh`: the size
      container is the hero's own stage, which is the section's content width,
-     and a classic scrollbar makes `100vw` wider than that — 15px of drift
+     and a classic scrollbar makes `100vw` wider than that - 15px of drift
      against the poster the whole point of this layer is to stay registered
      with. */
   .hero-window-scope {
@@ -1143,7 +1143,7 @@ body {
 }
 /* The card's foot. The expanded hero used to stop on a ruled line: photograph,
    hairline and drop shadow all ending in the same row with the floor starting
-   underneath it. These masks take that row away instead of painting over it —
+   underneath it. These masks take that row away instead of painting over it - 
    masking resolves to the real ground, which can never differ from itself.
    The ramp rides the elements the expansion sizes, so the edge stays pinned to
    the card's own base through the whole growth instead of sliding up through

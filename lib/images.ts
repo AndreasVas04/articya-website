@@ -16,7 +16,7 @@ interface ManifestEntry {
 }
 interface Manifest {
   dir: string;
-  /** `cap` is the widest rung a format emits — the JPEG tier is capped, and a
+  /** `cap` is the widest rung a format emits - the JPEG tier is capped, and a
    *  srcset must never list a file the build did not write. */
   formats: { ext: string; mime: string; cap?: number }[];
   images: Record<string, ManifestEntry>;
@@ -40,7 +40,7 @@ export interface ImageSource {
 export interface ResolvedImage {
   /** <source> entries, modern formats first (avif, webp), then jpeg. */
   sources: ImageSource[];
-  /** Largest JPEG variant — the universal <img> fallback (masters are not shipped). */
+  /** Largest JPEG variant - the universal <img> fallback (masters are not shipped). */
   fallback: string;
   /** JPEG srcset, so the bare <img> still width-selects where <picture> is unused. */
   jpegSrcSet: string;
@@ -100,8 +100,8 @@ export interface SizeBox {
 
 export const FULL_VIEWPORT: SizeBox = { vw: 1, vh: 1 };
 
-/** The home hero's frame. Every layer in that section — the poster, the copy
- *  of it masked to the land, the card's slides and the LCP preload — is pushed
+/** The home hero's frame. Every layer in that section - the poster, the copy
+ *  of it masked to the land, the card's slides and the LCP preload - is pushed
  *  past the window and back as the card opens, so the widest each of them is
  *  ever painted is the window plus that push. They all declare this one box:
  *  two declarations of the same photograph that resolve to different rungs
@@ -114,7 +114,7 @@ export const HERO_VIEWPORT: SizeBox = { vw: 1 + HERO_PUSH, vh: 1 + HERO_PUSH };
 // axes: where the frame is proportionally wider than the box, it is fitted by
 // its height and painted wider than the box, with the sides cropped off. A
 // `sizes` of the box width therefore under-declares the picture by exactly
-// that ratio, and the browser fetches a variant it then has to magnify — the
+// that ratio, and the browser fetches a variant it then has to magnify - the
 // ultra-wide slide asked for 100vw in a 16:10 window and was painted at
 // 134vw, and the same frame in a phone's portrait window at 464vw.
 //

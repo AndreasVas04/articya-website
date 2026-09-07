@@ -50,7 +50,7 @@ const TARGET_SCALES = [4, 5, 6, 5, 6, 8, 9];
 
 // The section's own height, in screens, and it is the same number at both
 // breakpoints. A sticky frame one screen tall inside it pins for `SECTION_SVH
-// - 1`, so 2.2 is 1.2 screens of pin — §2's ceiling exactly — where 3.00 and
+// - 1`, so 2.2 is 1.2 screens of pin - §2's ceiling exactly - where 3.00 and
 // 4.40 were 2.00 and 3.40. The timeline `useScroll` measures is one screen
 // longer than the section at each end's own definition: section top at the
 // window's foot to section bottom at its head, so 3.2 screens.
@@ -59,7 +59,7 @@ const SECTION_SVH = 2.2;
 // How far the footer stands inside the finale, and it is the footer's own
 // height at every width: 32px of padding, the 44px circles, the 20px gap, the
 // copyright's 20px row and 32px more of padding. Pulled up by exactly that, the
-// document ends where the pinned frame ends — so the last screen of `/about/`
+// document ends where the pinned frame ends - so the last screen of `/about/`
 // is the centre tile filling the window with the site's last words inside its
 // foot, and the photograph carries through into the footer instead of stopping
 // above a ground of its own. Only the pinned branch takes it; the resting
@@ -79,7 +79,7 @@ const APPROVED_SVH = { compact: 3, wide: 4.4 };
 // ends, holds the ratio of every interval to every other exactly, and leaves
 // each event at the same fraction of the pin it was approved at. In scroll
 // rather than in progress the phone's run is played at 0.600 of its old length
-// and the desktop's at 0.353 — the ceiling is one number and the two pins were
+// and the desktop's at 0.353 - the ceiling is one number and the two pins were
 // not.
 const stageKey = (value: number, compact: boolean) => {
   const was = compact ? APPROVED_SVH.compact : APPROVED_SVH.wide;
@@ -87,7 +87,7 @@ const stageKey = (value: number, compact: boolean) => {
   return (squeeze * (value * (was + 1) - 1) + 1) / (SECTION_SVH + 1);
 };
 
-// Each tile's slot, in fractions of the viewport, matching TILES above — the
+// Each tile's slot, in fractions of the viewport, matching TILES above - the
 // mobile box first and the md: box second, because this mosaic is the one on
 // the site whose bands change at the breakpoint.
 //
@@ -96,7 +96,7 @@ const stageKey = (value: number, compact: boolean) => {
 // at: `object-fit: cover` scales the frame until it covers both axes, so a
 // frame proportionally wider than its slot is fitted by its height and painted
 // wider than the slot with the sides cropped off. Slot 3 is the clearest case
-// — 20vw x 26vh on a phone is 78 x 172.6 CSS px at 390x664, and a 2.14:1 frame
+// - 20vw x 26vh on a phone is 78 x 172.6 CSS px at 390x664, and a 2.14:1 frame
 // cover-paints 370 of them against the 312 that `80vw` declares. `coverSizes`
 // reads each frame's own aspect out of the variant manifest and returns the
 // width it actually paints.
@@ -111,8 +111,8 @@ const TILE_BOXES: { wide: SizeBox; compact: SizeBox }[] = [
 ];
 
 // Declared at rest, which is the slot and not the peak. The fan-out takes the
-// tiles to between 4x and 9x and no rung on the ladder reaches that — the worst
-// slot asks 8036 device px against a 2880 cap — so a declaration made at the
+// tiles to between 4x and 9x and no rung on the ladder reaches that - the worst
+// slot asks 8036 device px against a 2880 cap - so a declaration made at the
 // peak would fetch the widest variant that exists for every tile and still not
 // close it, while costing every visitor the download. The rest is what the
 // reader looks at for the whole of the gather, the hold and the settle.
@@ -122,7 +122,7 @@ const TILE_BOXES: { wide: SizeBox; compact: SizeBox }[] = [
 // and holds it there, so its peak is the one growth on the wall a reader
 // actually stops on, and at rest it is 26vw. Declared at rest it would be
 // fetched at 749 device px and painted at 2995 on a 1440x900 desktop. `100vw`
-// is not a declaration at the peak either — the peak is 104vw — it is the
+// is not a declaration at the peak either - the peak is 104vw - it is the
 // widest rung the ladder carries, and it is what b256c30 declared here.
 const tileSizes = (src: string, index: number) =>
   index === 0
@@ -130,8 +130,8 @@ const tileSizes = (src: string, index: number) =>
     : coverSizes(src, TILE_BOXES[index].wide, TILE_BOXES[index].compact);
 
 // While the words are on screen each outer tile holds this offset from its
-// mosaic slot (x in vw, y in vh) — gathered loosely around the paragraph,
-// clear of the text block — then settles into the slot as the words hand
+// mosaic slot (x in vw, y in vh) - gathered loosely around the paragraph,
+// clear of the text block - then settles into the slot as the words hand
 // off. The center tile has no offset; it arrives last, where the words
 // stood.
 const GATHER: [number, number][] = [
@@ -146,14 +146,14 @@ const GATHER: [number, number][] = [
 
 // Below md the paragraph runs nearly full-width and full-height, so the ring
 // stages vertically instead: the wide and small tiles hold as two aligned
-// bands above and below the words — mirrored pairs on the mosaic's 2vw side
-// margins — and the tall middle-row tiles wait just offscreen (their slots sit
+// bands above and below the words - mirrored pairs on the mosaic's 2vw side
+// margins - and the tall middle-row tiles wait just offscreen (their slots sit
 // beside the text) and sweep in as the ring closes.
 //
 // The top band's inset was a bare fraction and the header it has to clear is a
 // fixed number of pixels, so the two could never be compared. At -8vh the
 // band's top edge lands at 0.115 x H, and its clearance is 0.115 x H minus the
-// header — which crosses zero at H = 565 against the 65px header of the build
+// header - which crosses zero at H = 565 against the 65px header of the build
 // this composition comes from and at H = 557 against today's 64px. Either way
 // it is negative at 553, a height this phone produces: measured on that build,
 // the topmost settled tile clears by -1.4px and is under the header.
@@ -178,11 +178,11 @@ const GATHER_COMPACT: [number, number][] = [
 const GATHER_COMPACT_PX = [0, 38, 0, 0, 0, 0, 38];
 
 // The story's finale: the photographs from the scenes above rise around the
-// closing paragraph while it completes — words and tiles share every frame —
+// closing paragraph while it completes - words and tiles share every frame - 
 // then the words dissolve, the loose ring closes into a mosaic over the
 // point where they stood, and the mosaic zooms until the community fills
-// the screen. Before mount and under reduced motion it renders unpinned —
-// the full paragraph followed by a static grid — so the exported HTML is
+// the screen. Before mount and under reduced motion it renders unpinned - 
+// the full paragraph followed by a static grid - so the exported HTML is
 // the resting state.
 export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
   const container = useRef<HTMLElement | null>(null);
@@ -194,7 +194,7 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
   // bottom at viewport top), so the words are already arriving while the
   // last scene releases and the frame is never empty. The section is 2.2
   // screens at both breakpoints now, so the pin engages at 0.3125 and
-  // releases at 0.6875 on either — the zoom completes just before release and
+  // releases at 0.6875 on either - the zoom completes just before release and
   // holds full-bleed for a beat, as it did at 0.745 against 0.75.
   const { scrollYProgress: stage } = useScroll({
     target: container,
@@ -257,7 +257,7 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
               // this grid's own layout implies. The server renders this grid
               // and the mounted component swaps to the pinned tiles, so a
               // narrower value here picks a smaller variant that is replaced
-              // before it is ever displayed — one download of each photo
+              // before it is ever displayed - one download of each photo
               // instead of two.
               sizes={tileSizes(src, index)}
               className={cn(
@@ -279,7 +279,7 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
       className="relative h-[220svh]"
       style={{ marginBottom: -FOOTER_OVERLAP }}
     >
-      {/* The pinned frame's job is to cover the window, so it names `dvh` — the
+      {/* The pinned frame's job is to cover the window, so it names `dvh` - the
           same correction 2.19 made to the stage, recorded there and made here.
           At `svh` it was sized to the smallest viewport while the tiles inside
           it are laid out in bare `vh`, which is `lvh`: a wall measured against
@@ -342,8 +342,8 @@ function TextBar({
   // is centred in the frame and the top band settles at 0.07·H + 38 below
   // its slot, so the clearance between the two is 0.27·H − 163.1: +16px at
   // 664 and −13.8 at 553, where the mark sat 12.6px inside the AboutImage2
-  // tile and read 1.00 on it. The block cannot go down — its foot already
-  // touches the bottom band at 553 — so the mark alone is shifted, by paint,
+  // tile and read 1.00 on it. The block cannot go down - its foot already
+  // touches the bottom band at 553 - so the mark alone is shifted, by paint,
   // and only where the clearance is short. See globals.css.
   return (
     <motion.span
@@ -385,9 +385,9 @@ function FinaleTile({
   // Outer tiles rise staggered into their gathered offsets while the words
   // complete; the ring settles into the mosaic as the words hand over, the
   // center tile arrives where they stood, and the zoom takes the center
-  // tile past full-bleed. Compact screens sequence the handoff strictly —
+  // tile past full-bleed. Compact screens sequence the handoff strictly - 
   // the ring holds until the words have fully dissolved and the center tile
-  // waits for the settle — and the band tiles above the words rise in from
+  // waits for the settle - and the band tiles above the words rise in from
   // above so their entrance also stays clear of the text.
   const center = index === 0;
   const key = (value: number) => stageKey(value, compact);

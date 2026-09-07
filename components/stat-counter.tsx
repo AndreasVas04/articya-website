@@ -49,8 +49,8 @@ export function StatCounter({ num, label }: StatCounterProps) {
     };
   }, [num]);
 
-  // Mobile is a compact ledger row — numeral left, label right on a shared
-  // baseline — so all three stats share one screen with the section intro.
+  // Mobile is a compact ledger row - numeral left, label right on a shared
+  // baseline - so all three stats share one screen with the section intro.
   // Desktop keeps the monumental centered column.
   return (
     <div

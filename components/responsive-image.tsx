@@ -6,9 +6,9 @@ interface ResponsiveImageProps {
   /** Content image path, e.g. "/images/hero-1.jpg". */
   src: string;
   alt: string;
-  /** The CSS `sizes` value — how wide the image renders at each breakpoint. */
+  /** The CSS `sizes` value - how wide the image renders at each breakpoint. */
   sizes: string;
-  /** Absolutely fills a positioned parent, object-cover — replaces `next/image` fill. */
+  /** Absolutely fills a positioned parent, object-cover - replaces `next/image` fill. */
   fill?: boolean;
   /** LCP image: eager, high fetch priority, never lazy. Everything else lazy-loads. */
   priority?: boolean;
@@ -18,7 +18,7 @@ interface ResponsiveImageProps {
 }
 
 // One shared <picture> emitting AVIF + WebP + JPEG srcsets so the browser
-// downloads the width and format it will actually display — the responsive
+// downloads the width and format it will actually display - the responsive
 // pipeline `next/image` can't provide under `output: export`. Widths/formats
 // come from the build-time manifest (lib/images.ts). Explicit width/height on
 // every image reserve the aspect ratio so nothing shifts as it loads.
