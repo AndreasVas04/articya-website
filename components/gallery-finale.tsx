@@ -243,7 +243,7 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
       <section ref={container} className="pt-16 md:pt-24">
         <div className="mx-auto max-w-6xl px-4 pb-16 md:pb-24">
           <span aria-hidden="true" className="block h-[2px] w-16 bg-amber" />
-          <p className="mt-6 max-w-3xl leading-[1.7] text-ink md:mt-8 md:text-xl md:leading-[1.55]">
+          <p className="mt-6 max-w-[44ch] text-[clamp(1rem,1.3vw,1.16rem)] leading-[1.66] text-ink md:mt-8">
             {groups.join(" ")}
           </p>
         </div>
@@ -297,7 +297,10 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
         >
           <div className="max-w-2xl text-center">
             <TextBar stage={stage} start={key(0.08)} end={key(0.14)} />
-            <p className="mt-8 text-xl leading-[1.55] text-ink">
+            {/* The body step, like every paragraph on the site: this one ran
+                at 20px where the three scenes above it run 16px on a phone
+                and 18.56px on a desktop, and read as a larger paragraph. */}
+            <p className="mt-8 max-w-[44ch] text-[clamp(1rem,1.3vw,1.16rem)] leading-[1.66] text-ink">
               {groups.map((group, i) => (
                 <FinaleGroup
                   key={i}
@@ -338,17 +341,15 @@ function TextBar({
   end: number;
 }) {
   const scaleX = useTransform(() => stageWindow(stage.get(), start, end));
-  // `.finale-rule` carries the one height this mark collides at. The block
-  // is centred in the frame and the top band settles at 0.07·H + 38 below
-  // its slot, so the clearance between the two is 0.27·H − 163.1: +16px at
-  // 664 and −13.8 at 553, where the mark sat 12.6px inside the AboutImage2
-  // tile and read 1.00 on it. The block cannot go down - its foot already
-  // touches the bottom band at 553 - so the mark alone is shifted, by paint,
-  // and only where the clearance is short. See globals.css.
+  // This mark used to be shifted down by paint at the shortest phone, where
+  // the 20px paragraph made the centred block tall enough to put it 12.6px
+  // inside the top band's tile. At the body step the block is 58px shorter,
+  // the mark stands 11px under the tile at 553 on its own row, and the shift
+  // is gone.
   return (
     <motion.span
       aria-hidden="true"
-      className="finale-rule mx-auto block h-[2px] w-16 bg-amber"
+      className="mx-auto block h-[2px] w-16 bg-amber"
       style={{ scaleX }}
     />
   );
