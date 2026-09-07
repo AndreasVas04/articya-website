@@ -66,8 +66,14 @@ export const gallery = [
     src: "/images/hero-1.jpg",
     alt: "Participants hiking along a lakeside mountain trail",
   },
-  { src: "/images/AboutImage2.jpg", alt: "Youth exchange activities" },
-  { src: "/images/AboutImage1.jpg", alt: "ArtiCYa team activities" },
+  {
+    src: "/images/AboutImage2.jpg",
+    alt: "Twenty young people seated in a circle outside a mountain cabin",
+  },
+  {
+    src: "/images/AboutImage1.jpg",
+    alt: "Five young people behind a table of Cypriot food, the Cyprus and Portugal flags on the wall",
+  },
   {
     src: "/images/hero-3.jpg",
     alt: "Participants talking on mossy rocks in the forest",
