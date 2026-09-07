@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import ScrollExpandMedia from "@/components/ui/scroll-expansion-hero";
 import { StatCounter } from "@/components/stat-counter";
 import { Reveal } from "@/components/reveal";
@@ -646,8 +647,22 @@ export default function HomePage() {
             <div className="plate-shade pointer-events-none absolute inset-0 [--shade-bottom:84%] [--shade-color:var(--color-sky-anchor)] [--shade-mid:44%] [--shade-mid-from:16.667%] [--shade-mid-to:50%] [--shade-top:70%]" />
           </div>
 
-          <div className="relative w-full px-6 py-20 md:w-[46%] md:px-12 md:py-24">
-            <Reveal>
+          {/* The column arrives as one event on the clock, the way the
+              clearing does: the heading block lifts first, then each numeral
+              leads its own line by 80ms and the lines follow one another at
+              120ms, the last landing at 1.2-1.3s. It fires when the column's
+              own top has risen to 40% of the window, which puts the heading at
+              58-66% and three of the four rows on the glass at the moment it
+              starts; the fourth rises in at the fold. Each row used to reveal
+              itself on its own
+              observer with a 24px rise, so a slow scroll got four separate
+              drips and a fast one got a stagger that had nothing to do with
+              the heading above it. */}
+          <StageScene
+            fireMargin="-60%"
+            className="relative w-full px-6 py-20 md:w-[46%] md:px-12 md:py-24"
+          >
+            <div className="stage-rise" style={{ "--stage-rise": "56px" } as CSSProperties}>
               {/* The section's own rule, 96 x 2 like the clearing's and the
                   intro band's: one mark at one weight, and a whole number of
                   pixels so it paints two rows wherever the block lands. */}
@@ -670,12 +685,12 @@ export default function HomePage() {
                 aria-hidden="true"
                 className="mt-6 block h-px w-[62%] bg-hairline"
               />
-            </Reveal>
+            </div>
 
             <div className="mt-2 md:mt-4">
               <GainTrail items={gain.items} />
             </div>
-          </div>
+          </StageScene>
         </section>
 
         {/* The closing beat, on clean dark: the page's last quiet zone, coming

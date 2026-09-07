@@ -835,6 +835,19 @@ body {
       top: 2.15rem;
     }
   }
+  /* The numerals enter with the scene, each 80ms ahead of its line: the same
+     rise and the same two clocks as `.stage-rise`, on the pseudo-element, with
+     the row's own delay handed down through the custom property. */
+  .stage[data-armed]:not([data-on]) .gain-row::before {
+    opacity: 0;
+    translate: 0 56px;
+  }
+  .stage[data-on] .gain-row::before {
+    transition:
+      opacity 200ms var(--ease-out-quart),
+      translate 700ms var(--ease-out-quart);
+    transition-delay: var(--gain-delay, 0ms);
+  }
 
   /* The ramp ends at 52% of the frame on desktop, where the words occupy the
      left 46% of it. A phone has no room for a column beside a picture, so the
