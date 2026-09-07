@@ -112,7 +112,7 @@ const KNOWN = {
       "argument with the bytes measured. A 1920 window at DPR 2 asks 3840 of " +
       "a 100vw frame. The same 3072 rung closes it at the same price.",
     {
-      "IMG_4721|1920x900@2": 1.334,
+      "IMG_4721-oaks|1920x900@2": 1.334,
       "IMG_4735-road|1920x900@2": 1.334,
       "hero-1|1920x900@2": 1.334,
       "IMG_4582-road|1920x900@2": 1.334,

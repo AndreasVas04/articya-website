@@ -6,8 +6,10 @@ export const meta = {
 
 export const hero = {
   // The oak, the two cattle and the village beyond, and it appears nowhere
-  // else on the site.
-  image: "/images/pt/IMG_4721.jpg",
+  // else on the site. Cut to 0.968:1 from the 3:4 frame so a desktop window
+  // shows 60.5% of it rather than 47%; the rows a desktop shows are the ones
+  // the portrait showed.
+  image: "/images/pt/IMG_4721-oaks.jpg",
   heading: "About ArtiCYa",
   text: "A Cyprus-based organization committed to non-formal education, creativity, and social inclusion through Erasmus+ programmes.",
 };

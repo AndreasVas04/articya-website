@@ -20,25 +20,28 @@ export const metadata = pageMetadata({
 // Where the window is put on the frame, and both plates carry the same two
 // numbers or the focus pull would become a jump cut.
 //
-// Centred, this crop cut both animals. A 3:4 frame in a 16:10 window keeps
-// 46.9% of its height, and centred that band ran 26.6% to 73.4% - the near
-// cow stands at 67.6% to 83.3%, so the bottom edge went through her body and
-// took her legs off. A phone is the same failure on the other axis: the window
-// keeps 61.6% of the width, and centred it started at 19.2% where her head and
-// horns are at 0% to 12.5%, so the left edge took her face.
+// Centred, the portrait frame cut both animals. A 3:4 frame in a 16:10
+// window keeps 46.9% of its height, and centred that band ran 26.6% to 73.4%
+// - the near cow stands at 67.6% to 83.3% of the frame, so the bottom edge
+// went through her body and took her legs off. A phone is the same failure on
+// the other axis: centred it started at 19.2% where her head and horns are at
+// 0% to 12.5%, so the left edge took her face.
 //
-// 0% 70% is the one pair that holds her whole at both. The vertical number
-// only bites on a landscape window and the horizontal only on a portrait one,
-// so they are independent and each can go to the frame's own limit: 70% puts
-// the band at 37.2%–84.1%, which clears her hooves and still keeps the oak
-// canopy across the top, and 0% puts the phone's band at 0%–61.6%, which is
-// her muzzle to the far trees.
+// The ground is now `IMG_4721-oaks`, the frame cut to rows 22.5-100% (0.968:1),
+// so that a 16:10 window shows 60.5% of the picture instead of 47% and a
+// 390x664 phone 60.7%. The vertical number only bites on a landscape window
+// and the horizontal only on a portrait one, so they are independent. 48%
+// puts the desktop band at 19.0-79.5% of the cut, which is rows 37.2-84.1% of
+// the frame - the band `0% 70%` gave on the portrait, to the tenth - so the
+// desktop picture does not move: the hooves clear and the oak canopy still
+// crosses the top. 0% puts the phone's band at 0-60.7% of the width, her
+// muzzle to the far trees.
 //
 // The second animal, on the right, is cut by the original frame's own edge - 
 // head, horn and shoulder, with the body outside the photograph. No window on
 // this frame can make her whole, so the crop is composed around the one that
 // can be.
-const HERO_POSITION = "0% 70%";
+const HERO_POSITION = "0% 48%";
 
 const plates: StagePlate[] = [
   // The evening frame, and the most saturated of the three inner heroes. It

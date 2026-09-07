@@ -99,7 +99,7 @@ const FULL_BLEED = new Set([
   "/images/pt/IMG_4585.jpg", // home hero: the poster and its first slide
   "/images/pt/IMG_4619-valley.jpg", // home: "What you gain" and the closing
   "/images/pt/IMG_4582-road.jpg", // home: the panels' join
-  "/images/pt/IMG_4721.jpg", // the About ground
+  "/images/pt/IMG_4721-oaks.jpg", // the About ground
   "/images/pt/IMG_4735-road.jpg", // the Contact ground
   "/images/pt/IMG_3004-reservoir.jpg", // the FAQ ground
   "/images/hero-1.jpg", // the ground under "What we do"
@@ -251,6 +251,20 @@ const CROPS = {
   // pines.
   "/images/pt/IMG_3004-reservoir.jpg": {
     file: "pt/IMG_3004.jpg",
+    left: 0,
+    top: 0.225,
+    width: 1,
+    height: 0.775,
+  },
+  // The oak and the cattle, the About ground, cut the same way and for the
+  // same window: the portrait showed 47% of itself on a desktop. The band a
+  // 16:10 window takes from this cut at `0% 48%` is rows 37.2-84.1% of the
+  // frame, which is the band the portrait showed at `0% 70%` - the near cow
+  // (67.6-83.3%) stays whole and the desktop picture does not move. What the
+  // cut takes is the top 22.5%: canopy, above the rows any window showed on
+  // a desktop.
+  "/images/pt/IMG_4721-oaks.jpg": {
+    file: "pt/IMG_4721.jpg",
     left: 0,
     top: 0.225,
     width: 1,
