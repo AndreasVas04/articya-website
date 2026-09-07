@@ -113,6 +113,15 @@ const plates: StagePlate[] = [
   // lays edge to edge over it — so the finale is that picture arriving at full
   // strength out of its own defocused copy.
   //
+  // It arrives on the wipe and leaves on the fade. The arrival plays under the
+  // second panel's tail, where a fade held the valley at 0.03–0.9 across the
+  // strip of floor above the incoming section's top edge — the haze the
+  // ledger forbids, on the one stretch where the stage is bare. As a wipe the
+  // strip is floor, then boundary, then picture, on the clearing's own curve.
+  // The departure under the closing keeps the fade: the closing's words were
+  // measured on it, and a wipe there would stand the closing line on the
+  // valley at full strength, which §8.3 read at 2.6.
+  //
   // The crop is the gains frame's own, and it has to be, or the two are not
   // the same picture at all: `.gain-photo` takes the lower part of the frame
   // at 88% and this plate was taking the middle at 70%. A 16:10 window keeps
@@ -121,7 +130,7 @@ const plates: StagePlate[] = [
   // hills along the bottom — no subject in it at all, and the crossfade into
   // the gains was a pan as well as a focus pull. At 88% both layers show the
   // ridge running the width of the frame with the village under it.
-  { src: gainImage, position: "50% 88%" },
+  { src: gainImage, position: "50% 88%", wipe: "in" },
 ];
 
 // The first hero slide is the LCP; the backdrop reuses the same variant, so
@@ -538,24 +547,30 @@ export default function HomePage() {
             beat on top of a gap the panel had already opened — 113px from the
             last line of the panel to this heading. The accent rule sits on the
             section's top edge instead and the join reads as one beat. */}
-        {/* Holds the ground quiet until the last panel has actually finished.
-            A zone is keyed at its own middle, so without this the climb toward
-            the next zone starts at the panel's midpoint and runs across the
-            back half of its pin — which put the second panel's prose back on a
-            bright picture. */}
-        <div
-          aria-hidden="true"
-          data-stage-plate="1"
-          data-stage-strength="0"
-          className="h-0"
-        />
-
         {/* Clipped on x only: the ground runs a fifth of a screen past the
             section's foot. */}
         <section
           data-index-section=""
           className="gain-frame relative isolate flex min-h-svh items-center overflow-x-clip text-ink"
         >
+          {/* The quiet key the valley rises from. It stood at the section's
+              own top row (a zero-height marker just before it), which gave the
+              rise half a viewport; at 12svh above the section it has 0.62 of
+              one, the range the clearing's own plate was approved with — its
+              keys are -50svh and 12svh of a section that starts where the
+              hero ends. The boundary then leads the section's own top edge up
+              the window instead of trailing it, and the second panel's last
+              glyph is above the window while the boundary is still in the
+              lower half of it. It also holds the ground quiet until the last
+              panel has finished: a zone is keyed at its own middle, so without
+              a quiet key here the climb would start at the panel's midpoint
+              and put its prose back on a bright picture. */}
+          <span
+            aria-hidden="true"
+            data-stage-plate="1"
+            data-stage-strength="0"
+            className="absolute inset-x-0 -top-[12svh] h-0"
+          />
           {/* Declared rather than inherited, like every other key on the page.
               The section measures exactly a screen at all four heights, so this
               lands where the section's own middle did — but it says so. */}

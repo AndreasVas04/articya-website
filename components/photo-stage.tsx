@@ -70,11 +70,12 @@ export interface StagePlate {
   /** Arrive and leave as a full-bleed luminance wipe rather than as a fade,
    *  so no frame of the transition holds the picture at a strength between
    *  0.05 and 0.74. A plate wants this wherever its own ramp is the thing the
-   *  reader is looking at; the gains frame lays its own edge-to-edge copy of
-   *  its photograph over the stage, so that plate's ramp is never seen and it
-   *  keeps the fade. Assumes one rise and one fall, which is what every plate
-   *  on this page has. */
-  wipe?: boolean;
+   *  reader is looking at. `"in"` wipes the arrival and fades the departure:
+   *  the gains plate arrives under the second panel's tail, where a fade is
+   *  a haze behind the panel's floor, and leaves under the closing, whose
+   *  words were measured on the fade. Assumes one rise and one fall, which is
+   *  what every plate on this page has. */
+  wipe?: boolean | "in";
   /** Overrides the shared stage darkening, in percent, and the dark it is
    *  made of. One number cannot serve three photographs, and one *colour*
    *  cannot either: a darkening only darkens what shares its hue, so a
@@ -185,13 +186,17 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
         // crossfade stays because it carries no travel to be sensitive to; a
         // moving boundary is travel, and this is the one place on the page
         // where the haze is the cheaper of the two costs.
-        if (plates[i].wipe && !still) {
+        const rising = !arrival || scroll <= arrival.to;
+        const wipe = plates[i].wipe === "in" ? rising : Boolean(plates[i].wipe);
+        if (wipe && !still) {
           layers[i].style.opacity = value > 0.0001 ? "1" : "0";
-          const mask = wipeMask(value, !arrival || scroll <= arrival.to);
+          const mask = wipeMask(value, rising);
           layers[i].style.maskImage = mask;
           layers[i].style.setProperty("-webkit-mask-image", mask);
         } else {
           layers[i].style.opacity = value.toFixed(4);
+          layers[i].style.maskImage = "";
+          layers[i].style.removeProperty("-webkit-mask-image");
         }
 
         if (still) continue;
