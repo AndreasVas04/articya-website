@@ -648,11 +648,17 @@ export default function HomePage() {
 
           <div className="relative w-full px-6 py-20 md:w-[46%] md:px-12 md:py-24">
             <Reveal>
+              {/* The section's own rule, 96 x 2 like the clearing's and the
+                  intro band's: one mark at one weight, and a whole number of
+                  pixels so it paints two rows wherever the block lands. */}
               <span
                 aria-hidden="true"
-                className="block h-[1.25px] w-16 bg-amber"
+                className="block h-0.5 w-24 bg-amber"
               />
-              <h2 className="mt-3 type-heading font-display font-semibold tracking-[-0.025em]">
+              {/* `mt-[11.25px]`, not `mt-3`: the rule above grew by three
+                  quarters of a pixel, and the block is centred in its screen,
+                  so the heading and every row under it stay where they were. */}
+              <h2 className="mt-[11.25px] type-heading font-display font-semibold tracking-[-0.025em]">
                 {gain.title}
               </h2>
               {/* The rule under the heading, at 62% of the text column — the
