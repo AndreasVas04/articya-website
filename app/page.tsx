@@ -344,8 +344,14 @@ export default function HomePage() {
               fireMargin="-30%"
               className="relative mx-auto flex min-h-svh max-w-6xl flex-col justify-center px-4 xl:max-w-[min(84rem,92vw)]"
             >
+              {/* Seven of the twelve columns, and the ledger inside them: the
+                  clearing's words and numerals stand together on the left of
+                  the window, and the right is left to the picture. The seam
+                  the stage draws through this zone stands at 57% of the
+                  window, which clears the column's right edge at every width
+                  from 768 up (54.2% at 1440, 56.7% at 1920, 53% at 2560). */}
               <div className="relative md:grid md:grid-cols-12 md:items-start md:gap-x-12 xl:gap-x-20">
-                <div className="relative md:col-span-6 md:self-center">
+                <div className="relative md:col-span-7 md:self-center">
                   <div className="relative">
                     <div className="stage-lift">
                       {/* The clearing's own rule, at its own row. It used to
@@ -382,26 +388,31 @@ export default function HomePage() {
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>
 
-              {/* The ledger carries no rules of its own beyond the desktop
-                  column dividers: horizontal lines are the one mark this page
-                  never draws, so the mobile rows structure themselves on the
-                  numeral/label baseline alone. The rows are the wave's last
-                  beats, and each counter still starts its 700ms count only
-                  when it crosses into view - the ledger writes itself. */}
-              <div className="relative mt-2 md:mt-12">
-                <div className="relative grid md:grid-cols-3 md:divide-x md:divide-hairline">
-                  {whatWeDo.stats.map((stat, i) => (
-                    <div
-                      key={stat.label}
-                      className="stage-rise"
-                      style={{ transitionDelay: `${550 + i * 130}ms` }}
-                    >
-                      <StatCounter num={stat.num} label={stat.label} />
+                  {/* The ledger carries no rules of its own beyond the desktop
+                      column dividers: horizontal lines are the one mark this
+                      page never draws, so the mobile rows structure themselves
+                      on the numeral/label baseline alone. The rows are the
+                      wave's last beats, and each counter still starts its
+                      700ms count only when it crosses into view - the ledger
+                      writes itself. It used to run the full width of the
+                      container under the column; it is the column's own now,
+                      three cells across seven columns, and the numerals are
+                      sized to them - "500+" is 2.34 of its size wide and the
+                      cell at 1440 is 204px inside its padding. */}
+                  <div className="relative mt-2 md:mt-10">
+                    <div className="relative grid md:grid-cols-3 md:divide-x md:divide-hairline">
+                      {whatWeDo.stats.map((stat, i) => (
+                        <div
+                          key={stat.label}
+                          className="stage-rise"
+                          style={{ transitionDelay: `${550 + i * 130}ms` }}
+                        >
+                          <StatCounter num={stat.num} label={stat.label} />
+                        </div>
+                      ))}
                     </div>
-                  ))}
+                  </div>
                 </div>
               </div>
             </StageScene>
