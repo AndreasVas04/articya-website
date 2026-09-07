@@ -768,9 +768,16 @@ body {
      this and ignores the other: desktop fits the crop by its width and takes
      the lower part of it, so the ridge runs across the frame with the sky over
      it rather than sky alone; a phone fits it by its height and takes the
-     middle column, where the ridge is at its highest. */
+     middle column, where the ridge is at its highest.
+
+     The vertical register is the frame's foot. A desktop shows 61-73% of the
+     frame's height and y only chooses which slice; at 88% the box stopped 47px
+     short of the frame's bottom edge and spent them on sky at the top, where
+     the words are. At 100% the ridge and the village stand as high in the
+     window as this crop allows, and nothing of the valley is left below the
+     box. */
   .gain-photo {
-    object-position: 50% 88%;
+    object-position: 50% 100%;
   }
   .gain-defocus {
     position: absolute;
