@@ -1576,6 +1576,48 @@ number that is not identical is WebKit's own: it resolves `100dvh` at an 844
 window to **843.984375**, a 1/64px quantisation, which the bottom-row scan shows
 as a ±1 channel resample of the photograph and not as a row of exposed floor.
 
+## The grounds and the crop floor — 2026-09-08
+
+**A cover-fitted frame shows `boxAspect / frameAspect` of its width (or the
+inverse of its height); `object-position` chooses which slice, never how
+much.** The 60% floor is therefore a statement about two aspects, and it can
+be solved before a photograph is chosen. A 16:10 window shows 60% of a frame
+only at A ≥ 0.96; a 390×664 phone only at A ≤ 0.979; 750 (0.520) only at
+A ≤ 0.867, which no desktop box accepts. The band that passes both budget
+windows is **0.96–0.98**, and the two inner grounds are cut to it: `IMG_4721-
+oaks` (About) and `IMG_3004-reservoir` (FAQ), each rows 22.5–100% of a 3:4
+frame, 0.968:1, showing 60.5% on a desktop and 60.7% / 70.1% at 664 / 553.
+The convention in force is the published crop as the frame — the valley
+shows 46% of its master, `hero-1` 47% of `IMG_8626` — and these two hold to
+it the same way.
+
+**The gains' box is the screen below `md` and a fifth more above it.** The
+valley is 0.978:1, so a 120svh phone box showed 57.8% / 50.1% of it at 553 /
+664; the one-screen box shows 69.4% / 60.1%. The plate-shade's mid stops are
+20% / 60% on the phone box and 16.667% / 50% on the taller desktop one — the
+same rows either way. `gainSizes` follows the box through `coverSizes` and
+resolves to `(min-width: 768px) 100vw, 211.7vw`.
+
+**A new frame enters through `MATCH`, solved.** `IMG_3004` was fitted on its
+own non-sky, non-skin content to the mean a\* / b\* of the five on-site
+Portugal frames with L\* and C\* held inside the set's range: `wb [1.10, 1,
+1.14]`, gamma 0.888, satScale 0.825, and a shoulder of 0.95 set by the clip
+guard at full resolution (the blue gain blows the sky from 0.25% to 0.70% of
+the frame without one). `hero-2` and this frame are the two that carry a
+shoulder.
+
+**Contrast is read at the glyph's own ink.** The diff-gated sweep admits
+antialiased pixels down to about 54% coverage, so on a near-black ground its
+worst pixel is a fringe pixel and every element reads 4.7–4.9 whatever the
+picture behind it; it is a lower bound, not the reading. The FAQ's answers
+with a `<details>` open read **4.97** at the ink at 390×664 (floor 4.5),
+which is why the sharp plate's 79/80 stays.
+
+**Placements as of 2026-09-08.** 26 KNOWN rows in `verify:placements`:
+`IMG_3004-reservoir|1920x900@2` and `IMG_4721-oaks|1920x900@2` at 1.334 join
+the 2880-cap family; `IMG_4721|1920x900@2` leaves with the whole frame.
+`hero-2` stands at two placements (slide 2 and a finale tile).
+
 ## Do / Don't
 
 **Do**

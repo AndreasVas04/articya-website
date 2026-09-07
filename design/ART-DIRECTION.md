@@ -247,14 +247,15 @@ written.
 | File | Subject | Where it is |
 |---|---|---|
 | IMG_4585 | group on a path above the valley | home hero, poster and first slide, and nowhere else. It was the seven-tile wall's centre tile in the composition that stood here between `9e62d5e` and this one; the finale is back on the scattered mosaic and the mosaic's centre is `hero-1` |
-| IMG_4619 | valley under open sky | as `-valley`: home's "What you gain" and the closing it dissolves into, and nowhere else. Its bottom-right cable corner is cropped out. The `-ridge` sub-rectangle is still published by `scripts/responsive-images.mjs` and is **off the site** — it existed for the wall's upper-left 3.2:1 slot and that slot is gone |
+| IMG_4619 | valley under open sky | as `-valley`: home's "What you gain" and the closing it dissolves into, and nowhere else. Its ground box is the screen on a phone and a fifth more on a desktop (2026-09-08), so a phone shows 69% / 60% of the crop at 553 / 664 where the 120svh box showed 58% / 50%. Its bottom-right cable corner is cropped out. The `-ridge` sub-rectangle is still published by `scripts/responsive-images.mjs` and is **off the site** — it existed for the wall's upper-left 3.2:1 slot and that slot is gone |
 | IMG_4582 | road between stone walls, overcast | as `-road`: home only, crossed at the panels' join. Fencing across rows 107–507, and no window on it holds a complete subject — see §8 |
 | IMG_4739 | village at blue hour, cobbled lane | **off the site.** Both crops fail §2 from opposite ends: the whole frame carries overhead power cable across the sky, and the crop that removes the cable lands on railings, a satellite dish, a letterbox and a parked car |
 | hero-1 | the group walking the track above the reservoir | the ground under "What we do", and About's finale, the **centre tile** — the last to arrive, in the place the words stood, and the one the fan-out carries furthest. Uncropped it shows 84.8% of itself in a 16:10 window and it is a picture of the sentence it stands under. At 3024×2230 since the 2026-08-30 ingest, so the mosaic's own 4× is paid down to **0.990 against its source** at 1440×900 DPR 2 at the peak, measured. It is the one tile that declares the window rather than its slot — `100vw`, which takes the peak from 3.90 to **1.040** against fetched and costs 487 KB on a desktop; `OPEN-ITEMS.md` §12.1 |
 | IMG_4735 | cattle on a road at blue hour | as `-road`: the Contact ground, and nowhere else. Cables cross the upper half; the published crop takes the lower two thirds |
-| IMG_4721 | cattle under oaks | the About ground, and nowhere else. Cropped at `0% 70%`, which is the one pair that holds the near animal whole in a landscape window and in a portrait one. It carries the h1 there, against this table's older "never behind a heading" — the heading clears its floor at 5.33, so the note is recorded rather than enforced |
+| IMG_4721 | cattle under oaks | the About ground, and nowhere else, as `-oaks` since 2026-09-08: rows 22.5–100% of the frame (0.968:1), so a 16:10 window shows 60.5% of the picture instead of 46.9% and a 390×664 phone 60.7%. Positioned `0% 48%`, which puts the desktop band on the rows `0% 70%` gave on the portrait — the one pair that holds the near animal whole in a landscape window and in a portrait one. It carries the h1 there, against this table's older "never behind a heading" — the heading clears its floor at 5.33, so the note is recorded rather than enforced |
 | IMG_4599 | moss-covered wall under trees | **off the site.** It was on the seven-tile wall under protest — the set's one hard-midday frame, there because the wall ran a photograph short rather than because it earned a slot — and the mosaic does not need it |
-| hero-2 | the group walking a shaded forest road | home hero, second slide; the FAQ ground; About's finale, the bottom-left small slot. **Three placements**, recorded above |
+| hero-2 | the group walking a shaded forest road | home hero, second slide; About's finale, the bottom-left small slot. It was the FAQ ground until 2026-09-08, its third placement, and carried its cable across that page's sky; `IMG_3004` took the page |
+| IMG_3004 | the reservoir under the ridge, open sky | the FAQ ground, as `-reservoir` (rows 22.5–100%, 0.968:1), and nowhere else. The one frame of the 2026-08-29 delivery with no defect in it, from the same shoot as `hero-2`; matched onto the set (`PHOTO-GRADE.md`) |
 | hero-3 | participants talking on mossy rocks | home hero, third slide; About's finale, the right tall slot. At 2.14:1 in a slot that is 1.17:1 on a desktop and 0.45:1 on a phone it is the mosaic's hardest fit — 26% of its width shows there on a phone — and it is the slot the composition gives it |
 | home-training | a team-building game during a training course | About's third scene, and About's finale, the bottom wide slot directly under it |
 | AboutImage1 | five young people, Cypriot food, Cyprus + Portugal flags | Youth Exchanges panel on home; About's first scene; About's finale, the left tall slot |
@@ -431,8 +432,8 @@ What is still open:
   and so is its own display frame: a single straight line, `x = 783.4 +
   0.1856·y` px, entering the top edge at **col 25.91%** and coherent down to
   **row 35.17%** at col 34.61%. Bounding rectangle **cols 25.50–34.99%, rows
-  0–35.17%**, 13–23 px thick. The home hero slide and the FAQ ground carry it,
-  and so does the mosaic's bottom-left tile.
+  0–35.17%**, 13–23 px thick. The home hero slide carries it, and so does
+  the mosaic's bottom-left tile; the FAQ ground no longer does (2026-09-08).
   **No `object-position` closes that tile, on either axis, at any phone
   height** — at 664, 750 and 844 the slot is proportionally taller than the
   frame, so cover fits by height and the tile opens the *whole* of it and y is

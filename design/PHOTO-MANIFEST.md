@@ -632,11 +632,55 @@ and now govern repository weight, which is what they had already become.
 | home hero slide 2 resolution | **Closed.** 1.931 / 1.274 → 0.981 / 0.647 |
 | "What we do" ground resolution | **Closed on a desktop.** 1.406 → 0.952; the phone is a ladder-cap case at 1.136 |
 | `hero-3` shipping interpolation | **Closed.** 244 manufactured columns gone |
-| `hero-2`'s overhead cable | **Not closed.** It is in the photograph, at higher resolution than before |
+| `hero-2`'s overhead cable | **Off the FAQ** (2026-09-08, `IMG_3004` took the page). Still on the home hero's second slide and the finale's tile; in the photograph, only a different frame closes those |
 | `IMG_4582-road` holds no complete subject | **Not closed** |
-| A landscape frame for the About and FAQ grounds | **Not closed.** All seventeen files are portrait |
+| A landscape frame for the About and FAQ grounds | **Closed by cutting, not by delivery** (2026-09-08). No landscape arrived; both grounds are cut to 0.968:1 (rows 22.5–100% of a 3:4), which shows 60.5% on a desktop and 60.7% at 390×664 — the one band of aspects that clears the floor at both. `IMG_3004` is the FAQ's frame, `IMG_4721` re-cut is About's |
 | An outdoor activity frame for the offer panels | **Not closed.** `IMG_2865` is not the panels' answer, and the reason is size rather than content: at the panel's rendered size the walking group is **21 × 37 CSS px at 664** and each figure 8–11 px wide, while the timber railing at cols 30–37% reads clearly. It is two stops darker than `hero-2` with 40% of the frame in deep shadow, against a companion frame at chroma 73, and it costs **+19.4 MB of variants for a picture 179 px wide**. A frame that contains the subject is not a frame that shows it |
 | **An activity frame with the people large in the frame** | **Not closed, and it is not the row above.** The requirement is that the people *occupy* a substantial share of the frame rather than merely appear in it, in a bright register that stands beside `AboutImage1` and `AboutImage2` as a pair. `IMG_2865` fails it on both counts at once — by size and by tone |
 
 `photo-src/incoming/` is still excluded from the repository and still on disk
 only. No incoming file was deleted, no composition changed, no crop moved.
+
+---
+
+## What was done, 2026-09-08
+
+`IMG_3004` is ingested: `_originals/pt/IMG_3004.jpg`, 3024×4032, q95 4:4:4, no
+profile, orientation baked (the 2026-08-30 convention). It is the FAQ ground as
+`IMG_3004-reservoir` — rows 22.5–100%, 3024×3125, 0.968:1, 77.5% of the frame —
+and it retires `hero-2` from that page: the cable, the third placement and the
+46.9% coverage go with it. The FAQ's LCP rung falls 1389 → 714 KB at 2880.
+
+`IMG_4721` is re-cut the same way for About (`IMG_4721-oaks`), with the desktop
+band reproduced to the tenth (`0% 48%` on the cut against `0% 70%` on the
+portrait); 878 → 711 KB.
+
+The grade: matched, not looked — `MATCH["pt/IMG_3004.jpg"]` solved on the
+frame's own non-sky, non-skin content against the five on-site Portugal frames
+(a\* −5.75 → −1.99, b\* 10.60 → 6.91, L\* 27.0 → 32.8, C\* 15.3 → 12.1), shoulder
+0.95 by the clip guard (0.418% blown against 0.453%). `PHOTO-GRADE.md`'s rule
+holds: a shoulder only where the source carries more highlight than the target
+can, and this is the second frame that does.
+
+The 2026-08-29 delivery's arithmetic in §D stands. What it did not say, and
+this session found: **the 60% floor is a property of two aspects**, and no
+single aspect passes a 16:10 desktop, a 390×664 phone and a 390×750 phone at
+once (A ≥ 0.96, ≤ 0.979 and ≤ 0.867). A landscape frame would not have closed
+the inner grounds on a phone; a cut to 0.96–0.98 closes them at the two
+heights the measurement budget names and fails at 750 by arithmetic.
+
+### The photography list, as of 2026-09-08
+
+1. An activity frame with the people ≥ 0.4 of the frame's height, bright
+   register, portrait 3:4 — the offer panels and About's scenes. Every
+   candidate in the library holds its people at 0.03–0.28 of the frame;
+   `IMG_2865` paints them 72 px tall at the 1440 panel against a 90 px floor.
+2. A frame for "What you gain" at aspect 0.80–0.98 with a subject across its
+   width (a valley floor with a village, people on a ridge) — the valley is
+   sky under the words: 6.5% content whole-window at 1440. 750 needs ≤ 0.722
+   and no desktop box accepts it.
+3. Two wide frames (≥ 2.5:1, ≥ 1728 on the long axis) for the finale's wide
+   slots — carried from §D.
+4. A road between stone walls with no fence, for the panels' join — carried.
+5. A shaded forest road with no cable, or the home hero's second slide keeps
+   `hero-2`'s — carried.

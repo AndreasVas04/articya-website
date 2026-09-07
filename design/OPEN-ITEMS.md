@@ -2444,6 +2444,12 @@ the mismatch §2.19 recorded and left inside the frozen geometry.
 - **Landscape sources.** A 3:4 portrait frame full-bleed in a 16:10 window can
   never show more than 47% of its area. About and FAQ need landscape photographs
   to clear the 60% floor. Photography, not code.
+
+  **Closed on 2026-09-08 by a cut, not a delivery** (§15): both grounds are
+  0.968:1 crops of 3:4 frames, the one band of aspects (0.96–0.98) that shows
+  60% in a 16:10 window and at 390×664 at once. No landscape frame could have:
+  a 1.25 frame shows 78% on a desktop and 47% on a phone — the same failure in
+  the other pocket.
 - **The set is one frame short.** Thirteen usable photographs; the About page
   alone needs eleven distinct ones. After the three tiles that did not stand on
   their own came out, ten qualified. `hero-2` therefore takes a third placement
@@ -7263,3 +7269,63 @@ What remains, and none of it is new:
   2560 / 1984 / 1920 WebP rungs of `hero-2`, `IMG_4585`, `IMG_4721` and
   `IMG_4582-road`, 1.7–3.4 MB each. §5.3's decision on the WebP tier stands.
 
+
+
+## 15 · The crop floor, the inner grounds and the gains box — 2026-09-08
+
+Three commits on `9e04bb3`, each measured in `design/refs/2026-09-08-run.md`
+(kept out of the repository with the rest of `design/refs/`).
+
+- **`c18731d` — the gains' ground box is the screen below `md`.** The valley
+  is 0.978:1 and a 120svh phone box showed 57.8% / 50.1% of it at 553 / 664,
+  under the floor; the one-screen box shows 69.4% / 60.1%, and the picture's
+  subject — the ridge and the village — lands in the window's foot where the
+  taller box had open sky (whole-window content 6.1% → 9.4% at 664). The
+  desktop keeps its fifth: 73.4%, byte-identical. Contrast on every line and
+  mark stays over floor (lines ≥ 4.22, marks ≥ 3.39); keys and heights
+  unchanged. 750 is 53.2% by arithmetic.
+- **`3a9168b` — the FAQ stands on `IMG_3004`, cut to 0.968:1.** The only
+  defect-free frame of the 2026-08-29 delivery, matched onto the set (a\* /
+  b\* to the mean, L\* / C\* inside the range, shoulder 0.95 by the clip
+  guard). It retires `hero-2` from the page: the cable across its sky, the
+  third placement, 46.9% coverage, and half the LCP (1389 → 714 KB). The
+  page shows 60.5% of the frame on a desktop and 60.7% / 70.1% at 664 / 553.
+  Every answer with a `<details>` open reads ≥ 4.97 at the glyph's ink at
+  664 and ≥ 5.64 at 1440; the plates' numbers did not move.
+- **`a29a1fd` — About's ground re-cut to the same aspect.** The desktop band
+  is reproduced to the tenth (`0% 48%` on the cut = `0% 70%` on the
+  portrait; pixel diff mean 3.5 / px, 0.01% of pixels over 30), so nothing a
+  desktop showed moves; a phone loses the upper canopy and keeps the near cow
+  whole. h1 5.17 → 5.42 and lede 5.33 → 5.28 at 664, at the ink.
+
+**The finding under all three: the 60% floor is a statement about two
+aspects.** A cover-fitted frame shows `boxAspect / frameAspect` of its width
+and `object-position` cannot change that number. A 16:10 window passes at
+A ≥ 0.96, a 390×664 phone at A ≤ 0.979, a 390×750 phone at A ≤ 0.867 — so no
+single frame passes all three, and the 0.96–0.98 band passes the two heights
+the measurement budget names. §8.1's ask for "a landscape ground" would have
+moved the failure to the phone.
+
+**What the audit (run log Phase 5) leaves open, ranked:**
+
+1. The gains' picture is sky — 6.5% content whole-window at 1440, 0% under
+   the lines by the defocus ramp's construction. A photograph at aspect
+   0.80–0.98 with a subject across its width. Not code.
+2. The panels' people: 56–295 px at 1440, 8–46 px at 664 for every
+   candidate. A photograph with the people ≥ 0.4 of the frame's height.
+3. The About and FAQ reading grounds carry no sharp region (11–19% content)
+   where Contact carries a sharp fifth; the split does not transfer because
+   both layouts run text across the full width. Layout, not treatment.
+4. The footer as a composed close, and the CTA's radius — both inside
+   screens the owner approved as they stand; not touched.
+5. **The load.** Fast 3G at 664: FCP 2.34 s, LCP the headline at 2.35 s,
+   CLS 0; the hero's first rung (1984, 715 KB) is preloaded first with
+   `fetchpriority=high` and both latin font subsets are preloaded with
+   `display: swap`, yet the rung completes at 21.3 s (8.6 s on 4G) because
+   the stage's plates and the third slide, in a fixed in-view layer, share
+   the pipe. `fetchpriority=low` on those images moved nothing measurable
+   over HTTP/1.1 and was not committed. What would move it — deferring the
+   plates until the hero has painted — is a mechanic.
+6. 750: every full-bleed ground shows 52–54% there, by arithmetic, for every
+   aspect a desktop accepts.
+7. The home h1 under reduced motion; a real device pass; a real Actions run.
