@@ -679,10 +679,22 @@ export default function HomePage() {
               observer with a 24px rise, so a slow scroll got four separate
               drips and a fast one got a stagger that had nothing to do with
               the heading above it. */}
+          {/* The block stands on the site's own column above `md` - the
+              container and the six-column track the clearing's heading and
+              lead already use - so the title, the rule, the numerals and the
+              lines share the clearing's left edge at every desktop width:
+              73.6px at 1440, 304 at 1920. It used to be a 46% band inset 48px
+              from the window's edge, which put the words 26px inside the
+              clearing's column on a laptop and 256px outside it on a wide
+              screen, and left the right two thirds of the screen to open
+              sky. Below `md` nothing changes: the block is the full width at
+              the same padding it had. */}
           <StageScene
             fireMargin="-60%"
-            className="relative w-full px-6 py-20 md:w-[46%] md:px-12 md:py-24"
+            className="relative mx-auto w-full max-w-6xl px-6 py-20 md:px-4 md:py-24 xl:max-w-[min(84rem,92vw)]"
           >
+            <div className="md:grid md:grid-cols-12 md:gap-x-12 xl:gap-x-20">
+            <div className="md:col-span-6">
             <div className="stage-rise" style={{ "--stage-rise": "56px" } as CSSProperties}>
               {/* The section's own rule, 96 x 2 like the clearing's and the
                   intro band's: one mark at one weight, and a whole number of
@@ -708,8 +720,14 @@ export default function HomePage() {
               />
             </div>
 
-            <div className="mt-2 md:mt-4">
+            {/* The rows end a little past the longest line rather than at the
+                column's edge: "All expenses covered" is 341px of ink at its
+                35px size, and the hairlines between the rows are rules under
+                the words, not dividers across the column. */}
+            <div className="mt-2 md:mt-4 md:max-w-[29rem]">
               <GainTrail items={gain.items} />
+            </div>
+            </div>
             </div>
           </StageScene>
         </section>
