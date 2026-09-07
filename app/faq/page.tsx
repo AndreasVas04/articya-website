@@ -39,6 +39,21 @@ const plates: StagePlate[] = [
 // One icon per question group, in section order.
 const sectionIcons = [Compass, ShieldCheck, Backpack, Send];
 
+// The same questions and answers as structured data, built from the frozen
+// content constants so the two can never drift. `<` is escaped so the JSON
+// can never close its own script tag.
+const faqJsonLd = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: sections.flatMap((section) =>
+    section.items.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    }))
+  ),
+}).replace(/</g, "\\u003c");
+
 // Native details/summary keeps every answer in the exported markup and
 // working without JS; the open animation lives in globals.css. The whole
 // page sits on one gold ground — hierarchy between question groups
@@ -46,6 +61,10 @@ const sectionIcons = [Compass, ShieldCheck, Backpack, Send];
 export default function FaqPage() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: faqJsonLd }}
+      />
       <PhotoStage plates={plates} />
       <PageHero heading={hero.heading} text={hero.text} longHeading />
 
