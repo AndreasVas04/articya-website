@@ -18,6 +18,7 @@
 
 import fs from "node:fs";
 import path from "node:path";
+import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
 import { gradeToRaw, gradedFiles, productionStrength } from "./grade-photos.mjs";
@@ -336,7 +337,10 @@ const displayDims = (w, h, o) => (o >= 5 && o <= 8 ? { w: h, h: w } : { w, h });
 
 // Signature over every input that can change the output, so a warm tree is an
 // instant no-op and any change to an original, the grade, this script or the
-// config forces a rebuild.
+// config forces a rebuild. Inputs are keyed by content, never by mtime: a
+// checkout writes every file afresh, so an mtime key could never match on CI
+// and a restored cache would have been deleted and re-encoded in full.
+const fileHash = (file) => createHash("sha256").update(fs.readFileSync(file)).digest("hex").slice(0, 16);
 function signature() {
   const parts = [`v${CONFIG_VERSION}`, `strength${productionStrength}`, `ladder${LADDER.join(",")}`,
     `cap${MAX_WIDTH}/${BLEED_WIDTH}`, `bleed${[...FULL_BLEED].sort().join(",")}`,
@@ -344,11 +348,10 @@ function signature() {
     `avifq${LADDER.concat(Object.values(SCALED).map((s) => s.width)).map(AVIF_QUALITY).join(",")}`,
     `scaled${JSON.stringify(SCALED)}`];
   for (const f of ["scripts/responsive-images.mjs", "scripts/grade-photos.mjs"]) {
-    parts.push(`${f}:${fs.statSync(path.join(ROOT, f)).mtimeMs}`);
+    parts.push(`${f}:${fileHash(path.join(ROOT, f))}`);
   }
   for (const file of gradedFiles.slice().sort()) {
-    const st = fs.statSync(path.join(SRC, file));
-    parts.push(`${file}:${st.size}:${st.mtimeMs}`);
+    parts.push(`${file}:${fileHash(path.join(SRC, file))}`);
   }
   return parts.join("|");
 }

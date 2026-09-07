@@ -24,6 +24,17 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
+      # The responsive variants are pure build artefacts of the originals and
+      # the two pipeline scripts, and a cold encode of all of them is most of a
+      # build. Restore the tree when none of those inputs changed; the script's
+      # own freshness check compares a content signature stored in the manifest
+      # against the same inputs, so a restored tree is accepted as up to date
+      # and a stale one (any input changed, so the key misses) is rebuilt in
+      # full and saved under the new key.
+      - uses: actions/cache@v4
+        with:
+          path: public/images/variants
+          key: variants-v1-${{ hashFiles('public/images/_originals/**', 'scripts/grade-photos.mjs', 'scripts/responsive-images.mjs') }}
       - run: npm run build:pages
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
