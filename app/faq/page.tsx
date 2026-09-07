@@ -12,20 +12,25 @@ export const metadata = pageMetadata({
   path: "/faq/",
 });
 
-// The page's ground: the shaded forest road, sharp under the hero and out of
-// focus under the questions. Dark already through the trees, but the longest
-// headline on the site crosses the whole frame, including the gap of open sky
-// the road runs toward - at 83/68/70 the lede measures 4.57 desktop and 4.38
-// mobile against a 4.5 floor.
+// The page's ground: the reservoir under the ridge, sharp under the hero and
+// out of focus under the questions. It replaced the shaded forest road, which
+// carried a power cable across its sky, was also the home hero's second slide
+// and a finale tile, and as a 3:4 portrait showed 47% of itself in a 16:10
+// window; this frame is cut to 0.968:1 and shows 60.5% on a desktop and 60.7%
+// at 390x664. It is two stops brighter than the road in its middle third
+// (L* 46.7 against 23.6), so the darkening below was re-measured on it rather
+// than carried over: the numbers hold.
 //
 // The sharp plate's mid and base are 79/80 rather than 73/74, and the reason
 // is the state no sweep used to reach: with a <details> open, its answer is
 // `ink-soft` - the dimmest text on the site - and it crosses this plate low in
 // the window while the crossfade to the soft plate is barely under way, so
-// this plate is 92-97% of the ground under it. The first two answers measured
-// 3.94 and 4.16 there against a 4.5 floor, in both engines and at all five
-// heights. The soft plate cannot reach them: at those scrolls it is carrying
-// three parts in a hundred.
+// this plate is 92-97% of the ground under it. On the forest road the first
+// two answers measured 3.94 and 4.16 there against a 4.5 floor at 73/74; on
+// this frame, at 79/80, the first answer reads 4.94 at the glyph's own ink at
+// 390x664 with every answer open, which is the page's smallest margin and the
+// reason neither plate comes down. The soft plate cannot reach them: at those
+// scrolls it is carrying three parts in a hundred.
 const plates: StagePlate[] = [
   { src: hero.image, position: "50% 50%", priority: true, shade: { top: 85, mid: 79, base: 80, color: "var(--color-land-anchor)" } },
   {

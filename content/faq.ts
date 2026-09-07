@@ -15,7 +15,11 @@ export const meta = {
 };
 
 export const hero = {
-  image: "/images/hero-2.jpg",
+  // The reservoir under the ridge, cut square, and it appears nowhere else on
+  // the site. It replaces the shaded forest road, which was also the home
+  // hero's second slide and a finale tile, and carried a power cable across
+  // its sky.
+  image: "/images/pt/IMG_3004-reservoir.jpg",
   heading: "Frequently Asked Questions",
   text: "Here you can find answers to the most common questions about Erasmus+ opportunities and participation with ArtiCYa.",
 };

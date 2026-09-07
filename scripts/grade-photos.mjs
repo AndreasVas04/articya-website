@@ -160,6 +160,16 @@ const MATCH = {
   "AboutImage2.jpg": { wb: [1.086, 1, 1.16], gamma: 1.027, lift: 0.006, satScale: 1.06 },
   "home-training.jpg": { wb: [0.933, 1, 1.058], gamma: 0.99, lift: 0.006, satScale: 0.915 },
   "home-youth.jpg": { wb: [0.927, 1, 0.884], gamma: 0.997, lift: 0.006, satScale: 0.6 },
+  // The reservoir under the ridge (the FAQ ground), from the July 2024 shoot
+  // rather than the Portugal DNGs, so it is matched onto the set like the seven
+  // older frames rather than left ungraded with the six. Solved on its own
+  // non-sky, non-skin content against the mean of the five on-site Portugal
+  // frames: a* -5.75 -> -1.99 and b* 10.60 -> 6.91, both onto the set's mean;
+  // L* 27.0 -> 32.8 and C* 15.3 -> 12.1, inside the set's range. The shoulder
+  // is set by the clip guard as hero-2's was: at 1 the blue gain blows the sky
+  // from 0.25% to 0.70% of the frame, and 0.95 is the highest hundredth that
+  // passes (0.42% against a 0.45% cap).
+  "pt/IMG_3004.jpg": { wb: [1.1, 1, 1.14], gamma: 0.888, lift: 0.006, satScale: 0.825, shoulder: 0.95 },
 };
 
 // A matching pass runs the ordinary pixel path with every look move set to its

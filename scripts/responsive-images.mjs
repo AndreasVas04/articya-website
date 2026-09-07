@@ -85,7 +85,7 @@ const MAX_WIDTH = 2560;
 // The true guarantee is narrower and the code enforces it: BLEED_WIDTH is
 // emitted only for frames in this set, and a width above it only under a
 // SCALED key of its own. A frame in this set that also appears somewhere small
-// — hero-2 is the FAQ ground and an About wall tile — is safe because the wall
+// — hero-2 is a hero slide and an About finale tile — is safe because the
 // tile's `sizes` asks for 768 and the browser takes the rung it asks for.
 //
 // The three small heroes are here because they *are* full-bleed placements.
@@ -101,8 +101,9 @@ const FULL_BLEED = new Set([
   "/images/pt/IMG_4582-road.jpg", // home: the panels' join
   "/images/pt/IMG_4721.jpg", // the About ground
   "/images/pt/IMG_4735-road.jpg", // the Contact ground
+  "/images/pt/IMG_3004-reservoir.jpg", // the FAQ ground
   "/images/hero-1.jpg", // the ground under "What we do"
-  "/images/hero-2.jpg", // the FAQ ground and hero slide 2
+  "/images/hero-2.jpg", // hero slide 2
   "/images/hero-3.jpg", // hero slide 3
 ]);
 
@@ -237,6 +238,23 @@ const CROPS = {
     top: 1 / 3,
     width: 1,
     height: 2 / 3,
+  },
+  // The reservoir under the ridge, cut to 0.968:1. This one is not a cable
+  // cut: the frame is clean end to end, and the cut is for the window. A
+  // cover-fitted frame shows boxAspect / frameAspect of its width, so a 3:4
+  // portrait full-bleed shows 47% of itself in a 16:10 window; at 0.968 the
+  // 16:10 window shows 60.5% of the frame's height and a 390x664 phone 60.7%
+  // of its width - the one band of aspects (0.96-0.98) that clears the 60%
+  // floor on both, and the cut keeps 77.5% of the frame. What goes is the
+  // top of the open sky; the ridge starts at 47% of the frame, so the cut
+  // keeps a fifth of sky over it and all of the water and the foreground
+  // pines.
+  "/images/pt/IMG_3004-reservoir.jpg": {
+    file: "pt/IMG_3004.jpg",
+    left: 0,
+    top: 0.225,
+    width: 1,
+    height: 0.775,
   },
 };
 

@@ -117,6 +117,7 @@ const KNOWN = {
       "hero-1|1920x900@2": 1.334,
       "IMG_4582-road|1920x900@2": 1.334,
       "IMG_4619-valley|1920x900@2": 1.334,
+      "IMG_3004-reservoir|1920x900@2": 1.334,
     }
   ),
   // The one pair on this list that is paint rather than declaration.
