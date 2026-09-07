@@ -66,6 +66,19 @@ const SETTLE_FORWARD_FROM = 0.2;
 // negative input settles back to the poster from anywhere short of 0.80, and
 // forward only from there, where the opening is nearly whole.
 const SETTLE_BACK_HOLD_FROM = 0.8;
+// A settle that would reverse the hand - back to the poster from under 0.20
+// on the way down, back to the release from over 0.80 on the way up - is
+// started by the idle clock only once the hand has been still for the whole
+// of its own cadence, read over its last few inputs and never capped. A
+// trackpad moved slowly delivers bursts with pauses of a few hundred ms
+// between them, and a mouse turned slowly a notch every 700 ms; the idle
+// read against the last gap alone fired inside those pauses and carried the
+// opening back against the hand after every one of them - measured, a slow
+// scroll up from the lede never got the poster past 0.97 and the poster and
+// its land copy flashed in front of the card at every pause. A settle in the
+// hand's own direction keeps the shorter idle: it completes what the hand was
+// doing. The tail and a lifted finger start their settles at once, as before.
+const CADENCE_EVENTS = 8;
 
 // Progress per wheel unit: one trackpad flick opens the poster. At 0.0009 the
 // opening took 1111 units - three flicks on a laptop where a phone's thumb
@@ -345,6 +358,8 @@ const ScrollExpandMedia = ({
   const lastInputAt = useRef(0);
   // The sign of the last non-zero wheel or touch delta; the settle reads it.
   const lastDir = useRef(1);
+  // The gaps between the last few inputs, for the reversal idle above.
+  const gaps = useRef<number[]>([]);
 
   // Under reduced motion the component renders its resting state: media
   // expanded, content visible, no scroll hijacking, first slide only. The
@@ -468,16 +483,25 @@ const ScrollExpandMedia = ({
     // Start a settle from wherever progress is, if it is anywhere between the
     // two ends. Under reduced motion it would be one step rather than a
     // travel; the capture is off there, so it never runs at all.
-    const startSettle = () => {
+    const startSettle = (byIdle = false) => {
       clearIdle();
       const p = progressRef.current;
       if (p <= 0 || p >= 1 || settle.current) return;
-      const wait = refractoryUntil.current - performance.now();
+      const now = performance.now();
+      const wait = refractoryUntil.current - now;
       if (wait > 0) {
-        idleTimer.current = window.setTimeout(startSettle, wait);
+        idleTimer.current = window.setTimeout(() => startSettle(byIdle), wait);
         return;
       }
       const to = settleTarget(p, lastDir.current);
+      if (byIdle && (to === 1) !== lastDir.current > 0) {
+        const still = Math.max(SETTLE_IDLE_MAX_MS, SETTLE_IDLE_GAPS * Math.max(0, ...gaps.current));
+        const left = still - (now - lastInputAt.current);
+        if (left > 0) {
+          idleTimer.current = window.setTimeout(() => startSettle(true), left);
+          return;
+        }
+      }
       settle.current = { from: p, to, start: performance.now(), duration: settleDuration(p, to) };
       setSettleRun((n) => n + 1);
     };
@@ -493,8 +517,11 @@ const ScrollExpandMedia = ({
       // a stream corrects it on its next event, a single nudge waits 600 ms.
       const gap = lastInputAt.current ? now - lastInputAt.current : SETTLE_IDLE_MAX_MS;
       lastInputAt.current = now;
+      // Read as the slowest hand at most, like the idle: the wait for a
+      // reversal is then never longer than one and a half of that.
+      gaps.current = [...gaps.current.slice(1 - CADENCE_EVENTS), Math.min(gap, SETTLE_IDLE_MAX_MS)];
       const idle = Math.min(Math.max(gap * SETTLE_IDLE_GAPS, SETTLE_IDLE_MS), SETTLE_IDLE_MAX_MS);
-      idleTimer.current = window.setTimeout(startSettle, idle);
+      idleTimer.current = window.setTimeout(() => startSettle(true), idle);
     };
 
     const handleWheel = (e: globalThis.WheelEvent) => {
@@ -641,6 +668,7 @@ const ScrollExpandMedia = ({
       refractoryUntil.current = 0;
       lastInputAt.current = 0;
       lastDir.current = 1;
+      gaps.current = [];
       setScrollProgress(0);
       setMediaFullyExpanded(false);
       setShowContent(false);
