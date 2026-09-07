@@ -65,6 +65,10 @@ export interface StagePlate {
    *  and the picture runs straight through — the clip is on a full-size copy,
    *  so the two sides cannot fall out of register. */
   split?: number;
+  /** Where the seam stands below `md`, if not at `split`. A phone has no
+   *  column beside the picture: the text runs the full width, so the seam has
+   *  to stand to the right of every row or the rows cross it. */
+  splitCompact?: number;
   /** This plate is the page's LCP: preloaded, eager, never lazy. */
   priority?: boolean;
   /** Arrive and leave as a full-bleed luminance wipe rather than as a fade,
@@ -362,7 +366,17 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
           key={`${plate.src}-${i}`}
           data-plate-layer=""
           className="stage-plate absolute inset-0"
-          style={{ opacity: 0 }}
+          style={
+            {
+              opacity: 0,
+              ...(plate.split !== undefined
+                ? {
+                    "--split-wide": `${plate.split}%`,
+                    "--split-compact": `${plate.splitCompact ?? plate.split}%`,
+                  }
+                : null),
+            } as CSSProperties
+          }
         >
           <div
             data-plate-image=""
@@ -383,10 +397,7 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
             </div>
             {plate.split !== undefined && (
               <>
-                <div
-                  className="absolute inset-0"
-                  style={{ clipPath: `inset(0 ${100 - plate.split}% 0 0)` }}
-                >
+                <div className="stage-plate-split absolute inset-0">
                   <div className="stage-plate-soft">
                     <ResponsiveImage
                       src={plate.src}
@@ -399,10 +410,7 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
                 </div>
                 {/* A visible line, deliberately: the reference's seam is a
                     mark, not a feather. */}
-                <div
-                  className="stage-plate-seam"
-                  style={{ left: `${plate.split}%` }}
-                />
+                <div className="stage-plate-seam" />
               </>
             )}
           </div>

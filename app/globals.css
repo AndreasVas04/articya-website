@@ -399,6 +399,20 @@ body {
     }
   }
 
+  /* Where the seam stands. The plate declares two positions inline — one for
+     the wide layout, one for below `md` — and the layer picks by breakpoint,
+     so the soft copy's clip and the seam can never disagree. */
+  .stage-plate {
+    --split: var(--split-compact);
+  }
+  @media (min-width: 768px) {
+    .stage-plate {
+      --split: var(--split-wide);
+    }
+  }
+  .stage-plate-split {
+    clip-path: inset(0 calc(100% - var(--split)) 0 0);
+  }
   /* The seam of the split — 1px of cream at 30%, top to bottom. It is the one
      vertical line on the site and it is meant to be seen: the reference draws
      it rather than feathering the join, so the frame reads as one photograph
@@ -407,6 +421,7 @@ body {
     position: absolute;
     top: 0;
     bottom: 0;
+    left: var(--split);
     width: 1px;
     background: color-mix(in srgb, var(--color-ink) 30%, transparent);
   }

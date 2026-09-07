@@ -60,10 +60,20 @@ const plates: StagePlate[] = [
   // address stays at 4.21 / 4.40 / 4.47 — because by the time it is on screen
   // the crossfade has finished and this plate is the whole ground. At 54/66/72
   // it reads 4.87 and 5.06 at the two heights that failed.
+  //
+  // Below `md` the seam stands at 78%, not 48%. The text is the full width
+  // there and its rows are fixed in px, so at 48% the email address crossed
+  // the seam by 88-96px, the Instagram handle by 12-19, the hairline under the
+  // heading by 50, and at 375 wide the heading itself by 4: type standing half
+  // on the soft side and half on the sharp picture. At 78% every row clears
+  // the seam by 10px or more down to a 360px screen, the words keep the soft
+  // side, and the sharp fifth on the right is still the same photograph
+  // through one hard line.
   {
     src: hero.image,
     position: "50% 50%",
     split: 48,
+    splitCompact: 78,
     shade: { top: 54, mid: 66, base: 72, from: "22%", to: "62%", color: "var(--color-sky-anchor)" },
   },
 ];
