@@ -1,7 +1,7 @@
 import { hero as aboutHero } from "@/content/about";
 import { hero as contactHero } from "@/content/contact";
 import { hero as faqHero } from "@/content/faq";
-import { coverSizes, FULL_VIEWPORT, negotiatedExt, variantUrl } from "@/lib/images";
+import { coverSizes, FULL_VIEWPORT, negotiatedExt, resolveImage } from "@/lib/images";
 import { releasePipe, savingData } from "@/lib/connection";
 
 // A route change to an inner page paints the page and then waits for its
@@ -14,9 +14,9 @@ import { releasePipe, savingData } from "@/lib/connection";
 // The fix is to ask for it before the route exists. Which file to ask for is
 // the whole of the problem - a prefetch of a rung the destination will not
 // choose is not a head start, it is a second download - so nothing here names
-// a width. The URL comes out of the same `coverSizes()` the plate declares and
-// the same ladder `verify-placements` asserts, resolved against the window the
-// reader is actually in.
+// a width and nothing here picks a rung. What is handed over is the ladder and
+// the `sizes` string the plate itself declares, and the device does the
+// choosing, with its own window and its own ratio.
 //
 // The hero of each inner page is the first plate of its `PhotoStage`, which is
 // the page's own `hero.image` - the same constant the route renders from, so
@@ -27,14 +27,26 @@ export const ROUTE_HEROES: Record<string, string> = {
   "/contact/": contactHero.image,
 };
 
-/** The file the destination's hero plate would fetch in this window, or null
- *  when the route has no hero or the format is not yet knowable. */
-export function heroRung(href: string): string | null {
+/** The candidate set the destination's hero plate declares, in the format this
+ *  browser has already negotiated - or null when the route has no hero or the
+ *  format is not yet knowable.
+ *
+ *  It is the ladder and the `sizes` string, not a width. Deriving the rung here
+ *  meant resolving the media query, reading the window and multiplying by the
+ *  device ratio - three numbers this file has no business owning, and on iOS
+ *  the second of them is the *visual* viewport. Handing the same two strings to
+ *  an `Image` runs the browser's own selection algorithm over the browser's own
+ *  candidates, so the file asked for is the file the plate will ask for by
+ *  construction rather than by agreement. */
+export function heroCandidates(href: string): { srcSet: string; sizes: string } | null {
   const src = ROUTE_HEROES[href];
   if (!src) return null;
+  const resolved = resolveImage(src);
   const ext = negotiatedExt();
-  if (!ext) return null;
-  return variantUrl(src, coverSizes(src, FULL_VIEWPORT), ext);
+  if (!resolved || !ext) return null;
+  const source = resolved.sources.find((s) => s.ext === ext);
+  if (!source) return null;
+  return { srcSet: source.srcSet, sizes: coverSizes(src, FULL_VIEWPORT) };
 }
 
 // Once per route per session: a second request for a file already asked for is
@@ -46,36 +58,63 @@ export function alreadyAsked(href: string): boolean {
   return asked.has(href);
 }
 
-/** Reserve a route, so two paths cannot ask for the same file. Returns the URL
- *  to fetch, or null when there is nothing to do. */
-export function claimHero(href: string): string | null {
+/** Reserve a route, so two paths cannot ask for the same file. Returns the
+ *  candidates to load, or null when there is nothing to do. */
+export function claimHero(href: string): { srcSet: string; sizes: string } | null {
   if (asked.has(href)) return null;
   if (savingData()) return null;
-  const url = heroRung(href);
-  if (!url) return null;
+  const c = heroCandidates(href);
+  if (!c) return null;
   asked.add(href);
-  return url;
+  return c;
 }
 
-/** Put the destination's hero on the wire now.
- *
- *  `rel="preload"`, not `rel="prefetch"`, and the route change is why.
- *  Prefetch is for a *navigation*: its response is held against the next
- *  document, and a client-side route change never commits one - measured, the
- *  prefetched file and the plate's own request were two downloads of the same
- *  URL, and the hero landed 4 s later on Fast 3G than with no prefetch at all.
- *  A preload is a request of *this* document, which is the document the plate
- *  ends up in, so the plate's request coalesces onto it. */
+// A detached image is collectable the moment nothing points at it, and a
+// collected image is a cancelled request. These hold the reference until the
+// load settles; the decode is not done until something paints it, so what is
+// held here is the encoded file and not a bitmap.
+const inFlight = new Set<HTMLImageElement>();
+
+/** Start the load, at `priority`, and return the element so a queue can stop
+ *  it. The plate's own request on arrival coalesces onto this one: it is the
+ *  same document, the same candidates and the same selection. */
+export function loadHero(
+  c: { srcSet: string; sizes: string },
+  priority: "high" | "low",
+  done?: (ok: boolean) => void
+): HTMLImageElement {
+  const img = new Image();
+  const settle = (ok: boolean) => {
+    inFlight.delete(img);
+    done?.(ok);
+  };
+  img.onload = () => settle(true);
+  img.onerror = () => settle(false);
+  img.fetchPriority = priority;
+  img.sizes = c.sizes;
+  inFlight.add(img);
+  // Last, so the selection runs with `sizes` already on the element.
+  img.srcset = c.srcSet;
+  return img;
+}
+
+/** Stop a load that is no longer wanted. Removing both attributes re-runs the
+ *  image update with no source, which is what cancels the request. */
+export function stopHero(img: HTMLImageElement): void {
+  inFlight.delete(img);
+  img.onload = null;
+  img.onerror = null;
+  img.removeAttribute("srcset");
+  img.removeAttribute("src");
+}
+
+/** Put the destination's hero on the wire now. */
 export function prefetchHero(href: string, press = false): void {
   // A press is a route change starting. A hover is not - a cursor crossing the
   // nav on its way somewhere else would otherwise end the queue for the
   // session.
   if (press) releasePipe(href);
-  const url = claimHero(href);
-  if (!url) return;
-  const link = document.createElement("link");
-  link.rel = "preload";
-  link.as = "image";
-  link.href = url;
-  document.head.appendChild(link);
+  const c = claimHero(href);
+  if (!c) return;
+  loadHero(c, press ? "high" : "low");
 }

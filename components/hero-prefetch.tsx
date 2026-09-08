@@ -2,10 +2,17 @@
 
 import { useEffect } from "react";
 import { holdPipe, savingData, tooSlowToSpeculate } from "@/lib/connection";
-import { claimHero } from "@/lib/hero-prefetch";
+import { claimHero, loadHero, stopHero } from "@/lib/hero-prefetch";
 
 // The order the three are fetched in.
 const ROUTES = ["/about/", "/faq/", "/contact/"];
+
+// `requestIdleCallback` does not exist in WebKit - measured `undefined` on
+// WebKit 26.6, the engine behind current Safari and every iOS browser - so on
+// the phone this queue has always run off the timeout below. It is 200 ms and
+// not longer on purpose: what the reader is waiting for is the photograph, and
+// the request is `low` priority behind whatever home is still painting.
+const IDLE_FALLBACK_MS = 200;
 
 // The intent prefetch buys the press-and-release - 300 ms of finger, and on
 // 4G that is most but not all of the wait. This buys the rest of it, out of
@@ -18,52 +25,42 @@ const ROUTES = ["/about/", "/faq/", "/contact/"];
 // they are on is still painting slides and stage plates. Sequenced, each one
 // is a single low-priority stream that yields to anything the reader can see.
 //
-// `fetch` rather than a link element, for the two things a link cannot do:
-// the promise is what sequences the queue, and the signal is what stops it.
-// The response is cacheable (`max-age=600` from Pages), so the plate's own
-// request on arrival is a cache hit and not a second download.
+// An `Image` rather than a `fetch`, and the selection is why: the device is
+// handed the destination's own candidates and its own `sizes` and picks the
+// rung itself, so the file this queue warms is the file the plate asks for by
+// construction. Its `onload` sequences the queue and dropping its source stops
+// it. Nothing is decoded here - a detached image holds the file, and the
+// bitmap is not made until something paints it.
 export function HeroPrefetch() {
   useEffect(() => {
     if (savingData() || tooSlowToSpeculate()) return;
 
-    const controller = new AbortController();
     let current: string | null = null;
+    let live: HTMLImageElement | null = null;
     let stopped = false;
 
-    const next = async (i: number) => {
+    const next = (i: number) => {
       if (stopped || i >= ROUTES.length) return;
       const href = ROUTES[i];
-      const url = claimHero(href);
-      if (!url) return next(i + 1);
+      const c = claimHero(href);
+      if (!c) return next(i + 1);
       current = href;
-      try {
-        const res = await fetch(url, {
-          signal: controller.signal,
-          priority: "low",
-        } as RequestInit);
-        // `fetch` settles on the headers, so awaiting it alone queues all
-        // three inside 80 ms and they finish together - measured, three
-        // overlapping streams rather than the one this is meant to be. The
-        // body is what has to be waited on, and it is read and dropped a
-        // chunk at a time: the file is wanted in the cache, never in memory.
-        const reader = res.body?.getReader();
-        while (reader) {
-          const { done } = await reader.read();
-          if (done) break;
-        }
-      } catch {
-        // An abort or a miss ends the queue; neither is worth a retry.
-        return;
-      }
-      current = null;
-      next(i + 1);
+      live = loadHero(c, "low", () => {
+        live = null;
+        current = null;
+        // A miss is not worth a retry, and the next route is not its fault.
+        next(i + 1);
+      });
     };
 
     // Stop, and hand back whatever is in flight for the page the reader has
     // just asked for.
     const stop = (keep: string | null) => {
       stopped = true;
-      if (current !== keep) controller.abort();
+      if (live && current !== keep) {
+        stopHero(live);
+        live = null;
+      }
     };
     const release = holdPipe({ stop });
 
@@ -71,7 +68,7 @@ export function HeroPrefetch() {
       if (stopped) return;
       const idle = window.requestIdleCallback;
       if (idle) idle(() => next(0), { timeout: 3000 });
-      else window.setTimeout(() => next(0), 200);
+      else window.setTimeout(() => next(0), IDLE_FALLBACK_MS);
     };
 
     if (document.readyState === "complete") start();

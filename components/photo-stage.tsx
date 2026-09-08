@@ -1,11 +1,16 @@
 "use client";
 
-import { useEffect, useRef, type CSSProperties } from "react";
+import { useEffect, useLayoutEffect, useRef, type CSSProperties } from "react";
 import { cubicBezier } from "framer-motion";
 import { ResponsiveImage } from "@/components/responsive-image";
 import { coverSizes, FULL_VIEWPORT, imageGround, imagePreload } from "@/lib/images";
 import { onLayoutResize } from "@/lib/viewport";
 import { cn } from "@/lib/utils";
+
+// The layer's first frame has to be right, so the measure runs before the
+// paint. On the server it touches nothing, which is what this alternation is
+// for - the same pattern the hero uses.
+const useIsomorphicLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 const easeInOutCubic = cubicBezier(0.65, 0, 0.35, 1);
 
@@ -119,7 +124,14 @@ interface StageFrame {
 export function PhotoStage({ plates }: { plates: StagePlate[] }) {
   const rootRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
+  // A layout effect, not an effect. The plates are rendered at nothing and the
+  // first `draw()` is what gives the page its photograph, so on an effect the
+  // route committed, the browser painted the ground, and only the frame after
+  // that carried the picture. Measured at 390x664: an inner page arrived with
+  // its plate at opacity 0 and reached 1 a frame later, which is the beat of
+  // dark between a route change and its photograph. Before the paint there is
+  // no such frame.
+  useIsomorphicLayoutEffect(() => {
     const root = rootRef.current;
     if (!root) return;
     const layers = Array.from(
@@ -432,7 +444,12 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
           className="stage-plate absolute inset-0"
           style={
             {
-              opacity: 0,
+              // The LCP plate is the page's first screen at full strength, and
+              // it is declared so in the markup rather than reached by script:
+              // this is the frame the server's HTML paints, before any of this
+              // component's code has run. The layout effect above corrects it
+              // on the first client frame if the reader has arrived at depth.
+              opacity: plate.priority ? 1 : 0,
               ...(plate.split !== undefined
                 ? {
                     "--split-wide": `${plate.split}%`,

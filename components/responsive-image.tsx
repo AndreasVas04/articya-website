@@ -40,6 +40,12 @@ export function ResponsiveImage({
   const resolved = resolveImage(src);
   const loading = priority || eager ? "eager" : "lazy";
   const fetchPriority = priority ? "high" : undefined;
+  // The page's own photograph decodes on the frame that paints it, not one or
+  // two frames later. `async` is right for everything else - a decode off the
+  // main thread never holds a frame - but it is what puts a beat of ground
+  // between a route arriving and its picture being on it, and on a warm cache
+  // that beat is the whole of the wait.
+  const decoding = priority ? "sync" : "async";
 
   // Fill mode mirrors next/image: the <picture> is display:contents (no box),
   // so the absolute img resolves against the positioned parent the caller sizes.
@@ -58,7 +64,7 @@ export function ResponsiveImage({
         sizes={sizes}
         loading={loading}
         fetchPriority={fetchPriority}
-        decoding="async"
+        decoding={decoding}
         draggable={draggable}
         className={imgClass}
         style={style}
@@ -80,7 +86,7 @@ export function ResponsiveImage({
         alt={alt}
         loading={loading}
         fetchPriority={fetchPriority}
-        decoding="async"
+        decoding={decoding}
         draggable={draggable}
         className={imgClass}
         style={style}
