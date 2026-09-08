@@ -80,6 +80,30 @@ export function claimHero(href: string): string | null {
   return url;
 }
 
+// The idle queue below, while one is running. Background speculation holds the
+// pipe only until the reader asks for something: the press that starts a route
+// change has to find the wire clear, and on a phone that press arrives while
+// the queue is most of a photograph into a page nobody has asked for.
+//
+// The unmount is too late to do this. Measured at 390x664 on 4G, a tap that
+// left home mid-queue still let all three files run to completion - React
+// unmounts the page when the destination is ready to render, which on a slow
+// link is a second after the finger.
+interface Queue {
+  /** Stop, keeping whatever is in flight for `keep` - by then that is not
+   *  speculation, it is the file the reader is waiting on. */
+  stop: (keep: string | null) => void;
+}
+let queue: Queue | null = null;
+
+/** Register the idle queue; returns its own deregister. */
+export function holdPipe(q: Queue): () => void {
+  queue = q;
+  return () => {
+    if (queue === q) queue = null;
+  };
+}
+
 /** Put the destination's hero on the wire now.
  *
  *  `rel="preload"`, not `rel="prefetch"`, and the route change is why.
@@ -89,7 +113,14 @@ export function claimHero(href: string): string | null {
  *  URL, and the hero landed 4 s later on Fast 3G than with no prefetch at all.
  *  A preload is a request of *this* document, which is the document the plate
  *  ends up in, so the plate's request coalesces onto it. */
-export function prefetchHero(href: string): void {
+export function prefetchHero(href: string, press = false): void {
+  // A press is a route change starting. A hover is not - a cursor crossing the
+  // nav on its way somewhere else would otherwise end the queue for the
+  // session.
+  if (press) {
+    queue?.stop(href);
+    queue = null;
+  }
   const url = claimHero(href);
   if (!url) return;
   const link = document.createElement("link");
@@ -97,4 +128,13 @@ export function prefetchHero(href: string): void {
   link.as = "image";
   link.href = url;
   document.head.appendChild(link);
+}
+
+// The idle path's own guard. A reader on 2g is not helped by three
+// photographs queued ahead of the page they are on; `saveData` is the
+// preference and this is the connection.
+export function tooSlowToSpeculate(): boolean {
+  const conn = (navigator as Navigator & { connection?: { effectiveType?: string } }).connection;
+  const type = conn?.effectiveType;
+  return type === "2g" || type === "slow-2g";
 }

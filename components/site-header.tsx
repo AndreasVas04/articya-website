@@ -34,8 +34,8 @@ const HOME_RESET_EVENT = "home:reset";
 const DESKTOP = "(min-width: 768px)";
 function intentPrefetch(href: string) {
   return {
-    onPointerDown: () => prefetchHero(href),
-    onTouchStart: () => prefetchHero(href),
+    onPointerDown: () => prefetchHero(href, true),
+    onTouchStart: () => prefetchHero(href, true),
     onPointerEnter: () => {
       if (window.matchMedia(DESKTOP).matches) prefetchHero(href);
     },
