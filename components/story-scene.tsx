@@ -115,7 +115,7 @@ export function StoryScene({ groups, image, flip = false }: StorySceneProps) {
                 making the spans inline-block to earn one would stop them
                 wrapping across lines. */}
             <p
-              className="mt-6 max-w-[44ch] text-[clamp(1rem,1.3vw,1.16rem)] leading-[1.66] text-ink md:mt-8"
+              className="type-lead mt-6 text-ink md:mt-8"
               style={enter(2, RISE)}
             >
               {groups.map((group, i) => (

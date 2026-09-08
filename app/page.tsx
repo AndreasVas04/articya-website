@@ -247,7 +247,7 @@ export default function HomePage() {
               window, so the pixel would have moved the rule's own row rather
               than the statement's. Given back here, the row stands exactly
               where it stood. */}
-          <p className="mt-[19px] max-w-[44ch] translate-y-14 text-balance text-center text-[clamp(1rem,1.3vw,1.16rem)] leading-[1.66] text-ink opacity-0 duration-[400ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] group-data-[expanded]:delay-[60ms] motion-reduce:translate-y-0">
+          <p className="type-lead mt-[19px] translate-y-14 text-balance text-center text-ink opacity-0 duration-[400ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] group-data-[expanded]:delay-[60ms] motion-reduce:translate-y-0">
             {hero.text}
           </p>
           <div className="mt-5 translate-y-14 opacity-0 duration-[400ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] group-data-[expanded]:delay-150 motion-reduce:translate-y-0">
@@ -403,7 +403,7 @@ export default function HomePage() {
                         className="stage-rise"
                         style={{ transitionDelay: "250ms" }}
                       >
-                        <p className="mt-2 max-w-[44ch] text-[clamp(1rem,1.3vw,1.16rem)] leading-[1.66] text-ink-soft md:mt-8">
+                        <p className="type-lead mt-2 text-ink-soft md:mt-8">
                           {whatWeDo.lead}
                         </p>
                       </div>

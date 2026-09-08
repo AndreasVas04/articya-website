@@ -473,8 +473,65 @@ This supersedes the step table below it. Five rules, and they are floors:
 | Hero headline | `clamp(3.4rem, 11vw, 10rem)` / 0.94 | The home hero h1 and every inner-page hero h1 — 158.4px at 1440, 54.4px at 390 |
 | Section heading | `clamp(2.3rem, 6vw, 5rem)` / 0.94 | "What we do", "What you gain", "Get in touch", the offer-panel titles, the closing line — 80 / 36.8px |
 | Sub-heading | `clamp(1.9rem, 3.6vw, 3rem)` | The FAQ group headings and the gains trail items — 48 / 30.4px |
-| Body | `clamp(1rem, 1.3vw, 1.16rem)` / 1.66, `max-width: 44ch` | Every paragraph on the site, the FAQ questions and answers, the Contact channel values — 18.56 / 16px |
+| Lead | `clamp(1.375rem, 1.25vw, 1.5rem)` / 1.45, `max-width: 38ch`, **md+ only** | The paragraph that opens a section — 24px at 1920, 22px at 1440, Body below `md` |
+| Body | `clamp(1rem, 1.3vw, 1.16rem)` / 1.66, `max-width: 44ch` | Every other paragraph on the site, the FAQ questions and answers, the Contact channel values — 18.56 / 16px |
 | Tracking | `-0.025em` | All display type, the wordmark and the stat numerals included |
+
+**The lead is a desktop register and nothing else.** Every prose block on the
+site rendered at 18.56px / 30.81 in a 543.9px track at 1440 *and* at 1920 —
+`1.3vw` passes its own ceiling at 1428, so the ramp is flat above it. On a
+phone that is right and stays right: the lead resolves to the body step below
+`md`, byte for byte. On a 1440 laptop it left the clearing's lead as a small
+block in the corner of a screen whose other half holds a 504px Earth, and
+measured, the eye was correct to go to the Earth — block area × mean ink
+contrast against disc area × mean disc contrast came to **1.198 at 1440 and
+0.860 at 1920**. Under 1.0 the object is the first read, and at 1920 the
+object was.
+
+The fix is a register rather than a nudge, and it is applied to every
+paragraph that opens a section on every route, not only to the one that was
+complained about: the home hero's statement and the clearing's lead, the
+About / FAQ / Contact hero ledes, and About's three scene leads. It is not
+applied to a list item (the FAQ answers), a closing statement (the home
+closing, About's finale paragraph — which was deliberately brought *down* onto
+the body step), the offer panels' prose (sized to the panel, not to the ramp),
+or the Contact channel values.
+
+Three numbers move together and they have to. **Size** 18.56 → 22 / 24, from
+the ramp's own clamp form with `1.25vw` as the middle term, so both reference
+viewports land on whole pixels. **Line height** 1.66 → 1.45, because a larger
+face needs proportionally less leading; 1.45 is the FAQ question's own figure.
+**Measure** 44ch → 38ch, and this is the one that is easy to get backwards:
+`ch` scales with the font, so 44ch at 22px would be a wider line as well as a
+larger one. Read off the rendered page, 38ch is **45–58 characters** on the
+longest line across the eight blocks at both viewports — inside the 58 a lead
+gets and well inside the 70 a body block gets. The worst is Contact's, at
+exactly 58.
+
+After: **1.698 at 1440 and 1.427 at 1920.** The block is the first read at
+both. Nothing else moved — every section is still exactly 1 vp, the two
+document heights are identical to the pixel (5248 at 1440, 6202 at 1920), and
+the phone renders what it rendered before.
+
+Contrast, swept per element at 5px across each block's own traversal, worst
+value, judged at the glyph's own ink: FAQ 7.47 → 7.45 / 7.65 → 7.65, Contact
+5.17 → 5.19 / 5.53 → 5.52, About hero 5.07 → 5.06 / 5.33 → 5.33, About
+scenes 5.79 → 5.84, 9.45 → 9.42 and 9.27 → 9.36, the clearing's lead 5.11 →
+5.11 at both. The home hero's statement reads **10.23 → 8.07** at 1440 and
+**10.69 → 9.57** at 1920 where it rests — a third line stands its top row
+higher in the card's foot ramp, and that ramp is anchored in px.
+
+**Open, and pre-existing: the hero statement's exit is not measured against
+any floor.** `IntroExit` translates the band up at 1.5× the document's rate,
+so on its way off the screen the words cross open photograph above the card's
+foot ramp. Swept at 5px over that travel the block reads **2.51 at 1440 and
+2.15 at 1920 on `9d9bc09`**, and 2.19 / 1.66 with the lead step. Both are
+under the 4.5 floor: the exit was under it before this change, and the step
+lowers it by 0.3–0.5. It is a transit and not a reading state, which is the
+argument the finale's fade-out stands on, but it had never been measured and
+the number is recorded here rather than left unwritten. The fix, when it is
+taken, is the ramp and not the type — the card's foot darkening is anchored to
+the band's own foot in px and does not travel with the band.
 
 The old **Hero statement** step is retired with the rest: one sentence in the
 display face at its own size and its own weight was a step the ramp did not

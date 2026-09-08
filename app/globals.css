@@ -715,6 +715,44 @@ body {
       font-size: 3.5vw;
     }
   }
+
+  /* The lead - the paragraph that opens a section, on a desktop only.
+   *
+   * Every prose block on the site rendered at 18.56px/30.81 in a 543.9px track
+   * at 1440 *and* at 1920 - the ramp is flat above 1428, where 1.3vw passes
+   * its own ceiling. On a phone that is right: legibility is absolute and a
+   * paragraph is not easier to read for having been made smaller. On a 1440
+   * laptop it left "What we do" as a small block in the corner of a screen
+   * whose other half holds a 504px Earth, and the eye went to the Earth.
+   *
+   * The fix is a register, not a nudge, and not a nudge in one place: one step
+   * for every paragraph that opens a section, on every route. 22px at 1440,
+   * 24px at 1920, from the ramp's own form - the same clamp the body step is
+   * written in, with 1.25vw as the middle term so both ends land on whole
+   * pixels at the two viewports the site is measured at.
+   *
+   * Line height comes down with the size, 1.66 -> 1.45: a larger face needs
+   * proportionally less leading, and 1.45 is the FAQ question's own figure.
+   * The measure comes down with it too. `ch` scales with the font, so 44ch at
+   * 22px would be a *wider* line as well as a larger one, and the site's
+   * measure rule is read off the rendered page: 38ch here is 57 characters on
+   * the longest rendered line, inside the 58 a lead gets and well inside the
+   * 70 a body block gets.
+   *
+   * Below md this is the body step, to the declaration - the phone renders
+   * exactly what it rendered before. */
+  .type-lead {
+    font-size: clamp(1rem, 1.3vw, 1.16rem);
+    line-height: 1.66;
+    max-width: 44ch;
+  }
+  @media (min-width: 768px) {
+    .type-lead {
+      font-size: clamp(1.375rem, 1.25vw, 1.5rem);
+      line-height: 1.45;
+      max-width: 38ch;
+    }
+  }
 }
 
 /* `.photo-midday` stood here: a `saturate(0.82) hue-rotate(-4deg)` chain on

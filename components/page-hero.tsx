@@ -56,7 +56,7 @@ export function PageHero({ heading, text, longHeading, compactTitle }: PageHeroP
           >
             {heading}
           </h1>
-          <p className="mx-auto mt-8 max-w-[44ch] text-pretty text-[clamp(1rem,1.3vw,1.16rem)] leading-[1.66] text-ink">
+          <p className="type-lead mx-auto mt-8 text-pretty text-ink">
             {text}
           </p>
         </Reveal>
