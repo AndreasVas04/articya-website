@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 
+import { onLayoutResize } from "@/lib/viewport";
+
 // The section index down the right margin of a wide screen: fixed, vertically
 // centred and inert.
 //
@@ -51,10 +53,10 @@ export function SectionIndex() {
 
     read();
     window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
+    const offResize = onLayoutResize(onScroll);
     return () => {
       window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
+      offResize();
       if (raf) cancelAnimationFrame(raf);
     };
   }, []);

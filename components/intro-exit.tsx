@@ -2,6 +2,8 @@
 
 import { useEffect } from "react";
 
+import { onLayoutResize } from "@/lib/viewport";
+
 // The hero's intro block leaves at one and a half times the document's own
 // rate once the card is the window. That is the smallest rate that clears it
 // before the clearing's lead has settled, at every window height, and the
@@ -46,7 +48,7 @@ export function IntroExit() {
 
     measure();
     window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", measure);
+    const offResize = onLayoutResize(measure);
     // `hero-open` is the hero's own flag, so the gate above has to be told
     // when it lands rather than polling for it.
     const flags = new MutationObserver(draw);
@@ -54,7 +56,7 @@ export function IntroExit() {
 
     return () => {
       window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", measure);
+      offResize();
       flags.disconnect();
       if (raf) cancelAnimationFrame(raf);
       block.style.translate = "";

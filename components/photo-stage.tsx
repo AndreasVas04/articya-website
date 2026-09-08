@@ -4,6 +4,7 @@ import { useEffect, useRef, type CSSProperties } from "react";
 import { cubicBezier } from "framer-motion";
 import { ResponsiveImage } from "@/components/responsive-image";
 import { coverSizes, FULL_VIEWPORT, imageGround, imagePreload } from "@/lib/images";
+import { onLayoutResize } from "@/lib/viewport";
 import { cn } from "@/lib/utils";
 
 const easeInOutCubic = cubicBezier(0.65, 0, 0.35, 1);
@@ -295,7 +296,7 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
 
     measure();
     window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", measure);
+    const offResize = onLayoutResize(measure);
     // The pinned offer panels take their full height only once they mount, so
     // the zone geometry moves under this layer after its first read. Watching
     // the document rather than guessing a delay also covers a font swap or a
@@ -304,7 +305,7 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
     observer.observe(document.documentElement);
     return () => {
       window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", measure);
+      offResize();
       observer.disconnect();
       basisProbe.remove();
       if (raf) cancelAnimationFrame(raf);

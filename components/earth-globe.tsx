@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import type { EarthHandle } from "@/components/earth-scene";
+import { onLayoutResize } from "@/lib/viewport";
 import { cn, withBasePath } from "@/lib/utils";
 
 // The skins (scripts/globe-texture.mjs): the day map at two rungs, and the
@@ -106,10 +107,11 @@ export function EarthGlobe({ className }: { className?: string }) {
       if (!raf) raf = requestAnimationFrame(draw);
     };
     let resizeObserver: ResizeObserver | null = null;
+    let offResize: (() => void) | null = null;
     if (!reducedMotion) {
       measure();
       window.addEventListener("scroll", onScroll, { passive: true });
-      window.addEventListener("resize", measure);
+      offResize = onLayoutResize(measure);
       resizeObserver = new ResizeObserver(measure);
       resizeObserver.observe(document.documentElement);
     }
@@ -119,7 +121,7 @@ export function EarthGlobe({ className }: { className?: string }) {
       loader.disconnect();
       handle?.dispose();
       window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", measure);
+      offResize?.();
       resizeObserver?.disconnect();
       if (raf) cancelAnimationFrame(raf);
     };

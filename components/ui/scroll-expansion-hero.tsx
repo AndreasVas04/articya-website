@@ -11,6 +11,7 @@ import {
 import { cubicBezier, motion, useReducedMotion } from "framer-motion";
 import { ResponsiveImage } from "@/components/responsive-image";
 import { coverSizes, HERO_PUSH, HERO_VIEWPORT } from "@/lib/images";
+import { onLayoutResize } from "@/lib/viewport";
 import { cn, withBasePath } from "@/lib/utils";
 
 // useLayoutEffect on the client, useEffect on the server: the effect it runs
@@ -424,8 +425,7 @@ const ScrollExpandMedia = ({
       setDescent(skyline - title.offsetTop);
     };
     measure();
-    window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
+    return onLayoutResize(measure);
   }, []);
 
   // The frame the card becomes the window is the frame the block below it
@@ -734,10 +734,13 @@ const ScrollExpandMedia = ({
   }, []);
 
   useEffect(() => {
-    const checkIfMobile = () => setIsMobile(window.innerWidth < 768);
+    // The breakpoint is the layout viewport's own width, so a pinch cannot
+    // reach it - and the card's ramp is re-derived from the progress it is
+    // standing on, which after the release is 1.
+    const checkIfMobile = () =>
+      setIsMobile(document.documentElement.clientWidth < 768);
     checkIfMobile();
-    window.addEventListener("resize", checkIfMobile);
-    return () => window.removeEventListener("resize", checkIfMobile);
+    return onLayoutResize(checkIfMobile);
   }, []);
 
   // The slideshow runs on its own clock, independent of scroll progress.
