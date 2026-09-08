@@ -7329,3 +7329,38 @@ moved the failure to the phone.
 6. 750: every full-bleed ground shows 52–54% there, by arithmetic, for every
    aspect a desktop accepts.
 7. The home h1 under reduced motion; a real device pass; a real Actions run.
+
+---
+
+## 16 · The Earth — 2026-09-09
+
+Built on the owner's call after the split was rejected: `85d68e2` +
+`53a3e35` (the reverts), `cfefe1c` (the Earth), `b5723ef` (the marks).
+Numbers in `DESIGN-SYSTEM.md` **The Earth**; the session's measurements
+in `design/refs/2026-09-09-globe.md`.
+
+**Open:**
+
+1. **The owner's eye, on the device.** The realistic skin, the amber
+   cities, the marks and the spin were judged on screenshots at 1440 and
+   664 and on a scratch page; the object has not turned under a thumb. The
+   levers if it wants adjusting, all in `components/earth-scene.ts` and
+   named at the top: `NIGHT` (how dark the night side), `TERMINATOR_WRAP`,
+   the cloud `opacity` (0.55), `MARK_PX` / `HOME_MARK_PX`, the halo's 0.10 /
+   0.55; and in `scripts/globe-texture.mjs` the grade — `SATURATION`,
+   `WATER_PULL`, `LEVEL`.
+2. **The phone payload.** 450 KB of texture on demand a viewport ahead of
+   the section (138 KB day + 312 KB pack), on top of the page's photographs.
+   The pack could take a phone rung of its own (1536×768 ≈ 175 KB) if the
+   load is measured to want it; not done, because the lights are the one
+   channel that suffers at lower sizes and the night side is the point.
+3. **375×553 holds the section at 1.199 screens** — inside the 1.2 line by
+   a pixel's worth, on the 36px phone gap. A shorter iPhone SE window than
+   553 (none is known) would cross it.
+4. **Unmeasured:** WebKit; a real device (the touch axis-lock, the drag's
+   inertia, the parallax at natural scroll speed); 750; the `no WebGL` path
+   was exercised only by the probe's branch, not on a browser without it.
+5. **The dotted globe stays rejected** (`ART-DIRECTION.md` §3); the
+   duotone Earth and the amber route lines join it there. A revert of
+   `b5723ef` leaves the Earth turning with nothing on it; a revert of
+   `cfefe1c` returns the clearing to the words and the ledger on the plate.

@@ -26,7 +26,9 @@
 > - **Four components are gone**: the dotted globe and its land data,
 >   the lamp CTA (the closing section's frozen text now stands as plain type on
 >   the plate), the resin embers, and the living atmosphere with its pointer
->   parallax and its two drifting glow layers. `.film-grain` is deleted
+>   parallax and its two drifting glow layers. (The **Earth** of 2026-09-09
+>   is not that globe: a lit planet beside "What we do", not a dot diagram —
+>   see **The Earth** at the end of this document.) `.film-grain` is deleted
 >   site-wide. The single-light-source thread therefore runs from the gains
 >   trail and stops there; the trail's rail now dissolves at both ends.
 > - **The type scale below is superseded** by the display ramp in **Typography
@@ -1698,3 +1700,79 @@ integration time.
 
 The globe and lamp share `resin`/`resin-light` deliberately — they are the
 same light source (see signature element).
+
+## The Earth — 2026-09-09
+
+**"What we do" carries an object again, and it is the planet.** The owner
+rejected the clearing-as-split (`58c0a06`, `b5a9982`, reverted at `85d68e2`
+and `53a3e35`) and asked for a spinning Earth — realistic, detailed, in the
+colours of the section, with bullets on the countries the projects reach.
+The dotted globe stays rejected (`ART-DIRECTION.md` §3); this is a different
+object, and the owner's verdict on the duotone first draft is what set its
+terms: *an Earth in the site's two tones read as an impostor; amber arcs
+read as hand-drawn.* The real skin, and points not lines.
+
+**Where it stands.** The grid's right six of twelve columns at `md+`,
+`self-center`, the ledger under both columns in a `col-span-12` row; below
+`md` the same grid stacks and the Earth goes last, under the stats. Never
+behind a glyph — the no-shape-behind-text rule applies to a sphere too, and
+it is measured across the traversal, not at rest:
+
+| | 1440×900 | 390×664 | 375×553 |
+|---|---|---|---|
+| the box (`min(100%, 56svh)` at `md+`; 0.82 of the column below) | 504 | 293.5 | 281.3 |
+| the disc (0.90 of the box; the atmosphere takes the rest) | 454 | 264 | 253 |
+| gap under the ledger's last row (phones) | — | 36px | 36px |
+| section | 1.000 vp | 1.017 vp | **1.199 vp** |
+| closest a glyph comes to the disc, parallax live, 20px steps | 46.5px | 47.9px | 31.3px |
+
+36px is the largest phone gap that keeps the shortest window's section
+under 1.2 screens; the parallax is bound to 33px so the drift can never
+close it.
+
+**The skin** (`scripts/globe-texture.mjs`, the outputs committed under
+`public/globe/`): NASA's Blue Marble Next Generation for **July** with
+topography and bathymetry, graded toward the section — saturation 0.84, the
+water pulled 0.34 toward `#102c3a` in proportion to its own level, the whole
+×0.9 — at **4096×2048 q76 (348 KB)** for a desktop's disc and **2048×1024
+q80 (138 KB)** for a phone's, the rung chosen by the canvas's backing size.
+A second 2048×1024 map at q70 (**312 KB**) packs the night lights (Black
+Marble 2016, on a 0.7 gamma) in R, the clouds in G, the water mask in B.
+
+**The light.** One key light from the upper left — 35° above the view axis,
+45° to its left, in the camera's frame — with a 0.18 wrap on a smoothstep;
+the night side holds 0.045 of the day and its cities come up in
+`--color-resin`, the site's one accent as light. A glint on the water only
+(pow 110, 0.22). Clouds on a second sphere at 1.006 R at 0.55, lit by the
+same light, drifting a fifth faster than the ground. The atmosphere twice:
+an inner Fresnel limb on the globe (sky `#8fbce6` warmed to `#f2d7a8` on
+the sun side) and an outer back-face shell at 1.045 R, a ring strongest
+against the planet and gone at its own edge, 0.10 on the dark side to 0.55
+in the sun. Camera elevation 18°, FOV 26°, axis tilt 23.4°.
+
+**The marks.** Twenty-one points of `--color-resin` on the sphere — the
+twenty countries and Cyprus — a bright core inside a soft halo at 0.5, 15px
+and 22px, the home mark breathing ±12% on a 5.7 s cycle; the far side fades
+on `smoothstep(0, 0.3, n·v)`. They light in the brief's order 70 ms apart,
+260 ms each, 300 ms after the scene fires. No labels: the marks carry no
+words, and the countries stat beside them carries the meaning.
+
+**Motion.** One revolution in **90 s**, Cyprus facing the reader at the
+moment the scene fires; the box rises with the clearing's wave on the
+sanctioned 200 ms / 1200 ms settle (`.stage-globe`, 120px, 88 on a phone).
+A drag turns it about its axis with inertia (0.92 per 60 Hz frame), the
+spin returning 4 s after the hand over 600 ms; a touch is claimed only once
+it has declared itself horizontal, so the page keeps its scroll. The box
+drifts at **0.06 of the scroll** from its reading position, bound to
+±33px — background may be scroll-linked, and this is the ground's side of
+the section. Under reduced motion: no spin, no drift, the Cyprus frame with
+every mark lit. Without WebGL: nothing rendered, the box gone, the section
+as it was.
+
+**Cost.** three.js loads on demand a viewport ahead of the section: two
+chunks, 83.1 + 50.7 KB gzip, none of it on first load (166 kB, +1 for the
+loader). Textures 660 KB on a desktop, 450 KB on a phone, on demand. On the
+machine's GPU under a 4× CPU throttle the entrance costs **0.46 ms** of main
+thread per frame and no long task; headless Chromium's software rasterizer
+reads 9.7 ms, which is the swap stalling and is recorded as such. The loop
+runs only while the box is on screen and only while something moves.

@@ -129,7 +129,12 @@ not covered twice.
 - A sawtooth or zigzag mask at the foot of a photograph.
 - Dotted globe, lamp CTA, floating amber particles, film grain, the gains trail
   with its glow and nodes, accordion card fills on FAQ, channel card fills on
-  Contact.
+  Contact. (The dotted globe was the Vercel-style dot template. The lit Earth
+  of 2026-09-09 beside "What we do" is a different object, built on the
+  owner's call — `DESIGN-SYSTEM.md`, **The Earth**. Two of its own rejects
+  join this list: an Earth in the site's two tones, which read as an
+  impostor beside the photographs; and amber route lines, which read as
+  hand-drawn.)
 
 **Typography**
 - A high-contrast serif display face. Tried and rejected.
@@ -163,6 +168,13 @@ the picture costs no extra request. The clock entrance it already had did not
 change; it only had nothing behind it. The plate carries its own darkening at
 74/82/82 on `sky-anchor`, because the shared stage numbers were set for an
 overcast road and this frame is a sunny one.
+
+Since 2026-09-09 the clearing's right column carries the **Earth** — the
+planet, lit, turning once in 90 s, its cities in the site's amber on the
+night side and a point of amber on each country the projects reach; on a
+phone it stands under the stats. It answers the owner's "only text" and the
+rejected split at once: an object beside the words, never behind them, on
+the ground that was already there. The numbers are in `DESIGN-SYSTEM.md`.
 
 **Youth Exchanges / Training Courses** — the object photograph must show young
 people on an Erasmus+ activity. `AboutImage1` (the group with the Cyprus and
@@ -333,8 +345,17 @@ bolting them on individually has produced worse results than leaving them out.
 
 ## 8 · Current state
 
-`9647a04`. The dark world, the Portugal set, the alternating panels and the
-measured geometry are all in, and four things have landed on top of them.
+`b5723ef`. The dark world, the Portugal set, the alternating panels and the
+measured geometry are all in, and five things have landed on top of them.
+
+**The Earth stands beside "What we do"** (2026-09-09). The clearing-as-split
+of 2026-09-08 was rejected on the owner's device ("before it was 10 times
+better in the transition") and reverted; in its place the right column
+carries a lit, turning Earth with amber marks on the countries. The first
+draft — the site's two tones as a skin, amber route lines — was rejected in
+the same session as an impostor with hand-drawn lines; what shipped is the
+planet's own skin graded toward the section, and points. `DESIGN-SYSTEM.md`,
+**The Earth**; the session's log in `design/refs/2026-09-09-globe.md`.
 
 **The panels are unpinned.** 200svh and the sticky frame are gone; each panel is
 one viewport, scrolled through. Home lost 1800px at 1440×900 and 1531px at
