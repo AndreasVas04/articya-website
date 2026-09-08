@@ -834,6 +834,35 @@ coasting cancels it, and no new settle starts for 250 ms after a cancel. A
 deliberate slow scroll — deltaY 1 every 80 ms, or a notch every 200–300 ms —
 is never taken over.
 
+**The opening plays once per page load.** Past the release at p = 1 the
+opening does not re-engage: the wheel/touch capture is not re-armed, no
+listener is attached, progress stays at 1 and the settle controller is idle.
+Scrolling to scrollY 0 and beyond leaves the hero open — scrollY 0 is the top
+of an open page, not the way back into a poster. The opening still runs in
+full on every fresh load and on reload, and the logo-on-home reset still
+returns the hero to it, because both of those are the page beginning again
+rather than the reader scrolling within it.
+
+It used to be reversible — a wheel up or a 20px swipe down at scrollY ≤ 5 took
+the release back — and the reversal was both wrong and unreliable. Wrong,
+because scrolling back up from the lede is a request to see the top of the
+page and not to replay an opening. Unreliable, because the way back in runs
+the machine backwards through a hand the settle has to read: measured on
+`9d9bc09` from scrollY 120 with a wheel/finger stream of −1 every 80 ms and −4
+every 200 ms, the poster and its land copy came back in front of the card at
+1440×900 on both series and at 390×664 on the first, while the 390×664 second
+series and every 1200 ms series changed nothing at all. Same gesture, four
+different answers. Measured on the same three series after: **scrollY clamps
+at 0 and not one hero value moves** — card width, height and opacity, the
+ridge and poster opacity and scale, the headline's transform and opacity, and
+the `hero-open` class are all constant, at both viewports, on wheel and on
+touch.
+
+The direction hysteresis of `9a612e4` / `7c13e14` stays, and is still
+reachable: it governs a reversal *inside* the opening, before the release,
+which is untouched. What went with the re-entry is only the code that ran
+after it.
+
 **The strike, and marks generally.** The amber strike under the label is a
 mark and answers to the **3.0** floor at its own ink; the poster plate's mid
 darkening is 76 (from 66) so that it reads 3.20 / 3.25 / 3.38 over the sky at

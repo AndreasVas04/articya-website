@@ -435,6 +435,32 @@ const ScrollExpandMedia = ({
     return () => document.documentElement.classList.remove("hero-open");
   }, [contentVisible]);
 
+  // The opening plays once per page load and does not re-engage.
+  //
+  // It used to be reversible: a wheel up or a swipe down at the top of the
+  // page took the release back and handed the reader the collapsed poster
+  // again. Two things were wrong with it and neither is a tuning. The first is
+  // that scrolling back up from the lede is not a request to replay an
+  // opening - it is a request to see the top of the page, and the page's top
+  // is the open hero. The second is that the way back in runs the whole
+  // machine backwards through a hand the settle has to read: on a slow
+  // deliberate scroll up the poster and its land copy came back in front of
+  // the card at every pause between notches, which is the blink.
+  //
+  // So the release is terminal. Past it the capture is not re-armed - no
+  // wheel, touch, key or scroll listener is attached at all - progress stays
+  // at 1, and scrollY 0 is simply the top of an open page. A fresh load and a
+  // reload still run the opening from the start, and the logo reset still
+  // returns the hero to it, because both of those are the page beginning
+  // again rather than the reader scrolling within it.
+  const released = useRef(false);
+  const release = () => {
+    released.current = true;
+    settle.current = null;
+    if (idleTimer.current !== null) window.clearTimeout(idleTimer.current);
+    idleTimer.current = null;
+  };
+
   // A visitor who has already scrolled by the time hydration lands is reading
   // somewhere below this hero, and the choreography has no screen left to play
   // on. The inline script pins the page to 0 during parse, so any offset here
@@ -448,16 +474,17 @@ const ScrollExpandMedia = ({
   useIsomorphicLayoutEffect(() => {
     if (window.scrollY <= 0) return;
     skipCapture.current = true;
+    release();
     setScrollProgress(1);
     setMediaFullyExpanded(true);
     setShowContent(true);
   }, []);
 
   useEffect(() => {
-    if (reducedMotion || skipCapture.current) return;
+    if (reducedMotion || skipCapture.current || released.current) return;
 
     const expandInstantly = () => {
-      settle.current = null;
+      release();
       setScrollProgress(1);
       setMediaFullyExpanded(true);
       setShowContent(true);
@@ -468,6 +495,7 @@ const ScrollExpandMedia = ({
       progressRef.current = newProgress;
       setScrollProgress(newProgress);
       if (newProgress >= 1) {
+        release();
         setMediaFullyExpanded(true);
         setShowContent(true);
       } else if (newProgress < 0.75) {
@@ -524,39 +552,36 @@ const ScrollExpandMedia = ({
       idleTimer.current = window.setTimeout(() => startSettle(true), idle);
     };
 
+    // This effect only exists while the opening does, so there is no expanded
+    // state for these handlers to test for: the branch that took the release
+    // back on a wheel up at scrollY 0 went with the re-entry.
     const handleWheel = (e: globalThis.WheelEvent) => {
       if (e.deltaY !== 0) lastDir.current = e.deltaY > 0 ? 1 : -1;
-      if (mediaFullyExpanded && e.deltaY < 0 && window.scrollY <= 5) {
-        setMediaFullyExpanded(false);
-        e.preventDefault();
-      } else if (!mediaFullyExpanded) {
-        e.preventDefault();
-        const now = performance.now();
-        const size = Math.abs(e.deltaY);
-        const since = now - tail.current.at;
-        // A tail shrinks; a plateau of equal deltas is still the same tail
-        // running out, but it is not evidence of one starting.
-        const shrinking = since <= TAIL_GAP_MS && size > 0 && size < tail.current.size;
-        const coasting = since <= COAST_GAP_MS && size <= tail.current.size;
-        tail.current = { count: shrinking ? tail.current.count + 1 : 1, at: now, size };
-        // The tail that started a settle does not also cancel it.
-        if (coasting && settle.current) return;
-        onInput();
-        applyProgress(e.deltaY * WHEEL_GAIN);
-        if (
-          shrinking &&
-          tail.current.count >= TAIL_EVENTS &&
-          progressRef.current >= SETTLE_FORWARD_FROM
-        ) {
-          startSettle();
-        }
+      e.preventDefault();
+      const now = performance.now();
+      const size = Math.abs(e.deltaY);
+      const since = now - tail.current.at;
+      // A tail shrinks; a plateau of equal deltas is still the same tail
+      // running out, but it is not evidence of one starting.
+      const shrinking = since <= TAIL_GAP_MS && size > 0 && size < tail.current.size;
+      const coasting = since <= COAST_GAP_MS && size <= tail.current.size;
+      tail.current = { count: shrinking ? tail.current.count + 1 : 1, at: now, size };
+      // The tail that started a settle does not also cancel it.
+      if (coasting && settle.current) return;
+      onInput();
+      applyProgress(e.deltaY * WHEEL_GAIN);
+      if (
+        shrinking &&
+        tail.current.count >= TAIL_EVENTS &&
+        progressRef.current >= SETTLE_FORWARD_FROM
+      ) {
+        startSettle();
       }
     };
 
     // Keyboard escape hatch: expand in one step so the wheel/touch lock can
     // never trap keyboard or switch-access users.
     const handleKeyDown = (e: globalThis.KeyboardEvent) => {
-      if (mediaFullyExpanded) return;
       const target = e.target as HTMLElement | null;
       if (target?.closest("a, button, input, select, textarea")) return;
       if (EXPAND_KEYS.includes(e.key)) {
@@ -576,18 +601,13 @@ const ScrollExpandMedia = ({
       const deltaY = touchStartY - touchY;
       if (deltaY !== 0) lastDir.current = deltaY > 0 ? 1 : -1;
 
-      if (mediaFullyExpanded && deltaY < -20 && window.scrollY <= 5) {
-        setMediaFullyExpanded(false);
-        e.preventDefault();
-      } else if (!mediaFullyExpanded) {
-        // Once progress hits 1 this branch stops matching, so touch events
-        // are no longer intercepted and native scrolling resumes.
-        e.preventDefault();
-        onInput();
-        const scrollFactor = deltaY < 0 ? 0.008 : 0.005;
-        applyProgress(deltaY * scrollFactor);
-        setTouchStartY(touchY);
-      }
+      // Once progress hits 1 this effect is gone, so touch events are no
+      // longer intercepted and native scrolling resumes.
+      e.preventDefault();
+      onInput();
+      const scrollFactor = deltaY < 0 ? 0.008 : 0.005;
+      applyProgress(deltaY * scrollFactor);
+      setTouchStartY(touchY);
     };
 
     // The finger lifting is the end of the input, so the settle starts there
@@ -595,13 +615,11 @@ const ScrollExpandMedia = ({
     // glass is caught by the clock.
     const handleTouchEnd = () => {
       setTouchStartY(0);
-      if (!mediaFullyExpanded) startSettle();
+      startSettle();
     };
 
     const handleScroll = () => {
-      if (!mediaFullyExpanded) {
-        window.scrollTo(0, 0);
-      }
+      window.scrollTo(0, 0);
     };
 
     // One step of the settle in flight, fed through `applyProgress` from this
@@ -640,7 +658,7 @@ const ScrollExpandMedia = ({
       window.removeEventListener("touchmove", handleTouchMove);
       window.removeEventListener("touchend", handleTouchEnd);
     };
-  }, [scrollProgress, mediaFullyExpanded, touchStartY, reducedMotion, settleRun]);
+  }, [scrollProgress, touchStartY, reducedMotion, settleRun]);
 
   // The idle clock must not outlive the capture.
   useEffect(
@@ -660,6 +678,7 @@ const ScrollExpandMedia = ({
   useEffect(() => {
     const reset = () => {
       skipCapture.current = false;
+      released.current = false;
       settle.current = null;
       if (idleTimer.current !== null) window.clearTimeout(idleTimer.current);
       idleTimer.current = null;
