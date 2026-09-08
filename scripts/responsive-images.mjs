@@ -388,6 +388,81 @@ function signature() {
   return parts.join("|");
 }
 
+// The ground a plate stands on while its photograph is still on the wire.
+//
+// An inner page paints and then waits: measured at 390x664 DPR 3, the hero
+// landed 500-734 ms after the route on 4G and 4.3-6.0 s on Fast 3G, and until
+// it did the reader had the floor - the same flat pine under every page,
+// telling them nothing about the picture that is coming. This is that ground
+// given the photograph's own colour, so the arrival is a frame resolving out
+// of its own hue rather than a picture cutting in over an unrelated dark.
+//
+// It is not a blur, a gradient or a fade. It is one opaque colour, and the
+// polarised ledger is why: a low-resolution copy of the frame held under the
+// real one is a picture at partial strength, which is the one state no plate
+// on this site is allowed to hold.
+//
+// The two ground plates the page actually declares. A frame's mean is pulled
+// onto whichever of them it is nearer, so the ground carries the picture's hue
+// at the floor's own weight and can never be a light rectangle waiting to be
+// replaced.
+const PLATES = { "gold-wash": "#141c16", "gold-anchor": "#0e1510" };
+
+const srgbToLinear = (c) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
+const linearToSrgb = (c) => (c <= 0.0031308 ? c * 12.92 : 1.055 * c ** (1 / 2.4) - 0.055);
+// The brightness the ledger is read at: the sRGB bytes, weighted. Not relative
+// luminance - the check this feeds ("no brighter than the floor") is about
+// what the screen paints, and both sides of it are bytes.
+const byteLuma = ([r, g, b]) => 0.2126 * r + 0.7152 * g + 0.0722 * b;
+const hexToRgb = (hex) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
+const rgbToHex = (rgb) => "#" + rgb.map((c) => Math.round(c).toString(16).padStart(2, "0")).join("");
+
+/** The mean colour of the middle third of a frame, in linear light so the
+ *  average is of the light and not of the encoding. */
+function middleThirdMean(data, width, height, channels) {
+  const x0 = Math.floor(width / 3), x1 = Math.ceil((width * 2) / 3);
+  const y0 = Math.floor(height / 3), y1 = Math.ceil((height * 2) / 3);
+  const sum = [0, 0, 0];
+  let n = 0;
+  for (let y = y0; y < y1; y++) {
+    for (let x = x0; x < x1; x++) {
+      const i = (y * width + x) * channels;
+      for (let c = 0; c < 3; c++) sum[c] += srgbToLinear(data[i + c] / 255);
+      n++;
+    }
+  }
+  return sum.map((v) => v / n);
+}
+
+/** That mean pulled down onto a plate's own brightness, hue intact.
+ *
+ *  Nearest is read before the pull, on the one axis the pull travels: the
+ *  frame goes to the pole it has least distance to fall to. Read after it, the
+ *  answer is always the deeper plate and the choice is not a choice - both
+ *  candidates land on their own target exactly, so the darker one is nearer to
+ *  everything by having less colour left in it.
+ *
+ *  The scale is on the linear values - a multiply there is a change of
+ *  exposure, which leaves the chromaticity where it was - and the factor is
+ *  solved for rather than derived, because the target is stated in bytes. */
+function pullToPlate(meanLinear) {
+  const mean = meanLinear.map((v) => linearToSrgb(v) * 255);
+  const [name, hex] = Object.entries(PLATES).sort(
+    (a, b) =>
+      Math.abs(byteLuma(mean) - byteLuma(hexToRgb(a[1]))) -
+      Math.abs(byteLuma(mean) - byteLuma(hexToRgb(b[1])))
+  )[0];
+  const target = byteLuma(hexToRgb(hex));
+  let lo = 0, hi = 1;
+  for (let i = 0; i < 40; i++) {
+    const k = (lo + hi) / 2;
+    const rgb = meanLinear.map((v) => linearToSrgb(Math.min(1, v * k)) * 255);
+    if (byteLuma(rgb) > target) hi = k; else lo = k;
+  }
+  const rgb = meanLinear.map((v) => linearToSrgb(Math.min(1, v * ((lo + hi) / 2))) * 255);
+  return { name, hex: rgbToHex(rgb), luma: byteLuma(rgb), mean: rgbToHex(mean) };
+}
+
 async function run() {
   assertLadder(await bleedWidths());
 
@@ -471,16 +546,28 @@ async function run() {
         }
       }
 
+      // The ground, off the same graded pixels every variant is resized from,
+      // and after the crop - a crop moves the middle third.
+      const groundBuf = region
+        ? await sharp(oriented.data, { raw: { width: fullW, height: fullH, channels: 3 } })
+            .extract(region).raw().toBuffer({ resolveWithObject: true })
+        : { data: oriented.data, info: { width: fullW, height: fullH, channels: 3 } };
+      const ground = pullToPlate(
+        middleThirdMean(groundBuf.data, groundBuf.info.width, groundBuf.info.height, 3)
+      );
+
       images[key] = {
         base,
         width: dispW,
         height: dispH,
         widths,
         formats: FORMATS.map((f) => f.ext),
+        ground: ground.hex,
       };
       if (scaled) images[scaled.key] = { ...images[key], widths: emitted };
       console.log(
         `  ${base.padEnd(22)} ${dispW}x${dispH}  ${widths.length} widths` +
+          `  ground ${ground.hex} L${ground.luma.toFixed(1)} (${ground.name}, from ${ground.mean})` +
           (scaled ? ` (+${scaled.width} for ${scaled.key})` : "")
       );
     }

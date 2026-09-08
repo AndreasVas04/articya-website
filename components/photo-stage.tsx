@@ -3,7 +3,7 @@
 import { useEffect, useRef, type CSSProperties } from "react";
 import { cubicBezier } from "framer-motion";
 import { ResponsiveImage } from "@/components/responsive-image";
-import { coverSizes, FULL_VIEWPORT, imagePreload } from "@/lib/images";
+import { coverSizes, FULL_VIEWPORT, imageGround, imagePreload } from "@/lib/images";
 import { cn } from "@/lib/utils";
 
 const easeInOutCubic = cubicBezier(0.65, 0, 0.35, 1);
@@ -321,6 +321,25 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
     ? imagePreload(lcp.src, coverSizes(lcp.src, FULL_VIEWPORT))
     : null;
 
+  // The ground this layer stands on until its first photograph arrives. An
+  // inner page paints its hero before the picture is anywhere near it - 500 ms
+  // behind on 4G, seconds on 3G - and what showed through was the site floor:
+  // the same flat pine under every page, and a hard cut to the frame when it
+  // landed. This is the frame's own dark instead, so the picture resolves out
+  // of its own hue rather than replacing an unrelated one.
+  //
+  // One opaque colour and nothing else. A blurred thumbnail is a photograph at
+  // partial strength, which is the state the polarised ledger forbids at every
+  // frame of a transition and not only at its ends; a gradient or a fade is
+  // the same thing spread over time. It is measured to the floor's own weight
+  // (L 25.9 against 25.9) so there is no step where this layer ends and the
+  // document's background begins, and none as it is covered.
+  //
+  // Only a stage with an LCP plate takes one. Home's stage arrives under the
+  // hero, out of nothing, on the run-up its first zone is keyed to - a ground
+  // there would paint a colour into that stretch, which is floor by design.
+  const ground = lcp ? imageGround(lcp.src) : null;
+
   // `h-[100dvh]` rather than `inset-0`, and the unit is the whole of it. A
   // fixed box with no height of its own resolves against the initial
   // containing block, and a phone browser holds that at the *large* viewport
@@ -342,6 +361,7 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
       ref={rootRef}
       aria-hidden="true"
       className="photo-stage pointer-events-none fixed inset-x-0 top-0 h-[100dvh]"
+      style={ground ? { backgroundColor: ground } : undefined}
     >
       {preload && (
         <link

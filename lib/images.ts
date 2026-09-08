@@ -13,6 +13,9 @@ interface ManifestEntry {
   height: number;
   widths: number[];
   formats: string[];
+  /** The frame's own dark, computed at build time - see `pullToPlate` in
+   *  scripts/responsive-images.mjs. */
+  ground: string;
 }
 interface Manifest {
   dir: string;
@@ -139,6 +142,13 @@ export function coverSizes(
   const w = painted(wide, REFERENCE_WIDE);
   const c = painted(compact, REFERENCE_COMPACT);
   return w === c ? `${w}vw` : `${BREAKPOINT} ${w}vw, ${c}vw`;
+}
+
+/** The opaque ground a placement stands on until its file arrives: the mean of
+ *  the frame's middle third pulled onto the nearest of the page's two ground
+ *  plates, so it carries the photograph's hue at the floor's own weight. */
+export function imageGround(src: string): string | null {
+  return data.images[src]?.ground ?? null;
 }
 
 /** Preload attributes for an LCP image, targeting the best modern format the
