@@ -1,10 +1,13 @@
 import {
   BackSide,
+  BufferGeometry,
+  Float32BufferAttribute,
   Group,
   LinearMipmapLinearFilter,
   Mesh,
   NormalBlending,
   PerspectiveCamera,
+  Points,
   Quaternion,
   Scene,
   ShaderMaterial,
@@ -20,12 +23,35 @@ import {
 // section (scripts/globe-texture.mjs); a second map carries the night lights,
 // the clouds and the water. The night side glows with its cities in the
 // site's own amber, the sun glints on the sea, a thin weather layer turns a
-// little faster than the ground, and the atmosphere is a soft blue limb.
+// little faster than the ground, and the atmosphere is a soft blue limb. The
+// marks are points of amber light on the countries the projects reach.
 // Everything here is loaded on demand a viewport ahead of the section and
 // thrown away with it; earth-globe.tsx owns that lifecycle.
 
-// Cyprus: the point the Earth faces the reader from when the section enters.
+// Cyprus, and the countries the marks stand on, in the order they light.
 const HOME: [number, number] = [35.13, 33.43];
+const PLACES: [number, number][] = [
+  [38.7223, -9.1393], // Portugal
+  [40.4168, -3.7038], // Spain
+  [41.9028, 12.4964], // Italy
+  [37.9838, 23.7275], // Greece
+  [52.52, 13.405], // Germany
+  [52.2297, 21.0122], // Poland
+  [44.4268, 26.1025], // Romania
+  [42.6977, 23.3219], // Bulgaria
+  [47.4979, 19.0402], // Hungary
+  [50.0755, 14.4378], // Czechia
+  [48.1486, 17.1077], // Slovakia
+  [46.0569, 14.5058], // Slovenia
+  [45.815, 15.9819], // Croatia
+  [48.2082, 16.3738], // Austria
+  [52.3676, 4.9041], // Netherlands
+  [50.8503, 4.3517], // Belgium
+  [48.8566, 2.3522], // France
+  [54.6872, 25.2797], // Lithuania
+  [56.9496, 24.1052], // Latvia
+  [59.437, 24.7536], // Estonia
+];
 
 const DEG = Math.PI / 180;
 // One revolution in 90 s; the weather drifts a fifth faster.
@@ -48,6 +74,12 @@ const NIGHT = 0.045;
 const ATMOSPHERE = "#8fbce6";
 const ATMOSPHERE_SUN = "#f2d7a8";
 const HALO_THICKNESS = 0.045;
+// Marks: an amber point with a soft halo, the home point larger and breathing.
+const MARK_PX = 15;
+const HOME_MARK_PX = 22;
+const MARK_STAGGER = 70;
+const MARK_FADE = 260;
+const MARK_LEAD = 300;
 // Drag: inertia damped 0.92 per 60 Hz frame, the spin back 4 s after the hand.
 const DRAG_DAMPING = 0.92;
 const IDLE_BEFORE_SPIN = 4000;
@@ -169,18 +201,51 @@ const HALO_FRAGMENT = /* glsl */ `
     #include <colorspace_fragment>
   }
 `;
-
+const MARK_VERTEX = /* glsl */ `
+  attribute float aSize;
+  attribute float aOn;
+  uniform float pixelRatio;
+  uniform float breath;
+  varying float vAlpha;
+  varying float vHome;
+  void main() {
+    vec4 mv = modelViewMatrix * vec4(position, 1.0);
+    vec3 n = normalize(normalMatrix * normal);
+    vec3 v = normalize(-mv.xyz);
+    // The far side goes out as it turns away: nothing pops at the limb.
+    vAlpha = smoothstep(0.0, 0.3, dot(n, v)) * aOn;
+    vHome = step(20.0, aSize);
+    gl_PointSize = aSize * pixelRatio * (1.0 + vHome * breath);
+    gl_Position = projectionMatrix * mv;
+  }
+`;
+const MARK_FRAGMENT = /* glsl */ `
+  uniform vec3 color;
+  varying float vAlpha;
+  varying float vHome;
+  void main() {
+    float d = length(gl_PointCoord - 0.5) * 2.0;
+    // A bright core inside a soft halo.
+    float core = 1.0 - smoothstep(0.22, 0.34, d);
+    float halo = (1.0 - smoothstep(0.2, 1.0, d)) * 0.5;
+    float a = max(core, halo) * vAlpha;
+    vec3 c = mix(color, vec3(1.0, 0.93, 0.8), core * 0.45);
+    gl_FragColor = vec4(c, a);
+    #include <colorspace_fragment>
+  }
+`;
 
 export interface EarthOptions {
   /** The day map, by rung: `[phone, desktop]`. */
   day: [string, string];
   /** The packed lights / clouds / water map. */
   pack: string;
-  /** `--color-resin`, as hex: the cities' light. */
+  /** `--color-resin`, as hex: the marks, and the cities' light. */
   resin: string;
   reducedMotion: boolean;
   /** Resolves once the section's entrance has fired (or at once, when there
-   *  is no entrance to wait for). Cyprus faces the reader from that moment. */
+   *  is no entrance to wait for). Cyprus faces the reader from that moment
+   *  and the marks light from it. */
   entered: Promise<void>;
 }
 
@@ -293,6 +358,46 @@ export function mountEarth(host: HTMLElement, canvas: HTMLCanvasElement, opts: E
   halo.renderOrder = 2;
   scene.add(halo);
 
+  // The marks.
+  const markCount = PLACES.length + 1;
+  const positions = new Float32Array(markCount * 3);
+  const normals = new Float32Array(markCount * 3);
+  const sizes = new Float32Array(markCount);
+  // The attribute owns its array (three copies what it is given), so the
+  // per-mark switch is written straight into it.
+  const onAttribute = new Float32BufferAttribute(new Float32Array(markCount), 1);
+  const on = onAttribute.array as Float32Array;
+  const place = (i: number, lat: number, lon: number, px: number) => {
+    const p = toSphere(lat, lon);
+    normals.set([p.x, p.y, p.z], i * 3);
+    p.multiplyScalar(1.008);
+    positions.set([p.x, p.y, p.z], i * 3);
+    sizes[i] = px;
+  };
+  place(0, HOME[0], HOME[1], HOME_MARK_PX);
+  PLACES.forEach(([lat, lon], i) => place(i + 1, lat, lon, MARK_PX));
+  const markGeometry = new BufferGeometry();
+  markGeometry.setAttribute("position", new Float32BufferAttribute(positions, 3));
+  markGeometry.setAttribute("normal", new Float32BufferAttribute(normals, 3));
+  markGeometry.setAttribute("aSize", new Float32BufferAttribute(sizes, 1));
+  markGeometry.setAttribute("aOn", onAttribute);
+  const markMaterial = new ShaderMaterial({
+    uniforms: {
+      color: { value: resin },
+      pixelRatio: { value: renderer.getPixelRatio() },
+      breath: { value: 0 },
+    },
+    vertexShader: MARK_VERTEX,
+    fragmentShader: MARK_FRAGMENT,
+    transparent: true,
+    depthTest: false,
+    depthWrite: false,
+  });
+  const marks = new Points(markGeometry, markMaterial);
+  marks.renderOrder = 3;
+  marks.visible = false;
+  spin.add(marks);
+
   const home = toSphere(HOME[0], HOME[1]);
 
   // The spin that puts Cyprus under the camera: the angle that turns its
@@ -323,6 +428,7 @@ export function mountEarth(host: HTMLElement, canvas: HTMLCanvasElement, opts: E
   let dragVelocity = 0;
   let dragging = false;
   let lastPointerAt = -Infinity;
+  let enteredAt: number | null = null;
   let ready = false;
   let visible = false;
   let raf = 0;
@@ -330,9 +436,27 @@ export function mountEarth(host: HTMLElement, canvas: HTMLCanvasElement, opts: E
   let discPx = 1;
   let disposed = false;
 
+  const lightMarks = (now: number) => {
+    if (enteredAt === null) return;
+    const t = now - enteredAt - MARK_LEAD;
+    let changed = false;
+    for (let i = 0; i < markCount; i += 1) {
+      const local = (t - i * MARK_STAGGER) / MARK_FADE;
+      const v = local <= 0 ? 0 : local >= 1 ? 1 : local * local * (3 - 2 * local);
+      if (on[i] !== v) {
+        on[i] = v;
+        changed = true;
+      }
+    }
+    if (changed) onAttribute.needsUpdate = true;
+  };
+  const marksDone = () =>
+    enteredAt !== null && performance.now() - enteredAt > MARK_LEAD + MARK_STAGGER * (markCount - 1) + MARK_FADE;
+
   const render = (now: number) => {
     spin.rotation.y = angle;
     weather.rotation.y = angle + cloudAngle;
+    markMaterial.uniforms.breath.value = opts.reducedMotion ? 0 : 0.12 * (0.5 + 0.5 * Math.sin(now / 900));
     renderer.render(scene, camera);
   };
 
@@ -356,9 +480,10 @@ export function mountEarth(host: HTMLElement, canvas: HTMLCanvasElement, opts: E
         dragVelocity = 0;
       }
     }
+    lightMarks(now);
     render(now);
 
-    const still = opts.reducedMotion && !dragging && Math.abs(dragVelocity) < 1e-5;
+    const still = opts.reducedMotion && marksDone() && !dragging && Math.abs(dragVelocity) < 1e-5;
     if (visible && !still) raf = requestAnimationFrame(frame);
   };
   const wake = () => {
@@ -488,13 +613,17 @@ export function mountEarth(host: HTMLElement, canvas: HTMLCanvasElement, opts: E
       globe.visible = true;
       clouds.visible = true;
       halo.visible = true;
+      marks.visible = true;
       // Shaders compile and the textures upload here, a viewport ahead of
       // the section, so the entrance's first frame costs a draw and nothing else.
       renderer.compile(scene, camera);
       ready = true;
       resize();
       if (opts.reducedMotion) {
-        // The Cyprus-facing frame, still.
+        // The Cyprus-facing frame with every mark lit.
+        enteredAt = -Infinity;
+        on.fill(1);
+        onAttribute.needsUpdate = true;
         render(performance.now());
       } else {
         render(performance.now());
@@ -505,6 +634,7 @@ export function mountEarth(host: HTMLElement, canvas: HTMLCanvasElement, opts: E
     .then(() => {
       if (disposed || opts.reducedMotion) return;
       angle = homeFacing;
+      enteredAt = performance.now();
       wake();
     })
     .catch(() => {
@@ -524,9 +654,11 @@ export function mountEarth(host: HTMLElement, canvas: HTMLCanvasElement, opts: E
       globeGeometry.dispose();
       cloudGeometry.dispose();
       haloGeometry.dispose();
+      markGeometry.dispose();
       globeMaterial.dispose();
       cloudMaterial.dispose();
       haloMaterial.dispose();
+      markMaterial.dispose();
       dayTexture.dispose();
       packTexture.dispose();
       renderer.dispose();
