@@ -88,6 +88,8 @@ const MARK_LEAD = 300;
 // Drag: inertia damped 0.92 per 60 Hz frame, the spin back 4 s after the hand.
 const DRAG_DAMPING = 0.92;
 const IDLE_BEFORE_SPIN = 4000;
+// How long a page scale has to hold before the drawing buffer is re-cut for it.
+const SCALE_SETTLE_MS = 250;
 const SPIN_RETURN = 600;
 
 // Latitude and longitude onto the unit sphere in the geometry's own frame:
@@ -444,6 +446,8 @@ export function mountEarth(host: HTMLElement, canvas: HTMLCanvasElement, opts: E
   let lastFrame = 0;
   let discPx = 1;
   let disposed = false;
+  // Set by the page-scale watch below: true while the reader holds a pinch.
+  let zoomed = false;
 
   const lightMarks = (now: number) => {
     if (enteredAt === null) return;
@@ -471,7 +475,7 @@ export function mountEarth(host: HTMLElement, canvas: HTMLCanvasElement, opts: E
 
   const frame = (now: number) => {
     raf = 0;
-    if (disposed || !ready) return;
+    if (disposed || !ready || zoomed) return;
     const dt = lastFrame ? Math.min(now - lastFrame, 100) : 16.67;
     lastFrame = now;
 
@@ -496,7 +500,7 @@ export function mountEarth(host: HTMLElement, canvas: HTMLCanvasElement, opts: E
     if (visible && !still) raf = requestAnimationFrame(frame);
   };
   const wake = () => {
-    if (!raf && ready && visible && !disposed) {
+    if (!raf && ready && visible && !disposed && !zoomed) {
       lastFrame = 0;
       raf = requestAnimationFrame(frame);
     }
@@ -509,17 +513,61 @@ export function mountEarth(host: HTMLElement, canvas: HTMLCanvasElement, opts: E
   // buffer, and a reallocation is the one operation on this canvas that can
   // cost the context. A lost context is a black disc for the rest of the
   // page's life, so the cheapest guard is not to ask.
-  let sized = 0;
+  //
+  // The key is the size and the ratio together, because the ratio moves too:
+  // see the page-scale watch below.
+  let sized = "";
+  let ratio = Math.min(window.devicePixelRatio || 1, 2);
   const resize = () => {
     const size = host.clientWidth;
-    if (!size || size === sized) return;
-    sized = size;
+    const key = `${size}@${ratio}`;
+    if (!size || key === sized) return;
+    sized = key;
+    renderer.setPixelRatio(ratio);
     renderer.setSize(size, size, false);
+    markMaterial.uniforms.pixelRatio.value = renderer.getPixelRatio();
     discPx = size * DISC;
     if (ready) render(performance.now());
   };
   const resizeObserver = new ResizeObserver(resize);
   resizeObserver.observe(host);
+
+  // A pinch is not a frame to render.
+  //
+  // While the reader holds a page scale the compositor is re-rastering every
+  // layer on the page at the new scale, and this canvas is asking the same GPU
+  // for a frame sixty times a second of a sphere nobody is looking at as a
+  // sphere. The loop stops for the whole of the gesture, and the buffer is
+  // halved to DPR 1 - a quarter of the pixels - for as long as the reader
+  // stays zoomed.
+  //
+  // The halving waits, and that is the point of the delay. `setPixelRatio`
+  // reallocates the drawing buffer, which is the one operation on this canvas
+  // that can cost the context, and the middle of a live gesture is the worst
+  // moment on the page to ask for memory. So the loop pauses on the first
+  // event and the buffer is only re-cut once the gesture has been still for
+  // SCALE_SETTLE_MS - and back at scale 1, the same wait again before the full
+  // ratio returns.
+  const vv = window.visualViewport;
+  let scaleTimer = 0;
+  const settleScale = () => {
+    const want = zoomed ? 1 : Math.min(window.devicePixelRatio || 1, 2);
+    if (want === ratio) return;
+    ratio = want;
+    sized = "";
+    resize();
+  };
+  const onScale = () => {
+    const now = (vv?.scale ?? 1) > 1;
+    if (now !== zoomed) {
+      zoomed = now;
+      if (!zoomed) wake();
+    }
+    window.clearTimeout(scaleTimer);
+    scaleTimer = window.setTimeout(settleScale, SCALE_SETTLE_MS);
+  };
+  vv?.addEventListener("resize", onScale);
+  vv?.addEventListener("scroll", onScale);
 
   // And if it is lost anyway - a background tab reclaimed, memory pressure on
   // a phone - the default is that the canvas stays black forever. Swallowing
@@ -532,7 +580,7 @@ export function mountEarth(host: HTMLElement, canvas: HTMLCanvasElement, opts: E
     raf = 0;
   };
   const onContextRestored = () => {
-    sized = 0;
+    sized = "";
     resize();
     dayTexture.needsUpdate = true;
     packTexture.needsUpdate = true;
@@ -686,6 +734,9 @@ export function mountEarth(host: HTMLElement, canvas: HTMLCanvasElement, opts: E
     dispose: () => {
       disposed = true;
       if (raf) cancelAnimationFrame(raf);
+      window.clearTimeout(scaleTimer);
+      vv?.removeEventListener("resize", onScale);
+      vv?.removeEventListener("scroll", onScale);
       resizeObserver.disconnect();
       canvas.removeEventListener("webglcontextlost", onContextLost);
       canvas.removeEventListener("webglcontextrestored", onContextRestored);
