@@ -67,8 +67,7 @@ export interface StagePlate {
   split?: number;
   /** Where the seam stands below `md`, if not at `split`. A phone has no
    *  column beside the picture: the text runs the full width, so the seam has
-   *  to stand to the right of every row or the rows cross it. `0` is no
-   *  split at all there - the sharp frame alone, and no seam drawn. */
+   *  to stand to the right of every row or the rows cross it. */
   splitCompact?: number;
   /** This plate is the page's LCP: preloaded, eager, never lazy. */
   priority?: boolean;
@@ -92,9 +91,6 @@ export interface StagePlate {
     from?: string;
     to?: string;
     color?: string;
-    /** The three strengths below `md`, where a plate that is a split above
-     *  it is the sharp frame alone and needs the darkening it had. */
-    compact?: { top: number; mid: number; base: number };
   };
 }
 
@@ -401,7 +397,7 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
             </div>
             {plate.split !== undefined && (
               <>
-                <div className={cn("stage-plate-split absolute inset-0", plate.splitCompact === 0 && "stage-plate-wide-only")}>
+                <div className="stage-plate-split absolute inset-0">
                   <div className="stage-plate-soft">
                     <ResponsiveImage
                       src={plate.src}
@@ -414,7 +410,7 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
                 </div>
                 {/* A visible line, deliberately: the reference's seam is a
                     mark, not a feather. */}
-                <div className={cn("stage-plate-seam", plate.splitCompact === 0 && "stage-plate-wide-only")} />
+                <div className="stage-plate-seam" />
               </>
             )}
           </div>
@@ -425,33 +421,18 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
               anywhere else on the page. */}
           <div
             className="plate-shade stage-plate-shade absolute inset-0"
-            data-shade-compact={plate.shade?.compact ? "" : undefined}
             style={
               plate.shade
                 ? ({
                     ...(plate.shade.color
                       ? { "--shade-color": plate.shade.color }
                       : null),
-                    // With a compact set the three strengths are written as
-                    // two pairs and the class picks by breakpoint, so the
-                    // inline value never has to be the same on both sides.
-                    ...(plate.shade.compact
-                      ? {
-                          "--shade-top-wide": `${plate.shade.top}%`,
-                          "--shade-mid-wide": `${plate.shade.mid}%`,
-                          "--shade-bottom-wide": `${plate.shade.base}%`,
-                          "--shade-top-compact": `${plate.shade.compact.top}%`,
-                          "--shade-mid-compact": `${plate.shade.compact.mid}%`,
-                          "--shade-bottom-compact": `${plate.shade.compact.base}%`,
-                        }
-                      : {
-                          "--shade-top": `${plate.shade.top}%`,
-                          "--shade-mid": `${plate.shade.mid}%`,
-                          "--shade-bottom": `${plate.shade.base}%`,
-                        }),
+                    "--shade-top": `${plate.shade.top}%`,
+                    "--shade-mid": `${plate.shade.mid}%`,
+                    "--shade-bottom": `${plate.shade.base}%`,
                     "--shade-mid-from": plate.shade.from ?? "30%",
                     "--shade-mid-to": plate.shade.to ?? "78%",
-                  } as Record<string, string> as CSSProperties)
+                  } as CSSProperties)
                 : undefined
             }
           />

@@ -425,28 +425,6 @@ body {
     width: 1px;
     background: color-mix(in srgb, var(--color-ink) 30%, transparent);
   }
-  /* A split that exists above `md` only: below it the soft copy and the
-     seam are not drawn, and the plate is the sharp frame it was. Its
-     darkening is two sets of three, written as pairs by the layer and picked
-     here by the same breakpoint, so the sharp frame below `md` keeps the
-     numbers it was measured at. */
-  @media (max-width: 767px) {
-    .stage-plate-wide-only {
-      display: none;
-    }
-  }
-  .stage-plate-shade[data-shade-compact] {
-    --shade-top: var(--shade-top-wide);
-    --shade-mid: var(--shade-mid-wide);
-    --shade-bottom: var(--shade-bottom-wide);
-  }
-  @media (max-width: 767px) {
-    .stage-plate-shade[data-shade-compact] {
-      --shade-top: var(--shade-top-compact);
-      --shade-mid: var(--shade-mid-compact);
-      --shade-bottom: var(--shade-bottom-compact);
-    }
-  }
   .stage-plate-soft {
     position: absolute;
     top: 0;

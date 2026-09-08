@@ -71,39 +71,11 @@ const plates: StagePlate[] = [
   // water own this frame's chroma, and a green-black over blue does not lower
   // it, it turns it. At equal strength the two are within 0.01 of each other on
   // contrast, so the choice costs nothing and buys the hue.
-  //
-  // It is the split above `md`: the same frame out of focus to the left of a
-  // seam at 57% of the window, sharp to the right of it, which is Contact's
-  // construction and the reference's own move for words on a full-bleed
-  // frame. The clearing's column ends at 54-56% of the window from 768 up,
-  // so every word stands on the soft side. Below `md` there is no column
-  // beside a paragraph and the plate is the sharp frame it was.
   {
     src: "/images/hero-1.jpg",
     position: "50% 50%",
     wipe: true,
-    split: 57,
-    splitCompact: 0,
-    //
-    // Two darkenings, one per side of the breakpoint. Below `md` the sharp
-    // frame carries the words and keeps 74/82/82. Above it the words stand
-    // on the soft copy, which is already at 0.6 of the frame and blurred, so
-    // the plate needs less: at 60 the lead reads 5.09 against 4.5 where the
-    // sharp frame at 82 read 5.00, the labels 5.25-5.69, and the sharp side
-    // of the seam shows the picture at 0.40 of itself. 54 leaves the lead at
-    // 4.62, which is no margin; 66 and 70 buy 5.53 and 5.94 for a picture at
-    // 0.34 and 0.30. The base comes to 76, the road's, because the foot of
-    // the window carries no words at rest now that the ledger is in the
-    // column.
-    shade: {
-      top: 74,
-      mid: 60,
-      base: 76,
-      from: "14%",
-      to: "86%",
-      color: "var(--color-sky-anchor)",
-      compact: { top: 74, mid: 82, base: 82 },
-    },
+    shade: { top: 74, mid: 82, base: 82, from: "14%", to: "86%", color: "var(--color-sky-anchor)" },
   },
   // The join between the two panels: the road between the stone walls under
   // flat overcast light, crossed rather than stopped on. It used to carry a
