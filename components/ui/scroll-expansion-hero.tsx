@@ -790,6 +790,15 @@ const ScrollExpandMedia = ({
   // becomes the gallery rather than floating a second picture over it.
   const cardOpacity = Math.min(Math.max((progress - 0.02) / 0.28, 0), 1);
 
+  // The poster's own strength, read once, by the layer at the top of the
+  // section and by the copy of it masked to the land at the bottom. At zero
+  // neither one is rendered at all: two full-bleed photographs, two
+  // darkenings and a mask, all painting nothing, all of them backing stores
+  // the compositor holds - and re-rasters at the square of a page scale -
+  // for the whole of the reading page below.
+  const poster = posterOpacity(progress);
+  const posterShowing = poster > 0;
+
   // The card holds the poster's own frame for the whole opening. The slideshow
   // clock is untouched and keeps running underneath; what is re-based is which
   // slide the card *shows*, so its first visible change lands after full bleed
@@ -883,9 +892,10 @@ const ScrollExpandMedia = ({
             of the picture at the same scale. They used to ride a 200ms tween
             while the window did not, and after a fast burst the two copies of
             the skyline stood up to 5px apart for a fifth of a second. */}
+        {posterShowing && (
         <div
           className="absolute inset-0 z-0"
-          style={{ opacity: posterOpacity(progress), scale: heroPush(progress) }}
+          style={{ opacity: poster, scale: heroPush(progress) }}
         >
           {/* The backdrop is the collapsed opening's presence: the graded
               home-hero vista at full photographic strength - a place, not a
@@ -935,6 +945,7 @@ const ScrollExpandMedia = ({
               used to be written here. */}
           <HeroShade progress={progress} />
         </div>
+        )}
 
         <div className="relative z-10 mx-auto flex w-full flex-col items-center">
           {/* The stage the card is centred in. A phone-only drop used to sink
@@ -1301,21 +1312,29 @@ const ScrollExpandMedia = ({
           style={
             {
               "--ridge-mask": `url(${withBasePath(POSTER_RIDGE)})`,
-              opacity: posterOpacity(progress),
+              opacity: poster,
               scale: heroPush(progress),
+              // The mask, the picture and its darkening are three composited
+              // full-bleed layers, and past the release they are three the
+              // reader pays for on every pinch to paint nothing. The plate
+              // itself cannot be unmounted - the descent measures the ridge's
+              // registration off it - so what leaves is everything inside it.
+              ...(posterShowing ? null : { display: "none" }),
             } as CSSProperties
           }
         >
-          <ResponsiveImage
-            src={bgImageSrc}
-            alt=""
-            fill
-            priority
-            sizes={posterSizes}
-            className="hero-poster object-cover saturate-[1.06] sepia-[0.08]"
-            style={{ objectPosition: "50% var(--hero-poster-y)" }}
-          />
-          <HeroShade progress={progress} />
+          {posterShowing && (
+            <ResponsiveImage
+              src={bgImageSrc}
+              alt=""
+              fill
+              priority
+              sizes={posterSizes}
+              className="hero-poster object-cover saturate-[1.06] sepia-[0.08]"
+              style={{ objectPosition: "50% var(--hero-poster-y)" }}
+            />
+          )}
+          {posterShowing && <HeroShade progress={progress} />}
         </div>
       </section>
     </div>

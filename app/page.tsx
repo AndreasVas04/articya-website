@@ -6,6 +6,7 @@ import { StageScene } from "@/components/stage-entrance";
 import { EarthGlobe } from "@/components/earth-globe";
 import { OfferPanel } from "@/components/offer-panel";
 import { GainTrail } from "@/components/gain-trail";
+import { NearGround } from "@/components/near-ground";
 import { PhotoStage, type StagePlate } from "@/components/photo-stage";
 import { ResponsiveImage } from "@/components/responsive-image";
 import { SectionIndex } from "@/components/edge-furniture";
@@ -648,10 +649,7 @@ export default function HomePage() {
               the whole of how much of the picture shows - at 120svh it showed
               57.8% / 50.1% of its width at 553 / 664, under the floor; at
               100svh it shows 69.3% / 60.1%. */}
-          <div
-            aria-hidden="true"
-            className="gain-ground absolute inset-x-0 top-0 bottom-0 -z-10 md:-bottom-[10svh]"
-          >
+          <NearGround className="gain-ground absolute inset-x-0 top-0 bottom-0 -z-10 md:-bottom-[10svh]">
             <ResponsiveImage
               src={gainImage}
               alt=""
@@ -721,7 +719,7 @@ export default function HomePage() {
                 180px fall read 3.08 and the window's own box 2.84, against a
                 3.0 floor. */}
             <div className="plate-shade pointer-events-none absolute inset-0 [--shade-bottom:84%] [--shade-color:var(--color-sky-anchor)] [--shade-mid:44%] [--shade-mid-from:20%] [--shade-mid-to:60%] [--shade-top:70%] md:[--shade-mid-from:25%] md:[--shade-mid-to:54.545%]" />
-          </div>
+          </NearGround>
 
           {/* The column arrives as one event on the clock, the way the
               clearing does: the heading block lifts first, then each numeral
