@@ -87,6 +87,17 @@ const MARK_FADE = 260;
 const MARK_LEAD = 300;
 // Drag: inertia damped 0.92 per 60 Hz frame, the spin back 4 s after the hand.
 const DRAG_DAMPING = 0.92;
+// The globe turns in any direction the hand takes it, but it is a planet and
+// not a trackball: the two axes are its own poles and the screen's horizontal,
+// so a drag never rolls it. The pitch is clamped short of the pole - past this
+// the far pole comes over the top and the axis reads as broken.
+const MAX_PITCH = 75 * DEG;
+// How the page and the globe divide a finger. Below `HOLD_SLOP` px the touch
+// has declared nothing; a finger still inside it after `GRAB_HOLD_MS` is a
+// grab, and one that leaves it horizontally is a grab at once. Anything else
+// is the page scrolling and the globe never sees it.
+const GRAB_HOLD_MS = 150;
+const HOLD_SLOP = 12;
 const IDLE_BEFORE_SPIN = 4000;
 // How long a page scale has to hold before the drawing buffer is re-cut for it.
 const SCALE_SETTLE_MS = 250;
@@ -434,10 +445,29 @@ export function mountEarth(host: HTMLElement, canvas: HTMLCanvasElement, opts: E
     return best;
   })();
 
+  // The globe's orientation, as two angles rather than a free quaternion. Yaw
+  // is about its own polar axis and is unbounded - it is the spin, and the
+  // auto-spin adds to it, so the turn always resumes about whatever up-axis the
+  // reader has left the planet on rather than snapping back to one. Pitch is
+  // about the screen's horizontal, expressed in the tilt group's frame, and is
+  // clamped. They compose pitch-after-yaw, so yaw stays the globe's own.
   let angle = homeFacing;
+  let pitch = 0;
   let cloudAngle = 0;
   let dragVelocity = 0;
+  let pitchVelocity = 0;
   let dragging = false;
+  const pitchAxis = new Vector3(1, 0, 0).applyQuaternion(
+    new Quaternion().setFromAxisAngle(new Vector3(0, 0, 1), AXIS_TILT).invert()
+  );
+  const yAxis = new Vector3(0, 1, 0);
+  const qYaw = new Quaternion();
+  const qPitch = new Quaternion();
+  const orient = (target: Group, yaw: number) => {
+    qYaw.setFromAxisAngle(yAxis, yaw);
+    qPitch.setFromAxisAngle(pitchAxis, pitch);
+    target.quaternion.copy(qPitch).multiply(qYaw);
+  };
   let lastPointerAt = -Infinity;
   let enteredAt: number | null = null;
   let ready = false;
@@ -467,8 +497,8 @@ export function mountEarth(host: HTMLElement, canvas: HTMLCanvasElement, opts: E
     enteredAt !== null && performance.now() - enteredAt > MARK_LEAD + MARK_STAGGER * (markCount - 1) + MARK_FADE;
 
   const render = (now: number) => {
-    spin.rotation.y = angle;
-    weather.rotation.y = angle + cloudAngle;
+    orient(spin, angle);
+    orient(weather, angle + cloudAngle);
     markMaterial.uniforms.breath.value = opts.reducedMotion ? 0 : 0.12 * (0.5 + 0.5 * Math.sin(now / 900));
     renderer.render(scene, camera);
   };
@@ -486,11 +516,15 @@ export function mountEarth(host: HTMLElement, canvas: HTMLCanvasElement, opts: E
       const auto = dragging ? 0 : Math.min(1, Math.max(0, (sinceHand - IDLE_BEFORE_SPIN) / SPIN_RETURN));
       angle += SPIN_RATE * (dt / 1000) * auto;
       cloudAngle += SPIN_RATE * CLOUD_DRIFT * (dt / 1000);
-      if (!dragging && Math.abs(dragVelocity) > 1e-5) {
+      if (!dragging && (Math.abs(dragVelocity) > 1e-5 || Math.abs(pitchVelocity) > 1e-5)) {
+        const decay = Math.pow(DRAG_DAMPING, dt / 16.67);
         angle += dragVelocity * (dt / 16.67);
-        dragVelocity *= Math.pow(DRAG_DAMPING, dt / 16.67);
+        pitch = Math.min(MAX_PITCH, Math.max(-MAX_PITCH, pitch + pitchVelocity * (dt / 16.67)));
+        dragVelocity *= decay;
+        pitchVelocity *= decay;
       } else if (!dragging) {
         dragVelocity = 0;
+        pitchVelocity = 0;
       }
     }
     lightMarks(now);
@@ -599,68 +633,165 @@ export function mountEarth(host: HTMLElement, canvas: HTMLCanvasElement, opts: E
   });
   intersection.observe(host);
 
-  // Drag turns the globe about its own axis, with the page keeping the
-  // vertical: the canvas carries `touch-action: pan-y`, and a touch is only
-  // claimed once it has declared itself horizontal. A mouse locks on press.
+  // The hand, and how it is divided with the page.
+  //
+  // A mouse or a pen grabs on the press and turns the globe freely from there,
+  // on both axes, with no threshold at all.
+  //
+  // A finger cannot, because the page has to keep its scroll and on a phone
+  // this disc is most of the screen. So a touch declares itself first. Inside
+  // 12px it has said nothing; a finger still inside that after 150 ms is a
+  // grab, and one that leaves it horizontally is a grab at once. A finger that
+  // leaves it vertically first is the page, and the globe lets go of it.
+  //
+  // The touch half is driven by touch events and not by pointer events, and
+  // the reason is `cancelable`. Once the browser has committed a finger to
+  // scrolling it stops delivering `pointermove` and marks `touchmove`
+  // non-cancelable - so on a flick the pointer path saw nothing, the 150 ms
+  // hold fired into a scroll that was already running, and the globe turned
+  // under a gesture that was moving the page. `cancelable` is the browser
+  // saying whether a grab is still available, and it is only on the touch
+  // event. Measured: a 200px vertical flick moved the disc by 16.8 mean
+  // channel steps against a 4.9 no-hand control on the pointer path, and by
+  // 3.3 against 4.7 on this one.
+  //
+  // The page's lock is the same flag: while the grab is live every cancelable
+  // touchmove is cancelled, which is what `touch-action` cannot do on its own -
+  // `pan-y pinch-zoom` is what keeps the pinch reachable, and it would scroll
+  // on the vertical half of a free rotation. A second finger is a pinch and
+  // ends the grab on the frame it lands.
   let pointerId: number | null = null;
+  let touchId: number | null = null;
   let lastX = 0;
+  let lastY = 0;
   let startX = 0;
   let startY = 0;
+  let holdTimer = 0;
   let axis: "none" | "drag" | "scroll" = "none";
-  const onPointerDown = (event: PointerEvent) => {
-    if (!event.isPrimary || pointerId !== null) return;
-    pointerId = event.pointerId;
-    startX = lastX = event.clientX;
-    startY = event.clientY;
+
+  const beginDrag = () => {
+    window.clearTimeout(holdTimer);
+    axis = "drag";
+    dragging = true;
+    dragVelocity = 0;
+    pitchVelocity = 0;
+  };
+  const letGo = () => {
+    window.clearTimeout(holdTimer);
+    if (pointerId !== null && canvas.hasPointerCapture(pointerId)) {
+      canvas.releasePointerCapture(pointerId);
+    }
+    pointerId = null;
+    touchId = null;
+    dragging = false;
+    axis = "none";
     lastPointerAt = performance.now();
-    if (event.pointerType === "mouse") {
-      axis = "drag";
-      dragging = true;
+    if (opts.reducedMotion) {
       dragVelocity = 0;
-      canvas.setPointerCapture(pointerId);
-    } else {
-      axis = "none";
+      pitchVelocity = 0;
     }
   };
-  const onPointerMove = (event: PointerEvent) => {
-    if (event.pointerId !== pointerId) return;
-    if (axis === "none") {
-      const dx = event.clientX - startX;
-      const dy = event.clientY - startY;
-      if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
-      if (Math.abs(dx) > Math.abs(dy)) {
-        axis = "drag";
-        dragging = true;
-        dragVelocity = 0;
-        canvas.setPointerCapture(pointerId);
-        lastX = event.clientX;
-      } else {
-        axis = "scroll";
-        pointerId = null;
-        return;
-      }
-    }
-    if (axis !== "drag") return;
-    const step = ((event.clientX - lastX) * Math.PI) / discPx;
-    lastX = event.clientX;
-    angle += step;
-    dragVelocity = step;
+
+  // A pixel of finger is the same angle on both axes: the disc's own radius
+  // subtends a quarter turn, so the surface follows the hand.
+  const turn = (x: number, y: number) => {
+    const stepX = ((x - lastX) * Math.PI) / discPx;
+    const stepY = ((y - lastY) * Math.PI) / discPx;
+    lastX = x;
+    lastY = y;
+    angle += stepX;
+    const held = Math.min(MAX_PITCH, Math.max(-MAX_PITCH, pitch + stepY));
+    // At the clamp the hand stops carrying pitch, and it must not leave a
+    // velocity behind either, or the release would push into the stop.
+    pitchVelocity = held - pitch;
+    pitch = held;
+    dragVelocity = stepX;
     lastPointerAt = performance.now();
     if (opts.reducedMotion) render(performance.now());
     else wake();
   };
-  const onPointerUp = (event: PointerEvent) => {
-    if (event.pointerId !== pointerId) return;
-    if (axis === "drag" && canvas.hasPointerCapture(event.pointerId)) {
-      canvas.releasePointerCapture(event.pointerId);
-    }
-    pointerId = null;
-    dragging = false;
-    axis = "none";
+
+  const onPointerDown = (event: PointerEvent) => {
+    if (event.pointerType === "touch") return;
+    if (!event.isPrimary || pointerId !== null) return;
+    pointerId = event.pointerId;
+    startX = lastX = event.clientX;
+    startY = lastY = event.clientY;
     lastPointerAt = performance.now();
-    if (opts.reducedMotion) dragVelocity = 0;
+    beginDrag();
+    canvas.setPointerCapture(event.pointerId);
+  };
+  const onPointerMove = (event: PointerEvent) => {
+    if (event.pointerType === "touch") return;
+    if (event.pointerId !== pointerId || axis !== "drag") return;
+    turn(event.clientX, event.clientY);
+  };
+  const onPointerUp = (event: PointerEvent) => {
+    if (event.pointerType === "touch") return;
+    if (event.pointerId !== pointerId) return;
+    letGo();
     wake();
   };
+
+  const onTouchStart = (event: TouchEvent) => {
+    if (event.touches.length > 1) {
+      letGo();
+      return;
+    }
+    const touch = event.touches[0];
+    touchId = touch.identifier;
+    startX = lastX = touch.clientX;
+    startY = lastY = touch.clientY;
+    axis = "none";
+    lastPointerAt = performance.now();
+    holdTimer = window.setTimeout(() => {
+      if (touchId !== null && axis === "none") beginDrag();
+    }, GRAB_HOLD_MS);
+  };
+  const onTouchMove = (event: TouchEvent) => {
+    if (event.touches.length > 1) {
+      letGo();
+      return;
+    }
+    let touch: Touch | null = null;
+    for (let i = 0; i < event.touches.length; i += 1) {
+      if (event.touches[i].identifier === touchId) touch = event.touches[i];
+    }
+    if (!touch) return;
+    if (axis === "none") {
+      // Not cancelable is the browser saying it has already taken this finger.
+      if (!event.cancelable) {
+        window.clearTimeout(holdTimer);
+        axis = "scroll";
+        touchId = null;
+        return;
+      }
+      const dx = touch.clientX - startX;
+      const dy = touch.clientY - startY;
+      if (Math.abs(dx) < HOLD_SLOP && Math.abs(dy) < HOLD_SLOP) return;
+      if (Math.abs(dx) <= Math.abs(dy)) {
+        window.clearTimeout(holdTimer);
+        axis = "scroll";
+        touchId = null;
+        return;
+      }
+      beginDrag();
+      lastX = touch.clientX;
+      lastY = touch.clientY;
+    }
+    if (axis !== "drag") return;
+    if (event.cancelable) event.preventDefault();
+    turn(touch.clientX, touch.clientY);
+  };
+  const onTouchEnd = () => {
+    letGo();
+    wake();
+  };
+
+  canvas.addEventListener("touchstart", onTouchStart, { passive: true });
+  canvas.addEventListener("touchmove", onTouchMove, { passive: false });
+  canvas.addEventListener("touchend", onTouchEnd);
+  canvas.addEventListener("touchcancel", onTouchEnd);
   canvas.addEventListener("pointerdown", onPointerDown);
   canvas.addEventListener("pointermove", onPointerMove);
   canvas.addEventListener("pointerup", onPointerUp);
@@ -741,6 +872,11 @@ export function mountEarth(host: HTMLElement, canvas: HTMLCanvasElement, opts: E
       canvas.removeEventListener("webglcontextlost", onContextLost);
       canvas.removeEventListener("webglcontextrestored", onContextRestored);
       intersection.disconnect();
+      window.clearTimeout(holdTimer);
+      canvas.removeEventListener("touchstart", onTouchStart);
+      canvas.removeEventListener("touchmove", onTouchMove);
+      canvas.removeEventListener("touchend", onTouchEnd);
+      canvas.removeEventListener("touchcancel", onTouchEnd);
       canvas.removeEventListener("pointerdown", onPointerDown);
       canvas.removeEventListener("pointermove", onPointerMove);
       canvas.removeEventListener("pointerup", onPointerUp);
