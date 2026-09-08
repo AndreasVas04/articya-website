@@ -51,15 +51,13 @@ export function StatCounter({ num, label }: StatCounterProps) {
 
   // Mobile is a compact ledger row - numeral left, label right on a shared
   // baseline - so all three stats share one screen with the section intro.
-  // Desktop keeps the centered column, sized to a third of the clearing's
-  // text column rather than to a third of the page: 80px at 1440 and 84 at
-  // 1920, where "500+" is 188 and 196px wide inside cells of 204 and 229.
+  // Desktop keeps the monumental centered column.
   return (
     <div
       ref={ref}
       className="relative flex items-baseline justify-between gap-4 px-1 py-2 md:block md:px-4 md:py-8 md:text-center"
     >
-      <div className="font-display text-[2.75rem] font-semibold leading-none tracking-[-0.025em] text-ink md:text-[clamp(3.25rem,5.6vw,5.25rem)]">
+      <div className="font-display text-[2.75rem] font-semibold leading-none tracking-[-0.025em] text-ink md:text-[clamp(3.25rem,8vw,6.5rem)]">
         {display}
       </div>
       <div className="text-[0.8125rem] font-semibold uppercase leading-[1.4] tracking-[0.08em] text-ink-soft md:mt-3">
