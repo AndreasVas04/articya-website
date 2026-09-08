@@ -165,6 +165,15 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
     // arrival only and holds at rest afterwards rather than swelling again
     // every time the plate fades back out.
     let arrivals: ({ from: number; to: number } | null)[] = [];
+    // The scroll range over which each plate has any strength at all, and the
+    // basis a viewport of lead is measured in. A plate outside its own range
+    // plus that lead is `display: none`: it paints nothing there either way,
+    // and hidden it is not a window-sized backing store the compositor has to
+    // hold - and re-raster at the square of a page scale - for the life of the
+    // page. The lead is a whole viewport of scroll, which is what gives the
+    // browser its decode back before the plate has any strength to show it at.
+    let spans: ({ from: number; to: number } | null)[] = [];
+    let lead = 0;
 
     const draw = () => {
       raf = 0;
@@ -186,6 +195,11 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
       for (let i = 0; i < layers.length; i += 1) {
         const value = a.values[i] + (b.values[i] - a.values[i]) * t;
         const arrival = arrivals[i];
+        const span = spans[i];
+        const live = !span || (scroll > span.from - lead && scroll < span.to + lead);
+        const hidden = layers[i].style.display === "none";
+        if (live === hidden) layers[i].style.display = live ? "" : "none";
+        if (!live) continue;
 
         // Under reduced motion the wipe gives way to the fade it replaced. The
         // crossfade stays because it carries no travel to be sensitive to; a
@@ -298,6 +312,22 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
         const at = frames.findIndex((f) => f.values[i] > 0);
         if (at <= 0) return null;
         return { from: frames[at - 1].scroll, to: frames[at].scroll };
+      });
+
+      // A plate has strength strictly between the key before its first zone
+      // and the key after its last: outside that pair it is 0 at every scroll.
+      lead = basis;
+      spans = plates.map((_, i) => {
+        const first = frames.findIndex((f) => f.values[i] > 0);
+        if (first < 0) return { from: Infinity, to: -Infinity };
+        let last = first;
+        for (let k = frames.length - 1; k > first; k -= 1) {
+          if (frames[k].values[i] > 0) { last = k; break; }
+        }
+        return {
+          from: frames[first - 1]?.scroll ?? -Infinity,
+          to: frames[last + 1]?.scroll ?? Infinity,
+        };
       });
 
       draw();
