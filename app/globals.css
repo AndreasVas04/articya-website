@@ -332,9 +332,13 @@ body {
 /* The image inside a plate. Only the picture is scaled on arrival; the plate's
    own darkening stays anchored to the window, or the ramps that meet the
    chrome would slide as the plate settled. */
+/* No `will-change`. The hint is a standing promotion: it holds a backing store
+   for this layer, at the window's size, on every route with a stage, for the
+   whole life of the page - and under a page scale iOS re-rasters that store at
+   the square of the scale. The layer only moves while its plate is arriving, so
+   the hint is written by the arrival and cleared with it (photo-stage.tsx). */
 .stage-plate-frame {
   overflow: hidden;
-  will-change: transform;
 }
 /* A plate's own darkening, and the whole of it. One shape for every plate:
    the picture carried hardest at the top and the bottom, where the chrome
@@ -434,6 +438,10 @@ body {
     scale: 4;
     transform-origin: 0 0;
     filter: blur(5px) brightness(0.6);
+    /* The hint stays here. It buys no promotion - the filter above already
+       gives this layer its own backing store - but it is what makes the
+       compositor rasterize the blur at the scale it is magnified to, and
+       without it the defocus resamples. */
     will-change: transform;
   }
 }
@@ -825,6 +833,9 @@ body {
     height: 25%;
     scale: 4;
     transform-origin: 0 0;
+    /* As `.stage-plate-soft`: the hint is what rasterizes the four blurred
+       copies under it at the scale they are magnified to. It is not here for
+       the promotion. */
     will-change: transform;
   }
   .gain-soft {

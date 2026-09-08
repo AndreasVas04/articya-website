@@ -213,7 +213,20 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
                 Math.min(Math.max((scroll - arrival.from) / reach, 0), 1)
               )
             : 1;
+        // The promotion is the arrival's, and it is handed back at the end of
+        // it. Settled, this transform is the identity - so clearing it paints
+        // exactly what writing it painted - and what goes with it is a
+        // window-sized backing store per plate, held for the life of the page
+        // and re-rastered at the square of any page scale the reader holds.
+        if (settled >= 1) {
+          if (images[i].style.transform) {
+            images[i].style.transform = "";
+            images[i].style.willChange = "";
+          }
+          continue;
+        }
         const rise = stageHeight * ARRIVE_RISE * (1 - settled);
+        if (!images[i].style.willChange) images[i].style.willChange = "transform";
         images[i].style.transform = `translate3d(0, ${rise.toFixed(2)}px, 0) scale(${(
           1 + ARRIVE_SCALE * (1 - settled)
         ).toFixed(4)})`;
