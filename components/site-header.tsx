@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { nav } from "@/content/shared";
+import { prefetchHero } from "@/lib/hero-prefetch";
 import { cn, withBasePath } from "@/lib/utils";
 
 function isActive(pathname: string, href: string) {
@@ -21,6 +22,25 @@ function isActive(pathname: string, href: string) {
 // stays a link; focus rests on it, which is where a returning visitor expects
 // to be.
 const HOME_RESET_EVENT = "home:reset";
+
+// The route's photograph starts downloading on the intent, not on the tap.
+// Next already prefetches the route's own JavaScript this way; its hero is the
+// larger half of the wait and had nothing arranging for it. On a phone the
+// intent is the finger landing - `pointerdown` and `touchstart`, whichever the
+// engine gives first - which is a whole press-and-release ahead of the
+// navigation; on a pointer device it is the cursor arriving on the label,
+// which is usually longer still. `prefetchHero` is once-per-route, so the
+// three handlers firing for one gesture cost one request between them.
+const DESKTOP = "(min-width: 768px)";
+function intentPrefetch(href: string) {
+  return {
+    onPointerDown: () => prefetchHero(href),
+    onTouchStart: () => prefetchHero(href),
+    onPointerEnter: () => {
+      if (window.matchMedia(DESKTOP).matches) prefetchHero(href);
+    },
+  };
+}
 
 // The chrome is not a bar. There is no fill behind it, no blur, no rule under
 // it: the nav sits directly on the photograph, in cream, with amber on the
@@ -151,6 +171,7 @@ export function SiteHeader() {
                 <Link
                   href={item.href}
                   onClick={() => setOpen(false)}
+                  {...intentPrefetch(item.href)}
                   // The active and hovered label is `resin-light`, not
                   // `amber`. Amber is a mark on this site and never text, and
                   // over a photograph it could not carry the state anyway: at

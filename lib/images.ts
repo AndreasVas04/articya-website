@@ -164,3 +164,41 @@ export function imagePreload(
     type: MIME[ext] ?? `image/${ext}`,
   };
 }
+
+// ---------------------------------------------------------------------------
+
+// Which file the browser would fetch for a placement, resolved in the client
+// against the window it is actually in. It is the rule `verify-placements`
+// asserts statically, run the other way round: `sizes` resolves to a CSS
+// width, the device multiplies it, and the ladder answers with the first rung
+// at or above it.
+//
+// It exists so a prefetch can name the same URL the destination page will ask
+// for. A prefetch of a different rung is not a slower prefetch, it is a second
+// download - so this reads the same `sizes` string the placement declares
+// rather than a number written down beside it.
+function resolveSizes(sizes: string): number | null {
+  // "(min-width: 768px) 172.9vw, 464.1vw" - entries in order, first match wins.
+  for (const part of sizes.split(",")) {
+    const entry = part.trim();
+    const match = entry.match(/^(?:\((.+)\)\s+)?([\d.]+)vw$/);
+    if (!match) continue;
+    const [, query, vw] = match;
+    if (query && !window.matchMedia(`(${query})`).matches) continue;
+    return (parseFloat(vw) / 100) * window.innerWidth;
+  }
+  return null;
+}
+
+/** The variant URL this window would select for `src` at `sizes`, in `ext`.
+ *  Client-only: it reads the viewport. */
+export function variantUrl(src: string, sizes: string, ext: string): string | null {
+  const entry = data.images[src];
+  if (!entry) return null;
+  const css = resolveSizes(sizes);
+  if (css === null) return null;
+  const asked = css * (window.devicePixelRatio || 1);
+  const rungs = widthsFor(entry, ext);
+  const rung = rungs.find((w) => w >= asked) ?? rungs[rungs.length - 1];
+  return withBasePath(`${data.dir}/${entry.base}-${rung}.${ext}`);
+}
