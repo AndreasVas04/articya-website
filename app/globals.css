@@ -1240,3 +1240,43 @@ details[open] .accordion-answer {
     scroll-behavior: auto !important;
   }
 }
+
+/* The Earth beside "What we do". The box is laid out by the page; what it
+   carries is a canvas the section loads a viewport ahead of itself
+   (components/earth-globe.tsx). Without WebGL the box goes with the canvas,
+   and the section is the one it was. The canvas keeps the page's vertical
+   scroll for itself: a mostly-vertical finger scrolls, a horizontal one turns
+   the globe. */
+@layer components {
+  .earth {
+    position: relative;
+  }
+  .earth[data-earth="off"] {
+    display: none;
+  }
+  .earth-canvas {
+    touch-action: pan-y;
+    cursor: grab;
+  }
+  .earth-canvas:active {
+    cursor: grabbing;
+  }
+  /* The globe's arrival, on the scene's clock with the rest of the clearing:
+     it rises with the wave, from 120px below (88 on a phone), and its rise is
+     the long settle - 1200ms against the column's 700 - so its tail is the
+     last, quietest motion of the arrival. No scale, no glow. */
+  .stage[data-armed]:not([data-on]) .stage-globe {
+    opacity: 0;
+    translate: 0 120px;
+  }
+  @media (max-width: 767px) {
+    .stage[data-armed]:not([data-on]) .stage-globe {
+      translate: 0 88px;
+    }
+  }
+  .stage[data-on] .stage-globe {
+    transition:
+      opacity 200ms var(--ease-out-quart),
+      translate 1200ms var(--ease-out-quart);
+  }
+}

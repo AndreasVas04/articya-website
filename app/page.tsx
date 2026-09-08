@@ -3,6 +3,7 @@ import ScrollExpandMedia from "@/components/ui/scroll-expansion-hero";
 import { StatCounter } from "@/components/stat-counter";
 import { Reveal } from "@/components/reveal";
 import { StageScene } from "@/components/stage-entrance";
+import { EarthGlobe } from "@/components/earth-globe";
 import { OfferPanel } from "@/components/offer-panel";
 import { GainTrail } from "@/components/gain-trail";
 import { PhotoStage, type StagePlate } from "@/components/photo-stage";
@@ -344,7 +345,12 @@ export default function HomePage() {
               fireMargin="-30%"
               className="relative mx-auto flex min-h-svh max-w-6xl flex-col justify-center px-4 xl:max-w-[min(84rem,92vw)]"
             >
-              <div className="relative md:grid md:grid-cols-12 md:items-start md:gap-x-12 xl:gap-x-20">
+              {/* Three blocks in one grid above `md`: the words in the left
+                  six columns, the Earth in the right six, and the ledger under
+                  both. Below `md` the same three stack, and the Earth goes
+                  last - under the stats, at 0.82 of the column - so a phone
+                  reads the words, the numbers, then the object. */}
+              <div className="relative flex flex-col md:grid md:grid-cols-12 md:items-start md:gap-x-12 xl:gap-x-20">
                 <div className="relative md:col-span-6 md:self-center">
                   <div className="relative">
                     <div className="stage-lift">
@@ -383,25 +389,43 @@ export default function HomePage() {
                     </div>
                   </div>
                 </div>
-              </div>
 
-              {/* The ledger carries no rules of its own beyond the desktop
-                  column dividers: horizontal lines are the one mark this page
-                  never draws, so the mobile rows structure themselves on the
-                  numeral/label baseline alone. The rows are the wave's last
-                  beats, and each counter still starts its 700ms count only
-                  when it crosses into view - the ledger writes itself. */}
-              <div className="relative mt-2 md:mt-12">
-                <div className="relative grid md:grid-cols-3 md:divide-x md:divide-hairline">
-                  {whatWeDo.stats.map((stat, i) => (
-                    <div
-                      key={stat.label}
-                      className="stage-rise"
-                      style={{ transitionDelay: `${550 + i * 130}ms` }}
-                    >
-                      <StatCounter num={stat.num} label={stat.label} />
-                    </div>
-                  ))}
+                {/* The Earth. It rises with the wave at 200ms and its rise is
+                    the arrival's long settle; the routes draw on the same
+                    clock, from the moment the scene fires (earth-globe.tsx).
+                    The box is the section's empty right side: the column's
+                    width, capped at 56svh so it stands inside its own screen
+                    beside the words - 504px at 1440x900 - and never behind a
+                    glyph. Below `md` it is 0.82 of the column under the
+                    stats, 294px at 390 wide, 36px under the last row: the
+                    section is then 1.199 screens at 375x553, the shortest
+                    window the device gives, and the parallax below is bound
+                    so the drift never reaches the row above. */}
+                <div
+                  className="stage-globe relative order-3 mt-9 md:order-none md:col-span-6 md:mt-0 md:self-center"
+                  style={{ transitionDelay: "200ms" }}
+                >
+                  <EarthGlobe className="mx-auto w-[82%] md:w-full md:max-w-[56svh]" />
+                </div>
+
+                {/* The ledger carries no rules of its own beyond the desktop
+                    column dividers: horizontal lines are the one mark this page
+                    never draws, so the mobile rows structure themselves on the
+                    numeral/label baseline alone. The rows are the wave's last
+                    beats, and each counter still starts its 700ms count only
+                    when it crosses into view - the ledger writes itself. */}
+                <div className="relative order-2 mt-2 md:order-none md:col-span-12 md:mt-12">
+                  <div className="relative grid md:grid-cols-3 md:divide-x md:divide-hairline">
+                    {whatWeDo.stats.map((stat, i) => (
+                      <div
+                        key={stat.label}
+                        className="stage-rise"
+                        style={{ transitionDelay: `${550 + i * 130}ms` }}
+                      >
+                        <StatCounter num={stat.num} label={stat.label} />
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </StageScene>
