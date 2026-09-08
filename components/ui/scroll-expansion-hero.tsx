@@ -111,6 +111,22 @@ const COAST_GAP_MS = 40;
 // the idle clock says.
 const SETTLE_REFRACTORY_MS = 250;
 const settleEase = cubicBezier(0.22, 1, 0.36, 1);
+
+// The way back in. See the re-entry effect below: a close is a clock, not a
+// scrub, so these are a threshold and a duration and nothing else.
+const CLOSE_MS = 700;
+const CLOSE_WHEEL_PX = 60;
+const CLOSE_WHEEL_WINDOW_MS = 400;
+const CLOSE_TOUCH_PX = 40;
+// The progress at which the expanded state hands back, going down. It is the
+// driver's own number, read the other way round.
+const CLOSE_HANDOVER = 0.75;
+interface Close {
+  from: number;
+  to: number;
+  start: number;
+  duration: number;
+}
 const settleTarget = (p: number, dir: number) =>
   dir < 0 ? (p >= SETTLE_BACK_HOLD_FROM ? 1 : 0) : p >= SETTLE_FORWARD_FROM ? 1 : 0;
 const settleDuration = (p: number, to: number) => (to === 1 ? 400 + 500 * (1 - p) : 300);
@@ -361,6 +377,20 @@ const ScrollExpandMedia = ({
   const lastDir = useRef(1);
   // The gaps between the last few inputs, for the reversal idle above.
   const gaps = useRef<number[]>([]);
+  // The close in flight, if any, and whether the way back in is armed at all.
+  // `reentry` is state rather than a ref because an effect has to arm and
+  // disarm on it; `closeRun` wakes that effect the way `settleRun` wakes the
+  // driver's.
+  const closing = useRef<Close | null>(null);
+  const [reentry, setReentry] = useState(false);
+  const [closeRun, setCloseRun] = useState(0);
+  // Cumulative upward travel at the top of the page, and when the window it is
+  // counted in opened. The window runs from its own start and not from the
+  // last event: measured against the last, a stream of deltaY 1 every 80 ms
+  // never re-opened it, so a deliberate slow scroll accumulated to the
+  // threshold over five seconds and closed the hero under a hand that was
+  // asking for nothing of the kind.
+  const upward = useRef({ sum: 0, at: 0 });
 
   // Under reduced motion the component renders its resting state: media
   // expanded, content visible, no scroll hijacking, first slide only. The
@@ -435,30 +465,23 @@ const ScrollExpandMedia = ({
     return () => document.documentElement.classList.remove("hero-open");
   }, [contentVisible]);
 
-  // The opening plays once per page load and does not re-engage.
-  //
-  // It used to be reversible: a wheel up or a swipe down at the top of the
-  // page took the release back and handed the reader the collapsed poster
-  // again. Two things were wrong with it and neither is a tuning. The first is
-  // that scrolling back up from the lede is not a request to replay an
-  // opening - it is a request to see the top of the page, and the page's top
-  // is the open hero. The second is that the way back in runs the whole
-  // machine backwards through a hand the settle has to read: on a slow
-  // deliberate scroll up the poster and its land copy came back in front of
-  // the card at every pause between notches, which is the blink.
-  //
-  // So the release is terminal. Past it the capture is not re-armed - no
-  // wheel, touch, key or scroll listener is attached at all - progress stays
-  // at 1, and scrollY 0 is simply the top of an open page. A fresh load and a
-  // reload still run the opening from the start, and the logo reset still
-  // returns the hero to it, because both of those are the page beginning
-  // again rather than the reader scrolling within it.
+  // Past the release the opening does not re-engage on its own: the capture is
+  // not re-armed, no wheel, touch, key or scroll listener of the driver's is
+  // attached, and progress stays at 1. What can happen at the top of the page
+  // is a *close*, and it is a different machine - see the re-entry effect
+  // below. The old reversal ran the driver backwards through a hand the settle
+  // had to read, and that is where every blink lived.
   const released = useRef(false);
-  const release = () => {
+  const release = (arm = true) => {
     released.current = true;
     settle.current = null;
     if (idleTimer.current !== null) window.clearTimeout(idleTimer.current);
     idleTimer.current = null;
+    // The way back in arms with the release, and only where the reader has
+    // actually watched the opening: a visitor who was already scrolled at
+    // hydration never saw it, and the screen it would close onto is one they
+    // scrolled past before this component existed.
+    if (arm) setReentry(true);
   };
 
   // A visitor who has already scrolled by the time hydration lands is reading
@@ -474,7 +497,7 @@ const ScrollExpandMedia = ({
   useIsomorphicLayoutEffect(() => {
     if (window.scrollY <= 0) return;
     skipCapture.current = true;
-    release();
+    release(false);
     setScrollProgress(1);
     setMediaFullyExpanded(true);
     setShowContent(true);
@@ -696,6 +719,175 @@ const ScrollExpandMedia = ({
     };
   }, [scrollProgress, touchStartY, reducedMotion, settleRun]);
 
+  // Scrolling back into the opening, and it is not the old reversal.
+  //
+  // The owner asked for the way back and the old way back is what has to stay
+  // gone: a wheel up at scrollY 0 used to hand progress to the driver in
+  // reverse, so the poster and its land copy came back in front of the card at
+  // every pause between notches and the same gesture gave four different
+  // answers at four speeds. Nothing here reads a delta into progress.
+  //
+  // A close is a clock. Past a threshold at the top of the page - 60 wheel px
+  // inside 400 ms, or 40 px of finger - progress runs 1 to 0 over 700 ms on
+  // the settle's own curve, through the same `applyProgress` path the driver
+  // uses, so the ramps, the thresholds and the crossing are read exactly as
+  // they are on the way up. No partial state is ever held: the close either
+  // completes or is cancelled, and a cancel settles back to 1 on the existing
+  // settle rather than stopping where it is. Below the threshold nothing
+  // happens at all and the rubber band is the browser's.
+  //
+  // From the closed state the driver takes over from 0 and the opening plays
+  // as it does on a fresh load - the choreography is untouched, because this
+  // effect is gone by then.
+  useEffect(() => {
+    if (reducedMotion || !reentry) return;
+
+    // One step, and the only place this effect writes progress. Going down,
+    // the expanded state hands back at the driver's own 0.75 - both flags on
+    // the same commit, so no frame holds one without the other.
+    const step = (p: number) => {
+      const next = clamp01(p);
+      progressRef.current = next;
+      setScrollProgress(next);
+      if (next >= 1) {
+        setMediaFullyExpanded(true);
+        setShowContent(true);
+      } else if (next < CLOSE_HANDOVER) {
+        setMediaFullyExpanded(false);
+        setShowContent(false);
+      }
+    };
+
+    // The end of a close: the driver's own state is put back to what a fresh
+    // load gives it, and `released` falling is what re-arms the capture.
+    const handBack = () => {
+      closing.current = null;
+      released.current = false;
+      settle.current = null;
+      if (idleTimer.current !== null) window.clearTimeout(idleTimer.current);
+      idleTimer.current = null;
+      tail.current = { count: 0, at: 0, size: 0 };
+      refractoryUntil.current = 0;
+      lastInputAt.current = 0;
+      lastDir.current = 1;
+      gaps.current = [];
+      upward.current = { sum: 0, at: 0 };
+      setReentry(false);
+    };
+
+    const startClose = () => {
+      const p = progressRef.current;
+      if (closing.current || p <= 0) return;
+      upward.current = { sum: 0, at: 0 };
+      closing.current = { from: p, to: 0, start: performance.now(), duration: CLOSE_MS * p };
+      setCloseRun((n) => n + 1);
+    };
+    // A hand going the other way during a close is the reader saying they
+    // meant to read on. It is not a scrub back: the close becomes the driver's
+    // own settle to 1, on the driver's own curve and duration.
+    const cancelClose = () => {
+      const p = progressRef.current;
+      if (!closing.current || closing.current.to === 1) return;
+      closing.current = { from: p, to: 1, start: performance.now(), duration: settleDuration(p, 1) };
+      setCloseRun((n) => n + 1);
+    };
+
+    const atTop = () =>
+      window.scrollY <= 0 && (!window.visualViewport || window.visualViewport.scale === 1);
+
+    const onWheel = (e: globalThis.WheelEvent) => {
+      if (closing.current) {
+        e.preventDefault();
+        if (e.deltaY > 0) cancelClose();
+        return;
+      }
+      if (!atTop() || e.deltaY >= 0) {
+        upward.current.sum = 0;
+        return;
+      }
+      const now = performance.now();
+      if (!upward.current.sum || now - upward.current.at > CLOSE_WHEEL_WINDOW_MS) {
+        upward.current.sum = 0;
+        upward.current.at = now;
+      }
+      upward.current.sum -= e.deltaY;
+      if (upward.current.sum >= CLOSE_WHEEL_PX) startClose();
+    };
+
+    // A second finger is a pinch and never a close - the arity gate, as on the
+    // driver's own capture.
+    let touchY = 0;
+    const onTouchStart = (e: globalThis.TouchEvent) => {
+      touchY = e.touches.length === 1 ? e.touches[0].clientY : 0;
+      upward.current.sum = 0;
+    };
+    const onTouchMove = (e: globalThis.TouchEvent) => {
+      if (!touchY) return;
+      if (e.touches.length !== 1) {
+        touchY = 0;
+        return;
+      }
+      const y = e.touches[0].clientY;
+      const delta = touchY - y;
+      touchY = y;
+      if (closing.current) {
+        e.preventDefault();
+        if (delta > 0) cancelClose();
+        return;
+      }
+      if (!atTop() || delta >= 0) {
+        upward.current.sum = 0;
+        return;
+      }
+      upward.current.sum -= delta;
+      if (upward.current.sum >= CLOSE_TOUCH_PX) startClose();
+    };
+    const onTouchEnd = () => {
+      touchY = 0;
+      upward.current.sum = 0;
+    };
+
+    // While a close is running the page is the hero's, exactly as it is during
+    // the opening.
+    const onScroll = () => {
+      if (closing.current) window.scrollTo(0, 0);
+    };
+
+    let frame = 0;
+    if (closing.current) {
+      frame = requestAnimationFrame(() => {
+        const c = closing.current;
+        if (!c) return;
+        const u = clamp01((performance.now() - c.start) / c.duration);
+        const p = u >= 1 ? c.to : c.from + (c.to - c.from) * settleEase(u);
+        const done = u >= 1;
+        if (done && c.to === 0) {
+          step(0);
+          handBack();
+          return;
+        }
+        if (done) closing.current = null;
+        step(p);
+      });
+    }
+
+    window.addEventListener("wheel", onWheel, { passive: false });
+    window.addEventListener("touchstart", onTouchStart, { passive: true });
+    window.addEventListener("touchmove", onTouchMove, { passive: false });
+    window.addEventListener("touchend", onTouchEnd);
+    window.addEventListener("touchcancel", onTouchEnd);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("wheel", onWheel);
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchmove", onTouchMove);
+      window.removeEventListener("touchend", onTouchEnd);
+      window.removeEventListener("touchcancel", onTouchEnd);
+      window.removeEventListener("scroll", onScroll);
+    };
+  }, [reentry, reducedMotion, scrollProgress, closeRun]);
+
   // The idle clock must not outlive the capture.
   useEffect(
     () => () => {
@@ -716,6 +908,9 @@ const ScrollExpandMedia = ({
       skipCapture.current = false;
       released.current = false;
       settle.current = null;
+      closing.current = null;
+      upward.current = { sum: 0, at: 0 };
+      setReentry(false);
       if (idleTimer.current !== null) window.clearTimeout(idleTimer.current);
       idleTimer.current = null;
       progressRef.current = 0;

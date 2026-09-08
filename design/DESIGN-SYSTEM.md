@@ -891,29 +891,72 @@ coasting cancels it, and no new settle starts for 250 ms after a cancel. A
 deliberate slow scroll — deltaY 1 every 80 ms, or a notch every 200–300 ms —
 is never taken over.
 
-**The opening plays once per page load.** Past the release at p = 1 the
-opening does not re-engage: the wheel/touch capture is not re-armed, no
-listener is attached, progress stays at 1 and the settle controller is idle.
-Scrolling to scrollY 0 and beyond leaves the hero open — scrollY 0 is the top
-of an open page, not the way back into a poster. The opening still runs in
-full on every fresh load and on reload, and the logo-on-home reset still
-returns the hero to it, because both of those are the page beginning again
-rather than the reader scrolling within it.
+**The way back into the opening is a close on a clock — 2026-09-09.** Past
+the release at p = 1 the *driver* does not re-engage: its wheel/touch capture
+is not re-armed and no delta of the reader's is ever read into progress at the
+top of the page. What can happen there is a close, and it is a different
+machine.
 
-It used to be reversible — a wheel up or a 20px swipe down at scrollY ≤ 5 took
-the release back — and the reversal was both wrong and unreliable. Wrong,
-because scrolling back up from the lede is a request to see the top of the
-page and not to replay an opening. Unreliable, because the way back in runs
-the machine backwards through a hand the settle has to read: measured on
-`9d9bc09` from scrollY 120 with a wheel/finger stream of −1 every 80 ms and −4
-every 200 ms, the poster and its land copy came back in front of the card at
-1440×900 on both series and at 390×664 on the first, while the 390×664 second
-series and every 1200 ms series changed nothing at all. Same gesture, four
-different answers. Measured on the same three series after: **scrollY clamps
-at 0 and not one hero value moves** — card width, height and opacity, the
-ridge and poster opacity and scale, the headline's transform and opacity, and
-the `hero-open` class are all constant, at both viewports, on wheel and on
-touch.
+At scrollY 0 and page scale 1, an upward gesture past a threshold — **60 wheel
+px inside a 400 ms window, or 40 px of finger** — runs progress **1 → 0 over
+700 ms** on `cubic-bezier(0.22, 1, 0.36, 1)`, through the same `applyProgress`
+path the driver uses, so the ramps, the thresholds, the crossing and the
+poster/ridge register are read exactly as they are on the way up. No partial
+state is ever held: the close either completes or is cancelled, and **a
+downward input during it cancels it and settles back to 1 on the existing
+settle** (`settleDuration(p, 1)`, the same curve). Below the threshold nothing
+happens at all and the rubber band is the browser's. From the closed state the
+driver takes over from 0 and the opening plays as it does on a fresh load,
+because this effect is gone by then. While a close runs the page is pinned at
+0, exactly as it is during the opening.
+
+The window runs **from its own start and not from the last event**, and that is
+the whole of why a deliberate hand is safe: measured against the last event, a
+stream of deltaY 1 every 80 ms never re-opened the window, so it accumulated to
+60 over five seconds and closed the hero under a gesture asking for nothing of
+the kind.
+
+This replaces the one-shot rule of `a25516e`. What is *not* coming back is the
+old reversal, which handed progress to the driver in reverse: the poster and
+its land copy came back in front of the card at every pause between notches and
+the same gesture gave four different answers at four speeds. Nothing in the
+close reads a delta into progress.
+
+Measured at 390×664 and 1440×900, sampled every frame on three channels that
+are each monotone in the opening by construction — the card's box, the poster's
+own strength, and the headline block's descent. Sign flips in each channel's
+difference sequence, and the state transitions, against the fresh-load opening
+as the control:
+
+| series (at scrollY 0) | card | poster | headline | hero-open | showContent | register |
+|---|---|---|---|---|---|---|
+| CONTROL: opening, fresh load | 500px / 0 flips | 1.00 / 0 | 330px / 0 | ×1 | ×1 | 0.000px |
+| −1 every 80 ms ×120 | 0 / 0 | 0 / 0 | 0 / 0 | ×0 | ×0 | 0.000px |
+| −4 every 200 ms ×40 | 0 / 0 | 0 / 0 | 0 / 0 | ×0 | ×0 | 0.000px |
+| −40 every 1200 ms ×6 | 0 / 0 | 0 / 0 | 0 / 0 | ×0 | ×0 | 0.000px |
+| −8 once | 0 / 0 | 0 / 0 | 0 / 0 | ×0 | ×0 | 0.000px |
+| −40 every 16 ms ×8 (flick) | 500px / 0 | 1.00 / 0 | 330px / 0 | ×1 | ×1 | 0.000px |
+| −120 once (one notch) | 500px / 0 | 1.00 / 0 | 330px / 0 | ×1 | ×1 | 0.000px |
+| 200px touch flick down | 500px / 0 | 1.00 / 0 | 330px / 0 | ×1 | ×1 | 0.000px |
+| re-open, +1 every 80 ms ×500 | 500px / 0 | 1.00 / 0 | 330px / 0 | ×1 | ×1 | 0.000px |
+| re-open, +4 every 200 ms ×120 | 500px / 0 | 1.00 / 0 | 330px / 0 | ×1 | ×1 | 0.000px |
+| re-open, 200px touch flick up | 500px / 0 | 1.00 / 0 | 330px / 0 | ×1 | ×1 | 0.000px |
+| flick down, then up at 200 ms | 500px / **1** | 1.00 / **1** | 330px / **1** | ×2 | ×2 | 0.000px |
+
+390×664 gives the same table at its own spans (264px card, 154.22px headline).
+The one flip in the last row is the cancel, which is what a cancel is. The
+poster and its land copy hold **0.000 px of register and 0.000 of opacity
+difference on every frame of every series**, and the page never leaves scrollY
+0 while a close is running. `hero-open` and `showContent` change on one commit
+together, which is what the fresh-load control does — it is one state and the
+class derived from it, not two.
+
+Chromium's mobile emulation divides a wheel delta by the device ratio, so the
+390 series are sent pre-multiplied by 3 to make the *received* deltas the ones
+named. A phone has no wheel; this is the harness and not the product.
+
+The opening still runs in full on every fresh load and on reload, and the
+logo-on-home reset still returns the hero to it.
 
 The direction hysteresis of `9a612e4` / `7c13e14` stays, and is still
 reachable: it governs a reversal *inside* the opening, before the release,
@@ -1788,6 +1831,87 @@ integration time.
 The globe and lamp share `resin`/`resin-light` deliberately — they are the
 same light source (see signature element).
 
+## Composited layers, and what a pinch costs — 2026-09-09
+
+**The rule: a layer that paints nothing does not exist.** Not opacity 0, not
+`will-change` held against a change that is not coming — `display: none`, or
+not rendered at all. On iOS every composited layer holds a backing store at
+the device ratio, and a page scale re-rasters all of them at the *square* of
+that scale: at 2.5× a full-bleed layer costs 6.25 times what it costs at rest.
+The WebContent process has a hard budget on the order of a few hundred MB, and
+past it Safari does not drop a frame, it kills the tab — *"A problem
+repeatedly occurred."*
+
+Chromium's `LayerTree` CDP domain emits nothing in the build this repo is
+measured on (0 events, headless and headed, with GPU raster forced), and
+Blink's layerisation is not WebKit's anyway. So the census is by **promotion
+rule off the DOM**: `will-change`, a 3D transform, `position: fixed`, `filter`,
+`backdrop-filter`, a mask, a canvas — each element's painted rect × 4 bytes ×
+DPR², summed, with decoded image bitmaps counted separately and deduplicated by
+URL (a bitmap does not scale with the page). It is an upper bound on the
+backing store, and the owner's Web Inspector memory timeline is the gate.
+
+Measured at **390×664 DPR 3**, before and after:
+
+| route / state | layers | backing store | at 2.5× pinch (+ decoded) |
+|---|---|---|---|
+| home, scroll top | 23 → **13** | 186.7 → **95.2 MB** | 1299 → **728 MB** |
+| home, hero open | 23 → **10** | 194.9 → **76.8 MB** | 1351 → **613 MB** |
+| home, over the Earth | 23 → **9** | 194.9 → **67.9 MB** | 1351 → **557 MB** |
+| /about/, scroll top | 6 → **5** | 47.9 → **39.0 MB** | 375 → **339 MB** |
+| /about/, the finale | 6 → **4** | 45.3 → **27.5 MB** | 359 → **267 MB** |
+| /faq/, scroll top | 5 → **4** | 39.0 → **30.1 MB** | 269 → **214 MB** |
+| /contact/, scroll top | 5 → **4** | 39.0 → **30.1 MB** | 272 → **216 MB** |
+
+At 1440×900 DPR 1 the same four commits take home from 24 layers / 110.7 MB to
+10 / 37.0 MB, and the inner pages from 21.6 to 16.7.
+
+**Four causes, in the order of their weight, and the Earth was not the first
+of them.** The canvas is **2.97 MB** — 1.5% of home's backing at 390 — and its
+buffer does not re-raster on a pinch at all. What the loop costs during a
+gesture is main thread and GPU contention, which is real and is why it stops
+(above); it is not the memory.
+
+1. **The hero's two extra copies of the poster** (`3177352`). The opening
+   paints the photograph three times — the plate, the copy masked to its own
+   land, the card's window — and past the release two of them stood at opacity
+   0 for the whole of the reading page below. Not rendered now, and back with
+   the poster's own strength. *−26.7 MB at 390.*
+2. **The gains' ground** (same commit). The sharp valley, the four defocused
+   copies over it and its mask are six window-sized layers that stood in the
+   tree from the moment home parsed. Painted only while the section is within
+   a viewport (`NearGround`). *−53.3 MB at 390.*
+3. **Plates that paint nothing** (`5b4d621`). A plate has strength only
+   between the key before its first zone and the key after its last; outside
+   that range plus **a viewport of lead** it is `display: none`. The lead is
+   the browser's decode back before the plate has any strength to show it at.
+4. **`will-change` held at rest** (`ddbc72a`). `.stage-plate-frame` carried the
+   hint and an identity `translate3d` for the life of the page. Both are
+   written by the arrival and cleared at the end of it; settled, the transform
+   was the identity, so clearing it paints what writing it painted.
+
+**The two blurred copies keep their hint, and it is not for the promotion.**
+`.stage-plate-soft` and `.gain-defocus` are promoted by their own filters
+either way. What `will-change: transform` buys them is the compositor
+rasterizing them at the scale they are magnified to; taken off, the defocus
+resamples — measured, the contact page's worst pixel moved ΔL 0.045 on a dark
+ground, which on a 4.5 pair is 4.50 → 2.88.
+
+**What the fourth commit costs, stated exactly.** Taking a layer out of the
+compositor changes where it is rasterized, and that is a rounding. Measured
+across 36 frames at both viewports: **every subpixel that moves does so by 1–3
+steps**, except 20 of 3.9 million on `/contact/` at 1440, at 14–20, on
+antialias edges under the blur. The frame's mean luminance is unmoved (47.15 →
+47.12). It is not byte-identical and it is not visible; the trade is against a
+crash.
+
+**The floor, and it is the photograph.** An inner page bottoms out at four
+layers — the fixed stage box, the defocused copy, the page's own foot mask and
+the header — and one decoded bitmap of 26 MB. That residue is what the page
+shows; it does not come out without changing the picture. `/faq/` and
+`/contact/` sit at 214–216 MB under a 2.5× pinch against the ~200 MB target,
+`/about/` at 267 because its ground is the largest rung on the site.
+
 ## The Earth — 2026-09-09
 
 **"What we do" carries an object again, and it is the planet.** The owner
@@ -1903,14 +2027,65 @@ words, and the countries stat beside them carries the meaning.
 **Motion.** One revolution in **90 s**, Cyprus facing the reader at the
 moment the scene fires; the box rises with the clearing's wave on the
 sanctioned 200 ms / 1200 ms settle (`.stage-globe`, 120px, 88 on a phone).
-A drag turns it about its axis with inertia (0.92 per 60 Hz frame), the
-spin returning 4 s after the hand over 600 ms; a touch is claimed only once
-it has declared itself horizontal, so the page keeps its scroll. The box
-drifts at **0.06 of the scroll** from its reading position, bound to
+The box drifts at **0.06 of the scroll** from its reading position, bound to
 ±33px — background may be scroll-linked, and this is the ground's side of
 the section. Under reduced motion: no spin, no drift, the Cyprus frame with
 every mark lit. Without WebGL: nothing rendered, the box gone, the section
 as it was.
+
+**The drag is free in any direction — 2026-09-09.** Yaw was the only axis.
+It is now yaw about the globe's own poles and pitch about the screen's
+horizontal (world X carried into the tilt group's frame), composed
+**pitch-after-yaw** so the turn is free while the planet never rolls. Both
+axes carry inertia at the same 0.92 per 60 Hz frame; the auto-spin still adds
+to **yaw alone**, so it resumes about whatever up-axis the reader left the
+planet on rather than snapping back to one, still 4 s after the hand over
+600 ms. Pitch is clamped at **±75°**, short of the far pole coming over the
+top, and the clamp takes the velocity with it so a release never pushes into
+the stop. A pixel of hand is the same angle on both axes: the disc's radius
+subtends a quarter turn.
+
+**How the finger is divided with the page.** A mouse or a pen grabs on the
+press and turns freely from there, with no threshold. A touch declares itself
+first: inside **12 px** it has said nothing; a finger still inside that after
+**150 ms** is a grab, and one that leaves it **horizontally** is a grab at
+once. A finger that leaves it vertically first is the page, and the globe
+lets go of it. Once it is a grab the page is locked by cancelling every
+cancelable `touchmove` — `touch-action` cannot do this, because `pan-y
+pinch-zoom` is what keeps the pinch reachable and it would scroll on the
+vertical half of a free rotation. A second finger ends the grab on the frame
+it lands.
+
+The touch half runs on **touch events and not pointer events**, and
+`cancelable` is why. Once the browser has committed a finger to scrolling it
+stops delivering `pointermove` and marks `touchmove` non-cancelable — so on a
+flick the pointer path saw nothing, the 150 ms hold fired into a scroll that
+was already running, and the globe turned under a gesture that was moving the
+page. `cancelable` is the browser saying whether a grab is still available,
+and it is only on the touch event. Measured at 390×664, mean channel step over
+the disc against a no-hand control of the same clock (the canvas is
+transparent, so the page must be put back to its scroll before the disc is
+read, or a gesture that scrolled is measured against a different ground):
+
+| gesture over the Earth | disc | no-hand control | page |
+|---|---|---|---|
+| vertical swipe, no hold, 200px | 2.52 | 5.47 | scrolls 185px |
+| hold 150 ms, then vertical 200px | 9.55 | 5.01 | held |
+| horizontal first, 200px | 5.95 | 3.08 | held |
+| hold, then diagonal 140/140 | 10.52 | 3.71 | held |
+| two fingers, panned 200px | 3.00 | 4.93 | held, grab released |
+| mouse, horizontal 200px (1440) | 8.39 | 4.15 | held |
+| mouse, vertical 200px (1440) | 9.14 | 3.04 | held |
+| mouse, diagonal 140/140 (1440) | 11.86 | 4.54 | held |
+
+**A page scale is not a frame to render.** While `visualViewport.scale > 1`
+the render loop stops, and once the gesture has been still for **250 ms** the
+drawing buffer is re-cut to DPR 1 — a quarter of the pixels — until the
+reader is back at scale 1, when the same wait restores the full ratio. The
+delay is the point: `setPixelRatio` reallocates the drawing buffer, which is
+the one operation on this canvas that can cost the context (`a54c437`), and
+the middle of a live gesture is the worst moment on the page to ask for
+memory.
 
 **Cost.** three.js loads on demand a viewport ahead of the section: two
 chunks, 83.1 + 50.7 KB gzip, none of it on first load (166 kB, +1 for the
