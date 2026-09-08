@@ -590,13 +590,39 @@ const ScrollExpandMedia = ({
       }
     };
 
+    // A second finger is a pinch, not a scroll, and this capture must be
+    // deaf to it. It reads `touches[0]` and cancels every move it sees, so a
+    // two-finger zoom used to arrive here as one finger's vertical travel:
+    // the opening advanced under a gesture nobody aimed at it, and - because
+    // the cancel lands on a page-scale gesture Safari has already begun and
+    // handed to the compositor - the zoom was left half-applied over layers
+    // that were never re-rastered. That is the black screen, and it needed a
+    // reload because nothing on the page repaints those layers again.
+    //
+    // So the arity is the gate, on both ends: a pinch never reaches the
+    // ramp, and the finger that started as a scroll stops being one the
+    // moment a second lands beside it.
+    const singleTouch = (e: globalThis.TouchEvent) =>
+      e.touches.length === 1 && e.targetTouches.length <= 1;
+
     const handleTouchStart = (e: globalThis.TouchEvent) => {
+      if (!singleTouch(e)) {
+        setTouchStartY(0);
+        return;
+      }
       setTouchStartY(e.touches[0].clientY);
     };
 
     const handleTouchMove = (e: globalThis.TouchEvent) => {
       if (!touchStartY) return;
-
+      if (!singleTouch(e)) {
+        setTouchStartY(0);
+        return;
+      }
+      // A reader who has zoomed in is panning their magnifying glass, not
+      // opening the hero, and the opening is keyed to a window they can no
+      // longer see all of.
+      if (window.visualViewport && window.visualViewport.scale !== 1) return;
       const touchY = e.touches[0].clientY;
       const deltaY = touchStartY - touchY;
       if (deltaY !== 0) lastDir.current = deltaY > 0 ? 1 : -1;
@@ -612,10 +638,18 @@ const ScrollExpandMedia = ({
 
     // The finger lifting is the end of the input, so the settle starts there
     // rather than waiting out the idle clock; a finger that stops on the
-    // glass is caught by the clock.
-    const handleTouchEnd = () => {
+    // glass is caught by the clock. Fingers still down are a gesture still
+    // running, and the settle has nothing to settle from.
+    const handleTouchEnd = (e: globalThis.TouchEvent) => {
       setTouchStartY(0);
+      if (e.touches.length > 0) return;
       startSettle();
+    };
+
+    // Safari cancels the touch sequence outright when it takes a gesture over
+    // - a pinch, or the swipe back. The capture has to let go with it.
+    const handleTouchCancel = () => {
+      setTouchStartY(0);
     };
 
     const handleScroll = () => {
@@ -648,6 +682,7 @@ const ScrollExpandMedia = ({
     window.addEventListener("touchstart", handleTouchStart, { passive: true });
     window.addEventListener("touchmove", handleTouchMove, { passive: false });
     window.addEventListener("touchend", handleTouchEnd);
+    window.addEventListener("touchcancel", handleTouchCancel);
 
     return () => {
       cancelAnimationFrame(settleFrame);
@@ -657,6 +692,7 @@ const ScrollExpandMedia = ({
       window.removeEventListener("touchstart", handleTouchStart);
       window.removeEventListener("touchmove", handleTouchMove);
       window.removeEventListener("touchend", handleTouchEnd);
+      window.removeEventListener("touchcancel", handleTouchCancel);
     };
   }, [scrollProgress, touchStartY, reducedMotion, settleRun]);
 
