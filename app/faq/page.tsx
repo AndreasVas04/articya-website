@@ -135,7 +135,7 @@ export default function FaqPage() {
                           </h3>
                           <span
                             aria-hidden="true"
-                            className="flex size-7 shrink-0 items-center justify-center rounded-full border border-amber/45 text-[0.625rem] text-resin-deep transition-transform duration-200 ease-out-quart group-open:rotate-180"
+                            className="flex size-7 shrink-0 items-center justify-center rounded-full border border-amber/45 text-[0.625rem] text-ink-soft transition-transform duration-200 ease-out-quart group-open:rotate-180"
                           >
                             {arrow}
                           </span>
