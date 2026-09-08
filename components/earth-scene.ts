@@ -65,15 +65,20 @@ const CAMERA_ELEVATION = 18 * DEG;
 const DISC = 0.9;
 const FOV = 26;
 // Key light: upper left, 35° above the view axis, 45° to the left of it.
-const LIGHT_ELEVATION = 35 * DEG;
-const LIGHT_AZIMUTH = 45 * DEG;
+const LIGHT_ELEVATION = 24 * DEG;
+const LIGHT_AZIMUTH = 58 * DEG;
 // The terminator's softness, and how dark the night side's ground goes.
 const TERMINATOR_WRAP = 0.18;
-const NIGHT = 0.045;
+const NIGHT = 0.06;
+// The day side, brought down toward the ground the section stands on.
+const EXPOSURE = 0.7;
+// A little of the sky in the day side: the far things in the photograph
+// behind it are cooler and softer than the near ones.
+const HAZE = 0.08;
 // The atmosphere: sky blue on the limb, warmer where the sun catches it.
 const ATMOSPHERE = "#8fbce6";
 const ATMOSPHERE_SUN = "#f2d7a8";
-const HALO_THICKNESS = 0.045;
+const HALO_THICKNESS = 0.1;
 // Marks: an amber point with a soft halo, the home point larger and breathing.
 const MARK_PX = 15;
 const HOME_MARK_PX = 22;
@@ -125,13 +130,15 @@ const GLOBE_FRAGMENT = /* glsl */ `
   uniform vec3 atmosphereSun;
   uniform float wrap;
   uniform float night;
+  uniform float exposure;
+  uniform float haze;
   varying vec2 vUv;
   varying vec3 vWorldNormal;
   varying vec3 vWorldPosition;
   void main() {
     vec3 n = normalize(vWorldNormal);
     vec3 v = normalize(cameraPos - vWorldPosition);
-    vec3 day = texture2D(map, vUv).rgb;
+    vec3 day = mix(texture2D(map, vUv).rgb, atmosphere * 0.6, haze) * exposure;
     vec3 aux = texture2D(pack, vUv).rgb;
     float ndl = dot(n, lightDir);
     float lit = clamp((ndl + wrap) / (1.0 + wrap), 0.0, 1.0);
@@ -193,11 +200,11 @@ const HALO_FRAGMENT = /* glsl */ `
     // Back faces of a shell just outside the globe: the ring between the
     // two limbs, strongest against the planet and gone at the shell's edge.
     float d = dot(normalize(vNormal), normalize(vView));
-    float ring = smoothstep(0.0, -0.28, d);
+    float ring = smoothstep(0.0, -0.42, d);
     float ndl = dot(normalize(vWorldNormal), lightDir);
     float sun = clamp(ndl * 0.5 + 0.5, 0.0, 1.0);
     vec3 color = mix(atmosphere, atmosphereSun, sun * 0.5);
-    gl_FragColor = vec4(color, ring * ring * (0.1 + 0.45 * sun));
+    gl_FragColor = vec4(color, ring * ring * ring * (0.08 + 0.34 * sun));
     #include <colorspace_fragment>
   }
 `;
@@ -313,6 +320,8 @@ export function mountEarth(host: HTMLElement, canvas: HTMLCanvasElement, opts: E
       atmosphereSun: { value: atmosphereSun },
       wrap: { value: TERMINATOR_WRAP },
       night: { value: NIGHT },
+      exposure: { value: EXPOSURE },
+      haze: { value: HAZE },
     },
     vertexShader: GLOBE_VERTEX,
     fragmentShader: GLOBE_FRAGMENT,
@@ -327,7 +336,7 @@ export function mountEarth(host: HTMLElement, canvas: HTMLCanvasElement, opts: E
       pack: { value: packTexture },
       lightDir: { value: lightDir },
       wrap: { value: TERMINATOR_WRAP },
-      opacity: { value: 0.55 },
+      opacity: { value: 0.45 },
     },
     vertexShader: GLOBE_VERTEX,
     fragmentShader: CLOUD_FRAGMENT,

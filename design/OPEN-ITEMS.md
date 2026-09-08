@@ -7345,10 +7345,12 @@ in `design/refs/2026-09-09-globe.md`.
    cities, the marks and the spin were judged on screenshots at 1440 and
    664 and on a scratch page; the object has not turned under a thumb. The
    levers if it wants adjusting, all in `components/earth-scene.ts` and
-   named at the top: `NIGHT` (how dark the night side), `TERMINATOR_WRAP`,
-   the cloud `opacity` (0.55), `MARK_PX` / `HOME_MARK_PX`, the halo's 0.10 /
-   0.55; and in `scripts/globe-texture.mjs` the grade — `SATURATION`,
-   `WATER_PULL`, `LEVEL`.
+   named at the top: `EXPOSURE` (0.70) and `HAZE` (0.08) — the two that
+   set it in the section's hour after his second verdict — `NIGHT`,
+   `TERMINATOR_WRAP`, `LIGHT_ELEVATION` / `LIGHT_AZIMUTH`, the cloud
+   `opacity` (0.45), `MARK_PX` / `HOME_MARK_PX`, the halo's 0.08 / 0.42;
+   and in `scripts/globe-texture.mjs` the grade — `SATURATION`,
+   `WATER_PULL`, `LEVEL`. If it wants to be brighter, `EXPOSURE` first.
 2. **The phone payload.** 450 KB of texture on demand a viewport ahead of
    the section (138 KB day + 312 KB pack), on top of the page's photographs.
    The pack could take a phone rung of its own (1536×768 ≈ 175 KB) if the

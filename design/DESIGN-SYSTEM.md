@@ -1739,16 +1739,28 @@ q80 (138 KB)** for a phone's, the rung chosen by the canvas's backing size.
 A second 2048×1024 map at q70 (**312 KB**) packs the night lights (Black
 Marble 2016, on a 0.7 gamma) in R, the clouds in G, the water mask in B.
 
-**The light.** One key light from the upper left — 35° above the view axis,
-45° to its left, in the camera's frame — with a 0.18 wrap on a smoothstep;
-the night side holds 0.045 of the day and its cities come up in
-`--color-resin`, the site's one accent as light. A glint on the water only
-(pow 110, 0.22). Clouds on a second sphere at 1.006 R at 0.55, lit by the
-same light, drifting a fifth faster than the ground. The atmosphere twice:
-an inner Fresnel limb on the globe (sky `#8fbce6` warmed to `#f2d7a8` on
-the sun side) and an outer back-face shell at 1.045 R, a ring strongest
-against the planet and gone at its own edge, 0.10 on the dark side to 0.55
-in the sun. Camera elevation 18°, FOV 26°, axis tilt 23.4°.
+**The light, and the hour.** The section's ground is a blue-hour
+photograph, and the Earth is lit for the same hour — the owner's second
+verdict, *it must feel part of the section*, was answered here and not by
+moving it: a first pass with a high sun (35° / 45°), full exposure and a
+tight halo read as an object placed on the section. One key light from the
+left and low — **24° above the view axis, 58° to its left**, in the
+camera's frame — so the terminator crosses the disc and the night side is
+a real share of it, with a 0.18 wrap on a smoothstep; the night holds 0.06
+of the day and its cities come up in `--color-resin`, the site's one accent
+as light. The day side is held down to **0.70** and takes **8%** of the sky
+colour — the far things in the photograph behind it are cooler and softer
+than the near ones, and so is this. A glint on the water only (pow 110,
+0.22). Clouds on a second sphere at 1.006 R at **0.45**, lit by the same
+light, drifting a fifth faster than the ground. The atmosphere twice: an
+inner Fresnel limb on the globe (sky `#8fbce6` warmed to `#f2d7a8` on the
+sun side) and an outer back-face shell at **1.10 R**, a ring³ strongest
+against the planet and dissolving over the whole shell rather than ending
+in a line, 0.08 on the dark side to 0.42 in the sun — the hard circle
+against the photograph was the loudest "pasted" cue. Camera elevation 18°,
+FOV 26°, axis tilt 23.4°. The levers are named constants at the top of
+`components/earth-scene.ts`: `EXPOSURE`, `HAZE`, `NIGHT`, `TERMINATOR_WRAP`,
+`LIGHT_ELEVATION` / `LIGHT_AZIMUTH`, `HALO_THICKNESS`.
 
 **The marks.** Twenty-one points of `--color-resin` on the sphere — the
 twenty countries and Cyprus — a bright core inside a soft halo at 0.5, 15px
@@ -1772,7 +1784,7 @@ as it was.
 **Cost.** three.js loads on demand a viewport ahead of the section: two
 chunks, 83.1 + 50.7 KB gzip, none of it on first load (166 kB, +1 for the
 loader). Textures 660 KB on a desktop, 450 KB on a phone, on demand. On the
-machine's GPU under a 4× CPU throttle the entrance costs **0.46 ms** of main
-thread per frame and no long task; headless Chromium's software rasterizer
+machine's GPU under a 4× CPU throttle the entrance costs under **0.5 ms** of
+main thread per frame and no long task; headless Chromium's software rasterizer
 reads 9.7 ms, which is the swap stalling and is recorded as such. The loop
 runs only while the box is on screen and only while something moves.
