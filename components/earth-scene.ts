@@ -502,15 +502,47 @@ export function mountEarth(host: HTMLElement, canvas: HTMLCanvasElement, opts: E
     }
   };
 
+  // The observed box is the host's own laid-out width, which a pinch cannot
+  // move - the layout viewport does not change when the reader zooms - so
+  // this never runs on a gesture. What it must also not do is run on a tick
+  // that reports the size it already has: `setSize` reallocates the drawing
+  // buffer, and a reallocation is the one operation on this canvas that can
+  // cost the context. A lost context is a black disc for the rest of the
+  // page's life, so the cheapest guard is not to ask.
+  let sized = 0;
   const resize = () => {
     const size = host.clientWidth;
-    if (!size) return;
+    if (!size || size === sized) return;
+    sized = size;
     renderer.setSize(size, size, false);
     discPx = size * DISC;
     if (ready) render(performance.now());
   };
   const resizeObserver = new ResizeObserver(resize);
   resizeObserver.observe(host);
+
+  // And if it is lost anyway - a background tab reclaimed, memory pressure on
+  // a phone - the default is that the canvas stays black forever. Swallowing
+  // the loss event is what lets the browser restore it; the restore then
+  // re-uploads what the GPU dropped and the disc comes back on its own.
+  const onContextLost = (event: Event) => {
+    event.preventDefault();
+    ready = false;
+    if (raf) cancelAnimationFrame(raf);
+    raf = 0;
+  };
+  const onContextRestored = () => {
+    sized = 0;
+    resize();
+    dayTexture.needsUpdate = true;
+    packTexture.needsUpdate = true;
+    renderer.compile(scene, camera);
+    ready = true;
+    render(performance.now());
+    if (!opts.reducedMotion) wake();
+  };
+  canvas.addEventListener("webglcontextlost", onContextLost);
+  canvas.addEventListener("webglcontextrestored", onContextRestored);
 
   // Rendering runs only while the globe is on screen.
   const intersection = new IntersectionObserver(([entry]) => {
@@ -655,6 +687,8 @@ export function mountEarth(host: HTMLElement, canvas: HTMLCanvasElement, opts: E
       disposed = true;
       if (raf) cancelAnimationFrame(raf);
       resizeObserver.disconnect();
+      canvas.removeEventListener("webglcontextlost", onContextLost);
+      canvas.removeEventListener("webglcontextrestored", onContextRestored);
       intersection.disconnect();
       canvas.removeEventListener("pointerdown", onPointerDown);
       canvas.removeEventListener("pointermove", onPointerMove);
