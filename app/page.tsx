@@ -335,15 +335,27 @@ export default function HomePage() {
               data-stage-strength="1"
               className="absolute inset-x-0 top-[100svh] h-0"
             />
-            {/* The clearing takes a whole screen and stands its words in the
-                middle of it. It used to open flush against the hero's foot,
-                which put the heading and the ledger in the bottom quarter of
-                the screen the reader lands on with three empty quarters of
-                photograph above them - the block read as having fallen to the
-                bottom of the frame rather than as standing in it. */}
+            {/* The clearing takes a whole screen. It used to open flush
+                against the hero's foot, which put the heading and the ledger
+                in the bottom quarter of the screen the reader lands on with
+                three empty quarters of photograph above them - the block read
+                as having fallen to the bottom of the frame rather than as
+                standing in it.
+
+                A phone answers that by centring the block in its screen.
+                Above `md` centring was the wrong answer twice over: the scene
+                centred the grid, and the words centred themselves again inside
+                the Earth's 504px row, so the sky over the heading was whatever
+                the two left - 25.8% of a 900 screen, 29.0% of a 1080 one, the
+                title past the middle of the frame and the reader stopped on
+                mostly sky. Both are gone above `md`: the grid opens at `9svh`,
+                the words take a further `9svh`, and the rule stands at 18svh of
+                every desktop window. `min-h-svh` still binds - the grid asks
+                for 9 + 56 svh plus the ledger's 246px, which is under a screen
+                while the window is 704px tall or more. */}
             <StageScene
               fireMargin="-30%"
-              className="relative mx-auto flex min-h-svh max-w-6xl flex-col justify-center px-4 xl:max-w-[min(84rem,92vw)]"
+              className="relative mx-auto flex min-h-svh max-w-6xl flex-col justify-center px-4 md:justify-start md:pt-[9svh] xl:max-w-[min(84rem,92vw)]"
             >
               {/* Three blocks in one grid above `md`: the words in the left
                   six columns, the Earth in the right six, and the ledger under
@@ -351,7 +363,12 @@ export default function HomePage() {
                   last - under the stats, at 0.82 of the column - so a phone
                   reads the words, the numbers, then the object. */}
               <div className="relative flex flex-col md:grid md:grid-cols-12 md:items-start md:gap-x-12 xl:gap-x-20">
-                <div className="relative md:col-span-6 md:self-center">
+                {/* The rule's row: 162px at 1440x900, 194px at 1920x1080.
+                    The words and the object no longer share a centre line -
+                    they share the object's own row instead. They cannot have
+                    both: the ledger is a full-width row wholly below the Earth,
+                    so half its stack always sits between the two centres. */}
+                <div className="relative md:col-span-6 md:mt-[9svh]">
                   <div className="relative">
                     <div className="stage-lift">
                       {/* The clearing's own rule, at its own row. It used to
@@ -396,13 +413,14 @@ export default function HomePage() {
                     The box is the section's empty right side: the column's
                     width, capped at 56svh so it stands inside its own screen
                     beside the words - 504px at 1440x900 - and never behind a
-                    glyph. Below `md` it is 0.82 of the column under the
+                    glyph. It sits at the grid's own top row, so its distance
+                    from the top of the window is the declared `9svh`. Below `md` it is 0.82 of the column under the
                     stats, 294px at 390 wide, 36px under the last row: the
                     section is then 1.199 screens at 375x553, the shortest
                     window the device gives, and the parallax below is bound
                     so the drift never reaches the row above. */}
                 <div
-                  className="stage-globe relative order-3 mt-9 md:order-none md:col-span-6 md:mt-0 md:self-center"
+                  className="stage-globe relative order-3 mt-9 md:order-none md:col-span-6 md:mt-0"
                   style={{ transitionDelay: "200ms" }}
                 >
                   <EarthGlobe className="mx-auto w-[82%] md:w-full md:max-w-[56svh]" />

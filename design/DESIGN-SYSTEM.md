@@ -679,13 +679,14 @@ fix a table.
 
   Desktop dropped its `pt-24` in the sunrise pass. The hero already leaves
   68px of gold under its card, and the left column's self-centering against
-  the taller globe column adds ~90px more — with 96px of padding on top, a
-  full empty gold band separated the card from the heading and the entrance
-  played out where nobody was looking. With no top padding the heading area
-  engages **158px** under the card block (measured at 1440×900), inside the
-  120–160px window, and the sunrise starts while the card is still leaving
-  the viewport — the two moments overlap instead of being separated by dead
-  gold.
+  the taller globe column added a further stretch of it — with 96px of padding
+  on top, a full empty gold band separated the card from the heading and the
+  entrance played out where nobody was looking. There is still no top padding,
+  and the self-centering is gone too (see **The Earth**, the declared rows):
+  the rule now engages **162px** under the card's foot at 1440×900, where the
+  centring left it at 232, so the sunrise starts while the card is still
+  leaving the viewport — the two moments overlap instead of being separated by
+  dead gold.
 
   Reverting also removed the reason for the mobile open-edge classes: the
   hero's bottom edge and the section's top edge meet again exactly, at every
@@ -1712,23 +1713,67 @@ object, and the owner's verdict on the duotone first draft is what set its
 terms: *an Earth in the site's two tones read as an impostor; amber arcs
 read as hand-drawn.* The real skin, and points not lines.
 
-**Where it stands.** The grid's right six of twelve columns at `md+`,
-`self-center`, the ledger under both columns in a `col-span-12` row; below
-`md` the same grid stacks and the Earth goes last, under the stats. Never
-behind a glyph — the no-shape-behind-text rule applies to a sphere too, and
-it is measured across the traversal, not at rest:
+**Where it stands.** The grid's right six of twelve columns at `md+`, the
+ledger under both columns in a `col-span-12` row; below `md` the same grid
+stacks and the Earth goes last, under the stats. Never behind a glyph — the
+no-shape-behind-text rule applies to a sphere too, and it is measured across
+the traversal, not at rest:
 
-| | 1440×900 | 390×664 | 375×553 |
-|---|---|---|---|
-| the box (`min(100%, 56svh)` at `md+`; 0.82 of the column below) | 504 | 293.5 | 281.3 |
-| the disc (0.90 of the box; the atmosphere takes the rest) | 454 | 264 | 253 |
-| gap under the ledger's last row (phones) | — | 36px | 36px |
-| section | 1.000 vp | 1.017 vp | **1.199 vp** |
-| closest a glyph comes to the disc, parallax live, 20px steps | 46.5px | 47.9px | 31.3px |
+| | 1440×900 | 1920×1080 | 390×664 | 375×553 |
+|---|---|---|---|---|
+| the box (`min(100%, 56svh)` at `md+`; 0.82 of the column below) | 504 | 604.8 | 293.5 | 281.3 |
+| the disc (0.90 of the box; the atmosphere takes the rest) | 454 | 544 | 264 | 253 |
+| gap under the ledger's last row (phones) | — | — | 36px | 36px |
+| section | 1.000 vp | 1.000 vp | 1.017 vp | **1.199 vp** |
+| closest a glyph comes to the disc, parallax live, 20px steps | 46.5px | 48.6px | 47.9px | 31.3px |
 
 36px is the largest phone gap that keeps the shortest window's section
 under 1.2 screens; the parallax is bound to 33px so the drift can never
 close it.
+
+**The rows, declared — 2026-09-09, second pass.** Above `md` the block used
+to float: the scene centred its grid in `min-h-svh` and the words centred
+themselves again inside the Earth's own 504px row, so the sky over the
+heading was whatever the two centrings left — **25.8% of a 900 screen and
+29.0% of a 1080 one**, with 157px of it spent inside the row before the rule
+was drawn. The reader stopped on a screen that was mostly sky. Both centrings
+are gone above `md` and the two rows are declared instead: the scene opens
+its grid at **9svh** (`md:justify-start md:pt-[9svh]`), the Earth stands at
+that row, and the text column takes a further **9svh** — so the rule is at
+**18svh of every desktop window**, and the space above it is a share of the
+screen rather than a residue. Below `md` nothing changes: the phone still
+centres, and both phone heights are byte-identical to the commit before,
+pixel for pixel, keys and document height included.
+
+| row, at the scroll that puts the section's top at the window's | 1440×900 | 1920×1080 |
+|---|---|---|
+| the rule | 232.2 → **162.0** (25.8% → **18.0%**) | 313.2 → **194.4** (29.0% → **18.0%**) |
+| the title's cap line | 249.7 → **179.6** (27.8% → 20.0%) | 333.1 → **214.3** (30.9% → 19.8%) |
+| the lead's last baseline | 415.7 → **345.6** | 514.6 → **395.8** |
+| the Earth's box, top | 82.3 → **88.0** | 121.8 → **105.6** |
+| the disc's centre | 334.3 → **340.0** | 424.2 → **408.0** |
+| the ledger, top → bottom | 626.9–825.1 → **633.0–831.2** | 767.3–965.5 → **750.0–948.2** |
+| the section | 1.000 vp → **1.000 vp** | 1.000 vp → **1.000 vp** |
+
+The section's height is unchanged because `min-h-svh` still binds: the grid
+needs `9svh + 56svh + 48 + 198` of the window, which is under a screen while
+the window is **704px tall or more**. Under that — a desktop window shorter
+than the shortest phone this site is measured at — the section grows instead
+of clipping: 1.02 vp at 660.
+
+**Why the words and the disc no longer share a centre line.** They did, to
+within the parallax's own 7px, and it cost the heading its row. They cannot
+have both. The ledger is a full-width row wholly below the Earth, so the
+block's centre — the rule's row to the ledger's foot — sits at least half the
+ledger's own stack, `(48 + 198.2) / 2 = 123px`, under the disc's; closing
+that gap needs the disc's foot to reach past the ledger's top row, which puts
+it over `15+ / COUNTRIES`. Solving the two together at 1440×900 wants a
+ledger foot at 1054px of a 900 screen. So the axis is not the constraint that
+gets satisfied: it is read, recorded and left — **−194.3 → −156.6px** at
+1440×900 and **−215.2 → −163.3px** at 1920×1080, the disc's centre above the
+block's in every case. What the lift buys instead is the heading's row, and
+what it costs is the quiet band between the lead's foot and the ledger, which
+opens from 205 to 281px at 1440 — photograph, and the walking group is in it.
 
 **The skin** (`scripts/globe-texture.mjs`, the outputs committed under
 `public/globe/`): NASA's Blue Marble Next Generation for **July** with
