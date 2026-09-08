@@ -12,6 +12,10 @@ interface ResponsiveImageProps {
   fill?: boolean;
   /** LCP image: eager, high fetch priority, never lazy. Everything else lazy-loads. */
   priority?: boolean;
+  /** Eager without claiming priority - a placement whose file is already in
+   *  the cache and whose decode should not be left to the moment it is
+   *  needed. The finale's tiles take it once the warmer has landed them. */
+  eager?: boolean;
   className?: string;
   style?: CSSProperties;
   draggable?: boolean;
@@ -28,12 +32,13 @@ export function ResponsiveImage({
   sizes,
   fill = false,
   priority = false,
+  eager = false,
   className,
   style,
   draggable,
 }: ResponsiveImageProps) {
   const resolved = resolveImage(src);
-  const loading = priority ? "eager" : "lazy";
+  const loading = priority || eager ? "eager" : "lazy";
   const fetchPriority = priority ? "high" : undefined;
 
   // Fill mode mirrors next/image: the <picture> is display:contents (no box),

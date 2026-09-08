@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
-import { claimHero, holdPipe, savingData, tooSlowToSpeculate } from "@/lib/hero-prefetch";
+import { holdPipe, savingData, tooSlowToSpeculate } from "@/lib/connection";
+import { claimHero } from "@/lib/hero-prefetch";
 
 // The order the three are fetched in.
 const ROUTES = ["/about/", "/faq/", "/contact/"];

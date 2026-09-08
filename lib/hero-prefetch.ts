@@ -1,7 +1,8 @@
 import { hero as aboutHero } from "@/content/about";
 import { hero as contactHero } from "@/content/contact";
 import { hero as faqHero } from "@/content/faq";
-import { coverSizes, FULL_VIEWPORT, variantUrl } from "@/lib/images";
+import { coverSizes, FULL_VIEWPORT, negotiatedExt, variantUrl } from "@/lib/images";
+import { releasePipe, savingData } from "@/lib/connection";
 
 // A route change to an inner page paints the page and then waits for its
 // photograph. Measured from home at 390x664 DPR 3, the hero arrived 500-1100 ms
@@ -26,21 +27,6 @@ export const ROUTE_HEROES: Record<string, string> = {
   "/contact/": contactHero.image,
 };
 
-// Which format this browser negotiated, read off a picture it has already
-// resolved rather than assumed. `<picture>` picks the first `<source>` whose
-// type it can decode; `currentSrc` is that decision, already made. Guessing
-// AVIF instead would spend a whole photograph on a browser that will then
-// fetch the WebP anyway.
-function negotiatedExt(): string | null {
-  for (const img of document.querySelectorAll("img")) {
-    const src = (img as HTMLImageElement).currentSrc;
-    if (!src || !src.includes("/images/variants/")) continue;
-    const ext = src.split(".").pop();
-    if (ext) return ext;
-  }
-  return null;
-}
-
 /** The file the destination's hero plate would fetch in this window, or null
  *  when the route has no hero or the format is not yet knowable. */
 export function heroRung(href: string): string | null {
@@ -49,15 +35,6 @@ export function heroRung(href: string): string | null {
   const ext = negotiatedExt();
   if (!ext) return null;
   return variantUrl(src, coverSizes(src, FULL_VIEWPORT), ext);
-}
-
-// A reader who has asked not to be spent on is not prefetched for, on either
-// path. `prefers-reduced-data` is the declaration; `Save-Data` is the header
-// the same preference sends, and the engines carry one or the other.
-export function savingData(): boolean {
-  if (window.matchMedia("(prefers-reduced-data: reduce)").matches) return true;
-  const conn = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
-  return Boolean(conn?.saveData);
 }
 
 // Once per route per session: a second request for a file already asked for is
@@ -80,30 +57,6 @@ export function claimHero(href: string): string | null {
   return url;
 }
 
-// The idle queue below, while one is running. Background speculation holds the
-// pipe only until the reader asks for something: the press that starts a route
-// change has to find the wire clear, and on a phone that press arrives while
-// the queue is most of a photograph into a page nobody has asked for.
-//
-// The unmount is too late to do this. Measured at 390x664 on 4G, a tap that
-// left home mid-queue still let all three files run to completion - React
-// unmounts the page when the destination is ready to render, which on a slow
-// link is a second after the finger.
-interface Queue {
-  /** Stop, keeping whatever is in flight for `keep` - by then that is not
-   *  speculation, it is the file the reader is waiting on. */
-  stop: (keep: string | null) => void;
-}
-let queue: Queue | null = null;
-
-/** Register the idle queue; returns its own deregister. */
-export function holdPipe(q: Queue): () => void {
-  queue = q;
-  return () => {
-    if (queue === q) queue = null;
-  };
-}
-
 /** Put the destination's hero on the wire now.
  *
  *  `rel="preload"`, not `rel="prefetch"`, and the route change is why.
@@ -117,10 +70,7 @@ export function prefetchHero(href: string, press = false): void {
   // A press is a route change starting. A hover is not - a cursor crossing the
   // nav on its way somewhere else would otherwise end the queue for the
   // session.
-  if (press) {
-    queue?.stop(href);
-    queue = null;
-  }
+  if (press) releasePipe(href);
   const url = claimHero(href);
   if (!url) return;
   const link = document.createElement("link");
@@ -128,13 +78,4 @@ export function prefetchHero(href: string, press = false): void {
   link.as = "image";
   link.href = url;
   document.head.appendChild(link);
-}
-
-// The idle path's own guard. A reader on 2g is not helped by three
-// photographs queued ahead of the page they are on; `saveData` is the
-// preference and this is the connection.
-export function tooSlowToSpeculate(): boolean {
-  const conn = (navigator as Navigator & { connection?: { effectiveType?: string } }).connection;
-  const type = conn?.effectiveType;
-  return type === "2g" || type === "slow-2g";
 }

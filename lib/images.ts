@@ -200,6 +200,21 @@ function resolveSizes(sizes: string): number | null {
   return null;
 }
 
+/** Which format this browser negotiated, read off a picture it has already
+ *  resolved rather than assumed. `<picture>` picks the first `<source>` whose
+ *  type it can decode; `currentSrc` is that decision, already made. Guessing
+ *  AVIF instead would spend a whole photograph on a browser that will then
+ *  fetch the WebP anyway. Client-only. */
+export function negotiatedExt(): string | null {
+  for (const img of document.querySelectorAll("img")) {
+    const src = (img as HTMLImageElement).currentSrc;
+    if (!src || !src.includes(`${data.dir}/`)) continue;
+    const ext = src.split(".").pop();
+    if (ext) return ext;
+  }
+  return null;
+}
+
 /** The variant URL this window would select for `src` at `sizes`, in `ext`.
  *  Client-only: it reads the viewport. */
 export function variantUrl(src: string, sizes: string, ext: string): string | null {

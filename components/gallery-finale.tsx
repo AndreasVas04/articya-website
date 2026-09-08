@@ -10,7 +10,8 @@ import {
   type MotionStyle,
 } from "framer-motion";
 import { ResponsiveImage } from "@/components/responsive-image";
-import { coverSizes, type SizeBox } from "@/lib/images";
+import { holdPipe, savingData, tooSlowToSpeculate } from "@/lib/connection";
+import { coverSizes, negotiatedExt, variantUrl, type SizeBox } from "@/lib/images";
 import { cn } from "@/lib/utils";
 
 const easeInOutCubic = cubicBezier(0.65, 0, 0.35, 1);
@@ -129,6 +130,12 @@ const tileSizes = (src: string, index: number) =>
     ? "100vw"
     : coverSizes(src, TILE_BOXES[index].wide, TILE_BOXES[index].compact);
 
+// How far above the finale the seven files are asked for, in screens of the
+// reader's own window. The section's top crossing a line 1.5 screens below the
+// window's foot is the cue, which is one IntersectionObserver and no scroll
+// listener.
+const WARM_AHEAD = 1.5;
+
 // While the words are on screen each outer tile holds this offset from its
 // mosaic slot (x in vw, y in vh) - gathered loosely around the paragraph,
 // clear of the text block - then settles into the slot as the words hand
@@ -227,6 +234,93 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
     stageWindow(stage.get(), key(0.68), key(0.745))
   );
 
+  // The wall, asked for before the reader is standing in it.
+  //
+  // The tiles are lazy, and the composition holds two of them outside the
+  // window until the ring closes, so a lazy load cannot fire for them until
+  // the pin is most of the way through. Measured cold at 390x664 DPR 3 on 4G,
+  // `hero-3`'s own request starts 369 ms *inside* a pin that is 800 ms long at
+  // a 1000 px/s flick; on Fast 3G all seven are still in flight when the
+  // reader reaches the document's last pixel, and the centre tile lands 5.8 s
+  // after the pin began - the finale plays out over the ground colour.
+  //
+  // So they are pulled one at a time, centre first, at `low`, the same way
+  // home pulls the three inner heroes: the promise sequences the queue, the
+  // signal stops it, and the body is drained a chunk at a time because the
+  // file is wanted in the cache and never in memory. Which file is not written
+  // down here - `variantUrl` resolves the same `sizes` string the tile itself
+  // declares, against the window the reader is actually in, so the warmed URL
+  // and the tile's own request are one download and not two.
+  //
+  // As each file lands, its tile stops being lazy, so the decode also happens
+  // on the approach instead of inside the pin. A tile whose file never arrives
+  // - Save-Data, a 2g connection, a route change - is left exactly as it is
+  // today.
+  const [warm, setWarm] = useState<number[]>([]);
+
+  useEffect(() => {
+    const section = container.current;
+    if (!mounted || reducedMotion || !section) return;
+    if (savingData() || tooSlowToSpeculate()) return;
+
+    const controller = new AbortController();
+    let stopped = false;
+
+    const run = async () => {
+      const ext = negotiatedExt();
+      if (!ext) return;
+      // Index 0 is the centre tile, which is why the queue is in index order:
+      // it is the one the finale ends on and the only one ever alone on the
+      // screen, so it is the one the reader waits for.
+      for (let index = 0; index < TILES.length; index++) {
+        if (stopped) return;
+        const image = images[index];
+        if (!image) continue;
+        const url = variantUrl(image.src, tileSizes(image.src, index), ext);
+        if (!url) continue;
+        try {
+          const res = await fetch(url, {
+            signal: controller.signal,
+            priority: "low",
+          } as RequestInit);
+          const reader = res.body?.getReader();
+          while (reader) {
+            const { done } = await reader.read();
+            if (done) break;
+          }
+        } catch {
+          return;
+        }
+        if (stopped) return;
+        setWarm((held) => [...held, index]);
+      }
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((entry) => entry.isIntersecting)) return;
+        observer.disconnect();
+        run();
+      },
+      { rootMargin: `0px 0px ${Math.round(window.innerHeight * WARM_AHEAD)}px 0px` }
+    );
+    observer.observe(section);
+
+    // A press for another route is the reader leaving, and the unmount is a
+    // second later than the finger on a slow link.
+    const stop = () => {
+      stopped = true;
+      controller.abort();
+    };
+    const release = holdPipe({ stop });
+
+    return () => {
+      observer.disconnect();
+      release();
+      stop();
+    };
+  }, [mounted, reducedMotion, images]);
+
   useEffect(() => {
     const query = window.matchMedia("(min-width: 768px)");
     const update = () => setCompact(!query.matches);
@@ -324,6 +418,7 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
             src={src}
             alt={alt}
             compact={compact}
+            warm={warm.includes(index)}
           />
         ))}
       </motion.div>
@@ -376,12 +471,14 @@ function FinaleTile({
   src,
   alt,
   compact,
+  warm,
 }: {
   stage: ReturnType<typeof useScroll>["scrollYProgress"];
   index: number;
   src: string;
   alt: string;
   compact: boolean;
+  warm: boolean;
 }) {
   // Outer tiles rise staggered into their gathered offsets while the words
   // complete; the ring settles into the mosaic as the words hand over, the
@@ -439,6 +536,7 @@ function FinaleTile({
           src={src}
           alt={alt}
           fill
+          eager={warm}
           sizes={tileSizes(src, index)}
           className="object-cover"
         />
