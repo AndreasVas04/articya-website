@@ -1293,7 +1293,13 @@ details[open] .accordion-answer {
     display: none;
   }
   .earth-canvas {
-    touch-action: pan-y;
+    /* `pan-y` alone excludes `pinch-zoom`: the browser keeps the vertical pan
+       and swallows the zoom, so the one photograph-sized thing on this screen
+       could not be pinched into at all. Naming the zoom back restores it and
+       the drag is unaffected - a pinch declares itself with a second finger,
+       which the pointer handler already ignores, and Safari sends a
+       `pointercancel` as it takes the gesture over. */
+    touch-action: pan-y pinch-zoom;
     cursor: grab;
   }
   .earth-canvas:active {
