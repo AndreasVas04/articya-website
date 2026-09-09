@@ -4,10 +4,12 @@ import { ButtonLink } from "@/components/ui/button";
 import { meta, notFound } from "@/content/not-found";
 
 // No canonical: a missing address is not a page of the site, and GitHub Pages
-// serves this file for every one of them. Next marks it noindex on its own.
+// serves this file for every one of them - inherited from the layout it would
+// point at home. Next marks the page noindex on its own.
 export const metadata: Metadata = {
   title: meta.title,
   description: meta.description,
+  alternates: { canonical: null },
 };
 
 // The About page's own ground and its own darkening, sharp, so the frame is
