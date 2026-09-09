@@ -7,7 +7,7 @@
     "type": "git",
     "url": "https://github.com/AndreasVas04/articya-website.git"
   },
-  "author": "Andreas Vasiliou (https://github.com/AndreasVas04)",
+  "author": "Andreas Vasileiou (https://github.com/AndreasVas04)",
   "private": true,
   "engines": {
     "node": "22.x"

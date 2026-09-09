@@ -91,4 +91,4 @@ below covers and what it excludes.
 
 ## Author
 
-**Andreas Vasiliou** — [github.com/AndreasVas04](https://github.com/AndreasVas04)
+**Andreas Vasileiou** — [github.com/AndreasVas04](https://github.com/AndreasVas04)
