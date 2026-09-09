@@ -13,3 +13,9 @@
 .DS_Store
 *.tsbuildinfo
 next-env.d.ts
+
+# working notes and unprocessed source photography, not part of the site
+CLAUDE.md
+.claude/
+design/refs/
+photo-src/
