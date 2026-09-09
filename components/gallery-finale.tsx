@@ -199,13 +199,21 @@ const GATHER_COMPACT_PX = [0, 38, 0, 0, 0, 0, 38];
 // their photographs have not. The rise is the site's long settle and the fade
 // is short against it, so everything is readable while it is still travelling.
 //
-// The cue is the group's own top - the highest of the four tiles at rest -
-// crossing 0.85 of the window on its way up, which is the group entering.
-// The outer two tiles, the pin, the dissolve, the ring's close and the zoom
-// stay on the scrollbar as built.
+// The cue is the paragraph's own foot - the resting position of its last
+// line - crossing 0.92 of the window on its way up. It used to be the group's
+// top, the highest of the four tiles, at 0.85: that fired with the words' top
+// still 73px below the fold on a phone and 210px on a desktop, so the 1.4s
+// played out under the fold and the reader arrived to a finished frame. At
+// the foot the whole paragraph is inside the window when the clock starts,
+// with 0.08 of the window under it - which is the 56px of the rise, near
+// enough, so the held block is just inside as well - and the top band's tile
+// is whole on the screen above it. The tiles' own entrance is later than it
+// would be on their own: the band sits 0.43 of a window above the words and
+// waits for them, since one clock is the point. The outer two tiles, the pin,
+// the dissolve, the ring's close and the zoom stay on the scrollbar as built.
 const WORDS_RISE_PX = 56;
 const WORDS_MS = 1400;
-const ARRIVAL_CUE = 0.85;
+const ARRIVAL_CUE = 0.92;
 // The tiles that arrive with the words: the top band, the two beside them and
 // the bottom band's long tile, in TILES order.
 const CLOCKED_TILES = new Set([1, 2, 3, 4]);
@@ -361,23 +369,22 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
     return () => query.removeEventListener("change", update);
   }, []);
 
-  // Where the group's top stands in the document, measured off the layout and
-  // never inside the scroll handler: the frame sits at the section's top until
-  // the pin engages, which is well below the cue, and the tiles' rest inside
-  // the frame is the layout's. What is measured is the box's pre-arrival
-  // position, so the rise it is waiting to make is taken back off.
-  const groupTop = useRef<number | null>(null);
+  // Where the paragraph's foot stands in the document, measured off the
+  // layout and never inside the scroll handler: the frame sits at the
+  // section's top until the pin engages, which is well below the cue, and the
+  // block's rest inside the frame is the layout's. The block is measured while
+  // it is still held, so the rise it is waiting to make is taken back off.
+  const wordsFoot = useRef<number | null>(null);
   useEffect(() => {
     if (!mounted || reducedMotion) return;
     const measure = () => {
       const el = frame.current;
       const section = container.current;
-      if (!el || !section) return;
-      const boxes = Array.from(el.querySelectorAll<HTMLElement>("[data-finale-clock]"));
-      if (boxes.length === 0) return;
+      const block = words.current?.querySelector<HTMLElement>(".finale-words-block");
+      if (!el || !section || !block) return;
       const frameTop = el.getBoundingClientRect().top;
-      const inFrame = Math.min(...boxes.map((b) => b.getBoundingClientRect().top - frameTop));
-      groupTop.current = section.getBoundingClientRect().top + window.scrollY + inFrame - WORDS_RISE_PX;
+      const inFrame = block.getBoundingClientRect().bottom - frameTop - (wordsIn ? 0 : WORDS_RISE_PX);
+      wordsFoot.current = section.getBoundingClientRect().top + window.scrollY + inFrame;
     };
     measure();
     const offResize = onLayoutResize(measure);
@@ -387,12 +394,12 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
       offResize();
       observer.disconnect();
     };
-  }, [mounted, reducedMotion, compact]);
+  }, [mounted, reducedMotion, compact, wordsIn]);
 
   // The cue, read on the tiles' own timeline so the two cannot drift.
   useMotionValueEvent(stage, "change", () => {
-    if (wordsIn || !mounted || reducedMotion || groupTop.current === null) return;
-    if (groupTop.current - window.scrollY <= ARRIVAL_CUE * window.innerHeight) setWordsIn(true);
+    if (wordsIn || !mounted || reducedMotion || wordsFoot.current === null) return;
+    if (wordsFoot.current - window.scrollY <= ARRIVAL_CUE * window.innerHeight) setWordsIn(true);
   });
 
   // Resting state: the paragraph in full, then the same photos as a plain
