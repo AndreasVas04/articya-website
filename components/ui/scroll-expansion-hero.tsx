@@ -455,6 +455,10 @@ const ScrollExpandMedia = ({
   // Where the page was on the last scroll event, so a finger's travel can be
   // read off the page as well as off the touch stream.
   const lastScrollY = useRef(0);
+  // Whether the pull-to-refresh guard below is listening, and how many moves
+  // it has cancelled; the overlay reads both.
+  const guardOn = useRef(false);
+  const prevented = useRef(0);
 
   // Under reduced motion the component renders its resting state: media
   // expanded, content visible, no scroll hijacking, first slide only. The
@@ -1102,6 +1106,70 @@ const ScrollExpandMedia = ({
     };
   }, [reentry, reducedMotion, scrollProgress, closeRun]);
 
+  // The pull-to-refresh guard. On the owner's phone the way back in never ran:
+  // a finger drawing the page down at the top is also iOS Safari's reload
+  // gesture, and Safari had the gesture before this component saw a move -
+  // the spinner came down where the close should have. No emulation shows
+  // it, which is why five rounds of the close passed in two engines and
+  // failed on the device.
+  //
+  // WebKit decides at the *start* of a touch whether the page may cancel it,
+  // from the listeners registered at that moment: a non-passive `touchmove`
+  // added inside `touchstart` is already too late for that gesture. So the
+  // guard is registered while the page stands at the top with the hero open
+  // - the one state in which the gesture is the hero's - and taken off the
+  // moment the page leaves it. It is never on the open page below the top,
+  // where a non-passive move listener would run every scroll through the
+  // main thread (see the re-entry effect's own registration), and never
+  // during the opening, whose capture is untouched.
+  //
+  // What it cancels: one finger, not part of a pinch, at scale 1, moving down
+  // the glass with `scrollY` at or above the top. A finger moving up is a
+  // scroll down the page and is left to the engine. The cancelled moves still
+  // reach the re-entry effect's handler, which reads the close off them.
+  useEffect(() => {
+    if (reducedMotion || !reentry) return;
+    let lastY = 0;
+
+    const onMove = (e: globalThis.TouchEvent) => {
+      if (e.touches.length !== 1 || pinch.current || zoomed()) return;
+      const y = e.touches[0].clientY;
+      const down = lastY > 0 && y > lastY;
+      lastY = y;
+      if (!down || window.scrollY > 0 || !e.cancelable) return;
+      e.preventDefault();
+      prevented.current += 1;
+    };
+    const onStart = (e: globalThis.TouchEvent) => {
+      lastY = e.touches.length === 1 ? e.touches[0].clientY : 0;
+    };
+    const arm = () => {
+      if (guardOn.current) return;
+      guardOn.current = true;
+      window.addEventListener("touchmove", onMove, { passive: false });
+      heroTrace.event("guard:on", `y=${Math.round(window.scrollY)}`);
+    };
+    const disarm = () => {
+      if (!guardOn.current) return;
+      guardOn.current = false;
+      window.removeEventListener("touchmove", onMove);
+      heroTrace.event("guard:off", `y=${Math.round(window.scrollY)}`);
+    };
+    const sync = () => {
+      if (window.scrollY <= 0 && !zoomed()) arm();
+      else disarm();
+    };
+
+    sync();
+    window.addEventListener("touchstart", onStart, { passive: true });
+    window.addEventListener("scroll", sync, { passive: true });
+    return () => {
+      disarm();
+      window.removeEventListener("touchstart", onStart);
+      window.removeEventListener("scroll", sync);
+    };
+  }, [reentry, reducedMotion]);
+
   // The idle clock must not outlive the capture.
   useEffect(
     () => () => {
@@ -1124,6 +1192,8 @@ const ScrollExpandMedia = ({
         upward: upward.current,
         pinch: pinch.current,
         settling: performance.now() < bounceUntil.current,
+        guard: guardOn.current,
+        prevented: prevented.current,
       })),
     [reentry]
   );

@@ -105,6 +105,19 @@ body {
   color: var(--color-ink);
 }
 
+/* iOS Safari's pull-to-refresh rides the same gesture as the hero's way back
+   in - a finger drawing the page down at the top - and Safari takes it first:
+   on the owner's phone the reload spinner came down where the close should
+   have run. Safari's refresh is built on the scroll view's own overscroll, so
+   `contain` (which leaves the rubber band and only stops the chaining) would
+   leave it too; `none` is the value that takes the overscroll away. Set on
+   the root, for every route: none of them has a top pull of its own to lose,
+   and the y axis only, so a horizontal swipe is untouched. */
+html,
+body {
+  overscroll-behavior-y: none;
+}
+
 /* Two-ring focus indicator: the pine ring carries the contrast on plaster
    grounds, the resin ring on pine grounds, so one rule covers both worlds. */
 :focus-visible {
