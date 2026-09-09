@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type CSSProperties } from "react";
 import {
   cubicBezier,
   motion,
+  useMotionValueEvent,
   useReducedMotion,
   useScroll,
   useTransform,
@@ -190,8 +191,17 @@ const GATHER_COMPACT_PX = [0, 38, 0, 0, 0, 0, 38];
 // it arrive in pieces - three stalls on the way down. The rise is the site's
 // long settle and the fade is short against it, so the words are readable
 // while they are still travelling.
+//
+// It is cued on the same frame the first outer tile begins to rise - the
+// tiles' own timeline, below - and not on the block crossing a line of its
+// own. Cued at 14% above the window's foot it fired 85px of scroll before the
+// tiles, and the owner saw the paragraph standing alone before the
+// photographs; the whole text must appear in the same transition as they do.
+// At 1.4s the block has finished while tiles 1-4 are still rising.
 const WORDS_RISE_PX = 56;
 const WORDS_MS = 1400;
+// The first outer tile's own key, as FinaleTile derives it for index 1.
+const FIRST_TILE_RISE = 0.1;
 
 // The story's finale: the photographs from the scenes above rise around the
 // closing paragraph, which arrives whole on its own clock the first time it
@@ -343,23 +353,12 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
     return () => query.removeEventListener("change", update);
   }, []);
 
-  // The cue: the block rising 14% above the window's foot, once. The same
-  // margin the stage entrances fire on, so a real share of the words is on
-  // the glass when the rise starts.
-  useEffect(() => {
-    const el = words.current;
-    if (!mounted || reducedMotion || wordsIn || !el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry.isIntersecting) return;
-        observer.disconnect();
-        setWordsIn(true);
-      },
-      { rootMargin: "0px 0px -14% 0px" }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [mounted, reducedMotion, wordsIn, compact]);
+  // The cue: the frame the first outer tile starts its rise, once. Read off
+  // the same timeline the tiles read, so the two cannot drift by a pixel.
+  const wordsCue = key(FIRST_TILE_RISE);
+  useMotionValueEvent(stage, "change", (value) => {
+    if (!wordsIn && mounted && !reducedMotion && value >= wordsCue) setWordsIn(true);
+  });
 
   // Resting state: the paragraph in full, then the same photos as a plain
   // grid. No pinning, no scroll-linked transforms.

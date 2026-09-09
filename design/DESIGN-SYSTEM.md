@@ -1086,6 +1086,21 @@ the words' dissolve (2912–2972 / 4020–4120) are untouched and hash-identical
 20px steps across 390×553, 390×664, 390×750 and 1440×900. Scrubbed text on the
 site is now only the finale's own exit.
 
+**The closing paragraph is cued on the tiles — 2026-09-09, second pass.**
+Cued on its own block rising 14% above the window's foot, the paragraph fired
+at scrollY 2332 at 390×664 where the first outer tile began its rise at
+2412–2432, and at 3220 against 3480 at 1440×900 (2780 against 3000 at
+1440×780) — 85 to 260 px of scroll in which the words stood alone. The cue is
+now the tiles' own timeline: the block enters on the first frame `stage`
+reaches tile 1's `inStart` (`key(0.1)`), read through `useMotionValueEvent`
+so the two cannot drift by a pixel. Measured at 20 px steps: the cue lands at
+2432 / 3460 / 3000, inside or on the first stop of tile 1's rise window at all
+three heights; the words' dissolve (2912–2972 / 4020–4120 / 3480–3580), the
+tiles and the foot mask are hash-identical on four viewports; the paragraph
+reads 10.33 / 10.72 at its own ink at 390×664 / 1440×900, bit-identical to
+before. 1.4 s is unchanged, so the block has finished while tiles 1–4 are
+still rising.
+
 **A route change is a wipe — 2026-09-09.** Measured before this at 390×664 on
 4G: a client-side `Link` committed the new route **86–88 ms** after the tap,
 painted it on the next frame, reset the scroll on the commit, kept the header

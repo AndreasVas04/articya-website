@@ -69,8 +69,11 @@ own evidence.
   did not: the paragraph arrived in pieces — three groups, three stalls on the
   way down. It now arrives **whole, once, on the clock**: the block rises 56px
   over 1.4s on `--ease-out-quart` with a 400ms fade, and the amber rule draws
-  from its centre on the same clock, the first time the block rises 14% above
-  the window's foot. That is the site's rule for text, applied. What stays on
+  from its centre on the same clock, cued on the frame the first outer tile
+  begins its rise (2026-09-09, second pass: cued 14% above the window's foot
+  it fired 85–100px of scroll before the tiles and the paragraph stood alone
+  before the photographs; the whole text appears in the same transition as
+  they do). That is the site's rule for text, applied. What stays on
   the scrollbar is the mosaic's own business — the tiles' gather, settle and
   zoom, the foot mask, and the words' *dissolve*, which is the third amendment
   below. The only scrubbed text on the site is now a paragraph leaving, never
