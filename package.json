@@ -2,6 +2,9 @@
   "name": "articya-website",
   "version": "2.0.0",
   "private": true,
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
     "dev": "npm run images && next dev",
     "build": "npm run images && next build && npm run verify:placements",
