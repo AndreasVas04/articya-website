@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { routeSettled } from "@/lib/route-wipe";
 import { cn } from "@/lib/utils";
 
 // A time-based, once-per-load section entrance. The scene arms after mount
@@ -40,8 +41,14 @@ export function StageScene({
       },
       { rootMargin: `0px 0px ${fireMargin} 0px` }
     );
-    observer.observe(el);
-    return () => observer.disconnect();
+    let gone = false;
+    routeSettled().then(() => {
+      if (!gone) observer.observe(el);
+    });
+    return () => {
+      gone = true;
+      observer.disconnect();
+    };
   }, [fireMargin]);
 
   return (

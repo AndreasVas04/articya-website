@@ -1061,6 +1061,39 @@ the words' dissolve (2912–2972 / 4020–4120) are untouched and hash-identical
 20px steps across 390×553, 390×664, 390×750 and 1440×900. Scrubbed text on the
 site is now only the finale's own exit.
 
+**A route change is a wipe — 2026-09-09.** Measured before this at 390×664 on
+4G: a client-side `Link` committed the new route **86–88 ms** after the tap,
+painted it on the next frame, reset the scroll on the commit, kept the header
+node (it is the root layout's) and re-mounted the stage and `main`; CLS 0.000
+and no motion of any kind — one page replaced by another between two frames,
+and on a cold cache the photograph landed 1.0 s after the ground. It now goes
+the way every other crossing on the site goes. Where `document.startViewTransition`
+exists and motion is not reduced, an internal link is taken through it: the old
+page holds on the glass while the new route commits and its photograph decodes,
+then the destination **wipes over it top to bottom — one boundary, the plate
+wipe's 40% feather, `--route-wipe` 0 → 140% over 480 ms on
+`cubic-bezier(0.65, 0, 0.35, 1)`** — with layer opacity only ever 0 or 1 (the
+root pair is `isolation: auto`, `mix-blend-mode: normal`, no cross-fade) and
+the header as its own named snapshot, swapped rather than animated, so it
+never moves. The destination's text (`Reveal`, `StageScene`) waits for the
+transition's `finished` before it arms, so it enters on its own clock after
+the wipe and never underneath the old snapshot. Reduced motion and browsers
+without the API get the instant swap as before; WebKit 26 runs it with no
+errors.
+
+**The wipe never shows ground before the photograph unless the photograph
+is not there.** The update callback waits for the destination's
+high-priority image to decode, at most 300 ms; on a warm cache — the intent
+and idle prefetches have put the file there — the decode resolves inside the
+commit, `ready` lands at **86 ms** and the wipe finishes at **579 ms** after
+the tap, and at 240 ms into it the revealed rows 0–28% of the window are
+**0.00% different** from the destination at rest, header included. Cold (the
+cache cleared after the prefetch), `ready` lands at **333 ms** — the 300 ms
+gate — the wipe runs over the ground and the photograph lands at 1.1 s, as
+before. From an inner page, whose idle queue does not run, a tap on another
+inner page is the cold case unless the finger's own intent prefetch beats
+300 ms: About → FAQ measured `ready` at 325 ms and the photograph at 830 ms.
+
 **Signature entrances play on the clock, not the scrollbar.** The page's two
 set-piece moments — the hero's first-load title card and the "What we do"
 stage entrance — are time-based and once per load. An earlier pass scrubbed

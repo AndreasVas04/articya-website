@@ -3,6 +3,7 @@ import { Bricolage_Grotesque, Instrument_Sans } from "next/font/google";
 import "./globals.css";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { RouteWipe } from "@/components/route-wipe";
 import { pageMetadata, siteUrl } from "@/lib/metadata";
 import { meta } from "@/content/home";
 
@@ -36,6 +37,7 @@ export default function RootLayout({
         <SiteHeader />
         <main>{children}</main>
         <SiteFooter />
+        <RouteWipe />
       </body>
     </html>
   );

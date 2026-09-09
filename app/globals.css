@@ -194,6 +194,66 @@ body {
   );
 }
 
+/* A route change is one move: the destination wipes over the page the
+   reader is on, top to bottom, on the plate wipe's own curve, with the same
+   40% feather every crossing on the site travels behind - and no cross-fade
+   anywhere. The old page holds at 1 and the new one is masked in over it, so
+   every row of every frame is one page or the other. The header is its own
+   snapshot and is swapped, not animated: it stands still through the wipe.
+   The travel is a registered custom property so the gradient's stops can be
+   animated; `--route-wipe` runs 0 -> 140%, which is the clear edge of the
+   feather crossing the whole window and leaving through its foot. Only the
+   click handler in components/route-wipe.tsx starts one, and it does not
+   under reduced motion or where the API is missing. */
+@property --route-wipe {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 0%;
+}
+@layer components {
+  .site-header {
+    view-transition-name: site-header;
+  }
+}
+::view-transition-image-pair(root),
+::view-transition-image-pair(site-header) {
+  isolation: auto;
+}
+::view-transition-old(root),
+::view-transition-new(root),
+::view-transition-old(site-header),
+::view-transition-new(site-header) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+::view-transition-group(site-header) {
+  animation: none;
+}
+::view-transition-old(site-header) {
+  display: none;
+}
+::view-transition-new(root) {
+  animation: route-wipe 480ms var(--ease-in-out-cubic) both;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    #000 calc(var(--route-wipe) - 40%),
+    transparent var(--route-wipe)
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    #000 calc(var(--route-wipe) - 40%),
+    transparent var(--route-wipe)
+  );
+}
+@keyframes route-wipe {
+  from {
+    --route-wipe: 0%;
+  }
+  to {
+    --route-wipe: 140%;
+  }
+}
+
 /* The foot of every page, where the header's ramp is at its top. The stage
    runs under the footer on the pages whose photograph does not end, so the
    footer's own line needs the same thing the nav needed: a full-width

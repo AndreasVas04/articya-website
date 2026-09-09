@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { routeSettled } from "@/lib/route-wipe";
 import { cn } from "@/lib/utils";
 
 interface RevealProps {
@@ -33,8 +34,16 @@ export function Reveal({ children, className, delayMs = 0 }: RevealProps) {
       },
       { threshold: 0.2 }
     );
-    observer.observe(el);
-    return () => observer.disconnect();
+    // On a route change the block enters after the wipe has uncovered it,
+    // not underneath the old page's snapshot.
+    let gone = false;
+    routeSettled().then(() => {
+      if (!gone) observer.observe(el);
+    });
+    return () => {
+      gone = true;
+      observer.disconnect();
+    };
   }, []);
 
   return (

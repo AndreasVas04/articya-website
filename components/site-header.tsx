@@ -97,7 +97,7 @@ export function SiteHeader() {
   }, [open]);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50">
+    <header className="site-header fixed inset-x-0 top-0 z-50">
       {/* The darkening the labels are carried by - see `.chrome-shade`. It is
           a layer of the window, not a background of this element: the header
           itself has none, and this ramp reaches nothing at its lower end. */}
