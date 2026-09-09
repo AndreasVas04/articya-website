@@ -113,27 +113,27 @@ const SETTLE_REFRACTORY_MS = 250;
 const settleEase = cubicBezier(0.22, 1, 0.36, 1);
 
 // The way back in. See the re-entry effect below: a close is a clock, not a
-// scrub, so these are a threshold and a duration and nothing else.
+// scrub, so this is a duration, a jitter floor and an arm's lifetime.
 const CLOSE_MS = 700;
-const CLOSE_WHEEL_PX = 60;
-const CLOSE_WHEEL_WINDOW_MS = 400;
-const CLOSE_TOUCH_PX = 40;
-// A finger cannot follow the page to the top the way a wheel can. A trackpad
-// keeps sending events all through its momentum tail, so on a laptop the
-// gesture that carries the page to 0 is still delivering deltas when it gets
-// there and the threshold is met at the top under the reader's own hand. A
-// flick is over the moment the finger leaves the glass: the page travels the
-// rest of the way on the engine's momentum and not one touch event is
-// delivered at the top. Measured on a phone-sized window, a 300px flick from
-// 600 delivered six moves, none of them at 0, and the close never fired -
-// which is the reader's report exactly, an upward swipe that comes to rest on
-// the lede with the opening still whole.
-//
-// So a flick that was aimed upward past the threshold and ran out of page
-// before it ran out of momentum stays armed, and the arrival at the top is
-// what fires the close. The arm lives this long past the last frame in which
-// the page actually moved toward the top - not from the finger, which would
-// cut off a long run-out - so it dies with the momentum wherever that stops.
+// There is no threshold. Any upward input at the top closes the hero; the
+// only thing an upward gesture has to add up to before it counts as one is
+// this, which rejects a finger's tremor and a trackpad's stray unit and
+// nothing a reader would call scrolling. It used to be 60 wheel px inside a
+// 400 ms window, or 40 px of finger: a trackpad drawn up slowly at 3 px every
+// 30 ms delivers 39 px in any 400 ms and never closed, a momentum tail that
+// lands the page on 0 with 4 px left in it never closed, and a short swipe at
+// the top under 40 px never closed. The owner's decision is that scrolling up
+// at the top always closes, so the thresholds and the slow-hand rule are gone.
+const CLOSE_JITTER_PX = 8;
+// An upward gesture that reaches the top under momentum closes on arrival,
+// whether or not a single event is delivered there. A flick is over the
+// moment the finger leaves the glass and the rest of the travel is the
+// engine's, with no touch event at 0; a trackpad's tail can run out on the
+// very frame it lands. So an upward gesture arms the close wherever it is
+// made, the scroll handler fires it on the frame the page reaches 0, and the
+// arm lives this long past the last frame in which the page actually moved
+// toward the top - so it dies with the momentum wherever that stops, and a
+// reader who comes to rest short of the top and reads on never meets one.
 const CLOSE_FLING_MS = 600;
 // The progress at which the expanded state hands back, going down. It is the
 // driver's own number, read the other way round.
@@ -401,14 +401,9 @@ const ScrollExpandMedia = ({
   const closing = useRef<Close | null>(null);
   const [reentry, setReentry] = useState(false);
   const [closeRun, setCloseRun] = useState(0);
-  // Cumulative upward travel at the top of the page, and when the window it is
-  // counted in opened. The window runs from its own start and not from the
-  // last event: measured against the last, a stream of deltaY 1 every 80 ms
-  // never re-opened it, so a deliberate slow scroll accumulated to the
-  // threshold over five seconds and closed the hero under a hand that was
-  // asking for nothing of the kind.
-  const upward = useRef({ sum: 0, at: 0 });
-  // The finger's last position, and a flick still travelling toward the top.
+  // Upward travel since the last downward input, against the jitter floor.
+  const upward = useRef(0);
+  // The finger's last position, and a gesture still travelling toward the top.
   // Both are refs and not locals inside the effect: the effect re-runs on
   // every frame of a close, and a gesture held across one of those re-runs
   // would otherwise lose the position it is measured from.
@@ -750,14 +745,15 @@ const ScrollExpandMedia = ({
   // every pause between notches and the same gesture gave four different
   // answers at four speeds. Nothing here reads a delta into progress.
   //
-  // A close is a clock. Past a threshold at the top of the page - 60 wheel px
-  // inside 400 ms, or 40 px of finger - progress runs 1 to 0 over 700 ms on
-  // the settle's own curve, through the same `applyProgress` path the driver
-  // uses, so the ramps, the thresholds and the crossing are read exactly as
-  // they are on the way up. No partial state is ever held: the close either
+  // A close is a clock. Any upward input at the top of the page - a wheel
+  // unit, a finger moving down the glass - past an 8 px jitter floor runs
+  // progress 1 to 0 over 700 ms on the settle's own curve, through the same
+  // `applyProgress` path the driver uses, so the ramps, the thresholds and
+  // the crossing are read exactly as they are on the way up. It starts
+  // exactly once and no partial state is ever held: the close either
   // completes or is cancelled, and a cancel settles back to 1 on the existing
-  // settle rather than stopping where it is. Below the threshold nothing
-  // happens at all and the rubber band is the browser's.
+  // settle rather than stopping where it is. There is no speed a hand can
+  // scroll up at the top and not close the hero; that is the owner's call.
   //
   // From the closed state the driver takes over from 0 and the opening plays
   // as it does on a fresh load - the choreography is untouched, because this
@@ -794,7 +790,7 @@ const ScrollExpandMedia = ({
       lastInputAt.current = 0;
       lastDir.current = 1;
       gaps.current = [];
-      upward.current = { sum: 0, at: 0 };
+      upward.current = 0;
       fling.current = null;
       gestureY.current = 0;
       setReentry(false);
@@ -803,7 +799,7 @@ const ScrollExpandMedia = ({
     const startClose = () => {
       const p = progressRef.current;
       if (closing.current || p <= 0) return;
-      upward.current = { sum: 0, at: 0 };
+      upward.current = 0;
       fling.current = null;
       closing.current = { from: p, to: 0, start: performance.now(), duration: CLOSE_MS * p };
       setCloseRun((n) => n + 1);
@@ -821,39 +817,44 @@ const ScrollExpandMedia = ({
     const atTop = () =>
       window.scrollY <= 0 && (!window.visualViewport || window.visualViewport.scale === 1);
 
+    // One upward gesture, wheel or finger, read the same way: past the jitter
+    // floor it closes if the page is at the top and arms the close if it is
+    // not. The arm is refreshed by every further upward event and by every
+    // frame the page climbs, so a gesture in steps stays armed as long as
+    // each step goes up. Any downward input drops both.
+    const upwardBy = (px: number) => {
+      upward.current += px;
+      if (upward.current < CLOSE_JITTER_PX) return;
+      if (atTop()) {
+        startClose();
+        return;
+      }
+      const until = performance.now() + CLOSE_FLING_MS;
+      if (fling.current) fling.current.until = until;
+      else fling.current = { until, last: window.scrollY };
+    };
+    const downward = () => {
+      upward.current = 0;
+      fling.current = null;
+    };
+
     const onWheel = (e: globalThis.WheelEvent) => {
       if (closing.current) {
         e.preventDefault();
         if (e.deltaY > 0) cancelClose();
         return;
       }
-      if (!atTop() || e.deltaY >= 0) {
-        upward.current.sum = 0;
-        return;
-      }
-      const now = performance.now();
-      if (!upward.current.sum || now - upward.current.at > CLOSE_WHEEL_WINDOW_MS) {
-        upward.current.sum = 0;
-        upward.current.at = now;
-      }
-      upward.current.sum -= e.deltaY;
-      if (upward.current.sum >= CLOSE_WHEEL_PX) startClose();
+      if (e.deltaY > 0) downward();
+      else if (e.deltaY < 0) upwardBy(-e.deltaY);
     };
 
     // A second finger is a pinch and never a close - the arity gate, as on the
-    // driver's own capture.
-    //
-    // The travel is counted from the finger down, wherever the page happens to
-    // be, and only the reading of it is gated on the top: the wheel's window
-    // has a momentum tail to be met at the top in, and a finger does not. It
-    // used to be zeroed on every move above 0, so a swipe arriving at the top
-    // had to find another 40px of finger after it got there - which is the
-    // travel a reader has already spent. A reversal still zeroes it, so a
-    // finger going the other way is never counted toward a close.
+    // driver's own capture. A move that does not change the finger's row is
+    // nothing, not a reversal: a device that repeats a coordinate used to
+    // zero the travel and un-arm a flick on the way out.
     const onTouchStart = (e: globalThis.TouchEvent) => {
       gestureY.current = e.touches.length === 1 ? e.touches[0].clientY : 0;
-      upward.current.sum = 0;
-      fling.current = null;
+      downward();
     };
     const onTouchMove = (e: globalThis.TouchEvent) => {
       if (!gestureY.current) return;
@@ -869,30 +870,23 @@ const ScrollExpandMedia = ({
         if (delta > 0) cancelClose();
         return;
       }
-      if (delta >= 0) {
-        upward.current.sum = 0;
-        return;
-      }
-      upward.current.sum -= delta;
-      if (upward.current.sum >= CLOSE_TOUCH_PX && atTop()) startClose();
+      if (delta > 0) downward();
+      else if (delta < 0) upwardBy(-delta);
     };
-    // A finger that asked for the top and left the glass before the page got
-    // there hands the rest of the gesture to the engine's momentum. The arm
-    // rides it; the scroll handler below is where it lands.
+    // The finger leaving the glass ends the gesture and not the arm: the page
+    // may still be travelling on the engine's momentum, and the scroll handler
+    // below is where that lands.
     const onTouchEnd = () => {
       gestureY.current = 0;
-      if (!closing.current && upward.current.sum >= CLOSE_TOUCH_PX && !atTop()) {
-        fling.current = { until: performance.now() + CLOSE_FLING_MS, last: window.scrollY };
-      }
-      upward.current.sum = 0;
+      upward.current = 0;
     };
 
     // While a close is running the page is the hero's, exactly as it is during
-    // the opening. Otherwise this is the arrival: a flick still climbing
-    // toward the top closes on the frame it reaches it, and the arm is dropped
-    // the moment the page stops climbing or the window runs out - so a reader
-    // who flicks, comes to rest short of the top and then scrolls down again
-    // never meets one.
+    // the opening. Otherwise this is the arrival: a page still climbing toward
+    // the top under an armed gesture closes on the frame it reaches it, and
+    // the arm is dropped once the page has stopped climbing for the arm's
+    // lifetime - so a reader who comes to rest short of the top and then
+    // scrolls down again never meets one.
     const onScroll = () => {
       if (closing.current) {
         window.scrollTo(0, 0);
@@ -969,7 +963,7 @@ const ScrollExpandMedia = ({
       released.current = false;
       settle.current = null;
       closing.current = null;
-      upward.current = { sum: 0, at: 0 };
+      upward.current = 0;
       fling.current = null;
       gestureY.current = 0;
       setReentry(false);

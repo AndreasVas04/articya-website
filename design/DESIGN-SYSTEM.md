@@ -906,30 +906,50 @@ is not re-armed and no delta of the reader's is ever read into progress at the
 top of the page. What can happen there is a close, and it is a different
 machine.
 
-At scrollY 0 and page scale 1, an upward gesture past a threshold — **60 wheel
-px inside a 400 ms window, or 40 px of finger** — runs progress **1 → 0 over
-700 ms** on `cubic-bezier(0.22, 1, 0.36, 1)`, through the same `applyProgress`
-path the driver uses, so the ramps, the thresholds, the crossing and the
-poster/ridge register are read exactly as they are on the way up. No partial
-state is ever held: the close either completes or is cancelled, and **a
-downward input during it cancels it and settles back to 1 on the existing
-settle** (`settleDuration(p, 1)`, the same curve). Below the threshold nothing
-happens at all and the rubber band is the browser's. From the closed state the
-driver takes over from 0 and the opening plays as it does on a fresh load,
-because this effect is gone by then. While a close runs the page is pinned at
-0, exactly as it is during the opening.
+**There is no threshold, and no speed a hand can scroll up at the top and not
+close the hero.** That is the owner's decision, taken on the third report of
+the same thing: scrolling back up from the lede stopped at "A youth
+organization…" on the laptop and on the phone. At scrollY 0 and page scale 1,
+any upward input — wheel `deltaY < 0`, or a finger moving down the glass —
+that adds up to **8 px** (a jitter floor, nothing a reader would call a
+scroll) runs progress **1 → 0 over 700 ms** on `cubic-bezier(0.22, 1, 0.36,
+1)`, through the same `applyProgress` path the driver uses, so the ramps, the
+thresholds, the crossing and the poster/ridge register are read exactly as
+they are on the way up. It starts exactly once; no partial state is ever held:
+the close either completes or is cancelled, and **a downward input during it
+cancels it and settles back to 1 on the existing settle** (`settleDuration(p,
+1)`, the same curve). From the closed state the driver takes over from 0 and
+the opening plays as it does on a fresh load, because this effect is gone by
+then. While a close runs the page is pinned at 0, exactly as it is during the
+opening.
 
-The window runs **from its own start and not from the last event**, and that is
-the whole of why a deliberate hand is safe: measured against the last event, a
-stream of deltaY 1 every 80 ms never re-opened the window, so it accumulated to
-60 over five seconds and closed the hero under a gesture asking for nothing of
-the kind.
+**Arming is the same rule, read away from the top.** An upward gesture past
+the 8 px that is made anywhere on the page arms the close, wheel or finger
+alike; every further upward event and every frame the page climbs refreshes
+the arm for 600 ms; the frame the page reaches 0 fires it, whether or not a
+single input event is delivered there; and the arm dies once the page has
+stopped climbing for 600 ms, so a reader who comes to rest short of the top
+and reads on never meets one. Any downward input drops the arm and the sum.
+A touch move that repeats the finger's row is nothing, not a reversal — it used
+to zero the sum, which un-armed a flick on its way out.
 
-This replaces the one-shot rule of `a25516e`. What is *not* coming back is the
-old reversal, which handed progress to the driver in reverse: the poster and
-its land copy came back in front of the card at every pause between notches and
-the same gesture gave four different answers at four speeds. Nothing in the
-close reads a delta into progress.
+What this replaces (`7d22d83` / `be755a8`): **60 wheel px inside a 400 ms
+window, or 40 px of finger, and a "slow hand does nothing" rule** built on
+the window. Reproduced as the owner makes the gestures, on the build before
+this one:
+
+| gesture, as the owner makes it | before | why | after |
+|---|---|---|---|
+| (a) trackpad: down 900, then up at −3 every 30 ms through the top and 30 events past it | **open** | 29 events at the top summed 87 px over 1.97 s, but no 400 ms window ever held 60 — a slow hand delivers 39 | closes 92 ms after the top |
+| (b) trackpad: brisk up with a shrinking tail that lands the page on 0 with 4 px left in it | **open** | 2 events at the top summed 2 px; a wheel gesture was never armed, only a finger's | closes on arrival |
+| (c) touch: flick to the top under momentum, then a second slow 60 px swipe at the top | closes (arm of `be755a8`) | — | closes on arrival |
+| (d) touch: one slow drag from scrollY 200 through 0 | closes | — | closes on arrival |
+
+(c) and (d) already closed in Chromium's emulation, so the phone's failure is
+not reproduced there; what the decision removes on the phone is the 40 px a
+short second swipe has to find at the top, the zero-delta reset, and the arm
+being dropped by a finger landing during the run-out. §7 stands: the phone is
+confirmed on the phone.
 
 Measured at 390×664 and 1440×900, sampled every frame on three channels that
 are each monotone in the opening by construction — the card's box, the poster's
@@ -937,35 +957,41 @@ own strength, and the headline block's descent. Sign flips in each channel's
 difference sequence, and the state transitions, against the fresh-load opening
 as the control:
 
-| series (at scrollY 0) | card | poster | headline | hero-open | showContent | register |
+| series (at scrollY 0 unless stated) | card | poster | headline | hero-open | showContent | register |
 |---|---|---|---|---|---|---|
-| CONTROL: opening, fresh load | 500px / 0 flips | 1.00 / 0 | 330px / 0 | ×1 | ×1 | 0.000px |
-| −1 every 80 ms ×120 | 0 / 0 | 0 / 0 | 0 / 0 | ×0 | ×0 | 0.000px |
-| −4 every 200 ms ×40 | 0 / 0 | 0 / 0 | 0 / 0 | ×0 | ×0 | 0.000px |
-| −40 every 1200 ms ×6 | 0 / 0 | 0 / 0 | 0 / 0 | ×0 | ×0 | 0.000px |
-| −8 once | 0 / 0 | 0 / 0 | 0 / 0 | ×0 | ×0 | 0.000px |
-| −40 every 16 ms ×8 (flick) | 500px / 0 | 1.00 / 0 | 330px / 0 | ×1 | ×1 | 0.000px |
-| −120 once (one notch) | 500px / 0 | 1.00 / 0 | 330px / 0 | ×1 | ×1 | 0.000px |
-| 200px touch flick down | 500px / 0 | 1.00 / 0 | 330px / 0 | ×1 | ×1 | 0.000px |
-| re-open, +1 every 80 ms ×500 | 500px / 0 | 1.00 / 0 | 330px / 0 | ×1 | ×1 | 0.000px |
-| re-open, +4 every 200 ms ×120 | 500px / 0 | 1.00 / 0 | 330px / 0 | ×1 | ×1 | 0.000px |
-| re-open, 200px touch flick up | 500px / 0 | 1.00 / 0 | 330px / 0 | ×1 | ×1 | 0.000px |
-| flick down, then up at 200 ms | 500px / **1** | 1.00 / **1** | 330px / **1** | ×2 | ×2 | 0.000px |
+| CONTROL: opening, fresh load | 500px / 0 flips | 1.00 / 0 | 391px / 0 | ×1 | ×1 | 0.000px |
+| −1 every 80 ms ×120 — **closes, by decision** | 500px / 0 | 1.00 / 0 | 391px / 0 | ×1 | ×1 | 0.000px |
+| −4 every 200 ms ×40 — closes | 500px / 0 | 1.00 / 0 | 391px / 0 | ×1 | ×1 | 0.000px |
+| −8 once — the floor exactly, closes | 500px / 0 | 1.00 / 0 | 391px / 0 | ×1 | ×1 | 0.000px |
+| −4 once — under the floor, nothing | 0 / 0 | 0 / 0 | 0 / 0 | ×0 | ×0 | 0.000px |
+| −1 every 80 ms from scrollY 120 — climbs, closes on arrival | 500px / 0 | 1.00 / 0 | 391px / 0 | ×1 | ×1 | 0.000px |
+| −40 every 16 ms ×8 (flick) | 500px / 0 | 1.00 / 0 | 391px / 0 | ×1 | ×1 | 0.000px |
+| −120 once (one notch) | 500px / 0 | 1.00 / 0 | 391px / 0 | ×1 | ×1 | 0.000px |
+| 200px touch flick down | 500px / 0 | 1.00 / 0 | 391px / 0 | ×1 | ×1 | 0.000px |
+| re-open, +1 every 80 ms ×500 | 500px / 0 | 1.00 / 0 | 391px / 0 | ×1 | ×1 | 0.000px |
+| re-open, +4 every 200 ms ×120 | 500px / 0 | 1.00 / 0 | 391px / 0 | ×1 | ×1 | 0.000px |
+| re-open, 200px touch flick up | 500px / 0 | 1.00 / 0 | 391px / 0 | ×1 | ×1 | 0.000px |
+| flick down, then up at 200 ms | 500px / **1** | 1.00 / **1** | 391px / **1** | ×2 | ×2 | 0.000px |
 
 390×664 gives the same table at its own spans (264px card, 154.22px headline).
-The one flip in the last row is the cancel, which is what a cancel is. The
-poster and its land copy hold **0.000 px of register and 0.000 of opacity
-difference on every frame of every series**, and the page never leaves scrollY
-0 while a close is running. `hero-open` and `showContent` change on one commit
-together, which is what the fresh-load control does — it is one state and the
-class derived from it, not two.
+The headline's span is 391px on the desktop rather than the 330 of the earlier
+table because the poster dropped to 27% the same day and the descent is
+measured off the same variable. The one flip in the last row is the cancel,
+which is what a cancel is. The poster and its land copy hold **0.000 px of
+register and 0.000 of opacity difference on every frame of every series**,
+and the page never leaves scrollY 0 while a close is running. `hero-open` and
+`showContent` change on one commit together.
 
 Chromium's mobile emulation divides a wheel delta by the device ratio, so the
 390 series are sent pre-multiplied by 3 to make the *received* deltas the ones
 named. A phone has no wheel; this is the harness and not the product.
 
 The opening still runs in full on every fresh load and on reload, and the
-logo-on-home reset still returns the hero to it.
+logo-on-home reset still returns the hero to it. What is *not* coming back is
+the old reversal, which handed progress to the driver in reverse: the poster
+and its land copy came back in front of the card at every pause between
+notches and the same gesture gave four different answers at four speeds.
+Nothing in the close reads a delta into progress.
 
 The direction hysteresis of `9a612e4` / `7c13e14` stays, and is still
 reachable: it governs a reversal *inside* the opening, before the release,
