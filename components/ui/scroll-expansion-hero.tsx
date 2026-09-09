@@ -11,6 +11,7 @@ import {
 import { cubicBezier, motion, useReducedMotion } from "framer-motion";
 import { ResponsiveImage } from "@/components/responsive-image";
 import { coverSizes, HERO_PUSH, HERO_VIEWPORT } from "@/lib/images";
+import { usePageLoaded } from "@/lib/page-load";
 import { onLayoutResize, pageZoomed } from "@/lib/viewport";
 import { heroTrace } from "@/lib/hero-trace";
 import { cn, withBasePath } from "@/lib/utils";
@@ -403,6 +404,11 @@ const ScrollExpandMedia = ({
   const [isMobile, setIsMobile] = useState(false);
   const [activeSlide, setActiveSlide] = useState(0);
   const [mounted, setMounted] = useState(false);
+  // The second and third slides are wanted 4.5s after the card reaches full
+  // bleed, which is never before the opening; asked for at the first frame
+  // they were 976KB beside the poster on the wire. They wait for the
+  // document's load and then have the whole of the opening to arrive in.
+  const loaded = usePageLoaded();
   const introRef = useRef<HTMLDivElement | null>(null);
   const ridgeRef = useRef<HTMLDivElement | null>(null);
   const titleRef = useRef<HTMLDivElement | null>(null);
@@ -1536,6 +1542,7 @@ const ScrollExpandMedia = ({
                       // reads as one photograph settling forward into the next.
                       <motion.div
                         key={src}
+                        hidden={i > 0 && !loaded}
                         className="absolute inset-0 origin-center"
                         initial={false}
                         animate={{

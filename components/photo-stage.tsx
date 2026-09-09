@@ -5,6 +5,7 @@ import { cubicBezier } from "framer-motion";
 import { ResponsiveImage } from "@/components/responsive-image";
 import { coverSizes, FULL_VIEWPORT, imageGround, imagePreload } from "@/lib/images";
 import { releaseHero } from "@/lib/hero-prefetch";
+import { usePageLoaded } from "@/lib/page-load";
 import { onLayoutResize } from "@/lib/viewport";
 import { cn } from "@/lib/utils";
 
@@ -124,6 +125,20 @@ interface StageFrame {
 // component only measures and blends.
 export function PhotoStage({ plates }: { plates: StagePlate[] }) {
   const rootRef = useRef<HTMLDivElement | null>(null);
+  // The plates that are not the page's first picture wait for the document's
+  // load before their files are asked for. They are lazy in the markup, but
+  // this layer is fixed at the top of the window, so every one of them was "in
+  // view" from the first frame and the engine fetched them all beside the LCP:
+  // on home that was 2.1MB of ground for screens the reader has not opened
+  // yet, on the wire with the 350KB poster they were looking at - and with the
+  // scripts the headline waits on. A frame with no box is not in view, so the
+  // export still names every file and nothing is fetched before `load`; on
+  // that frame the images turn eager, which asks for them whether or not
+  // their layer is displayed - a plate outside its lead is `display: none`
+  // (see the draw below), and a lazy image in a hidden layer would otherwise
+  // wait for the lead and arrive a screen late. A route reached through the
+  // router has loaded already and asks for them at once, as before.
+  const loaded = usePageLoaded();
 
   // A layout effect, not an effect. The plates are rendered at nothing and the
   // first `draw()` is what gives the page its photograph, so on an effect the
@@ -468,6 +483,7 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
         >
           <div
             data-plate-image=""
+            hidden={!plate.priority && !loaded}
             className="stage-plate-frame absolute inset-0"
           >
             {/* A soft plate is rasterized at a quarter of the frame and
@@ -479,6 +495,7 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
                 alt=""
                 fill
                 priority={plate.priority}
+                eager={!plate.priority && loaded}
                 sizes={sizes}
                 style={{ objectPosition: plate.position }}
               />
@@ -491,6 +508,7 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
                       src={plate.src}
                       alt=""
                       fill
+                      eager={loaded}
                       sizes={sizes}
                       style={{ objectPosition: plate.position }}
                     />
