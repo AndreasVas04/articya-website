@@ -958,6 +958,94 @@ armed/running/last reason, the last five touch events with their clientY deltas
 and `cancelable`, the element under the first touch, and a copy-log button; on
 any other URL nothing renders and its chunk is not fetched.
 
+**On touch the close is the finger's, not a clock — 2026-09-10.** The owner's
+verdict on the clock, made on a phone against the live site: it works, and it
+"does not feel smooth"; and a very slow drag at the top left the page with
+nothing moving until a nav link was tapped. Both are the same fact. Measured at
+390×664 in both engines on the build before this one, one continuous slow drag
+down at the top — 60 moves of 5 px, every one of them cancelled — reads:
+
+| finger | 0 | 25px | 50px | 75px | 100px | 125px | **150px** | 175px | 200px | 250px |
+|---|---|---|---|---|---|---|---|---|---|---|
+| p, clock close | 1.000 | 0.598 | 0.180 | 0.045 | 0.010 | 0.001 | **0.735** | 0.535 | 0.335 | 0.000 |
+| p, under the finger | 1.000 | 0.840 | 0.640 | 0.440 | 0.240 | 0.040 | 0.000 | 0.000 | 0.000 | 0.000 |
+
+The clock ran the hero shut in 700 ms while the hand was still going, arrived
+at 0 with 175 px of drag left in it, and then the driver's own capture re-armed
+mid-gesture against a stale touch origin and **put 0.735 of the opening back on
+the glass in one frame** — after which the rest of the drag closed it a second
+time. Two sign flips in progress, in both engines. That is what "not smooth"
+was.
+
+So on touch, at the top, with the hero open, the drag *is* the close. It runs
+the opening backwards through the driver's own gains — `deltaY < 0 → 0.008`,
+`> 0 → 0.005`, one expression now read by both machines — one step per move,
+through the same `applyProgress` path, with the pull-to-refresh guard
+cancelling the native gesture as before. **No clock runs while a finger is
+down.** On release the settle finishes it by the existing rules: the target
+takes the sign of the last delta, forward from 0.20, back to the poster from
+anywhere under 0.80. A reversal mid-drag is not a cancel and not an event —
+progress follows the hand back at the opening's own gain. **On a wheel or a
+trackpad nothing changes**: the 700 ms clock, the 8 px floor, the arm and the
+arrival are exactly as they were, and a flick that reaches the top with no
+finger on the glass still closes on arrival, because there is no hand there to
+follow.
+
+Measured, both engines, identical to three places at 390×664:
+
+| gesture | p at the lift | after the settle |
+|---|---|---|
+| slow drag 300 px in 60 moves of 5 px | 0.000 | 0.000, closed, **0 sign flips**, 0.008 per px exactly |
+| 40 px drag, then release | 0.680 | 0.000 |
+| 20 px drag, then release | 0.840 | 1.000 — the settle's own 0.80 hold |
+| 90 px down, 90 px up, 60 px down | 0.250 | 0.000, no cancel event, no stuck |
+| flick, 320 px in 8 moves | 0.000 | 0.000 |
+| 240 px down then 240 px back up, one finger, never lifted | 0.000 → 1.000 | 1.000 |
+| 36 px down, then a second finger | 0.712 | 1.000 — a pinch is never a close |
+
+Two consequences, both deliberate. **A pull under about 25 px of finger now
+returns to the open hero** rather than closing it: the settle holds at 0.80 and
+20 px of thumb is 0.16 of the ramp. §2.24's "no speed a hand can scroll up at
+the top and not close the hero" was written against the wheel's arm, which is
+untouched; under direct manipulation the reader's own hand decides, and a
+gesture that barely moved is a gesture that barely moved. **And the close hands
+the same finger back to the opening**: when the scrub reaches 0 the driver's
+touch origin is seeded with the row the finger is on, so one unbroken gesture
+can close the poster and open it again — 240 px down and 240 px up reads
+1.000 → 0.000 → 1.000 with no lift.
+
+**Nothing may cancel a move without moving something — 2026-09-10.** The matrix,
+enumerated over the guard's arming conditions × the driver's capture × the
+close's state × p ∈ {0, (0,1), 1}, driven at 390×664 in both engines:
+
+| state | moves | cancelled | p | verdict |
+|---|---|---|---|---|
+| capture on, p = 0, finger down the glass | 20 | **12, then released** | 0.000 → 0.000 | **the eaten gesture** |
+| capture on, p = 0, finger up the glass | 20 | 19 | 0.000 → 1.000 | the opening |
+| capture on, 0 < p < 1, either direction | — | every move | moves | the opening |
+| capture off, p = 1, at the top, down the glass | 20 | 20 | 1.000 → 0.889 → 1.000 | the scrub |
+| capture off, p = 1, at the top, up the glass | 8 | 0 | 1.000 | reading on |
+| clock close running, finger anywhere | — | every move | moves on the clock | the cancel path |
+| p = 1, two fingers | 10 | 0 | 1.000 | a pinch |
+| p = 1, page scale 1.5 | 10 | 0 | 1.000 | zoomed, inert |
+| p = 1, at scrollY 300 | 10 | 0 | 1.000 | guard off below the top |
+| any state, reduced motion | — | 0 | — | no capture, no re-entry |
+
+One row eats the gesture, and it is the one the owner met: **at the collapsed
+poster a finger drawing the page down is clamped at 0 and the page is pinned at
+0, so every move is cancelled and nothing on the glass answers.** It is
+reachable in one drag — close the hero under the finger and keep going — and
+the page then stays deaf for the rest of that gesture and for every further
+pull in the same direction.
+
+The watchdog is the floor under it, and it is a floor rather than a fix: after
+**12 consecutive cancelled moves that change neither progress nor `scrollY`**
+the gesture is handed back to the browser for the rest of its life, on both
+captures, reset at every `touchstart`. In the state it fires in there is
+nothing above the top to scroll to, so the screen does not change when it
+fires — what changes is that no state can hold a gesture indefinitely, which
+is the rule. `?debug=hero` prints `scrub` and `stuck-watchdog fired: n`.
+
 What this replaces (`7d22d83` / `be755a8`): **60 wheel px inside a 400 ms
 window, or 40 px of finger, and a "slow hand does nothing" rule** built on
 the window. Reproduced as the owner makes the gestures, on the build before

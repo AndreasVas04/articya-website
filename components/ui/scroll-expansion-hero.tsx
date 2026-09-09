@@ -156,6 +156,16 @@ const CLOSE_FLING_MS = 600;
 // The progress at which the expanded state hands back, going down. It is the
 // driver's own number, read the other way round.
 const CLOSE_HANDOVER = 0.75;
+// Progress per pixel of finger, and the driver's own asymmetry: 200px of thumb
+// opens the poster and 125 closes it. The scrub reads the same rule as the
+// opening, from the same place, so the two can never be given different hands.
+const touchGain = (delta: number) => (delta < 0 ? 0.008 : 0.005);
+// How many cancelled moves in a row that move neither progress nor the page
+// count as the page having eaten the gesture. Twelve is about a fifth of a
+// second of finger at 60Hz - long enough that no working state reaches it, and
+// short enough that a reader who has met one does not go on pulling at a page
+// that is not listening.
+const STUCK_MOVES = 12;
 // The third way in, and it is the phone's. A finger that pulls the page past
 // its top puts `scrollY` below zero on iOS, and a reader who has pulled this
 // far past it with the hero open is asking for the way back whatever the touch
@@ -441,6 +451,8 @@ const ScrollExpandMedia = ({
   // disarm on it; `closeRun` wakes that effect the way `settleRun` wakes the
   // driver's.
   const closing = useRef<Close | null>(null);
+  // A touch gesture running the opening backwards under the finger.
+  const scrubbing = useRef(false);
   const [reentry, setReentry] = useState(false);
   const [closeRun, setCloseRun] = useState(0);
   // Upward travel since the last downward input, against the jitter floor.
@@ -467,6 +479,12 @@ const ScrollExpandMedia = ({
   // it has cancelled; the overlay reads both.
   const guardOn = useRef(false);
   const prevented = useRef(0);
+  // The stuck watchdog, per gesture: how many cancelled moves have changed
+  // nothing, where the page stood on the last of them, and whether this
+  // gesture has been handed back to the browser. `stuckFired` is the session's
+  // count and the overlay reads it.
+  const watchdog = useRef({ n: 0, y: 0, off: false });
+  const stuckFired = useRef(0);
 
   // Under reduced motion the component renders its resting state: media
   // expanded, content visible, no scroll hijacking, first slide only. The
@@ -734,6 +752,7 @@ const ScrollExpandMedia = ({
       e.touches.length === 1 && e.targetTouches.length <= 1;
 
     const handleTouchStart = (e: globalThis.TouchEvent) => {
+      watchdog.current = { n: 0, y: window.scrollY, off: false };
       if (!singleTouch(e)) {
         setTouchStartY(0);
         return;
@@ -757,11 +776,34 @@ const ScrollExpandMedia = ({
 
       // Once progress hits 1 this effect is gone, so touch events are no
       // longer intercepted and native scrolling resumes.
-      e.preventDefault();
+      const p0 = progressRef.current;
+      const y0 = window.scrollY;
+      if (!watchdog.current.off) {
+        e.preventDefault();
+        prevented.current += 1;
+      }
       onInput();
-      const scrollFactor = deltaY < 0 ? 0.008 : 0.005;
-      applyProgress(deltaY * scrollFactor);
+      applyProgress(deltaY * touchGain(deltaY));
       setTouchStartY(touchY);
+      // The same watchdog the way back in carries, on the other capture. The
+      // state it exists for is this one: at progress 0 a finger drawing the
+      // page down is clamped at 0 and the page is pinned at 0, so every move
+      // is cancelled and nothing on the glass answers - which is what the
+      // reader met after a close finished under their hand. See the matrix in
+      // the design note.
+      if (watchdog.current.off) return;
+      const stillY = y0 === watchdog.current.y;
+      watchdog.current.y = window.scrollY;
+      if (deltaY !== 0 && progressRef.current === p0 && stillY) {
+        watchdog.current.n += 1;
+        if (watchdog.current.n >= STUCK_MOVES) {
+          watchdog.current.off = true;
+          stuckFired.current += 1;
+          heroTrace.event("stuck:release", `capture, ${watchdog.current.n} moves ate p=${p0.toFixed(3)}`);
+        }
+      } else {
+        watchdog.current.n = 0;
+      }
     };
 
     // The finger lifting is the end of the input, so the settle starts there
@@ -829,90 +871,154 @@ const ScrollExpandMedia = ({
   //
   // The owner asked for the way back and the old way back is what has to stay
   // gone: a wheel up at scrollY 0 used to hand progress to the driver in
-  // reverse, so the poster and its land copy came back in front of the card at
-  // every pause between notches and the same gesture gave four different
-  // answers at four speeds. Nothing here reads a delta into progress.
+  // reverse *at every speed*, so the poster and its land copy came back in
+  // front of the card at every pause between notches and the same gesture gave
+  // four different answers at four speeds. What replaced it was a clock, and
+  // the clock is still what a wheel gets: any upward input at the top past an
+  // 8 px jitter floor runs progress 1 to 0 over 700 ms on the settle's own
+  // curve, through the same `applyProgress` path the driver uses.
   //
-  // A close is a clock. Any upward input at the top of the page - a wheel
-  // unit, a finger moving down the glass - past an 8 px jitter floor runs
-  // progress 1 to 0 over 700 ms on the settle's own curve, through the same
-  // `applyProgress` path the driver uses, so the ramps, the thresholds and
-  // the crossing are read exactly as they are on the way up. It starts
-  // exactly once and no partial state is ever held: the close either
-  // completes or is cancelled, and a cancel settles back to 1 on the existing
-  // settle rather than stopping where it is. There is no speed a hand can
-  // scroll up at the top and not close the hero; that is the owner's call.
+  // **On touch it is the finger's, and that is the owner's decision of
+  // 2026-09-10.** A clock cannot be smooth under a hand that is still moving:
+  // the reader drags, the hero closes at its own rate underneath them, and the
+  // rest of the drag lands on a page that has already finished. So at the top,
+  // with the hero open, a finger drawing the page down *scrubs* - the opening
+  // played backwards through the driver's own gains and ramps, one frame per
+  // move, with the pull-to-refresh guard cancelling the native gesture - and
+  // the settle on release is the driver's own settle, to 0 or to 1 by the last
+  // direction. No clock runs while the finger is down. A reversal mid-drag is
+  // not a cancel and not an event: progress simply follows the finger back.
   //
-  // From the closed state the driver takes over from 0 and the opening plays
-  // as it does on a fresh load - the choreography is untouched, because this
-  // effect is gone by then.
+  // The three inputs are one machine and they are split across two effects:
+  // this one holds the state and the listeners and is stable for the life of
+  // the open hero, and the one below it draws whatever animation is in flight
+  // and re-runs every frame. They used to be one, which meant every touch
+  // listener on the page was torn down and re-registered on every frame of a
+  // close - and WebKit decides at touch *start* whether a gesture may be
+  // cancelled, from the listeners standing at that moment.
+
+  // One step, and the only place this machinery writes progress. Going down,
+  // the expanded state hands back at the driver's own 0.75 - both flags on
+  // the same commit, so no frame holds one without the other.
+  const step = (p: number) => {
+    const next = clamp01(p);
+    progressRef.current = next;
+    setScrollProgress(next);
+    if (next >= 1) {
+      setMediaFullyExpanded(true);
+      setShowContent(true);
+    } else if (next < CLOSE_HANDOVER) {
+      setMediaFullyExpanded(false);
+      setShowContent(false);
+    }
+  };
+
+  // The end of a close: the driver's own state is put back to what a fresh
+  // load gives it, and `released` falling is what re-arms the capture.
+  //
+  // `fingerY` is the row the finger is on when a scrub reaches 0 with the
+  // hand still down. The driver reads its own origin from state, and a
+  // sequence that began before it was listening would otherwise leave it at
+  // zero - so the same finger could not open the poster it had just closed
+  // until it was lifted and put down again. Seeding it hands the gesture over
+  // whole.
+  const handBack = (fingerY = 0) => {
+    closing.current = null;
+    scrubbing.current = false;
+    released.current = false;
+    settle.current = null;
+    if (idleTimer.current !== null) window.clearTimeout(idleTimer.current);
+    idleTimer.current = null;
+    tail.current = { count: 0, at: 0, size: 0 };
+    refractoryUntil.current = 0;
+    lastInputAt.current = 0;
+    lastDir.current = 1;
+    gaps.current = [];
+    upward.current = 0;
+    fling.current = null;
+    gestureY.current = fingerY;
+    lowest.current = fingerY;
+    bounceUntil.current = 0;
+    setTouchStartY(fingerY);
+    setReentry(false);
+  };
+
+  const startClose = () => {
+    const p = progressRef.current;
+    if (closing.current || scrubbing.current || p <= 0) return;
+    upward.current = 0;
+    fling.current = null;
+    closing.current = { from: p, to: 0, start: performance.now(), duration: CLOSE_MS * p };
+    heroTrace.event("close:start", `p=${p.toFixed(3)} y=${Math.round(window.scrollY)}`);
+    setCloseRun((n) => n + 1);
+  };
+
+  // A hand going the other way during a *clock* close is the reader saying they
+  // meant to read on. It is not a scrub back: the close becomes the driver's
+  // own settle to 1, on the driver's own curve and duration.
+  //
+  // Only a hand cancels: a wheel unit going down, or a finger that has come
+  // back up the glass by the jitter floor within one touch sequence. No
+  // scroll event ever does - on iOS the page reaching the top is followed by
+  // a spring that arrives as scroll events with a rising `scrollY`, and read
+  // as input that spring cancelled the close it had just started. A second
+  // finger and a zoom do not cancel either; they only keep a new close from
+  // starting.
+  const cancelClose = (reason: string) => {
+    const p = progressRef.current;
+    if (!closing.current || closing.current.to === 1) return;
+    closing.current = { from: p, to: 1, start: performance.now(), duration: settleDuration(p, 1) };
+    heroTrace.event("close:cancel", `${reason} p=${p.toFixed(3)}`);
+    setCloseRun((n) => n + 1);
+  };
+
+  // The scrub. It is the opening's own machine run backwards under the finger:
+  // the same asymmetric gains, so 125 px of thumb closes what 200 px opened,
+  // and the same `step` the clock writes through.
+  const startScrub = () => {
+    if (scrubbing.current) return;
+    closing.current = null;
+    fling.current = null;
+    scrubbing.current = true;
+    heroTrace.event("scrub:start", `p=${progressRef.current.toFixed(3)}`);
+    setCloseRun((n) => n + 1);
+  };
+
+  // `delta` carries the driver's own sign: positive is a finger going up the
+  // glass, which is the opening.
+  const scrubTo = (delta: number, fingerY: number) => {
+    if (delta !== 0) lastDir.current = delta > 0 ? 1 : -1;
+    step(progressRef.current + delta * touchGain(delta));
+    if (progressRef.current <= 0) {
+      scrubbing.current = false;
+      heroTrace.event("scrub:done", "handed back under the finger");
+      handBack(fingerY);
+    }
+  };
+
+  // The finger leaves and the settle finishes what it was doing, by the
+  // existing rules: forward from 0.20 with the hand, back to the poster
+  // against it unless the opening is nearly whole.
+  //
+  // `to` overrides that, and one caller needs it: a second finger landing
+  // mid-scrub is a pinch, and a pinch is never a close. It goes back to the
+  // open state whatever the hand was doing, which is what a close already
+  // running does when a second finger arrives.
+  const endScrub = (to?: number) => {
+    if (!scrubbing.current) return;
+    scrubbing.current = false;
+    const p = progressRef.current;
+    if (p <= 0 || p >= 1) return;
+    const target = to ?? settleTarget(p, lastDir.current);
+    closing.current = { from: p, to: target, start: performance.now(), duration: settleDuration(p, target) };
+    heroTrace.event("scrub:settle", `p=${p.toFixed(3)} -> ${target}`);
+    setCloseRun((n) => n + 1);
+  };
+
+  // The input half: every listener the way back in needs, registered once for
+  // the life of the open hero.
   useEffect(() => {
     if (reducedMotion || !reentry) return;
-
-    // One step, and the only place this effect writes progress. Going down,
-    // the expanded state hands back at the driver's own 0.75 - both flags on
-    // the same commit, so no frame holds one without the other.
-    const step = (p: number) => {
-      const next = clamp01(p);
-      progressRef.current = next;
-      setScrollProgress(next);
-      if (next >= 1) {
-        setMediaFullyExpanded(true);
-        setShowContent(true);
-      } else if (next < CLOSE_HANDOVER) {
-        setMediaFullyExpanded(false);
-        setShowContent(false);
-      }
-    };
-
-    // The end of a close: the driver's own state is put back to what a fresh
-    // load gives it, and `released` falling is what re-arms the capture.
-    const handBack = () => {
-      closing.current = null;
-      released.current = false;
-      settle.current = null;
-      if (idleTimer.current !== null) window.clearTimeout(idleTimer.current);
-      idleTimer.current = null;
-      tail.current = { count: 0, at: 0, size: 0 };
-      refractoryUntil.current = 0;
-      lastInputAt.current = 0;
-      lastDir.current = 1;
-      gaps.current = [];
-      upward.current = 0;
-      fling.current = null;
-      gestureY.current = 0;
-      lowest.current = 0;
-      bounceUntil.current = 0;
-      setReentry(false);
-    };
-
-    const startClose = () => {
-      const p = progressRef.current;
-      if (closing.current || p <= 0) return;
-      upward.current = 0;
-      fling.current = null;
-      closing.current = { from: p, to: 0, start: performance.now(), duration: CLOSE_MS * p };
-      heroTrace.event("close:start", `p=${p.toFixed(3)} y=${Math.round(window.scrollY)}`);
-      setCloseRun((n) => n + 1);
-    };
-    // A hand going the other way during a close is the reader saying they
-    // meant to read on. It is not a scrub back: the close becomes the driver's
-    // own settle to 1, on the driver's own curve and duration.
-    //
-    // Only a hand cancels: a wheel unit going down, or a finger that has come
-    // back up the glass by the jitter floor within one touch sequence. No
-    // scroll event ever does - on iOS the page reaching the top is followed by
-    // a spring that arrives as scroll events with a rising `scrollY`, and read
-    // as input that spring cancelled the close it had just started. A second
-    // finger and a zoom do not cancel either; they only keep a new close from
-    // starting.
-    const cancelClose = (reason: string) => {
-      const p = progressRef.current;
-      if (!closing.current || closing.current.to === 1) return;
-      closing.current = { from: p, to: 1, start: performance.now(), duration: settleDuration(p, 1) };
-      heroTrace.event("close:cancel", `${reason} p=${p.toFixed(3)}`);
-      setCloseRun((n) => n + 1);
-    };
 
     const atTop = () => window.scrollY <= 0 && !zoomed();
     const pulledPast = () => window.scrollY <= -CLOSE_PULL_PX && !zoomed();
@@ -930,6 +1036,9 @@ const ScrollExpandMedia = ({
         startClose();
         return;
       }
+      arm();
+    };
+    const arm = () => {
       const until = performance.now() + CLOSE_FLING_MS;
       if (fling.current) fling.current.until = until;
       else {
@@ -964,12 +1073,15 @@ const ScrollExpandMedia = ({
     const secondFinger = () => {
       pinch.current = true;
       gestureY.current = 0;
+      if (scrubbing.current) endScrub(1);
       downward();
       heroTrace.event("close:ignored", "second finger");
     };
+
     const onTouchStart = (e: globalThis.TouchEvent) => {
       // A new finger is the reader again, whatever the top was doing.
       bounceUntil.current = 0;
+      watchdog.current = { n: 0, y: window.scrollY, off: false };
       if (e.touches.length !== 1) {
         secondFinger();
         return;
@@ -980,7 +1092,12 @@ const ScrollExpandMedia = ({
       lastScrollY.current = window.scrollY;
       downward();
     };
-    const onTouchMove = (e: globalThis.TouchEvent) => {
+
+    // Both touchmove paths run through here. `canPrevent` is whether this
+    // listener is the non-passive one - the pull guard below, armed only while
+    // the page stands at the top with the hero open, which is the one state in
+    // which this gesture is the hero's.
+    const handleMove = (e: globalThis.TouchEvent, canPrevent: boolean) => {
       if (e.touches.length !== 1) {
         if (!pinch.current) secondFinger();
         return;
@@ -990,44 +1107,113 @@ const ScrollExpandMedia = ({
       const delta = gestureY.current - y;
       gestureY.current = y;
       lowest.current = Math.max(lowest.current, y);
-      if (closing.current) {
+      const p0 = progressRef.current;
+      const y0 = window.scrollY;
+      let cancelled = false;
+      const prevent = () => {
+        if (!canPrevent || watchdog.current.off || !e.cancelable) return;
         e.preventDefault();
+        prevented.current += 1;
+        cancelled = true;
+      };
+
+      if (closing.current) {
+        prevent();
         // Up the glass from where it turned, past the jitter floor: reading
         // on. A tremor never adds up to it.
-        if (lowest.current - y >= CLOSE_JITTER_PX) cancelClose("finger up");
-        return;
-      }
-      if (pulledPast()) {
+        if (closing.current.to === 0 && lowest.current - y >= CLOSE_JITTER_PX) cancelClose("finger up");
+      } else if (scrubbing.current) {
+        prevent();
+        scrubTo(delta, y);
+      } else if (pulledPast()) {
+        prevent();
         heroTrace.event("close:pulled", `y=${Math.round(window.scrollY)}`);
         startClose();
-        return;
+      } else if (delta > 0) {
+        downward();
+      } else if (delta < 0) {
+        // A finger drawing the page down at the top is Safari's own reload
+        // gesture and it is taken before the jitter floor is reached, because
+        // WebKit decides once per gesture and never hands it back.
+        if (atTop()) prevent();
+        upward.current += -delta;
+        if (upward.current >= CLOSE_JITTER_PX) {
+          if (atTop() && canPrevent && p0 > 0) {
+            // The travel since the finger turned goes on in one step, so
+            // progress follows the hand from the row it started on rather
+            // than from the row the floor was crossed at.
+            const carried = -upward.current;
+            upward.current = 0;
+            startScrub();
+            scrubTo(carried, y);
+          } else if (!atTop()) {
+            arm();
+          }
+        }
       }
-      if (delta > 0) downward();
-      else if (delta < 0) upwardBy(-delta);
+
+      // The watchdog. A cancelled move that leaves progress where it was, on a
+      // page that has not moved since the last cancelled move, is a move the
+      // page ate: the reader's finger travelled and nothing on the glass
+      // answered. Twelve of them in a row is not a state any of this is meant
+      // to reach, so the gesture is handed back to the browser rather than
+      // held - see the matrix in the design note. Nothing here changes what
+      // the page does when it is working; it is the floor under a defect.
+      if (cancelled) {
+        const stillP = progressRef.current === p0;
+        const stillY = y0 === watchdog.current.y;
+        watchdog.current.y = window.scrollY;
+        if (delta !== 0 && stillP && stillY) {
+          watchdog.current.n += 1;
+          if (watchdog.current.n >= STUCK_MOVES && !watchdog.current.off) {
+            watchdog.current.off = true;
+            stuckFired.current += 1;
+            heroTrace.event("stuck:release", `${watchdog.current.n} moves ate p=${p0.toFixed(3)} y=${Math.round(y0)}`);
+          }
+        } else {
+          watchdog.current.n = 0;
+        }
+      }
     };
-    // The finger leaving the glass ends the gesture and not the arm: the page
-    // may still be travelling on the engine's momentum, and the scroll handler
-    // below is where that lands. A finger that lifts *at* the top with the
-    // gesture armed closes here, on the lift itself - the arrival it would
-    // otherwise wait for may already have happened, or may come wrapped in the
-    // spring - and then the top is left to settle. The pinch flag outlives the
-    // finger that made it until the last one lifts.
+
+    // The passive path: below the top, where a non-passive move listener would
+    // run the whole page's scrolling through the main thread. It never
+    // cancels, and it steps aside when the guard is on so one move is read
+    // once.
+    const onTouchMove = (e: globalThis.TouchEvent) => {
+      if (guardOn.current) return;
+      handleMove(e, false);
+    };
+
+    // The finger leaving ends the gesture and not the arm: the page may still
+    // be travelling on the engine's momentum, and the scroll handler below is
+    // where that lands. A scrub settles here. A finger that lifts *at* the top
+    // with the gesture armed closes here, on the lift itself - the arrival it
+    // would otherwise wait for may already have happened, or may come wrapped
+    // in the spring - and then the top is left to settle. The pinch flag
+    // outlives the finger that made it until the last one lifts.
     const onTouchEnd = (e: globalThis.TouchEvent) => {
+      const scrubbed = scrubbing.current;
+      if (scrubbed) endScrub();
       gestureY.current = 0;
       upward.current = 0;
       if (e.touches.length > 0) return;
       pinch.current = false;
+      if (scrubbed) {
+        bounceUntil.current = performance.now() + BOUNCE_MS;
+        return;
+      }
       if (window.scrollY > 0) return;
       if (fling.current && !closing.current && !zoomed()) startClose();
       bounceUntil.current = performance.now() + BOUNCE_MS;
     };
 
-    // While a close is running the page is the hero's, exactly as it is during
-    // the opening - pinned to the top, except while the top is springing back
-    // on its own, which is not a scroll to correct. Otherwise this is the
-    // arrival: a page still climbing toward the top under an armed gesture
-    // closes on the frame it reaches it, a finger that has pulled the page
-    // past the top closes wherever the touch stream got to, and the arm is
+    // While a close or a scrub is running the page is the hero's, exactly as it
+    // is during the opening - pinned to the top, except while the top is
+    // springing back on its own, which is not a scroll to correct. Otherwise
+    // this is the arrival: a page still climbing toward the top under an armed
+    // gesture closes on the frame it reaches it, a finger that has pulled the
+    // page past the top closes wherever the touch stream got to, and the arm is
     // dropped once its lifetime has run out - so a reader who comes to rest
     // short of the top and then scrolls down again never meets one.
     //
@@ -1037,7 +1223,7 @@ const ScrollExpandMedia = ({
     // and the gesture arms off the scroll it produces.
     const onScroll = () => {
       if (zoomed()) return;
-      if (closing.current) {
+      if (closing.current || scrubbing.current) {
         if (window.scrollY > 0 && !settling()) window.scrollTo(0, 0);
         return;
       }
@@ -1071,112 +1257,88 @@ const ScrollExpandMedia = ({
       f.until = performance.now() + CLOSE_FLING_MS;
     };
 
-    let frame = 0;
-    if (closing.current) {
-      frame = requestAnimationFrame(() => {
-        const c = closing.current;
-        if (!c) return;
-        const u = clamp01((performance.now() - c.start) / c.duration);
-        const p = u >= 1 ? c.to : c.from + (c.to - c.from) * settleEase(u);
-        const done = u >= 1;
-        if (done && c.to === 0) {
-          step(0);
-          heroTrace.event("close:done");
-          handBack();
-          return;
-        }
-        if (done) {
-          closing.current = null;
-          heroTrace.event("close:settled", "back to 1");
-        }
-        step(p);
-      });
-    }
+    // The pull-to-refresh guard, and now the scrub's own listener.
+    //
+    // On the owner's phone the way back in never ran: a finger drawing the
+    // page down at the top is also iOS Safari's reload gesture, and Safari had
+    // the gesture before this component saw a move - the spinner came down
+    // where the close should have. No emulation shows it, which is why five
+    // rounds of the close passed in two engines and failed on the device.
+    //
+    // WebKit decides at the *start* of a touch whether the page may cancel it,
+    // from the listeners registered at that moment: a non-passive `touchmove`
+    // added inside `touchstart` is already too late for that gesture. So this
+    // is registered while the page stands at the top with the hero open - the
+    // one state in which the gesture is the hero's - and taken off the moment
+    // the page leaves it. It is never on the open page below the top, where a
+    // non-passive move listener would run every scroll through the main
+    // thread, and never during the opening, whose capture is untouched.
+    const onGuardMove = (e: globalThis.TouchEvent) => handleMove(e, true);
+    const armGuard = () => {
+      if (guardOn.current) return;
+      guardOn.current = true;
+      window.addEventListener("touchmove", onGuardMove, { passive: false });
+      heroTrace.event("guard:on", `y=${Math.round(window.scrollY)}`);
+    };
+    const disarmGuard = () => {
+      if (!guardOn.current) return;
+      guardOn.current = false;
+      window.removeEventListener("touchmove", onGuardMove);
+      heroTrace.event("guard:off", `y=${Math.round(window.scrollY)}`);
+    };
+    const syncGuard = () => {
+      if (window.scrollY <= 0 && !zoomed()) armGuard();
+      else disarmGuard();
+    };
+    const onScrollAll = () => {
+      onScroll();
+      syncGuard();
+    };
 
+    syncGuard();
     window.addEventListener("wheel", onWheel, { passive: false });
     window.addEventListener("touchstart", onTouchStart, { passive: true });
-    // Non-passive only while a close is running, which is the one time this
-    // handler cancels anything. Registered non-passive on the open page it
-    // told WebKit every touch on home might be cancelled, and the engine then
-    // ran the whole page's scrolling through the main thread to find out.
-    window.addEventListener("touchmove", onTouchMove, { passive: !closing.current });
+    window.addEventListener("touchmove", onTouchMove, { passive: true });
     window.addEventListener("touchend", onTouchEnd);
     window.addEventListener("touchcancel", onTouchEnd);
-    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("scroll", onScrollAll, { passive: true });
     return () => {
-      cancelAnimationFrame(frame);
+      disarmGuard();
       window.removeEventListener("wheel", onWheel);
       window.removeEventListener("touchstart", onTouchStart);
       window.removeEventListener("touchmove", onTouchMove);
       window.removeEventListener("touchend", onTouchEnd);
       window.removeEventListener("touchcancel", onTouchEnd);
-      window.removeEventListener("scroll", onScroll);
-    };
-  }, [reentry, reducedMotion, scrollProgress, closeRun]);
-
-  // The pull-to-refresh guard. On the owner's phone the way back in never ran:
-  // a finger drawing the page down at the top is also iOS Safari's reload
-  // gesture, and Safari had the gesture before this component saw a move -
-  // the spinner came down where the close should have. No emulation shows
-  // it, which is why five rounds of the close passed in two engines and
-  // failed on the device.
-  //
-  // WebKit decides at the *start* of a touch whether the page may cancel it,
-  // from the listeners registered at that moment: a non-passive `touchmove`
-  // added inside `touchstart` is already too late for that gesture. So the
-  // guard is registered while the page stands at the top with the hero open
-  // - the one state in which the gesture is the hero's - and taken off the
-  // moment the page leaves it. It is never on the open page below the top,
-  // where a non-passive move listener would run every scroll through the
-  // main thread (see the re-entry effect's own registration), and never
-  // during the opening, whose capture is untouched.
-  //
-  // What it cancels: one finger, not part of a pinch, at scale 1, moving down
-  // the glass with `scrollY` at or above the top. A finger moving up is a
-  // scroll down the page and is left to the engine. The cancelled moves still
-  // reach the re-entry effect's handler, which reads the close off them.
-  useEffect(() => {
-    if (reducedMotion || !reentry) return;
-    let lastY = 0;
-
-    const onMove = (e: globalThis.TouchEvent) => {
-      if (e.touches.length !== 1 || pinch.current || zoomed()) return;
-      const y = e.touches[0].clientY;
-      const down = lastY > 0 && y > lastY;
-      lastY = y;
-      if (!down || window.scrollY > 0 || !e.cancelable) return;
-      e.preventDefault();
-      prevented.current += 1;
-    };
-    const onStart = (e: globalThis.TouchEvent) => {
-      lastY = e.touches.length === 1 ? e.touches[0].clientY : 0;
-    };
-    const arm = () => {
-      if (guardOn.current) return;
-      guardOn.current = true;
-      window.addEventListener("touchmove", onMove, { passive: false });
-      heroTrace.event("guard:on", `y=${Math.round(window.scrollY)}`);
-    };
-    const disarm = () => {
-      if (!guardOn.current) return;
-      guardOn.current = false;
-      window.removeEventListener("touchmove", onMove);
-      heroTrace.event("guard:off", `y=${Math.round(window.scrollY)}`);
-    };
-    const sync = () => {
-      if (window.scrollY <= 0 && !zoomed()) arm();
-      else disarm();
-    };
-
-    sync();
-    window.addEventListener("touchstart", onStart, { passive: true });
-    window.addEventListener("scroll", sync, { passive: true });
-    return () => {
-      disarm();
-      window.removeEventListener("touchstart", onStart);
-      window.removeEventListener("scroll", sync);
+      window.removeEventListener("scroll", onScrollAll);
     };
   }, [reentry, reducedMotion]);
+
+  // The drawing half: one frame of whatever animation is in flight. It re-runs
+  // on every step, which is what advances the clock; the listeners above do
+  // not, which is what keeps WebKit's touch dispatch decision stable.
+  useEffect(() => {
+    if (reducedMotion || !reentry) return;
+    if (!closing.current) return;
+    const frame = requestAnimationFrame(() => {
+      const c = closing.current;
+      if (!c) return;
+      const u = clamp01((performance.now() - c.start) / c.duration);
+      const p = u >= 1 ? c.to : c.from + (c.to - c.from) * settleEase(u);
+      const done = u >= 1;
+      if (done && c.to === 0) {
+        step(0);
+        heroTrace.event("close:done");
+        handBack();
+        return;
+      }
+      if (done) {
+        closing.current = null;
+        heroTrace.event("close:settled", `back to ${c.to}`);
+      }
+      step(p);
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [reentry, reducedMotion, scrollProgress, closeRun]);
 
   // The idle clock must not outlive the capture.
   useEffect(
@@ -1196,6 +1358,8 @@ const ScrollExpandMedia = ({
         capture: !released.current && !skipCapture.current,
         reentry,
         closing: closing.current ? (closing.current.to === 0 ? "running" : "settling") : "no",
+        scrub: scrubbing.current,
+        stuck: stuckFired.current,
         armed: Boolean(fling.current),
         upward: upward.current,
         pinch: pinch.current,
@@ -1218,6 +1382,8 @@ const ScrollExpandMedia = ({
       released.current = false;
       settle.current = null;
       closing.current = null;
+      scrubbing.current = false;
+      watchdog.current = { n: 0, y: 0, off: false };
       upward.current = 0;
       fling.current = null;
       gestureY.current = 0;
