@@ -12,6 +12,7 @@ import { cubicBezier, motion, useReducedMotion } from "framer-motion";
 import { ResponsiveImage } from "@/components/responsive-image";
 import { coverSizes, HERO_PUSH, HERO_VIEWPORT } from "@/lib/images";
 import { onLayoutResize } from "@/lib/viewport";
+import { heroTrace } from "@/lib/hero-trace";
 import { cn, withBasePath } from "@/lib/utils";
 
 // useLayoutEffect on the client, useEffect on the server: the effect it runs
@@ -144,6 +145,12 @@ interface Close {
   start: number;
   duration: number;
 }
+// A reader who has zoomed in is panning a magnifying glass, and on iOS the
+// window's own scroll offset moves with it: `scrollY` there is the visual
+// viewport's, so a pan across a zoomed page fires `scroll` and a pin to 0
+// drags the glass back to the top-left on every frame of it. Nothing in this
+// section reads a page that is not at scale 1.
+const zoomed = () => Boolean(window.visualViewport && window.visualViewport.scale !== 1);
 const settleTarget = (p: number, dir: number) =>
   dir < 0 ? (p >= SETTLE_BACK_HOLD_FROM ? 1 : 0) : p >= SETTLE_FORWARD_FROM ? 1 : 0;
 const settleDuration = (p: number, to: number) => (to === 1 ? 400 + 500 * (1 - p) : 300);
@@ -409,6 +416,10 @@ const ScrollExpandMedia = ({
   // would otherwise lose the position it is measured from.
   const gestureY = useRef(0);
   const fling = useRef<{ until: number; last: number } | null>(null);
+  // A touch sequence that has had two fingers in it at any point. It is not
+  // a scroll from then on, whatever one finger does after the other lifts,
+  // and it clears only when every finger is off the glass.
+  const pinch = useRef(false);
 
   // Under reduced motion the component renders its resting state: media
   // expanded, content visible, no scroll hijacking, first slide only. The
@@ -694,6 +705,7 @@ const ScrollExpandMedia = ({
     };
 
     const handleScroll = () => {
+      if (zoomed()) return;
       window.scrollTo(0, 0);
     };
 
@@ -802,20 +814,21 @@ const ScrollExpandMedia = ({
       upward.current = 0;
       fling.current = null;
       closing.current = { from: p, to: 0, start: performance.now(), duration: CLOSE_MS * p };
+      heroTrace.event("close:start", `p=${p.toFixed(3)} y=${Math.round(window.scrollY)}`);
       setCloseRun((n) => n + 1);
     };
     // A hand going the other way during a close is the reader saying they
     // meant to read on. It is not a scrub back: the close becomes the driver's
     // own settle to 1, on the driver's own curve and duration.
-    const cancelClose = () => {
+    const cancelClose = (reason: string) => {
       const p = progressRef.current;
       if (!closing.current || closing.current.to === 1) return;
       closing.current = { from: p, to: 1, start: performance.now(), duration: settleDuration(p, 1) };
+      heroTrace.event("close:cancel", `${reason} p=${p.toFixed(3)}`);
       setCloseRun((n) => n + 1);
     };
 
-    const atTop = () =>
-      window.scrollY <= 0 && (!window.visualViewport || window.visualViewport.scale === 1);
+    const atTop = () => window.scrollY <= 0 && !zoomed();
 
     // One upward gesture, wheel or finger, read the same way: past the jitter
     // floor it closes if the page is at the top and arms the close if it is
@@ -831,17 +844,27 @@ const ScrollExpandMedia = ({
       }
       const until = performance.now() + CLOSE_FLING_MS;
       if (fling.current) fling.current.until = until;
-      else fling.current = { until, last: window.scrollY };
+      else {
+        fling.current = { until, last: window.scrollY };
+        heroTrace.event("close:armed", `y=${Math.round(window.scrollY)}`);
+      }
     };
     const downward = () => {
       upward.current = 0;
       fling.current = null;
     };
 
+    // Zoomed in, this whole machine is inert: nothing arms, nothing starts,
+    // and a close in flight is handed back to the settle rather than run on a
+    // page the reader can see only part of.
     const onWheel = (e: globalThis.WheelEvent) => {
+      if (zoomed()) {
+        if (closing.current) cancelClose("zoom");
+        return;
+      }
       if (closing.current) {
         e.preventDefault();
-        if (e.deltaY > 0) cancelClose();
+        if (e.deltaY > 0) cancelClose("wheel down");
         return;
       }
       if (e.deltaY > 0) downward();
@@ -849,17 +872,36 @@ const ScrollExpandMedia = ({
     };
 
     // A second finger is a pinch and never a close - the arity gate, as on the
-    // driver's own capture. A move that does not change the finger's row is
-    // nothing, not a reversal: a device that repeats a coordinate used to
-    // zero the travel and un-arm a flick on the way out.
+    // driver's own capture, and it poisons the whole sequence: a finger that
+    // was part of a pinch is not a scroll after its partner lifts, and a close
+    // already running when the second finger lands is cancelled to the settle.
+    // A move that does not change the finger's row is nothing, not a
+    // reversal: a device that repeats a coordinate used to zero the travel
+    // and un-arm a flick on the way out.
+    const secondFinger = () => {
+      pinch.current = true;
+      gestureY.current = 0;
+      downward();
+      if (closing.current) cancelClose("second finger");
+      else heroTrace.event("close:ignored", "second finger");
+    };
     const onTouchStart = (e: globalThis.TouchEvent) => {
-      gestureY.current = e.touches.length === 1 ? e.touches[0].clientY : 0;
+      if (e.touches.length !== 1) {
+        secondFinger();
+        return;
+      }
+      pinch.current = false;
+      gestureY.current = e.touches[0].clientY;
       downward();
     };
     const onTouchMove = (e: globalThis.TouchEvent) => {
-      if (!gestureY.current) return;
       if (e.touches.length !== 1) {
-        gestureY.current = 0;
+        if (!pinch.current) secondFinger();
+        return;
+      }
+      if (pinch.current || !gestureY.current) return;
+      if (zoomed()) {
+        if (closing.current) cancelClose("zoom");
         return;
       }
       const y = e.touches[0].clientY;
@@ -867,7 +909,7 @@ const ScrollExpandMedia = ({
       gestureY.current = y;
       if (closing.current) {
         e.preventDefault();
-        if (delta > 0) cancelClose();
+        if (delta > 0) cancelClose("finger up");
         return;
       }
       if (delta > 0) downward();
@@ -875,10 +917,12 @@ const ScrollExpandMedia = ({
     };
     // The finger leaving the glass ends the gesture and not the arm: the page
     // may still be travelling on the engine's momentum, and the scroll handler
-    // below is where that lands.
-    const onTouchEnd = () => {
+    // below is where that lands. The pinch flag outlives the finger that made
+    // it until the last one lifts.
+    const onTouchEnd = (e: globalThis.TouchEvent) => {
       gestureY.current = 0;
       upward.current = 0;
+      if (e.touches.length === 0) pinch.current = false;
     };
 
     // While a close is running the page is the hero's, exactly as it is during
@@ -888,6 +932,7 @@ const ScrollExpandMedia = ({
     // lifetime - so a reader who comes to rest short of the top and then
     // scrolls down again never meets one.
     const onScroll = () => {
+      if (zoomed()) return;
       if (closing.current) {
         window.scrollTo(0, 0);
         return;
@@ -917,17 +962,25 @@ const ScrollExpandMedia = ({
         const done = u >= 1;
         if (done && c.to === 0) {
           step(0);
+          heroTrace.event("close:done");
           handBack();
           return;
         }
-        if (done) closing.current = null;
+        if (done) {
+          closing.current = null;
+          heroTrace.event("close:settled", "back to 1");
+        }
         step(p);
       });
     }
 
     window.addEventListener("wheel", onWheel, { passive: false });
     window.addEventListener("touchstart", onTouchStart, { passive: true });
-    window.addEventListener("touchmove", onTouchMove, { passive: false });
+    // Non-passive only while a close is running, which is the one time this
+    // handler cancels anything. Registered non-passive on the open page it
+    // told WebKit every touch on home might be cancelled, and the engine then
+    // ran the whole page's scrolling through the main thread to find out.
+    window.addEventListener("touchmove", onTouchMove, { passive: !closing.current });
     window.addEventListener("touchend", onTouchEnd);
     window.addEventListener("touchcancel", onTouchEnd);
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -949,6 +1002,22 @@ const ScrollExpandMedia = ({
       settle.current = null;
     },
     []
+  );
+
+  // What the on-device overlay reads. One assignment here; the getter runs
+  // only while the overlay is polling it.
+  useEffect(
+    () =>
+      heroTrace.provide(() => ({
+        p: progressRef.current,
+        capture: !released.current && !skipCapture.current,
+        reentry,
+        closing: closing.current ? (closing.current.to === 0 ? "running" : "settling") : "no",
+        armed: Boolean(fling.current),
+        upward: upward.current,
+        pinch: pinch.current,
+      })),
+    [reentry]
   );
 
   // Clicking the logo while already on home fires this instead of navigating

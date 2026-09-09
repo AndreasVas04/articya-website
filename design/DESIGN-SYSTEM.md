@@ -933,6 +933,31 @@ and reads on never meets one. Any downward input drops the arm and the sum.
 A touch move that repeats the finger's row is nothing, not a reversal — it used
 to zero the sum, which un-armed a flick on its way out.
 
+**A pinch is never a close, and a zoomed page is inert — 2026-09-09, fourth
+report.** The close's listeners are on `window` (they always were), so a
+finger landing on the intro band at scrollY 0 reaches them. What could reach
+them wrongly was a pinch: the first finger of a two-finger gesture lands a
+frame before the second, and one finger moving down the glass at the top is an
+upward scroll. Now any touch sequence that has had two fingers in it at any
+point is poisoned until every finger lifts — it neither arms nor starts a
+close, and a close already running when the second finger lands is cancelled
+to the settle. While `visualViewport.scale !== 1` nothing arms, nothing starts
+and the scroll pin is not written: on iOS `scrollY` is the *visual* viewport's,
+so a pan across a zoomed page fires `scroll`, and a pin to 0 there drags the
+glass to the top-left on every frame of it — the driver's own pin on the
+closed poster is gated the same way. The close's `touchmove` listener is
+passive except while a close is running, so WebKit keeps the open page's
+scrolling on the compositor. Measured at 390×664: a two-finger sequence at the
+top leaves p at 1.000 with no arm; a second finger at p 0.15 of a running close
+settles back to 1 with one reversal; at scale 1.5 120 px of finger does
+nothing and the same finger at scale 1 closes; five synthetic `scroll` events on
+the closed poster pin 5 times at scale 1 and 0 at scale 2. The five owner
+gestures above still close. `?debug=hero` renders an on-device readout
+(`components/hero-debug.tsx`): scrollY, scale, touch count, p, capture,
+armed/running/last reason, the last five touch events with their clientY deltas
+and `cancelable`, the element under the first touch, and a copy-log button; on
+any other URL nothing renders and its chunk is not fetched.
+
 What this replaces (`7d22d83` / `be755a8`): **60 wheel px inside a 400 ms
 window, or 40 px of finger, and a "slow hand does nothing" rule** built on
 the window. Reproduced as the owner makes the gestures, on the build before
