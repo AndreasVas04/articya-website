@@ -62,18 +62,19 @@ are decisions taken on the About finale and they do not travel: nothing else on
 the site may cite them, and a second component that wants one asks for it on its
 own evidence.
 
-- **The closing paragraph's entrance is scroll-scrubbed, and it is the one
-  sanctioned scrub on the site.** The three groups complete on the scrollbar
-  while the seven tiles gather around them, and the words hand the frame back on
-  the scrollbar as the ring closes over the place they stood. That is the whole
-  composition: words and tiles share every frame and complete together, and a
-  clock would put the paragraph's last group on the screen at a moment decided
-  by a timer rather than by the reader's thumb. The rule's own reason — a flick
-  collapses a scrub and the text is gone before it can be read — is bought off
-  here by the pin: the paragraph carries ink for 0.75 of a viewport of thumb on
-  a phone and 0.68 on a desktop, and it stands complete and still for 0.23 of
-  one. That is more scroll than any reading passage on home is given — §8.1's
-  longest is 0.535 — and it is not 200ms.
+- **The closing paragraph's entrance was the one sanctioned scrub on the site,
+  and it is withdrawn (2026-09-09).** The three groups completed on the
+  scrollbar while the seven tiles gathered around them, on the argument that
+  the pin bought off the rule's own reason. The owner saw what the argument
+  did not: the paragraph arrived in pieces — three groups, three stalls on the
+  way down. It now arrives **whole, once, on the clock**: the block rises 56px
+  over 1.4s on `--ease-out-quart` with a 400ms fade, and the amber rule draws
+  from its centre on the same clock, the first time the block rises 14% above
+  the window's foot. That is the site's rule for text, applied. What stays on
+  the scrollbar is the mosaic's own business — the tiles' gather, settle and
+  zoom, the foot mask, and the words' *dissolve*, which is the third amendment
+  below. The only scrubbed text on the site is now a paragraph leaving, never
+  one arriving.
 - **The second amendment is withdrawn: the pin stands at the ceiling.** It ran
   **2.00 viewports on a phone and 3.40 on a desktop** and it now runs **1.200 at
   both**, measured at 553 / 664 / 750 / 844 and 1440×900. The section is

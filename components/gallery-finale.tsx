@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import {
   cubicBezier,
   motion,
@@ -25,7 +25,8 @@ interface GalleryImage {
 }
 
 interface GalleryFinaleProps {
-  /** The closing paragraph in staged groups; joined with spaces it is the original text. */
+  /** The closing paragraph as the content file carries it; joined with spaces
+   *  it is the original text, and it is rendered whole. */
   groups: string[];
   /** Up to 7 images; the first ends the zoom filling the viewport. */
   images: GalleryImage[];
@@ -184,18 +185,31 @@ const GATHER_COMPACT: [number, number][] = [
 // The pixel half of the two top-band offsets above, in the same tile order.
 const GATHER_COMPACT_PX = [0, 38, 0, 0, 0, 0, 38];
 
+// The words' entrance: once, on the clock, the whole paragraph together. It
+// used to arrive in three groups scrubbed on the scrollbar, and the owner saw
+// it arrive in pieces - three stalls on the way down. The rise is the site's
+// long settle and the fade is short against it, so the words are readable
+// while they are still travelling.
+const WORDS_RISE_PX = 56;
+const WORDS_MS = 1400;
+
 // The story's finale: the photographs from the scenes above rise around the
-// closing paragraph while it completes - words and tiles share every frame - 
-// then the words dissolve, the loose ring closes into a mosaic over the
-// point where they stood, and the mosaic zooms until the community fills
-// the screen. Before mount and under reduced motion it renders unpinned - 
-// the full paragraph followed by a static grid - so the exported HTML is
-// the resting state.
+// closing paragraph, which arrives whole on its own clock the first time it
+// is in view; then the words dissolve on the scrollbar, the loose ring closes
+// into a mosaic over the point where they stood, and the mosaic zooms until
+// the community fills the screen. Before mount and under reduced motion it
+// renders unpinned - the full paragraph followed by a static grid - so the
+// exported HTML is the resting state.
 export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
   const container = useRef<HTMLElement | null>(null);
   const reducedMotion = useReducedMotion();
   const [mounted, setMounted] = useState(false);
   const [compact, setCompact] = useState(false);
+  // The words block, and whether its entrance has played. The state lives
+  // here rather than in the pinned frame because the frame remounts at the
+  // breakpoint, and an entrance plays once per load, not once per width.
+  const words = useRef<HTMLDivElement | null>(null);
+  const [wordsIn, setWordsIn] = useState(false);
 
   // One travel-based timeline (section top at viewport bottom → section
   // bottom at viewport top), so the words are already arriving while the
@@ -209,11 +223,10 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
   });
   const key = (value: number) => stageKey(value, compact);
 
-  // Text: three groups complete shortly after the pin engages while the
-  // outer tiles gather, hold among them, then hand the frame over as the
-  // ring closes. On compact screens the words dissolve completely before
-  // the ring starts moving, so the closing tiles never cross live text.
-  const seg = 0.18 / (groups.length + 0.5);
+  // The words hold among the gathering tiles, then hand the frame over as
+  // the ring closes. On compact screens they dissolve completely before the
+  // ring starts moving, so the closing tiles never cross live text. The
+  // hand-over is the one thing about the words still read off the scrollbar.
   const [fadeFrom, fadeTo] = compact
     ? [key(0.4), key(0.46)]
     : [key(0.42), key(0.5)];
@@ -330,6 +343,24 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
     return () => query.removeEventListener("change", update);
   }, []);
 
+  // The cue: the block rising 14% above the window's foot, once. The same
+  // margin the stage entrances fire on, so a real share of the words is on
+  // the glass when the rise starts.
+  useEffect(() => {
+    const el = words.current;
+    if (!mounted || reducedMotion || wordsIn || !el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        observer.disconnect();
+        setWordsIn(true);
+      },
+      { rootMargin: "0px 0px -14% 0px" }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [mounted, reducedMotion, wordsIn, compact]);
+
   // Resting state: the paragraph in full, then the same photos as a plain
   // grid. No pinning, no scroll-linked transforms.
   if (!mounted || reducedMotion) {
@@ -389,24 +420,22 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
           className="absolute inset-0 z-10 flex items-center justify-center px-4"
           style={{ opacity: textOut, y: textDrift }}
         >
-          <div className="max-w-2xl text-center">
-            <TextBar stage={stage} start={key(0.08)} end={key(0.14)} />
+          <div
+            ref={words}
+            data-on={wordsIn ? "" : undefined}
+            className="finale-words max-w-2xl text-center"
+            style={{ "--finale-rise": `${WORDS_RISE_PX}px`, "--finale-ms": `${WORDS_MS}ms` } as CSSProperties}
+          >
+            {/* The rule draws from its centre on the words' own clock. It
+                used to be shifted down by paint at the shortest phone, where
+                the 20px paragraph made the centred block tall enough to put
+                it 12.6px inside the top band's tile; at the body step the
+                block is 58px shorter and it stands on its own row. */}
+            <span aria-hidden="true" className="finale-rule mx-auto block h-[2px] w-16 bg-amber" />
             {/* The body step, like every paragraph on the site: this one ran
                 at 20px where the three scenes above it run 16px on a phone
                 and 18.56px on a desktop, and read as a larger paragraph. */}
-            <p className="type-body mt-8 text-ink">
-              {groups.map((group, i) => (
-                <FinaleGroup
-                  key={i}
-                  stage={stage}
-                  start={key(0.13 + i * seg)}
-                  end={key(0.13 + i * seg + seg * 1.5)}
-                >
-                  {group}
-                  {i < groups.length - 1 ? " " : ""}
-                </FinaleGroup>
-              ))}
-            </p>
+            <p className="finale-words-block type-body mt-8 text-ink">{groups.join(" ")}</p>
           </div>
         </motion.div>
 
@@ -424,45 +453,6 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
       </motion.div>
     </section>
   );
-}
-
-function TextBar({
-  stage,
-  start,
-  end,
-}: {
-  stage: ReturnType<typeof useScroll>["scrollYProgress"];
-  start: number;
-  end: number;
-}) {
-  const scaleX = useTransform(() => stageWindow(stage.get(), start, end));
-  // This mark used to be shifted down by paint at the shortest phone, where
-  // the 20px paragraph made the centred block tall enough to put it 12.6px
-  // inside the top band's tile. At the body step the block is 58px shorter,
-  // the mark stands 11px under the tile at 553 on its own row, and the shift
-  // is gone.
-  return (
-    <motion.span
-      aria-hidden="true"
-      className="mx-auto block h-[2px] w-16 bg-amber"
-      style={{ scaleX }}
-    />
-  );
-}
-
-function FinaleGroup({
-  stage,
-  start,
-  end,
-  children,
-}: {
-  stage: ReturnType<typeof useScroll>["scrollYProgress"];
-  start: number;
-  end: number;
-  children: React.ReactNode;
-}) {
-  const opacity = useTransform(() => stageWindow(stage.get(), start, end));
-  return <motion.span style={{ opacity }}>{children}</motion.span>;
 }
 
 function FinaleTile({

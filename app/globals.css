@@ -1021,6 +1021,28 @@ body {
 .stage[data-on] .stage-mask-rise {
   transition: translate 700ms var(--ease-out-quart);
 }
+/* The About finale's closing paragraph and its rule: one block, once, on the
+   clock. The words rise 56px over 1.4s and the rule draws from its centre on
+   the same clock; the fade is short against the travel, as everywhere else,
+   so the movement is what the eye sees. Hidden only between mount and the
+   cue - the exported HTML and reduced motion never carry this state. */
+@layer components {
+  .finale-words:not([data-on]) .finale-words-block {
+    opacity: 0;
+    translate: 0 var(--finale-rise, 56px);
+  }
+  .finale-words[data-on] .finale-words-block {
+    transition:
+      opacity 400ms var(--ease-out-quart),
+      translate var(--finale-ms, 1400ms) var(--ease-out-quart);
+  }
+  .finale-words:not([data-on]) .finale-rule {
+    scale: 0 1;
+  }
+  .finale-words[data-on] .finale-rule {
+    transition: scale var(--finale-ms, 1400ms) var(--ease-out-quart);
+  }
+}
 /* Evening shadow: under framed prints, and as the raised state of
    interactive cards (open accordion, hovered contact card) - defined as a
    utility so hover/open variants reuse the same shadow. */

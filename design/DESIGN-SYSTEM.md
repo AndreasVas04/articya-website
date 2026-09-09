@@ -1047,6 +1047,20 @@ every glyph now clears the 0.10 line by **38 / 144 / 23 / 9px** at 1440×900 /
 phone's poster and expanded frames (byte-identical) and the poster's contrast
 (label 7.68, strike 3.47, headline 7.16–7.53 at ink) do not move.
 
+**The About closing paragraph is on the clock too — 2026-09-09.** It was the
+one sanctioned scrubbed entrance (`ART-DIRECTION.md` §2, first amendment, now
+withdrawn): three word groups completing on the scrollbar between scrollY 2472
+and 2732 at 390×664, 3520 and 3800 at 1440×900, with the rule drawing ahead of
+them over 80 and 60px of scroll. The owner saw three stalls. The whole
+paragraph now enters once, on the site's own clock — **56px rise over 1.4s on
+`--ease-out-quart`, a 400ms fade, the rule drawing from its centre on the same
+clock** — cued the first time the block rises 14% above the window's foot,
+which is scrollY 2332 at 390×664 and 3220 at 1440×900, a screen before the pin
+engages (2672 / 3600). The tiles' gather, settle and zoom, the foot mask and
+the words' dissolve (2912–2972 / 4020–4120) are untouched and hash-identical at
+20px steps across 390×553, 390×664, 390×750 and 1440×900. Scrubbed text on the
+site is now only the finale's own exit.
+
 **Signature entrances play on the clock, not the scrollbar.** The page's two
 set-piece moments — the hero's first-load title card and the "What we do"
 stage entrance — are time-based and once per load. An earlier pass scrubbed
