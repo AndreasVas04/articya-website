@@ -55,9 +55,9 @@ export function StatCounter({ num, label }: StatCounterProps) {
   return (
     <div
       ref={ref}
-      className="relative flex items-baseline justify-between gap-4 px-1 py-2 md:block md:px-4 md:py-8 md:text-center"
+      className="relative flex items-baseline justify-between gap-4 px-1 py-2 md:block md:px-2 md:py-4 md:text-center"
     >
-      <div className="font-display text-[2.75rem] font-semibold leading-none tracking-[-0.025em] text-ink md:text-[clamp(3.25rem,8vw,6.5rem)]">
+      <div className="font-display text-[2.75rem] font-semibold leading-none tracking-[-0.025em] text-ink md:text-[clamp(2.5rem,5vw,4.75rem)]">
         {display}
       </div>
       <div className="text-[0.8125rem] font-semibold uppercase leading-[1.4] tracking-[0.08em] text-ink-soft md:mt-3">

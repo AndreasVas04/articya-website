@@ -360,20 +360,21 @@ export default function HomePage() {
                 while the window is 704px tall or more. */}
             <StageScene
               fireMargin="-30%"
-              className="relative mx-auto flex min-h-svh max-w-6xl flex-col justify-center px-4 md:justify-start md:pt-[9svh] xl:max-w-[min(84rem,92vw)]"
+              className="relative mx-auto flex min-h-svh max-w-6xl flex-col justify-center px-4 md:justify-start md:pt-24 xl:max-w-[min(84rem,92vw)]"
             >
               {/* Three blocks in one grid above `md`: the words in the left
                   six columns, the Earth in the right six, and the ledger under
                   both. Below `md` the same three stack, and the Earth goes
                   last - under the stats, at 0.82 of the column - so a phone
                   reads the words, the numbers, then the object. */}
-              <div className="relative flex flex-col md:grid md:grid-cols-12 md:items-start md:gap-x-12 xl:gap-x-20">
-                {/* The rule's row: 162px at 1440x900, 194px at 1920x1080.
-                    The words and the object no longer share a centre line -
-                    they share the object's own row instead. They cannot have
-                    both: the ledger is a full-width row wholly below the Earth,
-                    so half its stack always sits between the two centres. */}
-                <div className="relative md:col-span-6 md:mt-[9svh]">
+              <div className="relative flex flex-col md:grid md:grid-cols-12 md:items-center md:gap-x-12 xl:gap-x-20">
+                {/* The block: the rule, the title, the lead and, above `md`,
+                    the ledger under them in the same six columns. It is one
+                    grid item so the Earth beside it can be centred on it - the
+                    disc's centre is the block's centre, which is what the
+                    words and the object could not share while the ledger was
+                    a full-width row wholly below the Earth. */}
+                <div className="relative md:col-span-6">
                   <div className="relative">
                     <div className="stage-lift">
                       {/* The clearing's own rule, at its own row. It used to
@@ -408,6 +409,28 @@ export default function HomePage() {
                           {whatWeDo.lead}
                         </p>
                       </div>
+                    </div>
+                  </div>
+                  {/* The ledger carries no rules of its own beyond the desktop
+                      column dividers: horizontal lines are the one mark this
+                      page never draws, so the mobile rows structure themselves
+                      on the numeral/label baseline alone. The rows are the
+                      wave's last beats, and each counter still starts its
+                      700ms count only when it crosses into view - the ledger
+                      writes itself. Below `md` it stands between the lead and
+                      the Earth exactly where it stood; above `md` it is the
+                      block's last row, three across inside the six columns. */}
+                  <div className="relative mt-2 md:mt-12">
+                    <div className="relative grid md:grid-cols-3 md:divide-x md:divide-hairline">
+                      {whatWeDo.stats.map((stat, i) => (
+                        <div
+                          key={stat.label}
+                          className="stage-rise"
+                          style={{ transitionDelay: `${550 + i * 130}ms` }}
+                        >
+                          <StatCounter num={stat.num} label={stat.label} />
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -447,25 +470,6 @@ export default function HomePage() {
                   <EarthGlobe className="mx-auto w-[82%] md:my-[max(0px,calc((56svh-559px)/2))] md:w-full md:max-w-[min(56svh,559px)]" />
                 </div>
 
-                {/* The ledger carries no rules of its own beyond the desktop
-                    column dividers: horizontal lines are the one mark this page
-                    never draws, so the mobile rows structure themselves on the
-                    numeral/label baseline alone. The rows are the wave's last
-                    beats, and each counter still starts its 700ms count only
-                    when it crosses into view - the ledger writes itself. */}
-                <div className="relative order-2 mt-2 md:order-none md:col-span-12 md:mt-12">
-                  <div className="relative grid md:grid-cols-3 md:divide-x md:divide-hairline">
-                    {whatWeDo.stats.map((stat, i) => (
-                      <div
-                        key={stat.label}
-                        className="stage-rise"
-                        style={{ transitionDelay: `${550 + i * 130}ms` }}
-                      >
-                        <StatCounter num={stat.num} label={stat.label} />
-                      </div>
-                    ))}
-                  </div>
-                </div>
               </div>
             </StageScene>
           </div>

@@ -2102,6 +2102,58 @@ block's in every case. What the lift buys instead is the heading's row, and
 what it costs is the quiet band between the lead's foot and the ledger, which
 opens from 205 to 281px at 1440 — photograph, and the walking group is in it.
 
+**Superseded the same day — the natural stop, 2026-09-09.** The rows above
+were declared with the section's top on the window's top, and that is not
+where a reader stops. From the intro's rest one flick lands the section's top
+at **0.119 H (trackpad, 793px of wheel) and 0.189 H (a 730px touch run-out)
+at 1440×900, 0.266 H and 0.324 H at 1920×1080** — the hero's "Contact Us"
+still in the top of the frame, as the owner's screenshot shows. Read there,
+the ledger (0.703–0.924 H at the top) was **below the fold from a section-top
+of 0.076 H on**: at 0.30 H its foot was at 1.224 H and its first row at
+1.003 H. No amount of top spacing closes that — the Earth's 504px box plus
+the 246px ledger under it is 750px of stack, and the fold at a 0.30 H stop
+allows 558. So the composition moves, under the owner's authorisation:
+
+- The ledger leaves its full-width row and becomes **the block's last row**,
+  three across inside the words' six columns, 48px under the lead. The
+  numerals step down to `clamp(2.5rem, 5vw, 4.75rem)` (72px at 1440, 76 at
+  1920, 40 at 768) with `px-2 py-4` cells, so "500+" sits in its cell with
+  17px to spare at 1440 and 5px at 768; the label step and the dividers are
+  unchanged.
+- The grid aligns its items to the **centre**, so the disc's centre *is* the
+  block's centre — the axis the paragraph above records as unreachable while
+  the ledger stood under the Earth. Centre to centre at 1440×900: **354.0 vs
+  348.0**, six pixels, the parallax's own noise.
+- The two `9svh` offsets go: the scene opens at `md:pt-24` (96px, the nav's
+  80 and a step) and the words carry no offset of their own. The Earth keeps
+  `min(100%, 56svh, 559px)` — 504 at 1440×900, 559 at 1920×1080 — its
+  parallax bound and its box; it stands 6px lower than before at 1440.
+
+| row, at the scroll that puts the section's top at the window's | 1440×900, top 0 | 0.15 H | 0.30 H | 1920×1080, top 0 | 0.15 H | 0.30 H |
+|---|---|---|---|---|---|---|
+| the rule | 0.180 → **0.184 H** | 0.330 → **0.334** | 0.480 → **0.484** | 0.180 → **0.188** | 0.330 → **0.338** | 0.480 → **0.488** |
+| the title's cap line | 0.201 → **0.204** | 0.351 → **0.354** | 0.501 → **0.504** | 0.198 → **0.207** | 0.348 → **0.357** | 0.498 → **0.507** |
+| the lead's foot | 0.383 → **0.387** | 0.533 → **0.537** | 0.683 → **0.687** | 0.370 → **0.378** | 0.520 → **0.528** | 0.670 → **0.678** |
+| the ledger, foot | 0.924 → **0.589** | 1.074 → **0.739** | 1.224 → **0.889** | 0.878 → **0.550** | 1.028 → **0.700** | 1.178 → **0.850** |
+| the Earth's box | 0.098–0.658 → **0.113–0.673** | | | 0.119–0.637 → **0.118–0.636** | | |
+| the disc's centre | 0.378 → **0.393** | | | 0.378 → **0.377** | | |
+
+The ledger's foot is under 0.92 H at every section-top position from 0 to
+0.30 H at both widths, which is the constraint; the rule's row is what the
+centre relationship leaves it — a block 365px tall centred on a 504px disc
+starts 70px below the disc's top — and it is the row `def4bc1` declared to
+within four pixels at 1440×900. The rule cannot be under 0.28 H at a 0.30 H
+stop in any layout, since it cannot stand above its own section; at the
+section's top it is 0.184 / 0.188 H. The section is still one screen at
+both widths (`min-h-svh` binds: the grid needs 96 + 504 of it), the twelve
+keys and the document height are unchanged, and both phone heights are
+byte-identical at the section's top and one screen further. The closest a
+glyph comes to the disc over the traversal, parallax live at 20px steps,
+goes **61.7 → 208.8px** at 1440×900, **87.3 → 182.3** at 1920×1080, and reads
+94.8 at 1024×768 and 74.2 at 768×1024 — the 31px floor holds everywhere.
+Contrast at 1440×900 across the natural-stop range: labels 5.00–5.02, lead
+5.01, numerals 8.13–8.22, heading 8.13 at ink, none below its floor.
+
 **The skin** (`scripts/globe-texture.mjs`, the outputs committed under
 `public/globe/`): NASA's Blue Marble Next Generation for **July** with
 topography and bathymetry, graded toward the section — saturation 0.84, the
