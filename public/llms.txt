@@ -1,0 +1,14 @@
+# ArtiCYa
+
+ArtiCYa is a youth organisation based in Cyprus. It runs and takes part in Erasmus+ projects for young people and youth workers: youth exchanges for participants aged 13 to 30, and training courses for youth workers aged 18 and over, with travel, accommodation and meals covered by the programme. This site describes what the organisation does, what participants gain, and how to get in touch.
+
+## Pages
+
+- https://andreasvas04.github.io/articya-website/ : Home. What ArtiCYa does, the two kinds of project it runs, and what a participant gains.
+- https://andreasvas04.github.io/articya-website/about/ : About. Who ArtiCYa is and how it works, told alongside photographs of its activities.
+- https://andreasvas04.github.io/articya-website/faq/ : FAQ. Questions and answers on Erasmus+, costs and safety, the experience and participation, and applications.
+- https://andreasvas04.github.io/articya-website/contact/ : Contact. Email and social profiles.
+
+## Photography
+
+Every photograph on this site is ArtiCYa's own, taken at its activities. The photographs, the logo and the site copy are copyright ArtiCYa, all rights reserved, and are not licensed for reuse.
