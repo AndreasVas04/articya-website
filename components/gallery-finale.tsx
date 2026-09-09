@@ -14,6 +14,7 @@ import { ResponsiveImage } from "@/components/responsive-image";
 import { holdPipe, savingData, tooSlowToSpeculate } from "@/lib/connection";
 import { coverSizes, negotiatedExt, variantUrl, type SizeBox } from "@/lib/images";
 import { cn } from "@/lib/utils";
+import { onLayoutResize } from "@/lib/viewport";
 
 const easeInOutCubic = cubicBezier(0.65, 0, 0.35, 1);
 
@@ -186,22 +187,28 @@ const GATHER_COMPACT: [number, number][] = [
 // The pixel half of the two top-band offsets above, in the same tile order.
 const GATHER_COMPACT_PX = [0, 38, 0, 0, 0, 0, 38];
 
-// The words' entrance: once, on the clock, the whole paragraph together. It
-// used to arrive in three groups scrubbed on the scrollbar, and the owner saw
-// it arrive in pieces - three stalls on the way down. The rise is the site's
-// long settle and the fade is short against it, so the words are readable
-// while they are still travelling.
+// The arrival: once, on one clock, the paragraph, its rule and the four tiles
+// that stand nearest it, together. The words used to arrive in three groups
+// scrubbed on the scrollbar, and the owner saw them arrive in pieces; then
+// they arrived on a clock cued where the first tile began its scroll-linked
+// rise, and the owner saw them standing alone over the ground - measured at
+// 390x664 and 1440x900, the paragraph was at full strength while every tile
+// was still under 0.02, because a rise read off the scrollbar is as slow as
+// the reader's hand and a clock is not. So the tiles nearest the words take
+// the clock too, and there is no frame on which the words have arrived and
+// their photographs have not. The rise is the site's long settle and the fade
+// is short against it, so everything is readable while it is still travelling.
 //
-// It is cued on the same frame the first outer tile begins to rise - the
-// tiles' own timeline, below - and not on the block crossing a line of its
-// own. Cued at 14% above the window's foot it fired 85px of scroll before the
-// tiles, and the owner saw the paragraph standing alone before the
-// photographs; the whole text must appear in the same transition as they do.
-// At 1.4s the block has finished while tiles 1-4 are still rising.
+// The cue is the group's own top - the highest of the four tiles at rest -
+// crossing 0.85 of the window on its way up, which is the group entering.
+// The outer two tiles, the pin, the dissolve, the ring's close and the zoom
+// stay on the scrollbar as built.
 const WORDS_RISE_PX = 56;
 const WORDS_MS = 1400;
-// The first outer tile's own key, as FinaleTile derives it for index 1.
-const FIRST_TILE_RISE = 0.1;
+const ARRIVAL_CUE = 0.85;
+// The tiles that arrive with the words: the top band, the two beside them and
+// the bottom band's long tile, in TILES order.
+const CLOCKED_TILES = new Set([1, 2, 3, 4]);
 
 // The story's finale: the photographs from the scenes above rise around the
 // closing paragraph, which arrives whole on its own clock the first time it
@@ -219,6 +226,7 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
   // here rather than in the pinned frame because the frame remounts at the
   // breakpoint, and an entrance plays once per load, not once per width.
   const words = useRef<HTMLDivElement | null>(null);
+  const frame = useRef<HTMLDivElement | null>(null);
   const [wordsIn, setWordsIn] = useState(false);
 
   // One travel-based timeline (section top at viewport bottom → section
@@ -353,11 +361,38 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
     return () => query.removeEventListener("change", update);
   }, []);
 
-  // The cue: the frame the first outer tile starts its rise, once. Read off
-  // the same timeline the tiles read, so the two cannot drift by a pixel.
-  const wordsCue = key(FIRST_TILE_RISE);
-  useMotionValueEvent(stage, "change", (value) => {
-    if (!wordsIn && mounted && !reducedMotion && value >= wordsCue) setWordsIn(true);
+  // Where the group's top stands in the document, measured off the layout and
+  // never inside the scroll handler: the frame sits at the section's top until
+  // the pin engages, which is well below the cue, and the tiles' rest inside
+  // the frame is the layout's. What is measured is the box's pre-arrival
+  // position, so the rise it is waiting to make is taken back off.
+  const groupTop = useRef<number | null>(null);
+  useEffect(() => {
+    if (!mounted || reducedMotion) return;
+    const measure = () => {
+      const el = frame.current;
+      const section = container.current;
+      if (!el || !section) return;
+      const boxes = Array.from(el.querySelectorAll<HTMLElement>("[data-finale-clock]"));
+      if (boxes.length === 0) return;
+      const frameTop = el.getBoundingClientRect().top;
+      const inFrame = Math.min(...boxes.map((b) => b.getBoundingClientRect().top - frameTop));
+      groupTop.current = section.getBoundingClientRect().top + window.scrollY + inFrame - WORDS_RISE_PX;
+    };
+    measure();
+    const offResize = onLayoutResize(measure);
+    const observer = new ResizeObserver(measure);
+    observer.observe(document.documentElement);
+    return () => {
+      offResize();
+      observer.disconnect();
+    };
+  }, [mounted, reducedMotion, compact]);
+
+  // The cue, read on the tiles' own timeline so the two cannot drift.
+  useMotionValueEvent(stage, "change", () => {
+    if (wordsIn || !mounted || reducedMotion || groupTop.current === null) return;
+    if (groupTop.current - window.scrollY <= ARRIVAL_CUE * window.innerHeight) setWordsIn(true);
   });
 
   // Resting state: the paragraph in full, then the same photos as a plain
@@ -412,8 +447,10 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
           section, so it sets no document height and moves no key. */}
       <motion.div
         key={compact ? "compact" : "wide"}
+        ref={frame}
+        data-on={wordsIn ? "" : undefined}
         className="finale-foot hero-foot-fade sticky top-0 h-[100dvh] overflow-hidden"
-        style={{ "--foot-in": footIn } as MotionStyle}
+        style={{ "--foot-in": footIn, "--finale-rise": `${WORDS_RISE_PX}px`, "--finale-ms": `${WORDS_MS}ms` } as MotionStyle}
       >
         <motion.div
           className="absolute inset-0 z-10 flex items-center justify-center px-4"
@@ -423,7 +460,6 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
             ref={words}
             data-on={wordsIn ? "" : undefined}
             className="finale-words max-w-2xl text-center"
-            style={{ "--finale-rise": `${WORDS_RISE_PX}px`, "--finale-ms": `${WORDS_MS}ms` } as CSSProperties}
           >
             {/* The rule draws from its centre on the words' own clock. It
                 used to be shifted down by paint at the shortest phone, where
@@ -447,6 +483,7 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
             alt={alt}
             compact={compact}
             warm={warm.includes(index)}
+            clocked={CLOCKED_TILES.has(index)}
           />
         ))}
       </motion.div>
@@ -461,6 +498,7 @@ function FinaleTile({
   alt,
   compact,
   warm,
+  clocked,
 }: {
   stage: ReturnType<typeof useScroll>["scrollYProgress"];
   index: number;
@@ -468,6 +506,8 @@ function FinaleTile({
   alt: string;
   compact: boolean;
   warm: boolean;
+  /** Arrives with the words, on their clock, rather than on the scrollbar. */
+  clocked: boolean;
 }) {
   // Outer tiles rise staggered into their gathered offsets while the words
   // complete; the ring settles into the mosaic as the words hand over, the
@@ -494,14 +534,18 @@ function FinaleTile({
   const zoomTo = key(0.745);
   const riseDirection = compact && gatherY < 0 ? -1 : 1;
 
-  const opacity = useTransform(() => stageWindow(stage.get(), inStart, inEnd));
+  // A clocked tile carries no scroll-linked entrance: its box inside takes
+  // the words' own rise and fade, and this layer keeps only the gather, the
+  // settle and the zoom.
+  const opacity = useTransform(() => (clocked ? 1 : stageWindow(stage.get(), inStart, inEnd)));
   const x = useTransform(
     () =>
       `${gatherX * (1 - stageWindow(stage.get(), settleFrom, settleTo))}vw`
   );
   const y = useTransform(() => {
-    const rise =
-      riseDirection * 6 * (1 - stageWindow(stage.get(), inStart, inEnd));
+    const rise = clocked
+      ? 0
+      : riseDirection * 6 * (1 - stageWindow(stage.get(), inStart, inEnd));
     const settle = 1 - stageWindow(stage.get(), settleFrom, settleTo);
     return `calc(${gatherY * settle + rise}vh + ${gatherPx * settle}px)`;
   });
@@ -516,8 +560,10 @@ function FinaleTile({
       className="absolute top-0 flex h-full w-full items-center justify-center"
     >
       <div
+        data-finale-clock={clocked ? "" : undefined}
         className={cn(
           "relative overflow-hidden rounded-xl ring-1 ring-amber/55",
+          clocked && "finale-tile",
           TILES[index]
         )}
       >
