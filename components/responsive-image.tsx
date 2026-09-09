@@ -1,4 +1,6 @@
-import type { CSSProperties } from "react";
+"use client";
+
+import { useEffect, useState, type CSSProperties } from "react";
 import { resolveImage } from "@/lib/images";
 import { cn, withBasePath } from "@/lib/utils";
 
@@ -21,11 +23,28 @@ interface ResponsiveImageProps {
   draggable?: boolean;
 }
 
+// Whether this document has hydrated. The first placement to mount sets it;
+// every placement that mounts after that was created by the client router.
+let hydrated = false;
+
 // One shared <picture> emitting AVIF + WebP + JPEG srcsets so the browser
 // downloads the width and format it will actually display - the responsive
 // pipeline `next/image` can't provide under `output: export`. Widths/formats
 // come from the build-time manifest (lib/images.ts). Explicit width/height on
 // every image reserve the aspect ratio so nothing shifts as it loads.
+//
+// A placement created by the client router carries no `src` and no `srcset`
+// on its `<img>`; the `<source>` elements decide. React creates the image,
+// sets its attributes and only then appends it to the picture, and WebKit runs
+// the source selection as the attributes land: on an image outside any picture
+// that selection sees no `<source>` and fetches the JPEG fallback - measured
+// on the way from home to /faq/, a 567KB file the page never paints, on the
+// wire beside the AVIF it does. Setting the two one render later cost a
+// second download of the AVIF instead, from the soft plate's lazy image. A
+// bare image inside a picture selects from the sources the moment it is
+// inserted, in both engines, and every browser that runs the router reads a
+// `<picture>`. The parser builds the picture whole, so the exported HTML and
+// the hydrating render carry both attributes as before.
 export function ResponsiveImage({
   src,
   alt,
@@ -38,6 +57,10 @@ export function ResponsiveImage({
   draggable,
 }: ResponsiveImageProps) {
   const resolved = resolveImage(src);
+  const [fallbacks] = useState(() => !hydrated);
+  useEffect(() => {
+    hydrated = true;
+  }, []);
   const loading = priority || eager ? "eager" : "lazy";
   const fetchPriority = priority ? "high" : undefined;
   // The page's own photograph decodes on the frame that paints it, not one or
@@ -78,8 +101,8 @@ export function ResponsiveImage({
         <source key={s.ext} type={s.mime} srcSet={s.srcSet} sizes={sizes} />
       ))}
       <img
-        src={resolved.fallback}
-        srcSet={resolved.jpegSrcSet}
+        src={fallbacks ? resolved.fallback : undefined}
+        srcSet={fallbacks ? resolved.jpegSrcSet : undefined}
         sizes={sizes}
         width={resolved.width}
         height={resolved.height}

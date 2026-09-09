@@ -4,6 +4,7 @@ import { useEffect, useLayoutEffect, useRef, type CSSProperties } from "react";
 import { cubicBezier } from "framer-motion";
 import { ResponsiveImage } from "@/components/responsive-image";
 import { coverSizes, FULL_VIEWPORT, imageGround, imagePreload } from "@/lib/images";
+import { releaseHero } from "@/lib/hero-prefetch";
 import { onLayoutResize } from "@/lib/viewport";
 import { cn } from "@/lib/utils";
 
@@ -373,6 +374,12 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
   // resolve to different rungs of the ladder and the page downloads the
   // photograph twice.
   const lcp = plates.find((p) => p.priority);
+
+  // The plate is on the page: whatever was fetched and decoded ahead of it can
+  // be let go, since this layer's own element references the file now.
+  useEffect(() => {
+    if (lcp) releaseHero(lcp.src);
+  }, [lcp]);
   const preload = lcp
     ? imagePreload(lcp.src, coverSizes(lcp.src, FULL_VIEWPORT))
     : null;

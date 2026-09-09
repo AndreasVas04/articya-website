@@ -1,7 +1,7 @@
 import { hero as aboutHero } from "@/content/about";
 import { hero as contactHero } from "@/content/contact";
 import { hero as faqHero } from "@/content/faq";
-import { coverSizes, FULL_VIEWPORT, negotiatedExt, resolveImage } from "@/lib/images";
+import { coverSizes, FULL_VIEWPORT, resolveImage } from "@/lib/images";
 import { releasePipe, savingData } from "@/lib/connection";
 
 // A route change to an inner page paints the page and then waits for its
@@ -14,9 +14,20 @@ import { releasePipe, savingData } from "@/lib/connection";
 // The fix is to ask for it before the route exists. Which file to ask for is
 // the whole of the problem - a prefetch of a rung the destination will not
 // choose is not a head start, it is a second download - so nothing here names
-// a width and nothing here picks a rung. What is handed over is the ladder and
-// the `sizes` string the plate itself declares, and the device does the
-// choosing, with its own window and its own ratio.
+// a width, a rung or a format. What is put in the document is the plate's own
+// `<picture>`: the same `<source>` elements in the same order with the same
+// `sizes`, so the browser makes the same decision it will make on arrival,
+// by construction rather than by agreement. An `Image` with one format's
+// ladder used to stand in for it, and it could only ever carry the format
+// read off a picture the browser had already resolved.
+//
+// The file is not the whole of the wait, either. Safari decodes a photograph
+// when something first paints it, and a 2560px AVIF is a run of the decoder
+// that lands between the route's arrival and its first frame - so the picture
+// here is decoded as soon as it has loaded and *kept*, attached and
+// referenced, until the plate it was fetched for is on the page. A detached
+// image holds the file; a decoded one that nothing points at is a bitmap the
+// engine may drop before it is ever painted.
 //
 // The hero of each inner page is the first plate of its `PhotoStage`, which is
 // the page's own `hero.image` - the same constant the route renders from, so
@@ -27,31 +38,34 @@ export const ROUTE_HEROES: Record<string, string> = {
   "/contact/": contactHero.image,
 };
 
-/** The candidate set the destination's hero plate declares, in the format this
- *  browser has already negotiated - or null when the route has no hero or the
- *  format is not yet knowable.
- *
- *  It is the ladder and the `sizes` string, not a width. Deriving the rung here
- *  meant resolving the media query, reading the window and multiplying by the
- *  device ratio - three numbers this file has no business owning, and on iOS
- *  the second of them is the *visual* viewport. Handing the same two strings to
- *  an `Image` runs the browser's own selection algorithm over the browser's own
- *  candidates, so the file asked for is the file the plate will ask for by
- *  construction rather than by agreement. */
-export function heroCandidates(href: string): { srcSet: string; sizes: string } | null {
-  const src = ROUTE_HEROES[href];
-  if (!src) return null;
-  const resolved = resolveImage(src);
-  const ext = negotiatedExt();
-  if (!resolved || !ext) return null;
-  const source = resolved.sources.find((s) => s.ext === ext);
-  if (!source) return null;
-  return { srcSet: source.srcSet, sizes: coverSizes(src, FULL_VIEWPORT) };
+export interface HeroCandidates {
+  /** The content image path the plate declares. */
+  src: string;
+  /** The plate's own `sizes`, so the selection is the plate's. */
+  sizes: string;
 }
 
-// Once per route per session: a second request for a file already asked for is
-// a second download on a cold miss and noise on a warm one.
+/** The destination's hero plate as it declares itself, or null when the route
+ *  has no hero. */
+export function heroCandidates(href: string): HeroCandidates | null {
+  const src = ROUTE_HEROES[href];
+  if (!src || !resolveImage(src)) return null;
+  return { src, sizes: coverSizes(src, FULL_VIEWPORT) };
+}
+
+export interface HeroLoad {
+  src: string;
+  picture: HTMLPictureElement;
+  img: HTMLImageElement;
+}
+
+// Every route asked for this session, and the loads in flight or held. A
+// second request for a file already asked for is a second download on a cold
+// miss, so the idle path asks once; a press for a route whose hold has since
+// been released asks again, which is a cache hit and a decode ahead of the
+// route.
 const asked = new Set<string>();
+const live = new Map<string, HeroLoad>();
 
 /** True when this route's hero has already been asked for. */
 export function alreadyAsked(href: string): boolean {
@@ -60,52 +74,88 @@ export function alreadyAsked(href: string): boolean {
 
 /** Reserve a route, so two paths cannot ask for the same file. Returns the
  *  candidates to load, or null when there is nothing to do. */
-export function claimHero(href: string): { srcSet: string; sizes: string } | null {
-  if (asked.has(href)) return null;
-  if (savingData()) return null;
+export function claimHero(href: string, press = false): HeroCandidates | null {
   const c = heroCandidates(href);
   if (!c) return null;
+  if (live.has(c.src)) return null;
+  if (asked.has(href) && !press) return null;
+  if (savingData()) return null;
   asked.add(href);
   return c;
 }
 
-// A detached image is collectable the moment nothing points at it, and a
-// collected image is a cancelled request. These hold the reference until the
-// load settles; the decode is not done until something paints it, so what is
-// held here is the encoded file and not a bitmap.
-const inFlight = new Set<HTMLImageElement>();
-
-/** Start the load, at `priority`, and return the element so a queue can stop
- *  it. The plate's own request on arrival coalesces onto this one: it is the
- *  same document, the same candidates and the same selection. */
+/** Start the load, at `priority`, and return it so a queue can stop it. The
+ *  plate's own request on arrival coalesces onto this one: it is the same
+ *  document, the same candidates and the same selection. `done` fires once
+ *  the file is loaded and decoded, or on a miss. */
 export function loadHero(
-  c: { srcSet: string; sizes: string },
+  c: HeroCandidates,
   priority: "high" | "low",
   done?: (ok: boolean) => void
-): HTMLImageElement {
-  const img = new Image();
+): HeroLoad | null {
+  const resolved = resolveImage(c.src);
+  if (!resolved) return null;
+  const picture = document.createElement("picture");
+  for (const s of resolved.sources) {
+    const source = document.createElement("source");
+    source.type = s.mime;
+    source.sizes = c.sizes;
+    source.srcset = s.srcSet;
+    picture.appendChild(source);
+  }
+  const img = document.createElement("img");
+  img.alt = "";
+  img.decoding = "async";
+  img.fetchPriority = priority;
+  // Into its picture with no source of its own: the `<source>` elements are
+  // the selection, and the image loads on insertion in both engines. Given a
+  // `src` of its own while detached, WebKit fetched that file as well.
+  picture.appendChild(img);
+  picture.setAttribute("aria-hidden", "true");
+  picture.style.cssText =
+    "position:absolute;top:0;left:0;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none";
+  document.body.appendChild(picture);
+  const load: HeroLoad = { src: c.src, picture, img };
+  live.set(c.src, load);
   const settle = (ok: boolean) => {
-    inFlight.delete(img);
+    if (!ok) drop(load);
     done?.(ok);
   };
-  img.onload = () => settle(true);
+  img.onload = () => {
+    img.decode().then(
+      () => settle(true),
+      () => settle(true)
+    );
+  };
   img.onerror = () => settle(false);
-  img.fetchPriority = priority;
-  img.sizes = c.sizes;
-  inFlight.add(img);
-  // Last, so the selection runs with `sizes` already on the element.
-  img.srcset = c.srcSet;
-  return img;
+  return load;
 }
 
-/** Stop a load that is no longer wanted. Removing both attributes re-runs the
- *  image update with no source, which is what cancels the request. */
-export function stopHero(img: HTMLImageElement): void {
-  inFlight.delete(img);
-  img.onload = null;
-  img.onerror = null;
-  img.removeAttribute("srcset");
-  img.removeAttribute("src");
+function drop(load: HeroLoad): void {
+  if (live.get(load.src) === load) live.delete(load.src);
+  load.picture.remove();
+}
+
+/** Stop a load that is no longer wanted. The picture leaves the document
+ *  whole and the image then leaves the picture: with no picture and no source
+ *  of its own the image update selects nothing, which is what cancels the
+ *  request. Taking the sources away one at a time instead re-ran the
+ *  selection at each step, and WebKit fetched the WebP and then the JPEG of a
+ *  file nobody wanted. */
+export function stopHero(load: HeroLoad): void {
+  load.img.onload = null;
+  load.img.onerror = null;
+  load.picture.remove();
+  load.img.remove();
+  drop(load);
+}
+
+/** The plate this file was fetched for is on the page: let go of the hold. The
+ *  plate's own element references the file from here. */
+export function releaseHero(src: string): void {
+  const load = live.get(src);
+  if (!load) return;
+  drop(load);
 }
 
 /** Put the destination's hero on the wire now. */
@@ -114,7 +164,7 @@ export function prefetchHero(href: string, press = false): void {
   // nav on its way somewhere else would otherwise end the queue for the
   // session.
   if (press) releasePipe(href);
-  const c = claimHero(href);
+  const c = claimHero(href, press);
   if (!c) return;
   loadHero(c, press ? "high" : "low");
 }

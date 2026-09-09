@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { holdPipe, savingData, tooSlowToSpeculate } from "@/lib/connection";
-import { claimHero, loadHero, stopHero } from "@/lib/hero-prefetch";
+import { claimHero, loadHero, stopHero, type HeroLoad } from "@/lib/hero-prefetch";
 
 // The order the three are fetched in.
 const ROUTES = ["/about/", "/faq/", "/contact/"];
@@ -25,18 +25,18 @@ const IDLE_FALLBACK_MS = 200;
 // they are on is still painting slides and stage plates. Sequenced, each one
 // is a single low-priority stream that yields to anything the reader can see.
 //
-// An `Image` rather than a `fetch`, and the selection is why: the device is
-// handed the destination's own candidates and its own `sizes` and picks the
-// rung itself, so the file this queue warms is the file the plate asks for by
-// construction. Its `onload` sequences the queue and dropping its source stops
-// it. Nothing is decoded here - a detached image holds the file, and the
-// bitmap is not made until something paints it.
+// A `<picture>` rather than a `fetch`, and the selection is why: the device is
+// handed the destination's own sources and its own `sizes` and picks the
+// format and the rung itself, so the file this queue warms is the file the
+// plate asks for by construction. Its load sequences the queue and dropping
+// its sources stops it. Each one is decoded as it lands and held until its
+// plate arrives - see lib/hero-prefetch.ts for why the bitmap matters.
 export function HeroPrefetch() {
   useEffect(() => {
     if (savingData() || tooSlowToSpeculate()) return;
 
     let current: string | null = null;
-    let live: HTMLImageElement | null = null;
+    let live: HeroLoad | null = null;
     let stopped = false;
 
     const next = (i: number) => {
@@ -51,6 +51,7 @@ export function HeroPrefetch() {
         // A miss is not worth a retry, and the next route is not its fault.
         next(i + 1);
       });
+      if (!live) next(i + 1);
     };
 
     // Stop, and hand back whatever is in flight for the page the reader has
