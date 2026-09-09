@@ -167,7 +167,7 @@ export function OfferPanel({
                   nothing, and making the spans inline-block to earn one would
                   stop them wrapping across lines. */}
               <p
-                className="mt-5 max-w-[44ch] text-[clamp(1rem,1.3vw,1.16rem)] leading-[1.66] text-ink"
+                className="type-body mt-5 text-ink"
                 style={enter(2, RISE)}
               >
                 {groups.map((group, i) => (

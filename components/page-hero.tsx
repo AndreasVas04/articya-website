@@ -56,7 +56,7 @@ export function PageHero({ heading, text, longHeading, compactTitle }: PageHeroP
           >
             {heading}
           </h1>
-          <p className="type-lead mx-auto mt-8 text-pretty text-ink">
+          <p className="type-body mx-auto mt-8 text-pretty text-ink">
             {text}
           </p>
         </Reveal>

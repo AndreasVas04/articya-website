@@ -473,65 +473,73 @@ This supersedes the step table below it. Five rules, and they are floors:
 | Hero headline | `clamp(3.4rem, 11vw, 10rem)` / 0.94 | The home hero h1 and every inner-page hero h1 — 158.4px at 1440, 54.4px at 390 |
 | Section heading | `clamp(2.3rem, 6vw, 5rem)` / 0.94 | "What we do", "What you gain", "Get in touch", the offer-panel titles, the closing line — 80 / 36.8px |
 | Sub-heading | `clamp(1.9rem, 3.6vw, 3rem)` | The FAQ group headings and the gains trail items — 48 / 30.4px |
-| Lead | `clamp(1.375rem, 1.25vw, 1.5rem)` / 1.45, `max-width: 38ch`, **md+ only** | The paragraph that opens a section — 24px at 1920, 22px at 1440, Body below `md` |
-| Body | `clamp(1rem, 1.3vw, 1.16rem)` / 1.66, `max-width: 44ch` | Every other paragraph on the site, the FAQ questions and answers, the Contact channel values — 18.56 / 16px |
+| Body | `clamp(17px, calc(16px + 100vw / 480), 20px)` / 1.5, `max-width: 44ch` | **Every** paragraph on the site, the FAQ questions and answers, the Contact channel values — 20px at 1920, 19px at 1440, 17px below 480. There is no second reading size |
 | Tracking | `-0.025em` | All display type, the wordmark and the stat numerals included |
 
-**The lead is a desktop register and nothing else.** Every prose block on the
-site rendered at 18.56px / 30.81 in a 543.9px track at 1440 *and* at 1920 —
-`1.3vw` passes its own ceiling at 1428, so the ramp is flat above it. On a
-phone that is right and stays right: the lead resolves to the body step below
-`md`, byte for byte. On a 1440 laptop it left the clearing's lead as a small
-block in the corner of a screen whose other half holds a 504px Earth, and
-measured, the eye was correct to go to the Earth — block area × mean ink
-contrast against disc area × mean disc contrast came to **1.198 at 1440 and
-0.860 at 1920**. Under 1.0 the object is the first read, and at 1920 the
-object was.
+**One reading size, and it is the only one on the site.** There were two. The
+body step ran 16px on a phone and 18.56px from 1428 up; the lead step put
+every paragraph that opens a section on 22px at 1440 and 24px at 1920 and left
+the closing statements, the offer panels and the FAQ answers where they were.
+Read down a page — and About is the plain case, three scenes at 22 and a
+closing paragraph at 18.56 — the two register as a mistake rather than as a
+hierarchy, because the paragraphs are doing the same job. A lead is first in
+its column and carries a rule above it; that is where its emphasis comes from,
+and it does not need points as well.
 
-The fix is a register rather than a nudge, and it is applied to every
-paragraph that opens a section on every route, not only to the one that was
-complained about: the home hero's statement and the clearing's lead, the
-About / FAQ / Contact hero ledes, and About's three scene leads. It is not
-applied to a list item (the FAQ answers), a closing statement (the home
-closing, About's finale paragraph — which was deliberately brought *down* onto
-the body step), the offer panels' prose (sized to the panel, not to the ramp),
-or the Contact channel values.
+**The ramp.** `clamp(17px, calc(16px + 100vw / 480), 20px)`: 1px per 480px of
+window, which puts both reference viewports on exact integers — 19px at 1440,
+20px at 1920 — and a 17px floor below 480, one point up from the phone's old
+16 and one point clear of the 16 that is the floor for reading at all. Line
+height is 1.5 at every width; the 1.66 the body step carried was tuned for
+16px and reads loose at 19. `.type-body` in `app/globals.css` is the single
+declaration site, which is why no block carries `max-w-[44ch]`,
+`text-[clamp(...)]` or `leading-[1.66]` any more, and why `.type-lead` is
+gone rather than aliased.
 
-Three numbers move together and they have to. **Size** 18.56 → 22 / 24, from
-the ramp's own clamp form with `1.25vw` as the middle term, so both reference
-viewports land on whole pixels. **Line height** 1.66 → 1.45, because a larger
-face needs proportionally less leading; 1.45 is the FAQ question's own figure.
-**Measure** 44ch → 38ch, and this is the one that is easy to get backwards:
-`ch` scales with the font, so 44ch at 22px would be a wider line as well as a
-larger one. Read off the rendered page, 38ch is **45–58 characters** on the
-longest line across the eight blocks at both viewports — inside the 58 a lead
-gets and well inside the 70 a body block gets. The worst is Contact's, at
-exactly 58.
+**Measure stays 44ch**, and the number is not the character count. `ch` is the
+zero's advance and Instrument Sans sets it at 0.666em, so a track in `ch` runs
+about half again as many rendered characters. Measured on the built page, 44ch
+lands the longest scanned line at **35–49 characters at 390, 52–67 at 1440 and
+55–67 at 1920** — inside the 70 a prose block gets, with the Contact lede and
+the third offer panel the worst at 67. A wider cap was considered and
+measured: 62ch would put every block near **93 characters**, which the measure
+rule does not allow.
 
-After: **1.698 at 1440 and 1.427 at 1920.** The block is the first read at
-both. Nothing else moved — every section is still exactly 1 vp, the two
-document heights are identical to the pixel (5248 at 1440, 6202 at 1920), and
-the phone renders what it rendered before.
+**Every paragraph on the site, per breakpoint, after: 17 / 19 / 20 and
+nothing else.** Verified by re-running the inventory that found the two steps
+— 23 blocks across the four routes, every row identical at each width.
 
-Contrast, swept per element at 5px across each block's own traversal, worst
-value, judged at the glyph's own ink: FAQ 7.47 → 7.45 / 7.65 → 7.65, Contact
-5.17 → 5.19 / 5.53 → 5.52, About hero 5.07 → 5.06 / 5.33 → 5.33, About
-scenes 5.79 → 5.84, 9.45 → 9.42 and 9.27 → 9.36, the clearing's lead 5.11 →
-5.11 at both. The home hero's statement reads **10.23 → 8.07** at 1440 and
-**10.69 → 9.57** at 1920 where it rests — a third line stands its top row
-higher in the card's foot ramp, and that ramp is anchored in px.
+**What moved.** The document heights barely: home **3915 → 3909** at 390,
+**5248 → 5244** at 1440, **6202 → 6200** at 1920; About and Contact identical
+at all three; FAQ **2272 → 2296** at 390 and **2501 → 2508** at 1920, its 1440
+height unchanged. Every stage is still exactly 1.00 vp. The two sections over
+1.2 vp are the ones that were — the wrapper that holds the clearing's three
+stages, and the FAQ's accordion list at 2.23 vp on a phone — and neither moved
+at 1440.
 
-**Open, and pre-existing: the hero statement's exit is not measured against
-any floor.** `IntroExit` translates the band up at 1.5× the document's rate,
-so on its way off the screen the words cross open photograph above the card's
-foot ramp. Swept at 5px over that travel the block reads **2.51 at 1440 and
-2.15 at 1920 on `9d9bc09`**, and 2.19 / 1.66 with the lead step. Both are
-under the 4.5 floor: the exit was under it before this change, and the step
-lowers it by 0.3–0.5. It is a transit and not a reading state, which is the
-argument the finale's fade-out stands on, but it had never been measured and
-the number is recorded here rather than left unwritten. The fix, when it is
-taken, is the ramp and not the type — the card's foot darkening is anchored to
-the band's own foot in px and does not travel with the band.
+**Contrast, swept per element at 20px over each page's whole traversal and
+refined at 5px around every worst stop, judged at the glyph's own ink.** Both
+viewports, all four routes, 81 elements: nothing under its floor except the
+one element that was already under it. About's worst prose block is **4.99**
+at 1440 and **5.11** at 390, Contact's **5.34** and **5.12**, the FAQ's
+**4.73** and **4.94**, home's — the clearing's lead — **5.00** and above.
+
+The exception is the home hero's statement on its way off the screen, and it
+is the transit recorded below. Bounded to the hero's own travel and swept on
+both builds, it reads **2.14 before and 2.42 after** at 1440: the one ramp
+lifts it, because a shorter block clears the open photograph sooner. It is
+still far under the 4.5 floor, it was under it before this change, and the fix
+remains the card's foot ramp rather than the type.
+
+**The clearing's visual weight went the other way, and it is recorded rather
+than compensated for.** Block area × mean ink contrast against disc area ×
+mean disc contrast: **1.705 → 1.135 at 1440** and **1.432 → 0.891 at 1920**.
+Under 1.0 the Earth is the first read, and at 1920 it is again — which is the
+reading the lead step was introduced to fix. The block's mean ink contrast is
+unchanged (8.04 → 7.97 and 7.99 → 8.02); what fell is its area, 71296 → 47902
+px² and 85120 → 52740 px². The answer, when it is taken, is not points on this
+paragraph — one size everywhere is the rule now — but the disc, which is
+504px at 1440 and 605px at 1920 against a block 86 and 90px tall.
 
 The old **Hero statement** step is retired with the rest: one sentence in the
 display face at its own size and its own weight was a step the ramp did not
@@ -539,21 +547,20 @@ need, and the home hero's tagline is body copy now. The **Stat numeral** keeps
 its own clamp — it is the one monumental role that is neither a heading nor
 prose — and takes the tracking with everything else.
 
-The measure rule is unchanged in intent and now enforced by a declaration
-rather than by per-block tracks: `44ch` lands every prose block inside the
-70-character ceiling at both viewports.
+The measure rule is unchanged in intent and enforced by a declaration rather
+than by per-block tracks: `44ch` lands every prose block inside the
+70-character ceiling at every viewport.
 
 | Step | Size / line height | Font | Use |
 |---|---|---|---|
 | Display | `clamp(2.75rem, 6vw, 4.5rem)` / 1.05, −0.02em | Bricolage 600 | Page hero headline only |
 | H2 | `clamp(2rem, 4vw, 3rem)` / 1.1, −0.01em | Bricolage 600 | Section headings, on every page: home "What we do" / "What you gain", home offer-panel titles, Contact "Get in touch", the FAQ question-group headings |
-| FAQ question | `1.0625rem` / 1.45 | Instrument Sans 600 | The FAQ accordion questions — reading size, body face, separated from the answer by weight, colour and space |
+| FAQ question | Body / 1.45 | Instrument Sans 600 | The FAQ accordion questions — reading size, body face, separated from the answer by weight, colour and space |
 | Stat numeral | `clamp(3.25rem, 8vw, 6.5rem)` / 1 desktop · `2.75rem` / 1 mobile | Bricolage 600 | Home stats only — `resin`, glowing. Monumental centered columns on desktop; compact ledger rows on mobile so all three share one screen |
 | Showpiece | `clamp(2.25rem, 5vw, 3.75rem)` / 1.15, −0.01em | Bricolage 600 | One key line per page max — on the built site, the home closing line and nothing else |
 | Trail item | `clamp(1.5rem, 2.5vw, 2.25rem)` / 1.2 | Bricolage 600 | Home gains sequence |
 | Hero statement | `0.9375rem` mobile · `1.25rem` desktop / 1.35, −0.01em | Bricolage 500 | Home hero mission line only — a calm lead under the headline: **exactly 2 lines on desktop, 3 on mobile** |
-| Lede | `1.25rem` / 1.55 | Instrument Sans 400 | Intro paragraph under headings; offer-panel body on desktop, where plain Body reads too small against the full-bleed panel scale |
-| Body | `1rem` / 1.7 | Instrument Sans 400 | Default copy; the Contact channel values |
+| Body | `1rem` / 1.7 | Instrument Sans 400 | Default copy; the Contact channel values. The Lede step that stood beside it is retired — see the strip scale above |
 | Caption | `0.875rem` / 1.5 | Instrument Sans 400 | Photo credits, footnotes, the footer copyright |
 | Label | `0.8125rem` / 1.4, +0.08em, uppercase | Instrument Sans 600 | Section eyebrows (`lichen`), pills, the Contact channel labels |
 | Button | `0.875rem` / 20px, +0.02em on the filled gold control | Instrument Sans 600 | Control labels — never uppercased, so a button never reads as a Label |

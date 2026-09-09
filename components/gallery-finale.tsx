@@ -337,7 +337,7 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
       <section ref={container} className="pt-16 md:pt-24">
         <div className="mx-auto max-w-6xl px-4 pb-16 md:pb-24">
           <span aria-hidden="true" className="block h-[2px] w-16 bg-amber" />
-          <p className="mt-6 max-w-[44ch] text-[clamp(1rem,1.3vw,1.16rem)] leading-[1.66] text-ink md:mt-8">
+          <p className="type-body mt-6 text-ink md:mt-8">
             {groups.join(" ")}
           </p>
         </div>
@@ -394,7 +394,7 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
             {/* The body step, like every paragraph on the site: this one ran
                 at 20px where the three scenes above it run 16px on a phone
                 and 18.56px on a desktop, and read as a larger paragraph. */}
-            <p className="mt-8 max-w-[44ch] text-[clamp(1rem,1.3vw,1.16rem)] leading-[1.66] text-ink">
+            <p className="type-body mt-8 text-ink">
               {groups.map((group, i) => (
                 <FinaleGroup
                   key={i}

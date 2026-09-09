@@ -131,7 +131,7 @@ function ChannelCard({
             own 13/600 label and the two read as one clump. The label keeps
             the weight and the uppercase tracking, the value reads as text - 
             the same eyebrow-and-value pairing the stats ledger uses. */}
-        <span className="mt-1 block max-w-[44ch] break-words text-[clamp(1rem,1.3vw,1.16rem)] leading-[1.66] text-ink transition-colors duration-200 ease-out-quart group-hover:text-resin-deep md:mt-2">
+        <span className="type-body mt-1 block break-words text-ink transition-colors duration-200 ease-out-quart group-hover:text-resin-deep md:mt-2">
           {value}
         </span>
       </span>
