@@ -428,7 +428,23 @@ export default function HomePage() {
                   className="stage-globe relative order-3 mt-9 md:order-none md:col-span-6 md:mt-0"
                   style={{ transitionDelay: "200ms" }}
                 >
-                  <EarthGlobe className="mx-auto w-[82%] md:w-full md:max-w-[56svh]" />
+                  {/* The 559px cap, and it is a weight rather than a size.
+                      The clearing is read as a block of words beside an
+                      object, and the reading is block area x mean ink
+                      contrast over disc area x mean disc contrast: under 1.0
+                      the object is what the eye takes first. At 56svh the
+                      disc is 604.8px on a 1080 screen and the ratio is 0.892
+                      - the Earth wins - where 900 leaves it at 504px and
+                      1.135. 559px is the largest diameter that holds 1.05 at
+                      1080 (1.051; 560 gives 1.048). The cap is px because it
+                      must bind on tall windows and nowhere else: 56svh
+                      reaches it at 998px of window, so 1440x900 is untouched.
+
+                      The margin is half the shrink, above and below, so the
+                      column keeps the row it had: the disc's centre stays on
+                      408px of a 1080 screen, the ledger stays where it was,
+                      and the section stays one screen. */}
+                  <EarthGlobe className="mx-auto w-[82%] md:my-[max(0px,calc((56svh-559px)/2))] md:w-full md:max-w-[min(56svh,559px)]" />
                 </div>
 
                 {/* The ledger carries no rules of its own beyond the desktop

@@ -531,15 +531,17 @@ lifts it, because a shorter block clears the open photograph sooner. It is
 still far under the 4.5 floor, it was under it before this change, and the fix
 remains the card's foot ramp rather than the type.
 
-**The clearing's visual weight went the other way, and it is recorded rather
-than compensated for.** Block area × mean ink contrast against disc area ×
-mean disc contrast: **1.705 → 1.135 at 1440** and **1.432 → 0.891 at 1920**.
-Under 1.0 the Earth is the first read, and at 1920 it is again — which is the
-reading the lead step was introduced to fix. The block's mean ink contrast is
-unchanged (8.04 → 7.97 and 7.99 → 8.02); what fell is its area, 71296 → 47902
-px² and 85120 → 52740 px². The answer, when it is taken, is not points on this
-paragraph — one size everywhere is the rule now — but the disc, which is
-504px at 1440 and 605px at 1920 against a block 86 and 90px tall.
+**The clearing's visual weight went the other way, and the answer was the
+disc.** Block area × mean ink contrast against disc area × mean disc
+contrast: **1.705 → 1.135 at 1440** and **1.432 → 0.891 at 1920**. Under 1.0
+the Earth is the first read, and at 1920 it was again — the reading the lead
+step had been introduced to fix. The block's mean ink contrast never moved
+(8.04 → 7.97 and 7.99 → 8.02); what fell was its area, 71296 → 47902 px² and
+85120 → 52740 px². Points on the paragraph are not available — one size
+everywhere is the rule now — so the disc came down instead, and only where
+the ratio was short: 604.8 → **559px** at 1920, which reads **1.052**. 1440
+keeps its 504px box and its **1.136**. See the box table above for what the
+cap is written against and what it leaves alone.
 
 The old **Hero statement** step is retired with the rest: one sentence in the
 display face at its own size and its own weight was a step the ramp did not
@@ -1938,8 +1940,8 @@ the traversal, not at rest:
 
 | | 1440×900 | 1920×1080 | 390×664 | 375×553 |
 |---|---|---|---|---|
-| the box (`min(100%, 56svh)` at `md+`; 0.82 of the column below) | 504 | 604.8 | 293.5 | 281.3 |
-| the disc (0.90 of the box; the atmosphere takes the rest) | 454 | 544 | 264 | 253 |
+| the box (`min(100%, 56svh, 559px)` at `md+`; 0.82 of the column below) | 504 | 559 | 293.5 | 281.3 |
+| the disc (0.90 of the box; the atmosphere takes the rest) | 454 | 503 | 264 | 253 |
 | gap under the ledger's last row (phones) | — | — | 36px | 36px |
 | section | 1.000 vp | 1.000 vp | 1.017 vp | **1.199 vp** |
 | closest a glyph comes to the disc, parallax live, 20px steps | 46.5px | 48.6px | 47.9px | 31.3px |
@@ -1947,6 +1949,22 @@ the traversal, not at rest:
 36px is the largest phone gap that keeps the shortest window's section
 under 1.2 screens; the parallax is bound to 33px so the drift can never
 close it.
+
+**The 559px cap, and it is a weight rather than a size.** `56svh` puts the
+box at 604.8px on a 1080 screen, where the block-to-disc reading below came
+to 0.892 — under 1.0, so the Earth is what the eye takes first. 559px is the
+largest diameter that holds the ratio at 1.05 there (**1.051** swept, against
+1.048 at 560), and the cap is expressed in px precisely because it must bind
+on tall windows and nowhere else: `56svh` reaches 559 at a window 998px tall,
+so 1440×900's 504px box is untouched and so is every phone. The margin is
+half the shrink, `max(0px, (56svh − 559px) / 2)`, taken above *and* below, so
+the column keeps the row it had. Measured before and after at 1920×1080: the
+disc's centre stays on **408.0**, the box top moves 105.6 → 128.5, the
+heading block stays on 203.6, the lead's foot on 399.3, the ledger's first
+numeral on 782, the section on 1.000 vp and the document on 6200. The
+clearance can only grow — 22.9px on every side — and swept at 20px over the
+traversal it reads **66.7 → 87.3px** on this harness. 1440×900, 390×664 and
+375×553 are identical in every one of those readings.
 
 **The rows, declared — 2026-09-09, second pass.** Above `md` the block used
 to float: the scene centred its grid in `min-h-svh` and the words centred
