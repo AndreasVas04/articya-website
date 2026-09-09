@@ -1106,6 +1106,25 @@ the wipe and never underneath the old snapshot. Reduced motion and browsers
 without the API get the instant swap as before; WebKit 26 runs it with no
 errors.
 
+**Home arrives closed from another route — 2026-09-09.** Measured on
+`/faq/` at scrollY 600 → the logo, at 1440×900 and 390×664: the hero's own
+layout effect read `scrollY` = 600 at 76 ms after the tap and Next reset it to
+0 at 85 ms, one commit phase later — so the hero took the *already-scrolled
+visitor* path (`skipCapture`: released, expanded, no re-entry armed), and
+every return to home landed open on the lede with no way back. The owner's
+decision: arriving at / from any route behaves like a fresh load. An arrival
+is told from a hard load by two facts the router cannot fake — a second mount
+of the hero in this document, or a document whose navigation entry was loaded
+at another path — and on an arrival the hero puts the scroll at 0 itself,
+before anything reads it, and mounts closed. `hero-load` now leaves with the
+hero on unmount, so the title card and the poster's fade play once per
+document load and never under the wipe: at the wipe's paused frame (240 ms of
+480, warm, `ready` 61 ms after the tap) the poster is decoded at opacity 1 and
+the h1 at 1 with no animation on either. Both viewports: arrival p 0 at
+scrollY 0, `hero-open` never set during the arrival, then two open/close
+cycles at 0 flips each; the logo return and the back button behave the same;
+a hard load still plays the title card and a reload is unchanged.
+
 **The wipe never shows ground before the photograph unless the photograph
 is not there.** The update callback waits for the destination's
 high-priority image to decode, at most 300 ms; on a warm cache — the intent

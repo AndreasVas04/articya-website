@@ -38,6 +38,21 @@ const RIDGE_SKYLINE = 0.4175;
 
 const clamp01 = (n: number) => Math.min(Math.max(n, 0), 1);
 
+// How many times this hero has mounted in the document. A second mount is a
+// client-side arrival: the route was left and come back to.
+let mounts = 0;
+
+// Whether this document was loaded at home. A document loaded at another
+// route that is now showing the hero arrived here through the router.
+const loadedAtHome = () => {
+  const entry = performance.getEntriesByType("navigation")[0] as
+    | PerformanceNavigationTiming
+    | undefined;
+  const loaded = new URL(entry?.name ?? location.href, location.href).pathname;
+  const home = withBasePath("/");
+  return loaded.replace(/\/(index\.html)?$/, "") === home.replace(/\/$/, "");
+};
+
 // The opening completes itself. Once it has started and the input stops, the
 // reader is not left mid-way between the poster and the clearing: after
 // SETTLE_IDLE ms with no wheel or touch delta the progress is carried on to
@@ -523,7 +538,23 @@ const ScrollExpandMedia = ({
   // state instead. The logo reset re-arms it, since that returns them here.
   const skipCapture = useRef(false);
 
+  //
+  // An arrival by the router is not that visitor. Home entered from another
+  // route mounts this component while the window still holds the page the
+  // reader left - Next resets the scroll in a layout effect of its own, one
+  // commit phase after this one - so the offset read here was /faq's and
+  // the hero opened straight onto the lede, released with no way back, on
+  // every return to home. The owner's decision is that arriving at / from any
+  // route behaves like a fresh load: the poster, closed, opening on the first
+  // downward input. So an arrival is told apart from a hard load and the
+  // scroll is put where a fresh load has it before anything reads it.
   useIsomorphicLayoutEffect(() => {
+    const arrived = mounts > 0 || !loadedAtHome();
+    mounts += 1;
+    if (arrived) {
+      window.scrollTo(0, 0);
+      return;
+    }
     if (window.scrollY <= 0) return;
     skipCapture.current = true;
     release(false);
@@ -531,6 +562,19 @@ const ScrollExpandMedia = ({
     setMediaFullyExpanded(true);
     setShowContent(true);
   }, []);
+
+  // The first-load title card plays once per document load, not once per
+  // mount. `hero-load` is added by the page's inline script on a hard load
+  // and never removed while the hero stands, so the finished animations hold
+  // their fill; it leaves with the hero, so a return by the router mounts the
+  // poster and the words at rest - the route wipe carries them at full
+  // strength, with nothing fading in underneath it.
+  useEffect(
+    () => () => {
+      document.documentElement.classList.remove("hero-load");
+    },
+    []
+  );
 
   useEffect(() => {
     if (reducedMotion || skipCapture.current || released.current) return;
