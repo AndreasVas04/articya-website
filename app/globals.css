@@ -1123,8 +1123,25 @@ body {
     /* Where the frame sits in the window. It carries the sky band the headline
        stands on above the skyline and the land the same headline's feet go
        into below it, so it is composition rather than framing: at 32% the
-       ridge cleared the words entirely and the split had nothing to show. */
+       ridge cleared the words entirely and the split had nothing to show.
+
+       That 32% was read on a phone, where cover fits the frame by height and
+       this number cannot move the skyline at all - it holds 0.4175 of the
+       window whatever it says. Above md the frame is fitted by width and the
+       skyline is `0.33H + 0.117W`, so it climbs as the window shortens while
+       the headline, at 15% plus a fixed stack, does not: at 1440x900 the last
+       21px of "are ArtiCYa" were behind the land, at the 780 a laptop's
+       browser actually leaves it was 42px and 22% of the line's ink, and at
+       1280x650 it was 41%. 27% moves the picture and its land copy down
+       together by 0.06 of the overflow - 61px at 1440x900, 68 at 780 - and
+       every glyph clears the land's 0.10 line at 1440x900 by 38px, at
+       1920x1080 by 144, at 1440x780 by 23 and at 1280x650 by 9. */
     --hero-poster-y: 33%;
+  }
+  @media (min-width: 768px) {
+    .hero-plate {
+      --hero-poster-y: 27%;
+    }
   }
   /* The card is a window onto the poster rather than a small copy of it, so
      what sits inside it is painted at the window's own size and centred on the

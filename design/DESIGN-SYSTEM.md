@@ -1002,6 +1002,25 @@ a percentage and not a pixel count — the fraction is the boundary's own and th
 constant is the px the type carries. Verify at the shortest window the device
 can produce, not at its screen size.
 
+**The desktop half of the same rule — 2026-09-09.** Above `md` the mask is
+fitted by *width*, so the skyline is `0.33·H + 0.117·W` — it climbs as the
+window shortens — while the block stands at `15%` plus a fixed 340px stack to
+the second line's last ink row, which does not. The two agree at 1920×1080
+(56px of clearance) and disagree at every laptop: at 1440×900 the last **21px**
+of "are ArtiCYa" were behind the land's 0.10 line, at **1440×780** — the window
+a laptop's browser actually leaves of a 900 screen — **42px and 22% of the
+line's ink**, and at 1280×650 **53px and 41%**, which is the "lower half"
+the owner reported. Lifting the block cannot close it: at 780 the words would
+have to start 57px from the top, under the 80px nav. So the *land* goes down.
+`--hero-poster-y` is **27% above `md`** (33% stays below, where cover fits by
+height and the number is inert): the picture and its land copy move together
+by 0.06 of the overflow — 61px at 1440×900, 68 at 780, 89 at 1920×1080 — and
+every glyph now clears the 0.10 line by **38 / 144 / 23 / 9px** at 1440×900 /
+1920×1080 / 1440×780 / 1280×650. The descent grows by the same 61px at 1440×900
+(330 → 391) because it is measured off the same variable; the twelve keys, the
+phone's poster and expanded frames (byte-identical) and the poster's contrast
+(label 7.68, strike 3.47, headline 7.16–7.53 at ink) do not move.
+
 **Signature entrances play on the clock, not the scrollbar.** The page's two
 set-piece moments — the hero's first-load title card and the "What we do"
 stage entrance — are time-based and once per load. An earlier pass scrubbed
