@@ -6,6 +6,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { RouteWipe } from "@/components/route-wipe";
 import { pageMetadata, siteUrl } from "@/lib/metadata";
 import { meta } from "@/content/home";
+import { footer } from "@/content/shared";
 
 const bricolage = Bricolage_Grotesque({
   subsets: ["latin"],
@@ -22,6 +23,18 @@ export const metadata: Metadata = {
   ...pageMetadata({ title: meta.title, description: meta.description, path: "/" }),
 };
 
+// The organisation itself, beside the FAQ page's own schema: only what the
+// site states - the name, its address, the logo and the two profiles the
+// footer links to. `<` is escaped so the JSON can never close its own tag.
+const organizationJsonLd = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "ArtiCYa",
+  url: `${siteUrl}/`,
+  logo: `${siteUrl}/images/logo.png`,
+  sameAs: footer.social.map((s) => s.href),
+}).replace(/</g, "\\u003c");
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
@@ -34,6 +47,10 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: organizationJsonLd }}
+        />
         <SiteHeader />
         <main>{children}</main>
         <SiteFooter />
