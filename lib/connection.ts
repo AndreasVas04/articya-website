@@ -1,8 +1,8 @@
-// The reader's connection, and who is allowed to hold it. Two pages
-// speculate ahead of the reader now - home fetches the three inner heroes out
-// of its idle time, and About warms the finale's seven tiles as the reader
-// comes down onto them - and both answer to the same two questions and share
-// the same single-holder pipe.
+// The reader's connection, and who is allowed to hold it. Every page
+// speculates ahead of the reader now - each route fetches the other three
+// heroes once its own photograph is on the glass, and About warms the
+// finale's seven tiles as the reader comes down onto them - and all of it
+// answers to the same two questions and shares the same single-holder pipe.
 
 // A reader who has asked not to be spent on is not prefetched for, on either
 // path. `prefers-reduced-data` is the declaration; `Save-Data` is the header
@@ -38,12 +38,66 @@ export interface Queue {
 }
 let queue: Queue | null = null;
 
-/** Register a queue; returns its own deregister. */
+// The page's own speculative files - home's stage plates, the card's later
+// slides, the Earth - take their turn after the route heroes, not beside
+// them. Measured at 390x664 over a 4 Mbps pipe: asked for together at load,
+// the three plates, two slides and the Earth's skins put 3.3MB on the wire
+// with the About hero, which finished at 9.9 / 12.8 s (WebKit / Chromium) and
+// the FAQ hero at 14.6 / 15.4 s - a tap inside the reader's first ten seconds
+// was always cold. The turn passes when the queue has drained, or was never
+// going to run; a press does not pass it, because the reader is leaving.
+//
+// The turn passes when the queue drains, when a press takes the wire back, or
+// after TURN_CAP_MS whatever the queue is doing. The cap is the backstop and
+// not the mechanism: a link slow enough that three heroes are still arriving
+// five seconds in is also a link where the reader may already be at "What we
+// do", and the ground under the words they are reading outranks a page they
+// have not asked for. At the two rates measured the queue drains inside it
+// (2.2s at 9 Mbps, 4.7s at 4.2) so the cap never fires.
+const TURN_CAP_MS = 5000;
+
+const turnWaiters = new Set<() => void>();
+let turnPassed = false;
+let capTimer = 0;
+const passTurn = () => {
+  if (capTimer) { window.clearTimeout(capTimer); capTimer = 0; }
+  if (turnPassed) return;
+  turnPassed = true;
+  for (const fn of turnWaiters) fn();
+};
+
+/** True once the page's own speculation may start: the hero queue has run,
+ *  or there is none. Until a queue registers, nothing is holding it. */
+export function groundTurn(): boolean {
+  return turnPassed || queue === null;
+}
+
+/** Notify when the turn passes; returns the unsubscribe. */
+export function onGroundTurn(fn: () => void): () => void {
+  turnWaiters.add(fn);
+  return () => {
+    turnWaiters.delete(fn);
+  };
+}
+
+/** Register a queue; returns its own deregister, which also passes the turn
+ *  when the queue has drained. */
 export function holdPipe(q: Queue): () => void {
   queue = q;
+  turnPassed = false;
   return () => {
     if (queue === q) queue = null;
+    passTurn();
   };
+}
+
+/** The queue has put its first file on the wire: the cap runs from here and
+ *  not from the moment the queue registered, which on a slow link is most of a
+ *  page load earlier and would spend the cap on a queue that had not started. */
+export function startPipeWork(): void {
+  if (turnPassed) return;
+  if (capTimer) window.clearTimeout(capTimer);
+  capTimer = window.setTimeout(passTurn, TURN_CAP_MS);
 }
 
 /** Clear the wire for a route the reader has actually asked for. */

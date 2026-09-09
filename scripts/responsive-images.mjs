@@ -328,6 +328,66 @@ const CROPS = {
 // reached Safari in 16.4. Those are all retina devices at DPR 2-3 and the
 // large rungs are exactly what a full-bleed frame needs on them.
 const AVIF_QUALITY = (w) => (w === BLEED_WIDTH ? 50 : 62);
+
+// The photograph at 24px, carried inline in the document.
+//
+// A route change paints the destination before its photograph exists: on a
+// phone the file is 900KB and the page stands on `ground` - the frame's own
+// dark, one opaque colour - until it lands. Measured on the owner's phone that
+// is about a second of flat green on the first visit to every route, and it is
+// the first thing the page shows.
+//
+// This is that second given the picture instead. 24px of the same graded
+// pixels, encoded once and written into the manifest as a data URI, so it is
+// in the server's HTML before any script has parsed and any request has been
+// made. It is not a blur, a shape, a frosted plate or a fade: it is the
+// photograph, at a resolution that fits in a kilobyte, painted full bleed at
+// full strength under the real rung - which lands on top of it at opacity 1,
+// on one frame, with nothing to cross-fade.
+//
+// The budget is the whole of the design: a rung that costs 900KB is worth
+// waiting for, an under-layer that costs a kilobyte is not worth waiting for
+// at all, and anything in between would be a third download of the same
+// frame. The quality is searched down from 70 until the encode fits, so the
+// number is the frame's and not a constant that happens to hold today.
+const PLACEHOLDER_WIDTH = 24;
+const PLACEHOLDER_BYTES = 880; // 1.17KB once base64 has taken its third
+const PLACEHOLDER_QUALITIES = [70, 60, 50, 40, 30, 20];
+const PLACEHOLDER_FORMATS = [
+  { ext: "avif", mime: "image/avif", encode: (s, q) => s.avif({ quality: q, effort: 9, chromaSubsampling: "4:2:0" }) },
+  { ext: "webp", mime: "image/webp", encode: (s, q) => s.webp({ quality: q, effort: 6, smartSubsample: true }) },
+];
+
+// The frames that are a page's first photograph, and the only ones that carry
+// a placeholder. Every entry costs its bytes twice - once in the exported HTML
+// and once in the manifest the client bundle holds - so this is the four route
+// heroes and nothing else. A plate below the fold is never the frame a reader
+// is waiting on.
+const PLACEHOLDER_FRAMES = new Set([
+  "/images/pt/IMG_4585.jpg", // home, the poster
+  "/images/pt/IMG_4721-oaks.jpg", // /about/
+  "/images/pt/IMG_3004-reservoir.jpg", // /faq/
+  "/images/pt/IMG_4735-road.jpg", // /contact/
+]);
+
+/** The frame at PLACEHOLDER_WIDTH as a data URI per format, at the highest
+ *  quality that fits the budget. Throws if even the lowest does not. */
+async function placeholders(pixels, raw, region) {
+  const out = {};
+  for (const fmt of PLACEHOLDER_FORMATS) {
+    let chosen = null;
+    for (const q of PLACEHOLDER_QUALITIES) {
+      let pipe = sharp(pixels, { raw });
+      if (region) pipe = pipe.extract(region);
+      const buf = await fmt.encode(pipe.resize({ width: PLACEHOLDER_WIDTH }), q).toBuffer();
+      if (buf.length <= PLACEHOLDER_BYTES) { chosen = { buf, q }; break; }
+    }
+    if (!chosen) throw new Error(`placeholder ${fmt.ext} does not fit ${PLACEHOLDER_BYTES}B at any quality`);
+    out[fmt.ext] = `data:${fmt.mime};base64,${chosen.buf.toString("base64")}`;
+    out[`${fmt.ext}Quality`] = chosen.q;
+  }
+  return out;
+}
 const FORMATS = [
   { ext: "avif", mime: "image/avif", encode: (s, w) => s.avif({ quality: AVIF_QUALITY(w), effort: 4, chromaSubsampling: "4:2:0" }) },
   { ext: "webp", mime: "image/webp", encode: (s) => s.webp({ quality: 82, effort: 5, smartSubsample: true }) },
@@ -342,7 +402,7 @@ function widthsFor(widths, fmt) {
   const kept = widths.filter((w) => w <= fmt.cap);
   return kept.length ? kept : [widths[0]];
 }
-const CONFIG_VERSION = 2;
+const CONFIG_VERSION = 3;
 
 const force = process.argv.includes("--force");
 
@@ -378,7 +438,8 @@ function signature() {
     `cap${MAX_WIDTH}/${BLEED_WIDTH}`, `bleed${[...FULL_BLEED].sort().join(",")}`,
     `fmt${FORMATS.map((f) => `${f.ext}${f.cap ?? ""}`).join(",")}`, `crops${JSON.stringify(CROPS)}`,
     `avifq${LADDER.concat(Object.values(SCALED).map((s) => s.width)).map(AVIF_QUALITY).join(",")}`,
-    `scaled${JSON.stringify(SCALED)}`];
+    `scaled${JSON.stringify(SCALED)}`,
+    `ph${PLACEHOLDER_WIDTH}/${PLACEHOLDER_BYTES}/${PLACEHOLDER_QUALITIES.join(",")}/${[...PLACEHOLDER_FRAMES].sort().join(",")}`];
   for (const f of ["scripts/responsive-images.mjs", "scripts/grade-photos.mjs"]) {
     parts.push(`${f}:${fileHash(path.join(ROOT, f))}`);
   }
@@ -556,6 +617,10 @@ async function run() {
         middleThirdMean(groundBuf.data, groundBuf.info.width, groundBuf.info.height, 3)
       );
 
+      const placeholder = PLACEHOLDER_FRAMES.has(key)
+        ? await placeholders(oriented.data, { width: fullW, height: fullH, channels: 3 }, region)
+        : null;
+
       images[key] = {
         base,
         width: dispW,
@@ -563,12 +628,16 @@ async function run() {
         widths,
         formats: FORMATS.map((f) => f.ext),
         ground: ground.hex,
+        ...(placeholder ? { placeholder } : null),
       };
       if (scaled) images[scaled.key] = { ...images[key], widths: emitted };
       console.log(
         `  ${base.padEnd(22)} ${dispW}x${dispH}  ${widths.length} widths` +
           `  ground ${ground.hex} L${ground.luma.toFixed(1)} (${ground.name}, from ${ground.mean})` +
-          (scaled ? ` (+${scaled.width} for ${scaled.key})` : "")
+          (scaled ? ` (+${scaled.width} for ${scaled.key})` : "") +
+          (placeholder
+            ? `  placeholder ${PLACEHOLDER_FORMATS.map((f) => `${f.ext} q${placeholder[`${f.ext}Quality`]} ${placeholder[f.ext].length}B`).join(" / ")}`
+            : "")
       );
     }
   }

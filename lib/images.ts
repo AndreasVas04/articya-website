@@ -16,6 +16,9 @@ interface ManifestEntry {
   /** The frame's own dark, computed at build time - see `pullToPlate` in
    *  scripts/responsive-images.mjs. */
   ground: string;
+  /** The frame at 24px as a data URI per format, for the four route heroes
+   *  only - see the placeholder block in scripts/responsive-images.mjs. */
+  placeholder?: Record<string, string>;
 }
 interface Manifest {
   dir: string;
@@ -149,6 +152,29 @@ export function coverSizes(
  *  plates, so it carries the photograph's hue at the floor's own weight. */
 export function imageGround(src: string): string | null {
   return data.images[src]?.ground ?? null;
+}
+
+export interface ImagePlaceholder {
+  /** `<source>` entries, modern first, then the `<img>` fallback. */
+  sources: { mime: string; src: string }[];
+  fallback: string;
+}
+
+/** The photograph at 24px, inline. It is the under-layer a hero paints on
+ *  from its first frame, before any request has been made: the same picture at
+ *  a resolution that fits in a kilobyte, at full strength, with the frame's own
+ *  `ground` behind it as the last fallback. Null for every frame that is not a
+ *  route hero. */
+export function imagePlaceholder(src: string): ImagePlaceholder | null {
+  const ph = data.images[src]?.placeholder;
+  if (!ph) return null;
+  const order = ["avif", "webp"].filter((ext) => ph[ext]);
+  if (!order.length) return null;
+  const fallback = ph[order[order.length - 1]];
+  return {
+    sources: order.slice(0, -1).map((ext) => ({ mime: MIME[ext] ?? `image/${ext}`, src: ph[ext] })),
+    fallback,
+  };
 }
 
 /** Preload attributes for an LCP image, targeting the best modern format the

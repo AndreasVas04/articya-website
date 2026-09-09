@@ -4,6 +4,8 @@ import "./globals.css";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { RouteWipe } from "@/components/route-wipe";
+import { HeroPrefetch } from "@/components/hero-prefetch";
+import { PrefetchDebug } from "@/components/prefetch-debug";
 import { pageMetadata, siteUrl } from "@/lib/metadata";
 import { meta } from "@/content/home";
 import { footer } from "@/content/shared";
@@ -55,6 +57,12 @@ export default function RootLayout({
         <main>{children}</main>
         <SiteFooter />
         <RouteWipe />
+        {/* The other routes' photographs, warmed out of the time the reader
+            spends on this one. It renders nothing, and it is here rather than
+            on home because every page now speculates for its neighbours. */}
+        <HeroPrefetch />
+        {/* That queue's readout, behind `?debug=prefetch` only. */}
+        <PrefetchDebug />
       </body>
     </html>
   );

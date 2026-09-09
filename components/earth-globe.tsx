@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import type { EarthHandle } from "@/components/earth-scene";
-import { afterPageLoad } from "@/lib/page-load";
+import { afterGroundTurn } from "@/lib/page-load";
 import { onLayoutResize } from "@/lib/viewport";
 import { cn, withBasePath } from "@/lib/utils";
 
@@ -66,15 +66,15 @@ export function EarthGlobe({ className }: { className?: string }) {
     // section arrives, and on a fresh load of home the section is within a
     // viewport of the collapsed hero from the first frame - so the import
     // started at once, on the wire beside the poster and the scripts the
-    // headline waits on. It waits for the document's load; the opening that
-    // follows is seconds long, and a route reached through the router has
-    // loaded already.
+    // headline waits on. It waits for the document's load and for the other
+    // routes' heroes to have had the wire; the opening that follows is seconds
+    // long, and a route reached through the router has loaded already.
     let offLoad: (() => void) | null = null;
     const loader = new IntersectionObserver(
       ([entry]) => {
         if (!entry.isIntersecting) return;
         loader.disconnect();
-        offLoad = afterPageLoad(() => import("@/components/earth-scene").then((m) => {
+        offLoad = afterGroundTurn(() => import("@/components/earth-scene").then((m) => {
           if (disposed) return;
           const resin =
             getComputedStyle(document.documentElement).getPropertyValue("--color-resin").trim() ||

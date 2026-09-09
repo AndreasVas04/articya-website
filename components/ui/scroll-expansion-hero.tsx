@@ -9,9 +9,10 @@ import {
   type ReactNode,
 } from "react";
 import { cubicBezier, motion, useReducedMotion } from "framer-motion";
+import { PhotoPlaceholder } from "@/components/photo-placeholder";
 import { ResponsiveImage } from "@/components/responsive-image";
 import { coverSizes, HERO_PUSH, HERO_VIEWPORT } from "@/lib/images";
-import { usePageLoaded } from "@/lib/page-load";
+import { useGroundTurn } from "@/lib/page-load";
 import { onLayoutResize, pageZoomed } from "@/lib/viewport";
 import { heroTrace } from "@/lib/hero-trace";
 import { cn, withBasePath } from "@/lib/utils";
@@ -407,8 +408,9 @@ const ScrollExpandMedia = ({
   // The second and third slides are wanted 4.5s after the card reaches full
   // bleed, which is never before the opening; asked for at the first frame
   // they were 976KB beside the poster on the wire. They wait for the
-  // document's load and then have the whole of the opening to arrive in.
-  const loaded = usePageLoaded();
+  // document's load and for the other routes' heroes to have had the wire,
+  // and then have the whole of the opening to arrive in.
+  const loaded = useGroundTurn();
   const introRef = useRef<HTMLDivElement | null>(null);
   const ridgeRef = useRef<HTMLDivElement | null>(null);
   const titleRef = useRef<HTMLDivElement | null>(null);
@@ -1413,6 +1415,13 @@ const ScrollExpandMedia = ({
               It carries no top fade. The layer starts at the section's top,
               which the fixed header covers, so a ramp there only spends its
               first visible rows washing the picture out against the bar. */}
+          {/* The photograph at 24px, inline in the document, under the rung
+              the page is waiting for - see components/photo-placeholder.tsx.
+              It rides inside this layer, so it carries the section's push and
+              stays registered with the poster over it; the poster's own
+              first-load entrance is on the picture and not on this, which is
+              the point of it - the frame is there from the first paint. */}
+          <PhotoPlaceholder src={bgImageSrc} position="50% var(--hero-poster-y)" />
           <ResponsiveImage
             src={bgImageSrc}
             alt=""

@@ -1153,6 +1153,102 @@ before. From an inner page, whose idle queue does not run, a tap on another
 inner page is the cold case unless the finger's own intent prefetch beats
 300 ms: About → FAQ measured `ready` at 325 ms and the photograph at 830 ms.
 
+**The photograph arrives before the photograph does — 2026-09-10.** The wipe's
+cold case above is the owner's first complaint, made on the phone against the
+live site: on the first visit to a route there is about a second of the solid
+green ground before the picture, and it is "ugly". `ground` is right as a
+floor — the frame's own dark, pulled onto the page's own plate, so the picture
+resolves out of its own hue — and it is still a flat colour standing where a
+photograph is meant to be.
+
+So the hero now carries **the frame itself at 24 px**, AVIF and WebP, base64 in
+the exported HTML, painted full bleed at full strength under the rung, at the
+plate's own crop, with `ground` behind it as the last fallback. It is in the
+server's markup, so it is on the glass before a script has parsed and before a
+request has been made; the rung lands on top of it at opacity 1 on a single
+frame, with no cross-fade, no ramp and no intermediate state, because the two
+are stacked and never blended.
+
+**This is the ledger's one exception and it is written down rather than argued
+away.** §2.13 forbids a picture at partial strength at any frame of a
+transition, and a blurred thumbnail under a photograph is exactly that. This is
+not held at partial strength and it is not a transition: every frame is a
+picture at 1.00. It is not a blur effect, a frosted plate, a gradient or a
+shape behind text — there is no filter on it, its edges are the window's, and
+the only thing between it and the reader is the plate's own darkening, which
+the rung stands under too.
+
+Measured with JavaScript off and every variant file refused, so the only
+picture is the one the server sent — that frame against the settled page, at
+390×664, identical in both engines to a tenth:
+
+| route | before: mean channel difference | after | before: pixels over 24 apart | after |
+|---|---|---|---|---|
+| `/faq/` | 13.8 / 255 | **4.3** | 19.9% | **1.3%** |
+| `/about/` | 21.2 | **7.5** | 39.4% | **3.1%** |
+| `/contact/` | 23.9 | **5.8** | 51.5% | **1.6%** |
+| `/` | 31.3 | **11.8** | 56.6% | **17.1%** |
+
+Home is the loosest of the four because its opening stacks three copies of the
+frame and the card's own slides over it; the placeholder sits under the poster
+and carries the section's push with it.
+
+The budget is the whole of the design. A rung that costs 700–900 KB is worth
+waiting for; an under-layer that costs a kilobyte is not worth waiting for at
+all, and anything between them would be a third download of the same frame. The
+encode searches quality down from 70 until it fits 880 bytes, so the number is
+the frame's own: **AVIF 635–755 B and WebP 295–415 B, both at q70**, which is
+930–1170 bytes of data URI per route in the HTML. Only the four route heroes
+carry one — the bytes are paid twice, once in the markup and once in the
+manifest the client bundle holds, and a plate below the fold is never a frame a
+reader is waiting on.
+
+Contrast is measured on it, because it is what the title stands on until the
+rung lands. At the glyph's own ink, worst pixel, both engines, with the rung
+taken out of the composite and the plate's darkening left standing: the hero
+title reads **4.81–5.20** and the lede **4.86–5.19** against a 3.0 floor for
+display type — *above* the same measurement with the rung in place (4.23–4.98
+and 4.30–4.85), because the 24 px frame carries none of the highlights the
+full-resolution one does.
+
+**The route heroes take the wire before the page's own ground — 2026-09-10.**
+The second half of the same complaint. The queue that warms the other routes'
+photographs used to start at the document's `load` and race everything else
+that starts there. Measured at 390×664 over a shared pipe, before and after,
+as milliseconds from home's own LCP to the moment each file is complete:
+
+| | about | faq | contact | the page's own files start |
+|---|---|---|---|---|
+| 9 Mbps, before | +3576 | +5737 | +6502 | +10 |
+| 9 Mbps, after | **+1042** | **+2076** | **+2845** | +2908 |
+| 4.2 Mbps, before | +7556 | +12250 | never | +62 |
+| 4.2 Mbps, after | **+2138** | **+4254** | +9351 | +5077 |
+
+Three things do it. The queue starts at the page's **own photograph**, not at
+`load` — `afterHeroPaint`, the high-priority image's own `decode()` — so it
+begins the moment the reader has what they came for. It runs on **every route**
+and not only on home, in the order about, faq, contact, home, each page dropping
+itself out of it. And the page's own speculation — the stage plates that are a
+different photograph from the hero, the card's second and third slides, the
+Earth's renderer and skins — waits for `groundTurn()`, which passes when the
+queue drains, when a press takes the wire back, or after a 5 s cap. A plate
+that is the *same* file as the hero is never held: the soft copy under every
+inner page's reading is the hero's own frame, so it costs nothing and holding
+it would leave the page standing on its floor for no saving at all.
+
+A tap five seconds into home now finds the destination's file **warm in every
+case**: the route commits and the photograph is on the same frame, and the
+server is not asked for it once. `?debug=prefetch` renders the queue on the
+device — per route the state (queued / in flight / warm / skipped and why), the
+URL the browser selected in the window it is actually in, and every request the
+document has made for that file, so a second request with bytes in it is
+visible as a second download.
+
+One thing this does not touch, and it is Chromium's: on home that engine
+fetches three lazy images below the fold — the two offer panels and one copy of
+the gains ground, 412 KB — before the LCP, because its lazy threshold widens on
+a slow link. It is on the build before this one too and it is not the queue's.
+
 **The destination's title is painted with its photograph — 2026-09-09,
 second pass.** The inner heroes' title, rule and lede entered through
 `Reveal` — a 400 ms rise armed after the wipe's `finished` — so on every route

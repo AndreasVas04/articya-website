@@ -11,7 +11,6 @@ import { PhotoStage, type StagePlate } from "@/components/photo-stage";
 import { ResponsiveImage } from "@/components/responsive-image";
 import { SectionIndex } from "@/components/edge-furniture";
 import { IntroExit } from "@/components/intro-exit";
-import { HeroPrefetch } from "@/components/hero-prefetch";
 import { HeroDebug } from "@/components/hero-debug";
 import { ButtonLink } from "@/components/ui/button";
 import { coverSizes, FULL_VIEWPORT, HERO_VIEWPORT, imagePreload } from "@/lib/images";
@@ -208,9 +207,6 @@ export default function HomePage() {
         {/* The intro block's exit below the release. It renders nothing of
             its own: it drives the block the markup already carries. */}
         <IntroExit />
-        {/* The three inner heroes, fetched out of the time the reader spends
-            here. Renders nothing. */}
-        <HeroPrefetch />
         {/* The hero's touch readout, behind `?debug=hero` only. */}
         <HeroDebug />
 

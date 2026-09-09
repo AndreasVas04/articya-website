@@ -2,10 +2,11 @@
 
 import { useEffect, useLayoutEffect, useRef, type CSSProperties } from "react";
 import { cubicBezier } from "framer-motion";
+import { PhotoPlaceholder } from "@/components/photo-placeholder";
 import { ResponsiveImage } from "@/components/responsive-image";
 import { coverSizes, FULL_VIEWPORT, imageGround, imagePreload } from "@/lib/images";
 import { releaseHero } from "@/lib/hero-prefetch";
-import { usePageLoaded } from "@/lib/page-load";
+import { useGroundTurn, usePageLoaded } from "@/lib/page-load";
 import { onLayoutResize } from "@/lib/viewport";
 import { cn } from "@/lib/utils";
 
@@ -125,6 +126,9 @@ interface StageFrame {
 // component only measures and blends.
 export function PhotoStage({ plates }: { plates: StagePlate[] }) {
   const rootRef = useRef<HTMLDivElement | null>(null);
+  // The page's LCP plate: preloaded, eager, never lazy, and the one frame
+  // every other plate on the page is timed against.
+  const lcp = plates.find((p) => p.priority);
   // The plates that are not the page's first picture wait for the document's
   // load before their files are asked for. They are lazy in the markup, but
   // this layer is fixed at the top of the window, so every one of them was "in
@@ -139,6 +143,14 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
   // wait for the lead and arrive a screen late. A route reached through the
   // router has loaded already and asks for them at once, as before.
   const loaded = usePageLoaded();
+  // A plate that is a *different* photograph from the hero waits longer than
+  // that: for the other routes' heroes to have had the wire (see
+  // `groundTurn` in lib/connection.ts). A plate that is the same file as the
+  // hero is not a download at all - the soft copy under every inner page's
+  // reading is the hero's own frame - so it costs nothing to show it the
+  // moment the document has loaded, and holding it would leave the page
+  // standing on its floor for no saving whatever.
+  const turn = useGroundTurn();
 
   // A layout effect, not an effect. The plates are rendered at nothing and the
   // first `draw()` is what gives the page its photograph, so on an effect the
@@ -388,8 +400,6 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
   // preload has to carry the same `sizes` the layer declares, or the two
   // resolve to different rungs of the ladder and the page downloads the
   // photograph twice.
-  const lcp = plates.find((p) => p.priority);
-
   // The plate is on the page: whatever was fetched and decoded ahead of it can
   // be let go, since this layer's own element references the file now.
   useEffect(() => {
@@ -459,6 +469,8 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
         // asking for the sharp one's width costs nothing (one URL, one
         // download) where asking for its own costs a second request.
         const sizes = coverSizes(plate.src, FULL_VIEWPORT);
+        // Whether this plate's file may be asked for yet.
+        const ready = plate.priority || (plate.src === lcp?.src ? loaded : turn);
         return (
         <div
           key={`${plate.src}-${i}`}
@@ -481,9 +493,14 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
             } as CSSProperties
           }
         >
+          {/* The photograph at 24px, inline in the document, under the rung
+              this page is waiting for - see components/photo-placeholder.tsx.
+              Only the hero carries one: it is the only frame a reader is ever
+              held on. */}
+          {plate.priority && <PhotoPlaceholder src={plate.src} position={plate.position} />}
           <div
             data-plate-image=""
-            hidden={!plate.priority && !loaded}
+            hidden={!ready}
             className="stage-plate-frame absolute inset-0"
           >
             {/* A soft plate is rasterized at a quarter of the frame and
@@ -495,7 +512,7 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
                 alt=""
                 fill
                 priority={plate.priority}
-                eager={!plate.priority && loaded}
+                eager={!plate.priority && ready}
                 sizes={sizes}
                 style={{ objectPosition: plate.position }}
               />
@@ -508,7 +525,7 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
                       src={plate.src}
                       alt=""
                       fill
-                      eager={loaded}
+                      eager={ready}
                       sizes={sizes}
                       style={{ objectPosition: plate.position }}
                     />
