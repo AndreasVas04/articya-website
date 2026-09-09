@@ -332,16 +332,21 @@ export default function HomePage() {
               data-stage-strength="1"
               className="absolute inset-x-0 top-[12svh] h-0"
             />
-            {/* `top-[100svh]`, not `bottom-0`. The two resolve to the same row
-                while this block is exactly a screen tall - measured, it is, at
-                553, 664, 750 and 844 - but one of them says so and the other
-                inherits it from whatever the content happens to measure. Every
-                key on this page is declared now. */}
+            {/* `top-[100svh]`, not `bottom-0`, below `md`. The two resolve to
+                the same row while this block is exactly a screen tall -
+                measured, it is, at 553, 664, 750 and 844 - but one of them says
+                so and the other inherits it from whatever the content happens
+                to measure. Every key on this page is declared now. Above `md`
+                the block is shorter than a screen (see the scene below), and
+                its own foot is the row that declares the plate full: keyed a
+                screen down it would have held the picture 174px past the
+                section at 1440x900, and the fall into the panels' dark keeps
+                its length only if both of its ends move with the foot. */}
             <span
               aria-hidden="true"
               data-stage-plate="0"
               data-stage-strength="1"
-              className="absolute inset-x-0 top-[100svh] h-0"
+              className="absolute inset-x-0 top-[100svh] h-0 md:bottom-0 md:top-auto"
             />
             {/* The clearing takes a whole screen. It used to open flush
                 against the hero's foot, which put the heading and the ledger
@@ -358,12 +363,21 @@ export default function HomePage() {
                 title past the middle of the frame and the reader stopped on
                 mostly sky. Both are gone above `md`: the grid opens at `9svh`,
                 the words take a further `9svh`, and the rule stands at 18svh of
-                every desktop window. `min-h-svh` still binds - the grid asks
-                for 9 + 56 svh plus the ledger's 246px, which is under a screen
-                while the window is 704px tall or more. */}
+                every desktop window. */}
+            {/* Above `md` the section ends where its content ends, plus a
+                beat: the grid's stack (the 96px head and the Earth's box, the
+                tallest thing in it) and `14svh` under it, with a floor of
+                0.72 of the window rather than a whole one. Held to a screen,
+                the section carried 370px of bare photograph under the ledger
+                at 1440x900 and 283 at 1440x780 - with the panels' own
+                breathing and the first panel's centred head, the reader
+                scrolled 0.79 / 0.70 of a window from the last numeral to the
+                next word, and the owner read it as a screen of empty picture.
+                At 726 / 642px the tail is 196 / 145px. Below `md` the block
+                is still one screen, byte for byte. */}
             <StageScene
               fireMargin="-30%"
-              className="relative mx-auto flex min-h-svh max-w-6xl flex-col justify-center px-4 md:justify-start md:pt-24 xl:max-w-[min(84rem,92vw)]"
+              className="relative mx-auto flex min-h-svh max-w-6xl flex-col justify-center px-4 md:min-h-[72svh] md:justify-start md:pb-[14svh] md:pt-24 xl:max-w-[min(84rem,92vw)]"
             >
               {/* Three blocks in one grid above `md`: the words in the left
                   six columns, the Earth in the right six, and the ledger under

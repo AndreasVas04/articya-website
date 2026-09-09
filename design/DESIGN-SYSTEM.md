@@ -2235,6 +2235,35 @@ goes **61.7 → 208.8px** at 1440×900, **87.3 → 182.3** at 1920×1080, and re
 Contrast at 1440×900 across the natural-stop range: labels 5.00–5.02, lead
 5.01, numerals 8.13–8.22, heading 8.13 at ink, none below its floor.
 
+**The clearing ends where its content ends — 2026-09-09, third pass.** Held
+to a screen, the section carried bare photograph under the ledger, and the
+owner saw a screen of empty picture before the panels. Measured at the
+natural stop (section top 0.119 / 0.189 H at 1440×900; a 1440×780 window
+lands the flick at −0.017 / 0.064 H), from the ledger's foot to the first
+panel's eyebrow row: **712 px = 0.791 H at 900 and 543 px = 0.696 H at 780**,
+of which the section's own tail under the ledger was 370 / 283 px, the
+panels' `10svh` beat 90 / 78, and the first panel's centred head (its top row
+to the eyebrow) 253 / 182. Above `md` the section is now the grid's stack —
+the 96 px head and the Earth's box — plus `14svh`, with a floor of 0.72 of the
+window: `md:min-h-[72svh] md:pb-[14svh]` on the scene, and the plate's full
+key moves from `100svh` to the section's own foot there (`md:bottom-0`), so
+the fall into the panels keeps its 684 px. **726 px (0.807 vp) at 900, 642 px
+(0.823 vp) at 780**; the tail under the ledger 196 / 145 px; the gap to the
+eyebrow **538 px = 0.598 H and 405 px = 0.519 H**; the longest run of scroll
+with no word on the glass, swept at 20 px from the hero's release to the
+first panel's title, **40 px (0.044 H) and 20 px (0.026 H)** where it was 220
+and 160. The brief's bound — the next word within 0.30 H of the ledger's foot
+— is not reachable by the section's height: at a tail of zero the beat and
+the panel's own centred head alone are 343 / 260 px, 0.38 / 0.33 H. What
+closes it is the panel's head or the beat, and neither is touched here. The
+block's rows, the Earth and the disc clearance are unchanged (208.8 / 239.0
+px at 900 / 780); the keys after the clearing move up by 174 / 138 px on a
+desktop and are identical on 390×664 and 375×553, whose screenshots are
+byte-identical at the section's top and one screen further. Contrast across
+the traversal at 1440×900: lead 5.01, labels 5.01–5.02, numerals 8.17–8.22,
+heading 8.13; at 1440×780: labels 5.01–5.08, numerals 8.11–8.23, heading
+8.12, lead 5.00.
+
 **The skin** (`scripts/globe-texture.mjs`, the outputs committed under
 `public/globe/`): NASA's Blue Marble Next Generation for **July** with
 topography and bathymetry, graded toward the section — saturation 0.84, the
