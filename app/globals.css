@@ -1304,16 +1304,43 @@ details[open] .accordion-answer {
     display: none;
   }
   .earth-canvas {
-    /* `pan-y` alone excludes `pinch-zoom`: the browser keeps the vertical pan
-       and swallows the zoom, so the one photograph-sized thing on this screen
-       could not be pinched into at all. Naming the zoom back restores it and
-       the drag is unaffected - a pinch declares itself with a second finger,
-       which the pointer handler already ignores, and Safari sends a
-       `pointercancel` as it takes the gesture over. */
+    /* The box outside the disc is the page's. `pan-y` alone excludes
+       `pinch-zoom`: the browser keeps the vertical pan and swallows the zoom,
+       so the one photograph-sized thing on this screen could not be pinched
+       into at all. Naming the zoom back restores it. */
     touch-action: pan-y pinch-zoom;
+    /* The grab's one mark: the disc takes a step toward the reader on the
+       press and gives it back on the release. */
+    transition: scale 120ms var(--ease-out-quart);
+  }
+  .earth-canvas[data-grab] {
+    scale: 1.02;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .earth-canvas {
+      transition: none;
+    }
+  }
+  /* The grab is the sphere's own silhouette - `DISC` in
+     components/earth-scene.ts, 0.9 of the frame, so 45% of the box in radius.
+     `clip-path` is what hit-tests, so a finger in the corners never lands on
+     this element at all and the page scrolls under it exactly as it does
+     beside the box.
+
+     `pinch-zoom` and not `none`: one finger is the globe's and the browser
+     must not pan the page with it, but two are always the browser's, and a
+     `none` here would swallow the pinch on the one photograph-sized thing on
+     the screen. The value is read off the element the finger landed on, at
+     the moment it lands - which is why the division is a second element and
+     not a value rewritten once the gesture is already running. */
+  .earth-grab {
+    position: absolute;
+    inset: 0;
+    clip-path: circle(45% at 50% 50%);
+    touch-action: pinch-zoom;
     cursor: grab;
   }
-  .earth-canvas:active {
+  .earth-grab:active {
     cursor: grabbing;
   }
   /* The globe's arrival, on the scene's clock with the rest of the clearing:

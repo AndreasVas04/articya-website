@@ -92,12 +92,6 @@ const DRAG_DAMPING = 0.92;
 // so a drag never rolls it. The pitch is clamped short of the pole - past this
 // the far pole comes over the top and the axis reads as broken.
 const MAX_PITCH = 75 * DEG;
-// How the page and the globe divide a finger. Below `HOLD_SLOP` px the touch
-// has declared nothing; a finger still inside it after `GRAB_HOLD_MS` is a
-// grab, and one that leaves it horizontally is a grab at once. Anything else
-// is the page scrolling and the globe never sees it.
-const GRAB_HOLD_MS = 150;
-const HOLD_SLOP = 12;
 const IDLE_BEFORE_SPIN = 4000;
 // How long a page scale has to hold before the drawing buffer is re-cut for it.
 const SCALE_SETTLE_MS = 250;
@@ -635,56 +629,56 @@ export function mountEarth(host: HTMLElement, canvas: HTMLCanvasElement, opts: E
 
   // The hand, and how it is divided with the page.
   //
-  // A mouse or a pen grabs on the press and turns the globe freely from there,
-  // on both axes, with no threshold at all.
+  // The division is a place and not a delay: the disc is the globe's and the
+  // rest of the box is the page's. A press that lands on the sphere's own
+  // silhouette turns it at once, in any direction, mouse and finger alike;
+  // one that lands in the corners or the margins is a scroll the globe never
+  // sees. The circle is `.earth-grab`, clipped in globals.css to the same
+  // `DISC` the camera is framed on, and the browser's own hit test against
+  // that clip is what decides - so `touch-action` is read off the right
+  // element at the moment the finger lands, which is the only moment an
+  // engine reads it.
   //
-  // A finger cannot, because the page has to keep its scroll and on a phone
-  // this disc is most of the screen. So a touch declares itself first. Inside
-  // 12px it has said nothing; a finger still inside that after 150 ms is a
-  // grab, and one that leaves it horizontally is a grab at once. A finger that
-  // leaves it vertically first is the page, and the globe lets go of it.
+  // What stood here was a hold: 12px of slop, 150ms, and a horizontal-first
+  // escape, because `pan-y` on the whole box meant a vertical finger had
+  // already been given to the scroller before the globe could ask for it.
+  // Reported from a phone, that reads as a disc that cannot be grabbed - the
+  // page moves instead, most tries. The clip removes the reason for the wait.
   //
-  // The touch half is driven by touch events and not by pointer events, and
-  // the reason is `cancelable`. Once the browser has committed a finger to
-  // scrolling it stops delivering `pointermove` and marks `touchmove`
-  // non-cancelable - so on a flick the pointer path saw nothing, the 150 ms
-  // hold fired into a scroll that was already running, and the globe turned
-  // under a gesture that was moving the page. `cancelable` is the browser
-  // saying whether a grab is still available, and it is only on the touch
-  // event. Measured: a 200px vertical flick moved the disc by 16.8 mean
-  // channel steps against a 4.9 no-hand control on the pointer path, and by
-  // 3.3 against 4.7 on this one.
+  // Touch is still driven by touch events and not by pointer events: a
+  // browser that has committed a finger to scrolling stops delivering
+  // `pointermove` and marks `touchmove` non-cancelable, and that flag is the
+  // one honest signal that the grab was never available. It is read once, on
+  // the first move - past that the finger is the globe's.
   //
-  // The page's lock is the same flag: while the grab is live every cancelable
-  // touchmove is cancelled, which is what `touch-action` cannot do on its own -
-  // `pan-y pinch-zoom` is what keeps the pinch reachable, and it would scroll
-  // on the vertical half of a free rotation. A second finger is a pinch and
-  // ends the grab on the frame it lands.
+  // A second finger is a pinch and ends the grab on the frame it lands.
   let pointerId: number | null = null;
   let touchId: number | null = null;
   let lastX = 0;
   let lastY = 0;
-  let startX = 0;
-  let startY = 0;
-  let holdTimer = 0;
-  let axis: "none" | "drag" | "scroll" = "none";
+  let turned = false;
+
+  // The disc's own hit target. Its absence is not an error: the scene is
+  // mounted on a host it does not build, and without the circle the globe
+  // simply keeps no hand of its own.
+  const grabTarget = host.querySelector<HTMLElement>(".earth-grab");
+  const onDisc = (event: Event) => grabTarget !== null && event.target === grabTarget;
 
   const beginDrag = () => {
-    window.clearTimeout(holdTimer);
-    axis = "drag";
     dragging = true;
+    turned = false;
     dragVelocity = 0;
     pitchVelocity = 0;
+    canvas.dataset.grab = "";
   };
   const letGo = () => {
-    window.clearTimeout(holdTimer);
-    if (pointerId !== null && canvas.hasPointerCapture(pointerId)) {
-      canvas.releasePointerCapture(pointerId);
+    if (pointerId !== null && grabTarget?.hasPointerCapture(pointerId)) {
+      grabTarget.releasePointerCapture(pointerId);
     }
     pointerId = null;
     touchId = null;
     dragging = false;
-    axis = "none";
+    delete canvas.dataset.grab;
     lastPointerAt = performance.now();
     if (opts.reducedMotion) {
       dragVelocity = 0;
@@ -714,16 +708,17 @@ export function mountEarth(host: HTMLElement, canvas: HTMLCanvasElement, opts: E
   const onPointerDown = (event: PointerEvent) => {
     if (event.pointerType === "touch") return;
     if (!event.isPrimary || pointerId !== null) return;
+    if (!onDisc(event)) return;
     pointerId = event.pointerId;
-    startX = lastX = event.clientX;
-    startY = lastY = event.clientY;
+    lastX = event.clientX;
+    lastY = event.clientY;
     lastPointerAt = performance.now();
     beginDrag();
-    canvas.setPointerCapture(event.pointerId);
+    grabTarget?.setPointerCapture(event.pointerId);
   };
   const onPointerMove = (event: PointerEvent) => {
     if (event.pointerType === "touch") return;
-    if (event.pointerId !== pointerId || axis !== "drag") return;
+    if (event.pointerId !== pointerId || !dragging) return;
     turn(event.clientX, event.clientY);
   };
   const onPointerUp = (event: PointerEvent) => {
@@ -738,48 +733,33 @@ export function mountEarth(host: HTMLElement, canvas: HTMLCanvasElement, opts: E
       letGo();
       return;
     }
+    if (!onDisc(event)) return;
     const touch = event.touches[0];
     touchId = touch.identifier;
-    startX = lastX = touch.clientX;
-    startY = lastY = touch.clientY;
-    axis = "none";
+    lastX = touch.clientX;
+    lastY = touch.clientY;
     lastPointerAt = performance.now();
-    holdTimer = window.setTimeout(() => {
-      if (touchId !== null && axis === "none") beginDrag();
-    }, GRAB_HOLD_MS);
+    beginDrag();
   };
   const onTouchMove = (event: TouchEvent) => {
     if (event.touches.length > 1) {
       letGo();
       return;
     }
+    if (touchId === null) return;
     let touch: Touch | null = null;
     for (let i = 0; i < event.touches.length; i += 1) {
       if (event.touches[i].identifier === touchId) touch = event.touches[i];
     }
     if (!touch) return;
-    if (axis === "none") {
-      // Not cancelable is the browser saying it has already taken this finger.
-      if (!event.cancelable) {
-        window.clearTimeout(holdTimer);
-        axis = "scroll";
-        touchId = null;
-        return;
-      }
-      const dx = touch.clientX - startX;
-      const dy = touch.clientY - startY;
-      if (Math.abs(dx) < HOLD_SLOP && Math.abs(dy) < HOLD_SLOP) return;
-      if (Math.abs(dx) <= Math.abs(dy)) {
-        window.clearTimeout(holdTimer);
-        axis = "scroll";
-        touchId = null;
-        return;
-      }
-      beginDrag();
-      lastX = touch.clientX;
-      lastY = touch.clientY;
+    // Not cancelable on the first move is the browser saying it took this
+    // finger before the disc could - the clip should have stopped that, and
+    // where it has not the page keeps its scroll.
+    if (!turned && !event.cancelable) {
+      letGo();
+      return;
     }
-    if (axis !== "drag") return;
+    turned = true;
     if (event.cancelable) event.preventDefault();
     turn(touch.clientX, touch.clientY);
   };
@@ -788,14 +768,14 @@ export function mountEarth(host: HTMLElement, canvas: HTMLCanvasElement, opts: E
     wake();
   };
 
-  canvas.addEventListener("touchstart", onTouchStart, { passive: true });
-  canvas.addEventListener("touchmove", onTouchMove, { passive: false });
-  canvas.addEventListener("touchend", onTouchEnd);
-  canvas.addEventListener("touchcancel", onTouchEnd);
-  canvas.addEventListener("pointerdown", onPointerDown);
-  canvas.addEventListener("pointermove", onPointerMove);
-  canvas.addEventListener("pointerup", onPointerUp);
-  canvas.addEventListener("pointercancel", onPointerUp);
+  host.addEventListener("touchstart", onTouchStart, { passive: true });
+  host.addEventListener("touchmove", onTouchMove, { passive: false });
+  host.addEventListener("touchend", onTouchEnd);
+  host.addEventListener("touchcancel", onTouchEnd);
+  host.addEventListener("pointerdown", onPointerDown);
+  host.addEventListener("pointermove", onPointerMove);
+  host.addEventListener("pointerup", onPointerUp);
+  host.addEventListener("pointercancel", onPointerUp);
 
   // Decode off the main thread where the browser allows it.
   const load = async (texture: Texture, src: string) => {
@@ -872,15 +852,14 @@ export function mountEarth(host: HTMLElement, canvas: HTMLCanvasElement, opts: E
       canvas.removeEventListener("webglcontextlost", onContextLost);
       canvas.removeEventListener("webglcontextrestored", onContextRestored);
       intersection.disconnect();
-      window.clearTimeout(holdTimer);
-      canvas.removeEventListener("touchstart", onTouchStart);
-      canvas.removeEventListener("touchmove", onTouchMove);
-      canvas.removeEventListener("touchend", onTouchEnd);
-      canvas.removeEventListener("touchcancel", onTouchEnd);
-      canvas.removeEventListener("pointerdown", onPointerDown);
-      canvas.removeEventListener("pointermove", onPointerMove);
-      canvas.removeEventListener("pointerup", onPointerUp);
-      canvas.removeEventListener("pointercancel", onPointerUp);
+      host.removeEventListener("touchstart", onTouchStart);
+      host.removeEventListener("touchmove", onTouchMove);
+      host.removeEventListener("touchend", onTouchEnd);
+      host.removeEventListener("touchcancel", onTouchEnd);
+      host.removeEventListener("pointerdown", onPointerDown);
+      host.removeEventListener("pointermove", onPointerMove);
+      host.removeEventListener("pointerup", onPointerUp);
+      host.removeEventListener("pointercancel", onPointerUp);
       globeGeometry.dispose();
       cloudGeometry.dispose();
       haloGeometry.dispose();

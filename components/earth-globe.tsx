@@ -130,6 +130,13 @@ export function EarthGlobe({ className }: { className?: string }) {
   return (
     <div ref={hostRef} aria-hidden="true" className={cn("earth aspect-square", className)}>
       <canvas ref={canvasRef} className="earth-canvas block h-full w-full" />
+      {/* The grab, and it is the disc rather than the box: the circle is
+          clipped, and a clip is what hit-tests, so the corners are never this
+          element and the page scrolls through them. The engine reads
+          `touch-action` off whatever the finger landed on, which is why the
+          division is a second element and not a value this component
+          rewrites once a gesture has already begun. */}
+      <div className="earth-grab" />
     </div>
   );
 }
