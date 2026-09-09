@@ -7366,3 +7366,28 @@ in `design/refs/2026-09-09-globe.md`.
    duotone Earth and the amber route lines join it there. A revert of
    `b5723ef` leaves the Earth turning with nothing on it; a revert of
    `cfefe1c` returns the clearing to the words and the ledger on the plate.
+
+---
+
+## 17 · Site hygiene — 2026-09-09
+
+Landed: a custom 404 (`app/not-found.tsx`, exported as `404.html`), `robots.txt`
+and `sitemap.xml` from the metadata routes, an Organization schema in the
+layout beside the FAQ page's, `llms.txt`, and the favicon set (`icon.png`,
+`apple-icon.png`, `favicon.ico`).
+
+**Open:**
+
+1. **A domain of its own.** Not actionable from this repository: it needs a
+   domain ArtiCYa owns. When there is one — (a) add `public/CNAME` holding the
+   bare hostname, so every deploy re-asserts it; (b) set the same custom
+   domain under the repository's Pages settings and turn on *Enforce HTTPS*
+   once the certificate has issued; (c) at the registrar, a `CNAME` record
+   from `www` to `andreasvas04.github.io`, or the four Pages `A` records and
+   the `AAAA` records for the apex; (d) drop the `/articya-website` base path
+   in `next.config.ts` and point `siteUrl` in `lib/metadata.ts` at the new
+   origin, which moves every canonical, the social cards, the sitemap and the
+   schema with it. Until then `robots.txt` sits under the repository path,
+   which a crawler never reads — the root of `andreasvas04.github.io` is not
+   this project's — so the sitemap is submitted by hand in Search Console and
+   the file states a policy it cannot enforce.
