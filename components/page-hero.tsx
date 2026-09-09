@@ -1,4 +1,3 @@
-import { Reveal } from "@/components/reveal";
 import { cn } from "@/lib/utils";
 
 interface PageHeroProps {
@@ -33,6 +32,12 @@ interface PageHeroProps {
 // else; the strength is per page and lives on the plate now, because a shaded
 // forest road arrives most of the way down on its own and a sunlit track
 // between a hillside and a reservoir arrives blown out.
+//
+// The title, the rule and the lede carry no entrance. They are painted at full
+// strength on the first frame with the photograph, on a fresh load and under
+// the route wipe alike - the owner's decision: a destination's title appearing
+// after its picture read as a delay. Everything below the hero keeps its own
+// clock entrance.
 export function PageHero({ heading, text, longHeading, compactTitle }: PageHeroProps) {
   return (
     <section
@@ -42,7 +47,7 @@ export function PageHero({ heading, text, longHeading, compactTitle }: PageHeroP
       className="relative flex min-h-svh items-center"
     >
       <div className="relative mx-auto flex w-full max-w-6xl flex-col items-center px-4 pb-16 pt-28 text-center md:pb-20 md:pt-36">
-        <Reveal>
+        <div>
           <span aria-hidden="true" className="mx-auto block h-[1.25px] w-16 bg-amber" />
           {/* 11ch of the display face, so the break travels with the size
               across viewports - at register A the measure has to be much
@@ -59,7 +64,7 @@ export function PageHero({ heading, text, longHeading, compactTitle }: PageHeroP
           <p className="type-body mx-auto mt-8 text-pretty text-ink">
             {text}
           </p>
-        </Reveal>
+        </div>
       </div>
     </section>
   );

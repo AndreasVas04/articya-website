@@ -1111,8 +1111,8 @@ the way every other crossing on the site goes. Where `document.startViewTransiti
 exists and motion is not reduced, an internal link is taken through it: the old
 page holds on the glass while the new route commits and its photograph decodes,
 then the destination **wipes over it top to bottom — one boundary, the plate
-wipe's 40% feather, `--route-wipe` 0 → 140% over 480 ms on
-`cubic-bezier(0.65, 0, 0.35, 1)`** — with layer opacity only ever 0 or 1 (the
+wipe's 40% feather, `--route-wipe` 0 → 140% over 360 ms (480 until the
+second pass below) on `cubic-bezier(0.65, 0, 0.35, 1)`** — with layer opacity only ever 0 or 1 (the
 root pair is `isolation: auto`, `mix-blend-mode: normal`, no cross-fade) and
 the header as its own named snapshot, swapped rather than animated, so it
 never moves. The destination's text (`Reveal`, `StageScene`) waits for the
@@ -1152,6 +1152,28 @@ gate — the wipe runs over the ground and the photograph lands at 1.1 s, as
 before. From an inner page, whose idle queue does not run, a tap on another
 inner page is the cold case unless the finger's own intent prefetch beats
 300 ms: About → FAQ measured `ready` at 325 ms and the photograph at 830 ms.
+
+**The destination's title is painted with its photograph — 2026-09-09,
+second pass.** The inner heroes' title, rule and lede entered through
+`Reveal` — a 400 ms rise armed after the wipe's `finished` — so on every route
+change the photograph was on the glass 360–480 ms before the words, and the
+owner read it as the title arriving late. The owner's decision: no clock
+entrance for the route hero on an inner page, by navigation or by fresh
+load; the title, the eyebrow rule and the lede are painted at full opacity on
+the first frame with the photograph, and the wipe is shortened to **360 ms**
+on the same ease. Body text below the hero keeps its clock entrance. Measured
+on 4G with a warm cache, per frame from the press: the h1 is at opacity 1
+with no translate on the route's commit frame in every case; the photograph
+is decoded on the same frame — home → About 96 / 108 ms at 390×664 /
+1440×900, FAQ → Contact 83 / 59 ms, About → FAQ 83 / 63 ms — so title and
+photograph are **0 frames** after the commit at both viewports; under the
+wipe `ready` lands 51–81 ms after the press and `finished` at 426–463 ms.
+Reduced motion: the instant swap, 0 frames. Cold (nothing has warmed the
+destination's file) the photograph still lands 300–500 ms after the route,
+as before; that is the network, not the entrance. The hero title and lede
+read bit-identical at their own ink to the build before on About (5.32 / 5.11
+at 390×664, 4.86 / 4.99 at 1440×900), FAQ (7.47 / 7.41) and Contact (4.81 /
+5.12), because the entrance never touched the resting frame.
 
 **Signature entrances play on the clock, not the scrollbar.** The page's two
 set-piece moments — the hero's first-load title card and the "What we do"

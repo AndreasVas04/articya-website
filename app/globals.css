@@ -201,8 +201,10 @@ body {
    every row of every frame is one page or the other. The header is its own
    snapshot and is swapped, not animated: it stands still through the wipe.
    The travel is a registered custom property so the gradient's stops can be
-   animated; `--route-wipe` runs 0 -> 140%, which is the clear edge of the
-   feather crossing the whole window and leaving through its foot. Only the
+   animated; `--route-wipe` runs 0 -> 140% over 360ms, which is the clear
+   edge of the feather crossing the whole window and leaving through its
+   foot - 480 held the reader a quarter second longer than the destination
+   needed, now that its title is painted with its photograph. Only the
    click handler in components/route-wipe.tsx starts one, and it does not
    under reduced motion or where the API is missing. */
 @property --route-wipe {
@@ -233,7 +235,7 @@ body {
   display: none;
 }
 ::view-transition-new(root) {
-  animation: route-wipe 480ms var(--ease-in-out-cubic) both;
+  animation: route-wipe 360ms var(--ease-in-out-cubic) both;
   -webkit-mask-image: linear-gradient(
     to bottom,
     #000 calc(var(--route-wipe) - 40%),
