@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import type { EarthHandle } from "@/components/earth-scene";
+import { afterPageLoad } from "@/lib/page-load";
 import { onLayoutResize } from "@/lib/viewport";
 import { cn, withBasePath } from "@/lib/utils";
 
@@ -61,11 +62,19 @@ export function EarthGlobe({ className }: { className?: string }) {
       watch.observe(stage, { attributes: true, attributeFilter: ["data-on"] });
     });
 
+    // The renderer and its skins are 1MB the reader cannot see until the
+    // section arrives, and on a fresh load of home the section is within a
+    // viewport of the collapsed hero from the first frame - so the import
+    // started at once, on the wire beside the poster and the scripts the
+    // headline waits on. It waits for the document's load; the opening that
+    // follows is seconds long, and a route reached through the router has
+    // loaded already.
+    let offLoad: (() => void) | null = null;
     const loader = new IntersectionObserver(
       ([entry]) => {
         if (!entry.isIntersecting) return;
         loader.disconnect();
-        import("@/components/earth-scene").then((m) => {
+        offLoad = afterPageLoad(() => import("@/components/earth-scene").then((m) => {
           if (disposed) return;
           const resin =
             getComputedStyle(document.documentElement).getPropertyValue("--color-resin").trim() ||
@@ -77,7 +86,7 @@ export function EarthGlobe({ className }: { className?: string }) {
             reducedMotion,
             entered,
           });
-        });
+        }));
       },
       { rootMargin: "100% 0px 100% 0px" }
     );
@@ -119,6 +128,7 @@ export function EarthGlobe({ className }: { className?: string }) {
     return () => {
       disposed = true;
       loader.disconnect();
+      offLoad?.();
       handle?.dispose();
       window.removeEventListener("scroll", onScroll);
       offResize?.();
