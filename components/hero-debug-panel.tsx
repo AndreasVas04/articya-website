@@ -108,7 +108,7 @@ export default function HeroDebugPanel() {
   const s = status.current;
   const num = (v: unknown) => (typeof v === "number" ? v.toFixed(3) : String(v));
   const lines = [
-    `y ${live.current.y.toFixed(2)}  scale ${live.current.scale.toFixed(3)}  touches ${live.current.touches}  p ${s ? num(s.p) : "-"}  capture ${s ? (s.capture ? "on" : "off") : "-"}`,
+    `y ${live.current.y.toFixed(2)}  scale ${live.current.scale.toPrecision(9)}  touches ${live.current.touches}  p ${s ? num(s.p) : "-"}  capture ${s ? (s.capture ? "on" : "off") : "-"}`,
     `close: armed ${s ? (s.armed ? "yes" : "no") : "-"}  running ${s ? s.closing : "-"}  reentry ${s ? (s.reentry ? "yes" : "no") : "-"}  pinch ${s ? (s.pinch ? "yes" : "no") : "-"}  up ${s ? num(s.upward) : "-"}`,
     `last: ${last.current || "-"}`,
     `touches: ${recent.current

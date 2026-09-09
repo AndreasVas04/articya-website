@@ -14,6 +14,16 @@
 // The layout viewport is the one that moved when the page actually changed
 // shape, and `clientWidth`/`clientHeight` on the document element is what it
 // measures. A pinch never moves it.
+// Whether the reader is holding a zoom. A scale within a hundredth of 1 is not
+// one: iOS reports the visual viewport's scale as the ratio of two widths, and
+// at rest the ratio is not always exactly 1. A gate that read `scale !== 1`
+// could shut a whole gesture machine on a page nobody had zoomed.
+const ZOOM_TOLERANCE = 0.01;
+export const pageZoomed = (): boolean => {
+  const vv = window.visualViewport;
+  return Boolean(vv) && Math.abs(vv!.scale - 1) > ZOOM_TOLERANCE;
+};
+
 const layoutSize = (): [number, number] => [
   document.documentElement.clientWidth,
   document.documentElement.clientHeight,
@@ -50,7 +60,7 @@ export function onLayoutResize(measure: () => void, delay = SETTLE_MS) {
     // Zoomed in, nothing about the layout can have changed. An orientation
     // change is the exception: it is a layout change by definition and has to
     // land whether or not the reader is holding a zoom.
-    if (!forced && window.visualViewport && window.visualViewport.scale !== 1) return;
+    if (!forced && pageZoomed()) return;
     window.clearTimeout(timer);
     timer = window.setTimeout(() => settle(forced), delay);
   };

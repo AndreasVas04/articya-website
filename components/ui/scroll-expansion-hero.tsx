@@ -11,7 +11,7 @@ import {
 import { cubicBezier, motion, useReducedMotion } from "framer-motion";
 import { ResponsiveImage } from "@/components/responsive-image";
 import { coverSizes, HERO_PUSH, HERO_VIEWPORT } from "@/lib/images";
-import { onLayoutResize } from "@/lib/viewport";
+import { onLayoutResize, pageZoomed } from "@/lib/viewport";
 import { heroTrace } from "@/lib/hero-trace";
 import { cn, withBasePath } from "@/lib/utils";
 
@@ -154,6 +154,18 @@ const CLOSE_FLING_MS = 600;
 // The progress at which the expanded state hands back, going down. It is the
 // driver's own number, read the other way round.
 const CLOSE_HANDOVER = 0.75;
+// The third way in, and it is the phone's. A finger that pulls the page past
+// its top puts `scrollY` below zero on iOS, and a reader who has pulled this
+// far past it with the hero open is asking for the way back whatever the touch
+// stream delivered on the way; a desktop never scrolls below zero, so it
+// never fires there.
+const CLOSE_PULL_PX = 24;
+// How long the top of the page is left to settle after the finger lifts there.
+// iOS springs the page back from a pull as a run of `scroll` events with a
+// rising `scrollY`, and nothing about that run is the reader: for this long
+// after a lift at the top no scroll-derived signal arms, starts or pins
+// anything. A new finger ends it at once.
+const BOUNCE_MS = 400;
 interface Close {
   from: number;
   to: number;
@@ -165,7 +177,7 @@ interface Close {
 // viewport's, so a pan across a zoomed page fires `scroll` and a pin to 0
 // drags the glass back to the top-left on every frame of it. Nothing in this
 // section reads a page that is not at scale 1.
-const zoomed = () => Boolean(window.visualViewport && window.visualViewport.scale !== 1);
+const zoomed = pageZoomed;
 const settleTarget = (p: number, dir: number) =>
   dir < 0 ? (p >= SETTLE_BACK_HOLD_FROM ? 1 : 0) : p >= SETTLE_FORWARD_FROM ? 1 : 0;
 const settleDuration = (p: number, to: number) => (to === 1 ? 400 + 500 * (1 - p) : 300);
@@ -435,6 +447,14 @@ const ScrollExpandMedia = ({
   // a scroll from then on, whatever one finger does after the other lifts,
   // and it clears only when every finger is off the glass.
   const pinch = useRef(false);
+  // The lowest row the finger has reached this sequence, so a move back up
+  // the glass is measured from where the finger turned and not event by event.
+  const lowest = useRef(0);
+  // Until when the top of the page is the engine's own spring and not input.
+  const bounceUntil = useRef(0);
+  // Where the page was on the last scroll event, so a finger's travel can be
+  // read off the page as well as off the touch stream.
+  const lastScrollY = useRef(0);
 
   // Under reduced motion the component renders its resting state: media
   // expanded, content visible, no scroll hijacking, first slide only. The
@@ -718,7 +738,7 @@ const ScrollExpandMedia = ({
       // A reader who has zoomed in is panning their magnifying glass, not
       // opening the hero, and the opening is keyed to a window they can no
       // longer see all of.
-      if (window.visualViewport && window.visualViewport.scale !== 1) return;
+      if (pageZoomed()) return;
       const touchY = e.touches[0].clientY;
       const deltaY = touchStartY - touchY;
       if (deltaY !== 0) lastDir.current = deltaY > 0 ? 1 : -1;
@@ -849,6 +869,8 @@ const ScrollExpandMedia = ({
       upward.current = 0;
       fling.current = null;
       gestureY.current = 0;
+      lowest.current = 0;
+      bounceUntil.current = 0;
       setReentry(false);
     };
 
@@ -864,6 +886,14 @@ const ScrollExpandMedia = ({
     // A hand going the other way during a close is the reader saying they
     // meant to read on. It is not a scrub back: the close becomes the driver's
     // own settle to 1, on the driver's own curve and duration.
+    //
+    // Only a hand cancels: a wheel unit going down, or a finger that has come
+    // back up the glass by the jitter floor within one touch sequence. No
+    // scroll event ever does - on iOS the page reaching the top is followed by
+    // a spring that arrives as scroll events with a rising `scrollY`, and read
+    // as input that spring cancelled the close it had just started. A second
+    // finger and a zoom do not cancel either; they only keep a new close from
+    // starting.
     const cancelClose = (reason: string) => {
       const p = progressRef.current;
       if (!closing.current || closing.current.to === 1) return;
@@ -873,6 +903,8 @@ const ScrollExpandMedia = ({
     };
 
     const atTop = () => window.scrollY <= 0 && !zoomed();
+    const pulledPast = () => window.scrollY <= -CLOSE_PULL_PX && !zoomed();
+    const settling = () => performance.now() < bounceUntil.current;
 
     // One upward gesture, wheel or finger, read the same way: past the jitter
     // floor it closes if the page is at the top and arms the close if it is
@@ -898,14 +930,10 @@ const ScrollExpandMedia = ({
       fling.current = null;
     };
 
-    // Zoomed in, this whole machine is inert: nothing arms, nothing starts,
-    // and a close in flight is handed back to the settle rather than run on a
-    // page the reader can see only part of.
+    // Zoomed in, nothing arms and nothing starts; a close already running is
+    // left to finish.
     const onWheel = (e: globalThis.WheelEvent) => {
-      if (zoomed()) {
-        if (closing.current) cancelClose("zoom");
-        return;
-      }
+      if (zoomed()) return;
       if (closing.current) {
         e.preventDefault();
         if (e.deltaY > 0) cancelClose("wheel down");
@@ -917,25 +945,27 @@ const ScrollExpandMedia = ({
 
     // A second finger is a pinch and never a close - the arity gate, as on the
     // driver's own capture, and it poisons the whole sequence: a finger that
-    // was part of a pinch is not a scroll after its partner lifts, and a close
-    // already running when the second finger lands is cancelled to the settle.
-    // A move that does not change the finger's row is nothing, not a
-    // reversal: a device that repeats a coordinate used to zero the travel
-    // and un-arm a flick on the way out.
+    // was part of a pinch is not a scroll after its partner lifts. A move that
+    // does not change the finger's row is nothing, not a reversal: a device
+    // that repeats a coordinate used to zero the travel and un-arm a flick on
+    // the way out.
     const secondFinger = () => {
       pinch.current = true;
       gestureY.current = 0;
       downward();
-      if (closing.current) cancelClose("second finger");
-      else heroTrace.event("close:ignored", "second finger");
+      heroTrace.event("close:ignored", "second finger");
     };
     const onTouchStart = (e: globalThis.TouchEvent) => {
+      // A new finger is the reader again, whatever the top was doing.
+      bounceUntil.current = 0;
       if (e.touches.length !== 1) {
         secondFinger();
         return;
       }
       pinch.current = false;
       gestureY.current = e.touches[0].clientY;
+      lowest.current = gestureY.current;
+      lastScrollY.current = window.scrollY;
       downward();
     };
     const onTouchMove = (e: globalThis.TouchEvent) => {
@@ -943,17 +973,21 @@ const ScrollExpandMedia = ({
         if (!pinch.current) secondFinger();
         return;
       }
-      if (pinch.current || !gestureY.current) return;
-      if (zoomed()) {
-        if (closing.current) cancelClose("zoom");
-        return;
-      }
+      if (pinch.current || !gestureY.current || zoomed()) return;
       const y = e.touches[0].clientY;
       const delta = gestureY.current - y;
       gestureY.current = y;
+      lowest.current = Math.max(lowest.current, y);
       if (closing.current) {
         e.preventDefault();
-        if (delta > 0) cancelClose("finger up");
+        // Up the glass from where it turned, past the jitter floor: reading
+        // on. A tremor never adds up to it.
+        if (lowest.current - y >= CLOSE_JITTER_PX) cancelClose("finger up");
+        return;
+      }
+      if (pulledPast()) {
+        heroTrace.event("close:pulled", `y=${Math.round(window.scrollY)}`);
+        startClose();
         return;
       }
       if (delta > 0) downward();
@@ -961,37 +995,66 @@ const ScrollExpandMedia = ({
     };
     // The finger leaving the glass ends the gesture and not the arm: the page
     // may still be travelling on the engine's momentum, and the scroll handler
-    // below is where that lands. The pinch flag outlives the finger that made
-    // it until the last one lifts.
+    // below is where that lands. A finger that lifts *at* the top with the
+    // gesture armed closes here, on the lift itself - the arrival it would
+    // otherwise wait for may already have happened, or may come wrapped in the
+    // spring - and then the top is left to settle. The pinch flag outlives the
+    // finger that made it until the last one lifts.
     const onTouchEnd = (e: globalThis.TouchEvent) => {
       gestureY.current = 0;
       upward.current = 0;
-      if (e.touches.length === 0) pinch.current = false;
+      if (e.touches.length > 0) return;
+      pinch.current = false;
+      if (window.scrollY > 0) return;
+      if (fling.current && !closing.current && !zoomed()) startClose();
+      bounceUntil.current = performance.now() + BOUNCE_MS;
     };
 
     // While a close is running the page is the hero's, exactly as it is during
-    // the opening. Otherwise this is the arrival: a page still climbing toward
-    // the top under an armed gesture closes on the frame it reaches it, and
-    // the arm is dropped once the page has stopped climbing for the arm's
-    // lifetime - so a reader who comes to rest short of the top and then
-    // scrolls down again never meets one.
+    // the opening - pinned to the top, except while the top is springing back
+    // on its own, which is not a scroll to correct. Otherwise this is the
+    // arrival: a page still climbing toward the top under an armed gesture
+    // closes on the frame it reaches it, a finger that has pulled the page
+    // past the top closes wherever the touch stream got to, and the arm is
+    // dropped once its lifetime has run out - so a reader who comes to rest
+    // short of the top and then scrolls down again never meets one.
+    //
+    // With a finger on the glass the page's own climb is that finger's
+    // travel, and it is read here as well as off the touch stream: a phone
+    // that delivers its moves late, coalesced or not at all still scrolls,
+    // and the gesture arms off the scroll it produces.
     const onScroll = () => {
       if (zoomed()) return;
       if (closing.current) {
-        window.scrollTo(0, 0);
+        if (window.scrollY > 0 && !settling()) window.scrollTo(0, 0);
         return;
+      }
+      if (settling()) return;
+      const y = window.scrollY;
+      const was = lastScrollY.current;
+      lastScrollY.current = y;
+      if (gestureY.current && !pinch.current) {
+        if (pulledPast()) {
+          heroTrace.event("close:pulled", `y=${Math.round(y)}`);
+          startClose();
+          return;
+        }
+        if (y < was) {
+          upwardBy(was - y);
+          if (closing.current) return;
+        }
       }
       const f = fling.current;
       if (!f) return;
+      if (performance.now() > f.until) {
+        fling.current = null;
+        return;
+      }
       if (atTop()) {
         startClose();
         return;
       }
-      const y = window.scrollY;
-      if (y >= f.last) {
-        if (performance.now() > f.until) fling.current = null;
-        return;
-      }
+      if (y >= f.last) return;
       f.last = y;
       f.until = performance.now() + CLOSE_FLING_MS;
     };
@@ -1060,6 +1123,7 @@ const ScrollExpandMedia = ({
         armed: Boolean(fling.current),
         upward: upward.current,
         pinch: pinch.current,
+        settling: performance.now() < bounceUntil.current,
       })),
     [reentry]
   );
