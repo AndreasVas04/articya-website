@@ -23,6 +23,9 @@ const pages = [
   { name: "about", original: "scripts/parity/about.html", exported: "out/about/index.html" },
   { name: "contact", original: "scripts/parity/contact.html", exported: "out/contact/index.html" },
   { name: "faq", original: "scripts/parity/faq.html", exported: "out/faq/index.html" },
+  // The 404 page has no legacy original: its snapshot is the page's own first
+  // export (2026-09-09), frozen from then on like the rest.
+  { name: "not-found", original: "scripts/parity/not-found.html", exported: "out/404.html" },
 ];
 
 const namedEntities = {
@@ -131,6 +134,8 @@ for (const page of pages) {
   original = normalizeBrandSpelling(original);
   original = normalizeRemovedOpportunities(original, page.name);
   exported = stripHeaderWordmark(exported);
+  // The 404 snapshot is an export itself, so it carries the wordmark too.
+  if (page.name === "not-found") original = stripHeaderWordmark(original);
 
   if (page.name === "home") {
     original = stripHomeBadges(original);
