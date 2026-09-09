@@ -1,82 +1,95 @@
-# ArtiCYa Website
+# ArtiCYa
 
-Website for **ArtiCYa**, a Cyprus-based Erasmus+ youth organization focused on non-formal education and social inclusion.
+Website for ArtiCYa, a Cyprus-based Erasmus+ youth organisation. Static site,
+built and deployed with GitHub Actions.
 
-Built with Next.js 15 (App Router, static export), TypeScript and Tailwind CSS v4.
+**Live:** https://andreasvas04.github.io/articya-website/
 
-## Live Demo
-🔗 https://andreasvas04.github.io/articya-website/
+[![Deploy](https://github.com/AndreasVas04/articya-website/actions/workflows/deploy.yml/badge.svg)](https://github.com/AndreasVas04/articya-website/actions/workflows/deploy.yml)
 
-## Pages
-- **Home** (`/`) — Landing page with organization overview
-- **About** (`/about`) — Mission, values, and impact
-- **FAQ** (`/faq`) — Common questions about programs
-- **Contact** (`/contact`) — Contact details and social links
+<p align="center">
+  <img src="docs/screenshots/desktop-hero.webp" width="49%" alt="Home page hero at 1440x900" />
+  <img src="docs/screenshots/phone-about-finale.webp" width="16%" alt="About page finale at 390x844" />
+</p>
+<p align="center"><sub>Left: home hero, 1440×900. Right: About page finale, 390×844.</sub></p>
 
-## Project Structure
-```
-articya-website/
-├── app/                  # Next.js App Router pages
-├── components/           # Shared components (header, footer, hero)
-│   └── ui/               # Reusable UI primitives
-├── content/              # All site copy as typed constants (frozen)
-├── lib/                  # Utilities (cn, withBasePath)
-├── public/images/        # Site images
-└── scripts/
-    ├── verify-text-parity.mjs
-    └── parity/           # Frozen HTML snapshots the parity check compares against
-```
+## What it does
 
-All visible text lives in `/content` as typed constants; pages render only from those. The original HTML pages are retained as frozen snapshots in `scripts/parity/`, used solely by the text-parity check to guard against content drift.
+- A hero that opens on the wheel or a finger drag: the scene's progress
+  tracks the input pixel for pixel, not a fixed-time animation, and it plays
+  once per page load.
+- Each section pins a full-bleed photograph while its text and numbers
+  settle over it, so a page reads as one continuous scene rather than
+  stacked blocks.
+- A rotating Earth in WebGL sits beside "What we do." three.js loads only
+  when the section is about to be seen; it never touches the first page
+  load, aside from about 1 kB for the loader itself.
+- The About page closes with a mosaic of photographs that assembles as you
+  scroll and dissolves into a single frame before the footer.
+- Hovering or touching a nav link starts prefetching that page's hero
+  photograph immediately, ahead of the click.
+- Two checks run on every build: one diffs the page's visible text against
+  frozen snapshots, the other asserts no responsive image is ever asked to
+  upscale.
 
-## Development
+## Stack
+
+- **Next.js 15.5** — App Router, static export
+- **TypeScript 5.9**
+- **Tailwind CSS 4.3** — CSS-first config, no `tailwind.config.js`
+- **three.js 0.185** — loaded on demand for the WebGL globe only
+- **GitHub Actions → GitHub Pages** — build and deploy on push to `main`
+
+## Engineering notes
+
+- **Responsive image ratio gate.** Every photograph is built at a ladder of
+  widths in AVIF/WebP/JPEG at build time. `verify:placements` then asserts,
+  across 132 placements and 7 viewports, that painted width × device pixel
+  ratio never exceeds the fetched image's own width — no browser is ever
+  asked to upscale a photograph.
+- **Contrast gate.** Every text/ground pairing is measured at the glyph's
+  own rendered ink on the composite output, swept in 5px steps across each
+  page's full scroll range, against a 4.5:1 floor for body text and 3.0:1
+  for large text.
+- **`svh`, not `vh`.** Mobile Safari doesn't give a page its full screen
+  height: a 390-wide iPhone renders at 664px with the URL bar showing and
+  750px with it collapsed, never the device's own 844px. Grounds are sized
+  in `dvh`, content in `svh`, and bare `vh` doesn't appear in the codebase.
+- **Composited-layer budget.** The home page's paint layers were cut from
+  23 to 13, its backing store from 186.7MB to 95.2MB, and the memory a 2.5×
+  pinch-zoom would decode from 1299MB to 728MB.
+- **Content-hash CI cache.** The responsive-image variants are cached in
+  Actions, keyed on a hash of the source photographs and the two pipeline
+  scripts. The encode step is 96% of a cold build, so a run that touches
+  neither turns a projected ~27-minute build into about one minute.
+- **Text-parity check.** `verify:text` diffs the rendered visible text of
+  all four pages against frozen HTML snapshots, character for character,
+  so a refactor can't silently drop or reorder copy.
+- **Post-export asset pruning.** A script scans the exported HTML for the
+  images each route actually references and drops the rest from the deploy
+  — 259 unreferenced files, 170MB, off the last build.
+
+## Run locally
+
 ```bash
 npm install
-npm run dev
+npm run dev          # http://localhost:3000
+npm run build:pages  # static export for GitHub Pages, out/
 ```
 
-Then visit `http://localhost:3000`.
-
-## Build
-
-Static export for any static host (also what Vercel serves):
+Verification scripts (also run as part of `build:pages`):
 
 ```bash
-npm run build
+npm run verify:text        # visible-text parity against frozen snapshots
+npm run verify:placements  # responsive-image ratio gate
 ```
 
-Build for GitHub Pages (adds the `/articya-website` base path to routes and image URLs):
+## Photography
 
-```bash
-npm run build:pages
-```
+All photographs, the logo and site copy are ArtiCYa's own, © ArtiCYa, and
+are not licensed for reuse. See [LICENSE](LICENSE) for what the MIT grant
+below covers and what it excludes.
 
-Both output to `out/`.
+## Author
 
-### Text parity check
-
-Verifies that the visible text of the exported pages matches the original HTML snapshots (`scripts/parity/`) character for character:
-
-```bash
-npm run verify:text
-```
-
-## Deployment
-
-### GitHub Pages
-```bash
-npm run build:pages
-```
-Publish the `out/` directory to GitHub Pages (e.g. push it to a `gh-pages` branch or upload it as the Pages artifact in a workflow). The site is served at https://andreasvas04.github.io/articya-website/.
-
-### Vercel (alternative)
-Import the repository on [vercel.com](https://vercel.com) — the Next.js preset works as is (`npm run build`, no `GITHUB_PAGES` flag). The static export is served from the domain root.
-
-## Contact
-**ArtiCYa - Erasmus+ Youth**
-- Facebook: https://www.facebook.com/p/Articya-61560558245829/
-- Instagram: https://www.instagram.com/articya4youth/
-- Location: Nicosia, Cyprus
-
-## License
-No license specified.
+**Andreas Vasiliou** — [github.com/AndreasVas04](https://github.com/AndreasVas04)
