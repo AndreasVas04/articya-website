@@ -8,10 +8,9 @@ built and deployed with GitHub Actions.
 [![Deploy](https://github.com/AndreasVas04/articya-website/actions/workflows/deploy.yml/badge.svg)](https://github.com/AndreasVas04/articya-website/actions/workflows/deploy.yml)
 
 <p align="center">
-  <img src="docs/screenshots/desktop-hero.webp" width="49%" alt="Home page hero at 1440x900" />
-  <img src="docs/screenshots/phone-about-finale.webp" width="16%" alt="About page finale at 390x844" />
+  <img src="docs/screenshots/desktop-hero.webp" width="100%" alt="Home page hero at 1440x900" />
 </p>
-<p align="center"><sub>Left: home hero, 1440×900. Right: About page finale, 390×844.</sub></p>
+<p align="center"><sub>Home, 1440×900.</sub></p>
 
 ## What it does
 
