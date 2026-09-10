@@ -1305,12 +1305,16 @@ photographs used to start at the document's `load` and race everything else
 that starts there. Measured at 390×664 over a shared pipe, before and after,
 as milliseconds from home's own LCP to the moment each file is complete:
 
-| | about | faq | contact | the page's own files start |
+| pipe, engine | about | faq | contact | the page's own files start |
 |---|---|---|---|---|
-| 9 Mbps, before | +3576 | +5737 | +6502 | +10 |
-| 9 Mbps, after | **+1042** | **+2076** | **+2845** | +2908 |
-| 4.2 Mbps, before | +7556 | +12250 | never | +62 |
-| 4.2 Mbps, after | **+2138** | **+4254** | +9351 | +5077 |
+| 9 Mbps, WebKit, before | +3576 | +5737 | +6502 | +10 |
+| 9 Mbps, WebKit, after | **+1049** | **+2077** | **+2850** | +2904 |
+| 9 Mbps, Chromium, before | +4417 | +5712 | +6481 | +13 |
+| 9 Mbps, Chromium, after | **+1080** | **+2110** | **+2876** | +2926 |
+| 4.2 Mbps, WebKit, before | +7556 | +12250 | never | +62 |
+| 4.2 Mbps, WebKit, after | **+2133** | **+4227** | +9075 | +5079 |
+| 4.2 Mbps, Chromium, before | +9559 | +12198 | never | +6 |
+| 4.2 Mbps, Chromium, after | **+2153** | **+4276** | +9487 | +5059 |
 
 Three things do it. The queue starts at the page's **own photograph**, not at
 `load` — `afterHeroPaint`, the high-priority image's own `decode()` — so it
@@ -1323,6 +1327,11 @@ queue drains, when a press takes the wire back, or after a 5 s cap. A plate
 that is the *same* file as the hero is never held: the soft copy under every
 inner page's reading is the hero's own frame, so it costs nothing and holding
 it would leave the page standing on its floor for no saving at all.
+
+9 Mbps is the DevTools 4G preset and 4.2 the harder half of it; the throttle is
+a shared token bucket in the harness's own server, because WebKit has no
+network emulation to borrow. At 4.2 the last of the three is past the 5 s cap,
+which is the cap doing its job: the page the reader is on takes its ground back.
 
 A tap five seconds into home now finds the destination's file **warm in every
 case**: the route commits and the photograph is on the same frame, and the
