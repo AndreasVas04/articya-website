@@ -87,6 +87,13 @@
 
   --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
   --ease-in-out-cubic: cubic-bezier(0.65, 0, 0.35, 1);
+  /* Every text entrance on the site: the About scenes' words, their rule and
+     their photograph, and the finale that closes the same page. One token, so
+     the two cannot be given different curves again. */
+  --ease-enter: cubic-bezier(0.16, 1, 0.3, 1);
+  /* And the step between them, in reading order. */
+  --enter-step: 90ms;
+  --enter-ms: 1400ms;
 }
 
 /* Not `@theme inline`: that inlines the stack into the generated utilities and
@@ -1097,30 +1104,45 @@ body {
   transition: translate 700ms var(--ease-out-quart);
 }
 /* The About finale's closing paragraph, its rule and the four tiles nearest
-   them: one arrival, once, on one clock. The words and the tiles rise 56px
-   over 1.4s and the rule draws from its centre on the same clock; the fade is
-   short against the travel, as everywhere else, so the movement is what the
-   eye sees. Hidden only between mount and the cue - the exported HTML and
-   reduced motion never carry this state. The tile's rise sits on the box
-   inside the scroll-linked layer, so the two channels never share a
-   property. */
+   them: one arrival, once, on one clock - and it is the scenes' own arrival,
+   to the number. The three scenes above it run `--enter-ms` on `--ease-enter`
+   with `--enter-step` between the rule, the photograph and the words, and
+   rise 40px; this ran 1400ms of travel against a 400ms fade on a different
+   curve, rose 56px and staggered nothing, which is what the owner saw. The
+   tile's rise sits on the box inside the scroll-linked layer, so the two
+   channels never share a property. Hidden only between mount and the cue -
+   the exported HTML and reduced motion never carry this state. */
 @layer components {
   .finale-words:not([data-on]) .finale-words-block,
   .finale-foot:not([data-on]) .finale-tile {
     opacity: 0;
-    translate: 0 var(--finale-rise, 56px);
+    translate: 0 var(--finale-rise, 40px);
   }
   .finale-words[data-on] .finale-words-block,
   .finale-foot[data-on] .finale-tile {
     transition:
-      opacity 400ms var(--ease-out-quart),
-      translate var(--finale-ms, 1400ms) var(--ease-out-quart);
+      opacity var(--enter-ms) var(--ease-enter),
+      translate var(--enter-ms) var(--ease-enter);
+  }
+  /* The scenes' reading order: the rule, then the photograph, then the words.
+     The finale has four photographs where a scene has one, and they take the
+     photograph's slot together. */
+  .finale-foot[data-on] .finale-tile {
+    transition-delay: var(--enter-step);
+  }
+  .finale-words[data-on] .finale-words-block {
+    transition-delay: calc(2 * var(--enter-step));
   }
   .finale-words:not([data-on]) .finale-rule {
     scale: 0 1;
   }
+  /* From its centre, where a scene's draws from its left edge: the scene's
+     text block is ranged left and this one is centred, so a rule that grew
+     from the left would not be under the middle of the words until it had
+     finished. It is the one number of the six that is deliberately not
+     shared. */
   .finale-words[data-on] .finale-rule {
-    transition: scale var(--finale-ms, 1400ms) var(--ease-out-quart);
+    transition: scale var(--enter-ms) var(--ease-enter);
   }
 }
 /* Evening shadow: under framed prints, and as the raised state of

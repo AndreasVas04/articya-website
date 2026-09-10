@@ -11,7 +11,10 @@ import { cn } from "@/lib/utils";
 // gone before they can be read; on a fixed duration a visitor who blasts past
 // still finds them settled where they belong. The travel is the individual
 // `translate`/`scale` properties, never `transform`.
-const ENTER_EASE = "cubic-bezier(0.16, 1, 0.3, 1)";
+// The site's one entrance curve and its one step, declared in globals.css so
+// the finale that closes this page cannot be given different ones.
+const ENTER_EASE = "var(--ease-enter)";
+const ENTER_STEP_MS = 90;
 const LIFT: CSSProperties = { opacity: 0, translate: "0 40px" };
 const RISE: CSSProperties = { translate: "0 40px" };
 const FADE: CSSProperties = { opacity: 0 };
@@ -80,9 +83,9 @@ export function StoryScene({ groups, image, flip = false }: StorySceneProps) {
     if (entered)
       return {
         transitionProperty: reducedMotion ? "opacity" : "opacity, translate, scale",
-        transitionDuration: reducedMotion ? "0.3s" : "1.4s",
+        transitionDuration: reducedMotion ? "0.3s" : "var(--enter-ms)",
         transitionTimingFunction: ENTER_EASE,
-        transitionDelay: `${slot * 90}ms`,
+        transitionDelay: `${slot * ENTER_STEP_MS}ms`,
       };
     if (reducedMotion) return "opacity" in hidden ? FADE : undefined;
     return hidden;

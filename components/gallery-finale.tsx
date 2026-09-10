@@ -4,7 +4,6 @@ import { useEffect, useRef, useState, type CSSProperties } from "react";
 import {
   cubicBezier,
   motion,
-  useMotionValueEvent,
   useReducedMotion,
   useScroll,
   useTransform,
@@ -14,7 +13,6 @@ import { ResponsiveImage } from "@/components/responsive-image";
 import { holdPipe, savingData, tooSlowToSpeculate } from "@/lib/connection";
 import { coverSizes, negotiatedExt, variantUrl, type SizeBox } from "@/lib/images";
 import { cn } from "@/lib/utils";
-import { onLayoutResize } from "@/lib/viewport";
 
 const easeInOutCubic = cubicBezier(0.65, 0, 0.35, 1);
 
@@ -196,24 +194,19 @@ const GATHER_COMPACT_PX = [0, 38, 0, 0, 0, 0, 38];
 // was still under 0.02, because a rise read off the scrollbar is as slow as
 // the reader's hand and a clock is not. So the tiles nearest the words take
 // the clock too, and there is no frame on which the words have arrived and
-// their photographs have not. The rise is the site's long settle and the fade
-// is short against it, so everything is readable while it is still travelling.
+// their photographs have not.
 //
-// The cue is the paragraph's own foot - the resting position of its last
-// line - crossing 0.92 of the window on its way up. It used to be the group's
-// top, the highest of the four tiles, at 0.85: that fired with the words' top
-// still 73px below the fold on a phone and 210px on a desktop, so the 1.4s
-// played out under the fold and the reader arrived to a finished frame. At
-// the foot the whole paragraph is inside the window when the clock starts,
-// with 0.08 of the window under it - which is the 56px of the rise, near
-// enough, so the held block is just inside as well - and the top band's tile
-// is whole on the screen above it. The tiles' own entrance is later than it
-// would be on their own: the band sits 0.43 of a window above the words and
-// waits for them, since one clock is the point. The outer two tiles, the pin,
-// the dissolve, the ring's close and the zoom stay on the scrollbar as built.
-const WORDS_RISE_PX = 56;
-const WORDS_MS = 1400;
-const ARRIVAL_CUE = 0.92;
+// And it is the three scenes' own arrival, on their own instrument. This
+// carried its own cue - the paragraph's foot crossing 0.92 of the window,
+// read off the tiles' scroll timeline - and its own numbers, and the owner
+// saw a page whose last scene did not move like the three before it. The
+// observer below is the one in components/story-scene.tsx, with the same
+// threshold and the same margin, watching the same thing: a quarter of the
+// text block risen clear of the bottom 15% of the window. The duration, the
+// curve, the step and the rise are the shared tokens in globals.css. The
+// outer two tiles, the pin, the dissolve, the ring's close and the zoom stay
+// on the scrollbar as built.
+const WORDS_RISE_PX = 40;
 // The tiles that arrive with the words: the top band, the two beside them and
 // the bottom band's long tile, in TILES order.
 const CLOCKED_TILES = new Set([1, 2, 3, 4]);
@@ -369,38 +362,23 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
     return () => query.removeEventListener("change", update);
   }, []);
 
-  // Where the paragraph's foot stands in the document, measured off the
-  // layout and never inside the scroll handler: the frame sits at the
-  // section's top until the pin engages, which is well below the cue, and the
-  // block's rest inside the frame is the layout's. The block is measured while
-  // it is still held, so the rise it is waiting to make is taken back off.
-  const wordsFoot = useRef<number | null>(null);
+  // The cue, and it is the scenes' own: fires once, the first time a quarter
+  // of the text block has risen clear of the bottom 15% of the window.
   useEffect(() => {
-    if (!mounted || reducedMotion) return;
-    const measure = () => {
-      const el = frame.current;
-      const section = container.current;
-      const block = words.current?.querySelector<HTMLElement>(".finale-words-block");
-      if (!el || !section || !block) return;
-      const frameTop = el.getBoundingClientRect().top;
-      const inFrame = block.getBoundingClientRect().bottom - frameTop - (wordsIn ? 0 : WORDS_RISE_PX);
-      wordsFoot.current = section.getBoundingClientRect().top + window.scrollY + inFrame;
-    };
-    measure();
-    const offResize = onLayoutResize(measure);
-    const observer = new ResizeObserver(measure);
-    observer.observe(document.documentElement);
-    return () => {
-      offResize();
-      observer.disconnect();
-    };
-  }, [mounted, reducedMotion, compact, wordsIn]);
-
-  // The cue, read on the tiles' own timeline so the two cannot drift.
-  useMotionValueEvent(stage, "change", () => {
-    if (wordsIn || !mounted || reducedMotion || wordsFoot.current === null) return;
-    if (wordsFoot.current - window.scrollY <= ARRIVAL_CUE * window.innerHeight) setWordsIn(true);
-  });
+    if (wordsIn || !mounted || reducedMotion) return;
+    const block = words.current?.querySelector<HTMLElement>(".finale-words-block");
+    if (!block) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        observer.disconnect();
+        setWordsIn(true);
+      },
+      { threshold: 0.25, rootMargin: "0px 0px -15% 0px" }
+    );
+    observer.observe(block);
+    return () => observer.disconnect();
+  }, [wordsIn, mounted, reducedMotion, compact]);
 
   // Resting state: the paragraph in full, then the same photos as a plain
   // grid. No pinning, no scroll-linked transforms.
@@ -457,7 +435,7 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
         ref={frame}
         data-on={wordsIn ? "" : undefined}
         className="finale-foot hero-foot-fade sticky top-0 h-[100dvh] overflow-hidden"
-        style={{ "--foot-in": footIn, "--finale-rise": `${WORDS_RISE_PX}px`, "--finale-ms": `${WORDS_MS}ms` } as MotionStyle}
+        style={{ "--foot-in": footIn, "--finale-rise": `${WORDS_RISE_PX}px` } as MotionStyle}
       >
         <motion.div
           className="absolute inset-0 z-10 flex items-center justify-center px-4"
