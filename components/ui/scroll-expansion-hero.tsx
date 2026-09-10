@@ -608,6 +608,7 @@ const ScrollExpandMedia = ({
     if (window.scrollY <= 0) return;
     skipCapture.current = true;
     release(false);
+    progressRef.current = 1;
     setScrollProgress(1);
     setMediaFullyExpanded(true);
     setShowContent(true);
@@ -629,8 +630,15 @@ const ScrollExpandMedia = ({
   useEffect(() => {
     if (reducedMotion || skipCapture.current || released.current) return;
 
+    // Progress is written in two places and both have to be told. `progressRef`
+    // is what the way back in reads its own starting point from, and a hero
+    // opened by the keyboard used to leave it at zero - so `startClose` saw a
+    // hero standing at nothing to close and returned, and the reader who had
+    // pressed End could scroll back to the top for as long as they liked with
+    // the hero staying open.
     const expandInstantly = () => {
       release();
+      progressRef.current = 1;
       setScrollProgress(1);
       setMediaFullyExpanded(true);
       setShowContent(true);
