@@ -411,7 +411,6 @@ const ScrollExpandMedia = ({
   const [scrollProgress, setScrollProgress] = useState(0);
   const [showContent, setShowContent] = useState(false);
   const [mediaFullyExpanded, setMediaFullyExpanded] = useState(false);
-  const [touchStartY, setTouchStartY] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
   const [activeSlide, setActiveSlide] = useState(0);
   const [mounted, setMounted] = useState(false);
@@ -422,11 +421,16 @@ const ScrollExpandMedia = ({
   // and then have the whole of the opening to arrive in.
   const loaded = useGroundTurn();
   const introRef = useRef<HTMLDivElement | null>(null);
+  const cardRef = useRef<HTMLDivElement | null>(null);
+  const posterRef = useRef<HTMLDivElement | null>(null);
   const ridgeRef = useRef<HTMLDivElement | null>(null);
   const titleRef = useRef<HTMLDivElement | null>(null);
   // How far the headline block goes down behind the land. Measured; see the
   // effect below.
   const [descent, setDescent] = useState(0);
+  // The same number the frame reads, without waiting for the render that
+  // carries it.
+  const descentRef = useRef(0);
   // The settle in flight, if any, and the idle clock that starts one. Refs,
   // because the handlers below are re-bound on every progress step and a
   // settle has to survive that; `settleRun` is what wakes the effect when one
@@ -434,7 +438,16 @@ const ScrollExpandMedia = ({
   const settle = useRef<Settle | null>(null);
   const idleTimer = useRef<number | null>(null);
   const progressRef = useRef(0);
+  // Where the finger was on the last move. A ref and not state: it changes on
+  // every touchmove, and as state it put the driver's own dependency list in
+  // the input's hands - four window listeners removed and added again per
+  // event, at the rate of the reader's thumb.
+  const touchStart = useRef(0);
+  // The frame that hands the glass what the input has already decided. See
+  // `applyProgress`.
+  const paintFrame = useRef(0);
   const [settleRun, setSettleRun] = useState(0);
+  const [releaseRun, setReleaseRun] = useState(0);
   // The wheel's recent shape: how many consecutive events have qualified as a
   // tail, when the last one landed and how big it was.
   const tail = useRef({ count: 0, at: 0, size: 0 });
@@ -546,6 +559,7 @@ const ScrollExpandMedia = ({
       const anchor =
         parseFloat(getComputedStyle(ridge).getPropertyValue("--hero-poster-y")) / 100;
       const skyline = (height - mask) * anchor + RIDGE_SKYLINE * mask;
+      descentRef.current = skyline - title.offsetTop;
       setDescent(skyline - title.offsetTop);
     };
     measure();
@@ -568,6 +582,12 @@ const ScrollExpandMedia = ({
   const released = useRef(false);
   const release = (arm = true) => {
     released.current = true;
+    // The driver's own wake-up. Its listeners used to leave with the next
+    // progress step, which re-ran the effect and hit the guard at the top of
+    // it; progress is not in that dependency list any more, so the release
+    // says so itself. Without this the wheel capture and the scroll pin stand
+    // after the opening has finished and the page never scrolls.
+    setReleaseRun((n) => n + 1);
     settle.current = null;
     if (idleTimer.current !== null) window.clearTimeout(idleTimer.current);
     idleTimer.current = null;
@@ -608,6 +628,7 @@ const ScrollExpandMedia = ({
     if (window.scrollY <= 0) return;
     skipCapture.current = true;
     release(false);
+    progressRef.current = 1;
     setScrollProgress(1);
     setMediaFullyExpanded(true);
     setShowContent(true);
@@ -626,20 +647,72 @@ const ScrollExpandMedia = ({
     []
   );
 
+  // The six values the opening moves, written onto the elements inside the
+  // frame the input landed in. It is not a second source of truth: every
+  // number here comes from the same helper the render below calls, with the
+  // same argument, so the state write that follows lands on what is already
+  // there. A layer the render has not mounted - the poster past its own
+  // strength - simply has no element to write to.
+  const paint = (p: number) => {
+    const w = cardWidth(p);
+    const h = cardHeight(p);
+    for (const box of [cardRef.current, introRef.current]) {
+      if (!box) continue;
+      box.style.width = w;
+      box.style.height = h;
+    }
+    if (cardRef.current) cardRef.current.style.opacity = String(cardAlpha(p));
+    if (posterRef.current) {
+      posterRef.current.style.opacity = String(posterOpacity(p));
+      posterRef.current.style.scale = String(heroPush(p));
+    }
+    if (titleRef.current) {
+      const exit = exitOf(p);
+      titleRef.current.style.transform = `translateY(${exit * descentRef.current}px) scale(${1 - 0.15 * exit})`;
+      titleRef.current.style.opacity = exit < 1 ? "1" : "0";
+    }
+  };
+
   useEffect(() => {
     if (reducedMotion || skipCapture.current || released.current) return;
 
     const expandInstantly = () => {
       release();
+      progressRef.current = 1;
       setScrollProgress(1);
       setMediaFullyExpanded(true);
       setShowContent(true);
     };
 
+    // Progress from a wheel notch or a finger, and it is read off the ref
+    // rather than the state. Two things follow, and they are the whole of the
+    // slow drag.
+    //
+    // The listeners stand still. The state was in this closure, so the effect
+    // that registers them listed it, and every event tore all four down and
+    // added them again - on a phone, at the rate of a thumb. Nothing here
+    // reads `scrollProgress` now, so the four are registered once.
+    //
+    // And the glass is handed the new value on the frame the input landed in,
+    // not on the one after it. `setScrollProgress` is a render, and a render
+    // is a task: measured at 390x664 on WebKit with one touchmove per frame,
+    // only 262 of 488 frames moved the card at all - the rest of the events
+    // arrived a frame late and doubled up with the next, which is the step-
+    // and-hold the owner has their finger on. `paint` writes the same six
+    // values React is about to write, straight onto the elements, inside the
+    // frame; the state write follows and the two agree, so there is nothing
+    // to fight over and no frame where progress has moved and the picture has
+    // not.
     const applyProgress = (delta: number) => {
-      const newProgress = Math.min(Math.max(scrollProgress + delta, 0), 1);
+      const newProgress = Math.min(Math.max(progressRef.current + delta, 0), 1);
       progressRef.current = newProgress;
-      setScrollProgress(newProgress);
+      if (!paintFrame.current) {
+        paintFrame.current = requestAnimationFrame(() => {
+          paintFrame.current = 0;
+          paint(progressRef.current);
+          setScrollProgress(progressRef.current);
+        });
+      }
       if (newProgress >= 1) {
         release();
         setMediaFullyExpanded(true);
@@ -754,16 +827,16 @@ const ScrollExpandMedia = ({
     const handleTouchStart = (e: globalThis.TouchEvent) => {
       watchdog.current = { n: 0, y: window.scrollY, off: false };
       if (!singleTouch(e)) {
-        setTouchStartY(0);
+        touchStart.current = 0;
         return;
       }
-      setTouchStartY(e.touches[0].clientY);
+      touchStart.current = e.touches[0].clientY;
     };
 
     const handleTouchMove = (e: globalThis.TouchEvent) => {
-      if (!touchStartY) return;
+      if (!touchStart.current) return;
       if (!singleTouch(e)) {
-        setTouchStartY(0);
+        touchStart.current = 0;
         return;
       }
       // A reader who has zoomed in is panning their magnifying glass, not
@@ -771,7 +844,7 @@ const ScrollExpandMedia = ({
       // longer see all of.
       if (pageZoomed()) return;
       const touchY = e.touches[0].clientY;
-      const deltaY = touchStartY - touchY;
+      const deltaY = touchStart.current - touchY;
       if (deltaY !== 0) lastDir.current = deltaY > 0 ? 1 : -1;
 
       // Once progress hits 1 this effect is gone, so touch events are no
@@ -784,7 +857,7 @@ const ScrollExpandMedia = ({
       }
       onInput();
       applyProgress(deltaY * touchGain(deltaY));
-      setTouchStartY(touchY);
+      touchStart.current = touchY;
       // The same watchdog the way back in carries, on the other capture. The
       // state it exists for is this one: at progress 0 a finger drawing the
       // page down is clamped at 0 and the page is pinned at 0, so every move
@@ -811,7 +884,7 @@ const ScrollExpandMedia = ({
     // glass is caught by the clock. Fingers still down are a gesture still
     // running, and the settle has nothing to settle from.
     const handleTouchEnd = (e: globalThis.TouchEvent) => {
-      setTouchStartY(0);
+      touchStart.current = 0;
       if (e.touches.length > 0) return;
       startSettle();
     };
@@ -819,7 +892,7 @@ const ScrollExpandMedia = ({
     // Safari cancels the touch sequence outright when it takes a gesture over
     // - a pinch, or the swipe back. The capture has to let go with it.
     const handleTouchCancel = () => {
-      setTouchStartY(0);
+      touchStart.current = 0;
     };
 
     const handleScroll = () => {
@@ -827,21 +900,25 @@ const ScrollExpandMedia = ({
       window.scrollTo(0, 0);
     };
 
-    // One step of the settle in flight, fed through `applyProgress` from this
-    // effect's own closure: the step re-renders, the effect re-runs and books
-    // the next one, so a settle advances one frame at a time on the page's
-    // own clock and never through a stale closure.
+    // The settle in flight, one step per frame on the page's own clock. It
+    // used to book each step by re-rendering: the step wrote progress to
+    // state, the effect listed it, the effect re-ran and booked the next
+    // frame. Nothing in this closure reads state now, so the loop books its
+    // own next frame and stops on the frame the settle is cleared - by its
+    // own end, or by the hand, which is the one thing that could cancel it
+    // before as well.
     let settleFrame = 0;
-    if (settle.current) {
-      settleFrame = requestAnimationFrame(() => {
-        const s = settle.current;
-        if (!s) return;
-        const u = clamp01((performance.now() - s.start) / s.duration);
-        const target = u >= 1 ? s.to : s.from + (s.to - s.from) * settleEase(u);
-        if (u >= 1) settle.current = null;
-        applyProgress(target - scrollProgress);
-      });
-    }
+    const settleStep = () => {
+      settleFrame = 0;
+      const s = settle.current;
+      if (!s) return;
+      const u = clamp01((performance.now() - s.start) / s.duration);
+      const target = u >= 1 ? s.to : s.from + (s.to - s.from) * settleEase(u);
+      if (u >= 1) settle.current = null;
+      applyProgress(target - progressRef.current);
+      if (settle.current) settleFrame = requestAnimationFrame(settleStep);
+    };
+    if (settle.current) settleFrame = requestAnimationFrame(settleStep);
 
     window.addEventListener("wheel", handleWheel, { passive: false });
     // Safari does not default window `scroll`/`touchstart` to passive the way
@@ -862,10 +939,12 @@ const ScrollExpandMedia = ({
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("touchstart", handleTouchStart);
       window.removeEventListener("touchmove", handleTouchMove);
+      if (paintFrame.current) cancelAnimationFrame(paintFrame.current);
+      paintFrame.current = 0;
       window.removeEventListener("touchend", handleTouchEnd);
       window.removeEventListener("touchcancel", handleTouchCancel);
     };
-  }, [scrollProgress, touchStartY, reducedMotion, settleRun]);
+  }, [reducedMotion, settleRun, releaseRun]);
 
   // Scrolling back into the opening, and it is not the old reversal.
   //
@@ -939,7 +1018,7 @@ const ScrollExpandMedia = ({
     gestureY.current = fingerY;
     lowest.current = fingerY;
     bounceUntil.current = 0;
-    setTouchStartY(fingerY);
+    touchStart.current = fingerY;
     setReentry(false);
   };
 
@@ -1396,6 +1475,7 @@ const ScrollExpandMedia = ({
       lastInputAt.current = 0;
       lastDir.current = 1;
       gaps.current = [];
+      progressRef.current = 0;
       setScrollProgress(0);
       setMediaFullyExpanded(false);
       setShowContent(false);
@@ -1440,9 +1520,9 @@ const ScrollExpandMedia = ({
   // replaces, to the pixel - so the pace there is not merely preserved but
   // identical, and the card still reaches the sides at progress 0.912.
   const stageEnd = ((1550 / 1440) * 100).toFixed(3);
-  const mediaWidth = isMobile
-    ? `${300 + progress * 650}px`
-    : `calc(300px + ${progress} * (${stageEnd}% - 300px))`;
+  const cardWidth = (p: number) =>
+    isMobile ? `${300 + p * 650}px` : `calc(300px + ${p} * (${stageEnd}% - 300px))`;
+  const mediaWidth = cardWidth(progress);
   // The height runs the same ramp, overshooting the stage by the same fraction
   // and stopped by the same cap. It used to land on a flat 800px desktop /
   // 600px mobile under an 85vh ceiling, and that is what detached the header:
@@ -1453,14 +1533,16 @@ const ScrollExpandMedia = ({
   // header has never had. Full bleed on both axes, and the picture runs to
   // every edge of the window the way the width already made it run to the
   // sides.
-  const mediaHeight = `calc(400px + ${progress} * (${stageEnd}% - 400px))`;
+  const cardHeight = (p: number) => `calc(400px + ${p} * (${stageEnd}% - 400px))`;
+  const mediaHeight = cardHeight(progress);
 
   // The card cross-dissolves out of the poster as it grows. The collapsed
   // opening is the full-bleed photograph itself, so a small frame sitting on
   // top of it would read as a photo-in-photo; instead the card is hidden until
   // the growth begins and is full by the time it has any size - the poster
   // becomes the gallery rather than floating a second picture over it.
-  const cardOpacity = Math.min(Math.max((progress - 0.02) / 0.28, 0), 1);
+  const cardAlpha = (p: number) => Math.min(Math.max((p - 0.02) / 0.28, 0), 1);
+  const cardOpacity = cardAlpha(progress);
 
   // The poster's own strength, read once, by the layer at the top of the
   // section and by the copy of it masked to the land at the bottom. At zero
@@ -1493,7 +1575,8 @@ const ScrollExpandMedia = ({
   // the expansion, so the opening *becomes* the gallery. The old split-and-
   // slide whipped the two lines 180vw apart on mobile inside a single flick,
   // which read as an instant vanish rather than a transition (see the brief).
-  const titleExit = Math.min(Math.max((progress - 0.03) / 0.57, 0), 1);
+  const exitOf = (p: number) => Math.min(Math.max((p - 0.03) / 0.57, 0), 1);
+  const titleExit = exitOf(progress);
   // Nothing fades. The block goes *down*, at full ink, until its top row is on
   // the skyline - and the land in front of the plate is what takes it, which
   // is `cabinfever`'s own move rather than an invention. Its deadline is
@@ -1566,6 +1649,7 @@ const ScrollExpandMedia = ({
             the skyline stood up to 5px apart for a fifth of a second. */}
         {posterShowing && (
         <div
+          ref={posterRef}
           className="absolute inset-0 z-0"
           style={{ opacity: poster, scale: heroPush(progress) }}
         >
@@ -1656,6 +1740,7 @@ const ScrollExpandMedia = ({
                 classic scrollbar cannot push the card past the stage and into
                 horizontal overflow. */}
             <div
+              ref={cardRef}
               className="hero-card hero-foot-fade hero-foot-halo absolute left-1/2 top-1/2 z-0 -translate-x-1/2 -translate-y-1/2"
               style={{
                 width: mediaWidth,
