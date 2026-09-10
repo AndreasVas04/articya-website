@@ -108,6 +108,20 @@ interface StageFrame {
   values: number[];
 }
 
+// A plate's darkening as custom properties, so the plate and the ground
+// standing under it are darkened by one set of numbers and not two.
+const shadeStyle = (shade: StagePlate["shade"]): CSSProperties | undefined =>
+  shade
+    ? ({
+        ...(shade.color ? { "--shade-color": shade.color } : null),
+        "--shade-top": `${shade.top}%`,
+        "--shade-mid": `${shade.mid}%`,
+        "--shade-bottom": `${shade.base}%`,
+        "--shade-mid-from": shade.from ?? "30%",
+        "--shade-mid-to": shade.to ?? "78%",
+      } as CSSProperties)
+    : undefined;
+
 // The photographic ground the whole page below the hero stands on: one fixed
 // full-viewport layer holding every plate, crossfading as the reader scrolls.
 // Sections paint no ground of their own, so there is no edge anywhere for a
@@ -409,19 +423,29 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
     ? imagePreload(lcp.src, coverSizes(lcp.src, FULL_VIEWPORT))
     : null;
 
-  // The ground this layer stands on until its first photograph arrives. An
-  // inner page paints its hero before the picture is anywhere near it - 500 ms
-  // behind on 4G, seconds on 3G - and what showed through was the site floor:
-  // the same flat pine under every page, and a hard cut to the frame when it
-  // landed. This is the frame's own dark instead, so the picture resolves out
-  // of its own hue rather than replacing an unrelated one.
+  // The ground this layer stands on until its first photograph arrives, and it
+  // is the photograph. An inner page paints its hero before the rung is
+  // anywhere near it - 500 ms behind on 4G, seconds on 3G - and what showed
+  // through was the site floor: the same flat pine under every page, and a
+  // hard cut to the frame when it landed. The frame's own dark closed the cut;
+  // the 24px copy of the frame closes the rest of it.
   //
-  // One opaque colour and nothing else. A blurred thumbnail is a photograph at
-  // partial strength, which is the state the polarised ledger forbids at every
-  // frame of a transition and not only at its ends; a gradient or a fade is
-  // the same thing spread over time. It is measured to the floor's own weight
-  // (L 25.9 against 25.9) so there is no step where this layer ends and the
-  // document's background begins, and none as it is covered.
+  // It stands *under every plate* rather than inside the first one, and that
+  // is the whole of this. Inside the plate it was carried by the plate's own
+  // opacity, which `draw` writes from `window.scrollY` in a layout effect - and
+  // on a route change that is the departure page's scroll for one frame, so the
+  // layer computed to nothing on exactly the frame a route arrives. Measured
+  // going /about/ to /faq/ at 390x664: one frame at opacity 0, and it is the
+  // frame the route wipe takes the destination from. Here no scroll position,
+  // no crossfade and no `display` can reach it.
+  //
+  // It carries no darkening of its own, and that is not an omission: the LCP
+  // plate's layer stands over it at opacity 1 from the first frame with the
+  // plate's own shade inside it, so this ground is already lit by exactly the
+  // numbers the rung will be lit by. A second shade here darkened it twice -
+  // measured at 390x664, the hero band fell to 0.31 of its own detail against
+  // 0.60 - which is the flat green this exists to end. The colour stays behind
+  // it for a browser that decodes neither format.
   //
   // Only a stage with an LCP plate takes one. Home's stage arrives under the
   // hero, out of nothing, on the run-up its first zone is keyed to - a ground
@@ -462,6 +486,7 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
           fetchPriority="high"
         />
       )}
+      {lcp && <PhotoPlaceholder src={lcp.src} position={lcp.position} />}
       {plates.map((plate, i) => {
         // One declaration per plate, shared by every copy of it. A soft copy
         // is rasterized at a quarter of the frame and would fetch a quarter
@@ -493,11 +518,6 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
             } as CSSProperties
           }
         >
-          {/* The photograph at 24px, inline in the document, under the rung
-              this page is waiting for - see components/photo-placeholder.tsx.
-              Only the hero carries one: it is the only frame a reader is ever
-              held on. */}
-          {plate.priority && <PhotoPlaceholder src={plate.src} position={plate.position} />}
           <div
             data-plate-image=""
             hidden={!ready}
@@ -544,20 +564,7 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
               anywhere else on the page. */}
           <div
             className="plate-shade stage-plate-shade absolute inset-0"
-            style={
-              plate.shade
-                ? ({
-                    ...(plate.shade.color
-                      ? { "--shade-color": plate.shade.color }
-                      : null),
-                    "--shade-top": `${plate.shade.top}%`,
-                    "--shade-mid": `${plate.shade.mid}%`,
-                    "--shade-bottom": `${plate.shade.base}%`,
-                    "--shade-mid-from": plate.shade.from ?? "30%",
-                    "--shade-mid-to": plate.shade.to ?? "78%",
-                  } as CSSProperties)
-                : undefined
-            }
+            style={shadeStyle(plate.shade)}
           />
         </div>
         );

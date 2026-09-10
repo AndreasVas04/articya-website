@@ -5,10 +5,14 @@ import { usePathname, useRouter } from "next/navigation";
 import { holdRoute } from "@/lib/route-wipe";
 
 // How long the wipe waits for the destination's photograph before it goes
-// over the ground instead. On a warm cache - the intent and idle prefetches
-// have already put the file there - the decode resolves inside a frame or
-// two; cold, this is the most a reader is held on the old page.
-const HERO_WAIT_MS = 300;
+// over the ground instead - and what it waits for is the 24px placeholder,
+// which is inline in the document and decodes inside a frame. It used to wait
+// for the rung: a 700-900KB download, up to 300 ms of the reader held on the
+// page they were leaving, and four rounds of prefetch could not move it,
+// because the hold was never on the file. The rung lands under the wipe
+// whenever it lands. This is the guard for an engine that has not decoded a
+// kilobyte of AVIF by the next frame, not a budget.
+const GROUND_WAIT_MS = 100;
 // How long the new route has to commit before the wipe is abandoned and the
 // change lands the plain way. The route's own chunk and payload are
 // prefetched on intent, so this is a guard and not a budget.
@@ -32,14 +36,16 @@ function routeOf(a: HTMLAnchorElement): string | null {
   return path + url.search + url.hash;
 }
 
-// The destination's own photograph: the one plate on every page that is
-// fetched at high priority, which is the hero on an inner page and the poster
-// on home. Resolves when it is decoded, or after HERO_WAIT_MS, whichever is
-// first.
-async function heroPainted() {
-  const img = document.querySelector<HTMLImageElement>('main img[fetchpriority="high"]');
+// The destination's own ground: the photograph at 24px that every route paints
+// under its hero from its first frame. Resolves when it is decoded, or after
+// GROUND_WAIT_MS, whichever is first. A route that carries no placeholder -
+// the 404 - has nothing to wait for and the wipe starts at once.
+async function heroGrounded() {
+  const img = document.querySelector<HTMLImageElement>(
+    "main [data-photo-placeholder] img"
+  );
   if (!img) return;
-  await Promise.race([img.decode().catch(() => undefined), sleep(HERO_WAIT_MS)]);
+  await Promise.race([img.decode().catch(() => undefined), sleep(GROUND_WAIT_MS)]);
 }
 
 // Resolved by the layout effect below on the commit that changes the path.
@@ -91,7 +97,7 @@ export function RouteWipe() {
           transition.skipTransition();
           return;
         }
-        await heroPainted();
+        await heroGrounded();
       });
       holdRoute(transition.finished);
     };
