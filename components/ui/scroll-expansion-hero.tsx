@@ -1443,13 +1443,25 @@ const ScrollExpandMedia = ({
     };
   }, [reentry, reducedMotion]);
 
-  // The drawing half: one frame of whatever animation is in flight. It re-runs
-  // on every step, which is what advances the clock; the listeners above do
-  // not, which is what keeps WebKit's touch dispatch decision stable.
+  // The drawing half: the animation in flight, one frame at a time. The
+  // listeners above do not re-run with it, which is what keeps WebKit's touch
+  // dispatch decision stable.
+  //
+  // The loop books its own next frame. It used to book it by re-rendering -
+  // the step wrote progress to state, this effect listed it, the effect re-ran
+  // - and a step that wrote the progress already standing wrote nothing at
+  // all: React holds a set to the same value, so nothing re-rendered, nothing
+  // re-ran, and the close stopped where it was. That is a real frame at the
+  // start of every settle, where `settleEase(0)` is exactly 0 and the target
+  // is exactly the progress the scrub left; measured at 390x664 on WebKit it
+  // froze one reversing scrub in five, at 0.64, with the card at 390x601 and
+  // no clock left to move it.
   useEffect(() => {
     if (reducedMotion || !reentry) return;
     if (!closing.current) return;
-    const frame = requestAnimationFrame(() => {
+    let frame = 0;
+    const draw = () => {
+      frame = 0;
       const c = closing.current;
       if (!c) return;
       const u = clamp01((performance.now() - c.start) / c.duration);
@@ -1466,9 +1478,11 @@ const ScrollExpandMedia = ({
         heroTrace.event("close:settled", `back to ${c.to}`);
       }
       step(p);
-    });
+      if (closing.current) frame = requestAnimationFrame(draw);
+    };
+    frame = requestAnimationFrame(draw);
     return () => cancelAnimationFrame(frame);
-  }, [reentry, reducedMotion, scrollProgress, closeRun]);
+  }, [reentry, reducedMotion, closeRun]);
 
   // The idle clock must not outlive the capture.
   useEffect(
