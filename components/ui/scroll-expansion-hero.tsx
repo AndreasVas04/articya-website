@@ -1700,6 +1700,12 @@ const ScrollExpandMedia = ({
                   style={{ scale: heroPush(progress) }}
                 >
                   {restingState ? (
+                    <>
+                    {/* Reduced motion rests with the poster layer unrendered -
+                        it is at strength 0 there - so the card's own copy is
+                        the page's first photograph and carries the 24px frame
+                        under it instead. */}
+                    <PhotoPlaceholder src={slides[0]} position="50% var(--hero-poster-y)" />
                     <ResponsiveImage
                       src={slides[0]}
                       alt=""
@@ -1709,6 +1715,7 @@ const ScrollExpandMedia = ({
                       className="object-cover saturate-[1.06] sepia-[0.08]"
                       style={{ objectPosition: "50% var(--hero-poster-y)" }}
                     />
+                    </>
                   ) : (
                     slides.map((src, i) => (
                       // Each slide crosses in by uncovering rather than a plain
