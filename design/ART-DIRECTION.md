@@ -161,6 +161,26 @@ mechanics stay frozen; the crop, the block's height in the frame and the mask
 are the three numbers that place the words on the skyline and they are tuned
 together — move one and re-measure the other two.
 
+Since 2026-09-11 the column has a **scroll cue** at its foot, and it stands
+from the first paint: `REFERENCE-LANGUAGE §A4`'s eyebrow row a third time — a
+48px amber rule, a 14px gap, and a word in the offer eyebrow's own register, on
+one line, on the axis, `CUE_GAP` below the headline block. The column then
+reads word-and-mark above the headline and mark-and-word below it. There is no
+entrance on it and no clock in front of it; it leaves over 320ms on the first
+input of any kind, for the page view. The row it stands on is bounded by the
+photograph rather than chosen: the foot of this frame is the sunlit bracken,
+where cream reads 1.05–1.21, and the lowest row on the axis that carries both
+floors leaves a gap of 43.1px at 375×553. Measured at its own ink the word
+reads 8.67–10.60 against a 4.5 floor and the rule 3.80–4.86 against 3.0.
+
+**The version that waited is rejected and joins §3's list.** A word at 2.9s
+with a 48px rule standing on the *vertical* axis under it: the reader who needs
+a cue is the reader already sitting still, and 80px of thin furniture floating
+in the middle of a photograph has nothing holding it. A **travelling lit
+segment** was refused before that — a second looping autoplay beside the
+Earth's, and a mark seen travelling is gate 2's own verdict.
+`design/refs/2026-09-11-cue2/`.
+
 **The lede** — "A youth organization connecting young people in Cyprus…" is
 currently under-weighted. It needs more presence in the composition. It must not
 get a box.

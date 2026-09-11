@@ -179,6 +179,43 @@ const CLOSE_PULL_PX = 24;
 // after a lift at the top no scroll-derived signal arms, starts or pins
 // anything. A new finger ends it at once.
 const BOUNCE_MS = 400;
+
+// The opening's one affordance, and it stands from the first paint. This hero
+// is a single screen with no scrollbar under it and nothing on it that looks
+// like a control, so a reader who has not met a page like this waits for
+// something to happen - and a hint that arrives after they have waited is one
+// that arrives after they have given up. Not one of the five reference sites
+// animates its cue and not one delays it: MNTN sets `scroll down` under its
+// headline, Grand Canyon runs a numbered rail down the right margin and
+// Forest Excursions a dot index down the same one, and all three are simply
+// *there*, from the first frame, until the reader moves.
+//
+// What is built is `REFERENCE-LANGUAGE` §A4's eyebrow row, used a third time:
+// a 48px amber rule, a 14px gap, and a word in the offer eyebrow's own
+// register, on one line, on the axis, under the headline. The column then
+// reads word-and-mark above the headline and mark-and-word below it, in the
+// same two marks at two weights. It is one row of about 13px and it is
+// horizontal, which is the whole difference from the row this replaces: that
+// one stood its rule on the *vertical* axis under the word, which made 80px
+// of thin furniture floating in the middle of a photograph with nothing
+// holding it, and it waited 2.9s before it did.
+const CUE_OUT_MS = 320;
+// What stands between the headline's box and the row, in px, and it is the
+// label's own margin read backwards: `mb-[37.25px]` is what the label stands
+// off the headline above, so the cue stands the same off it below and the
+// column has one clearance on each side of the words.
+//
+// How much lower it could go is measured and the answer is: not much. The
+// foot of this photograph is the sunlit bracken the hikers are standing in,
+// where cream reads 1.05-1.21 against the brightest pixel of the bottom row,
+// and reaching 4.5 there needs about 84% darkening held over the foreground -
+// a hood over the photograph's own subject, which is `ART-DIRECTION §3`'s
+// "no brightness filter to fix contrast" with a darkening in its place. Swept
+// in 4px steps, the lowest row on the axis that carries both floors leaves a
+// gap of 43.1px at 375x553 and 74.9 / 95.0 / 162.6 / 138.6 at the other four.
+// 37.25 is inside all five and is a number this column already owns.
+const CUE_GAP = 37.25;
+type Cue = "on" | "out" | "off";
 interface Close {
   from: number;
   to: number;
@@ -432,6 +469,19 @@ const ScrollExpandMedia = ({
   const ridgeRef = useRef<HTMLDivElement | null>(null);
   const windowRef = useRef<HTMLDivElement | null>(null);
   const titleRef = useRef<HTMLDivElement | null>(null);
+  const sectionRef = useRef<HTMLElement | null>(null);
+  // The scroll cue: which of its three states is on the glass, the same answer
+  // for the listeners that spend it (they are older than the render that would
+  // have told them), and whether it has been spent at all. Spent is one-way
+  // for the page view. It starts standing - there is no clock in front of it.
+  const [cue, setCue] = useState<Cue>("on");
+  const cueRef = useRef<Cue>("on");
+  const cueSpent = useRef(false);
+  // Where the cue stands, measured off the headline block rather than declared
+  // twice: the block's own height is the label, its margin and two lines of
+  // `clamp(3.4rem, 11vw, 10rem)`, and restating that in CSS is a second place
+  // for it to drift from.
+  const [cueTop, setCueTop] = useState(0);
   // How far the headline block goes down behind the land. Measured; see the
   // effect below.
   const [descent, setDescent] = useState(0);
@@ -575,10 +625,82 @@ const ScrollExpandMedia = ({
       const skyline = (height - mask) * anchor + RIDGE_SKYLINE * mask;
       descentRef.current = skyline - title.offsetTop;
       setDescent(skyline - title.offsetTop);
+      // The cue's row, out of the same read. The block's foot walked up to the
+      // section, which is the cue's containing block - `offsetTop` is layout,
+      // so the descent's transform on this same element cannot move it.
+      const section = sectionRef.current;
+      if (!section) return;
+      let y = title.offsetHeight + CUE_GAP;
+      for (
+        let el: HTMLElement | null = title;
+        el && el !== section;
+        el = el.offsetParent as HTMLElement | null
+      ) {
+        y += el.offsetTop;
+      }
+      setCueTop(y);
     };
     measure();
     return onLayoutResize(measure);
   }, []);
+
+  // The cue's one-way exit, which is the whole of its life: it is on the glass
+  // from the first paint and it leaves on the first input of any kind, for the
+  // page view, a close included. There is no clock in front of it and no
+  // entrance channel on it - a cue is furniture, and furniture does not arrive.
+  //
+  // Four *passive* listeners in their own effect: the set standing at
+  // `touchstart` is what WebKit reads a move's cancelability off, so nothing
+  // here may join the opening's capture - the re-entry effect already has a
+  // passive `touchmove` on the window and this is a second of the same kind,
+  // which changes nothing about what a move may prevent.
+  //
+  // It is `touchmove` and not `touchstart` on purpose: a tap on this section
+  // does nothing, and spending the one hint the reader has on a gesture that
+  // moved nothing is the worst answer to "I pressed it and nothing happened".
+  //
+  // Under reduced motion the hero renders expanded and its headline is at
+  // opacity 0 - there is no opening to explain and no column for the cue to
+  // end - so it never stands at all.
+  useEffect(() => {
+    if (reducedMotion) {
+      cueRef.current = "off";
+      setCue("off");
+      return;
+    }
+    const set = (next: Cue) => {
+      cueRef.current = next;
+      setCue(next);
+    };
+    let leave: number | null = null;
+    const spend = () => {
+      if (cueSpent.current) return;
+      cueSpent.current = true;
+      detach();
+      set("out");
+      leave = window.setTimeout(() => set("off"), CUE_OUT_MS);
+    };
+    // A pin to the top fires `scroll` with the page still at 0, and so does
+    // the inline script's own `scrollTo`. Only a page that has actually moved
+    // is the reader.
+    const onScroll = () => {
+      if (window.scrollY > 0) spend();
+    };
+    const detach = () => {
+      window.removeEventListener("wheel", spend);
+      window.removeEventListener("touchmove", spend);
+      window.removeEventListener("keydown", spend);
+      window.removeEventListener("scroll", onScroll);
+    };
+    window.addEventListener("wheel", spend, { passive: true });
+    window.addEventListener("touchmove", spend, { passive: true });
+    window.addEventListener("keydown", spend, { passive: true });
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      if (leave !== null) window.clearTimeout(leave);
+      detach();
+    };
+  }, [reducedMotion]);
 
   // The frame the card becomes the window is the frame the block below it
   // exists, and the thread's mark has a block to have left only from there on.
@@ -1809,6 +1931,7 @@ const ScrollExpandMedia = ({
           becomes a fixed document row instead of one that moves by 86px
           whenever the bar does. */}
       <section
+        ref={sectionRef}
         className="gold-field gold-field-chrome-top gold-field-open-bottom hero-drop-scope hero-plate relative isolate flex min-h-svh flex-col items-center justify-start overflow-hidden"
       >
         {/* The push and the fade are written inline, on the same clock as the
@@ -2278,6 +2401,30 @@ const ScrollExpandMedia = ({
           )}
           {posterShowing && <HeroShade progress={progress} />}
         </div>
+
+        {/* The scroll cue, and it stands in *front* of the land rather than
+            behind it. The depth device belongs to the title: the headline is
+            part of the picture and goes into it. This is an instruction to the
+            reader, so it sits on the glass with the header and leaves the frame
+            alone - which is also what lets it go without anything in the
+            photograph noticing.
+
+            It is absolutely positioned over the section and carries no height
+            of its own into the flow, so the page below it is the page that was
+            there: both document heights and all twelve stage keys are the
+            numbers they were, and the row it stands on is the headline block's
+            foot plus `CUE_GAP`. */}
+        {cue !== "off" && (
+          <div
+            aria-hidden="true"
+            data-hero-cue={cue}
+            className="hero-cue pointer-events-none absolute inset-x-0 z-30 flex items-center justify-center"
+            style={{ top: cueTop }}
+          >
+            <span className="hero-cue-rule" />
+            <span className="hero-cue-word" />
+          </div>
+        )}
       </section>
     </div>
   );

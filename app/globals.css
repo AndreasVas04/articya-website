@@ -1285,6 +1285,60 @@ body {
     width: 100cqw;
     height: 100cqh;
   }
+  /* The opening's scroll cue: `REFERENCE-LANGUAGE` §A4's eyebrow row, on the
+     axis, under the headline. Reading order is the reference's own - the rule,
+     then the words it labels - and the numbers are `.offer-eyebrow`'s own:
+     48px of amber, a 14px gap, 11px caps at 0.22em. The word is pseudo-content,
+     so the page's frozen visible text is untouched, which is
+     `.offer-eyebrow-text`'s route.
+
+     Cream on the word and amber on the rule, which is the site's own division
+     rather than a preference - amber is a mark, and the ceiling that lets the
+     offer eyebrow be amber *text* was measured on the dark floor. This one
+     stands on a photograph.
+
+     Nothing here has an entrance. The cue is on the glass from the first paint
+     and the only thing that ever happens to it is that it leaves. */
+  .hero-cue {
+    --hero-cue: "SCROLL";
+    gap: 14px;
+  }
+  /* What the reader is holding decides the verb, not how wide their window is:
+     a touchscreen laptop is told to swipe because that is what works on it. */
+  @media (pointer: coarse) {
+    .hero-cue {
+      --hero-cue: "SWIPE UP";
+    }
+  }
+  .hero-cue-word {
+    font-size: 11px;
+    line-height: 1.2;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--color-ink);
+    /* Tracking is added after the last letter too, so the box is 0.22em wider
+       on the right than the ink is. Pulled back, the pair's ink is centred on
+       the axis instead of standing 1.2px to its left. */
+    margin-right: -0.22em;
+  }
+  .hero-cue-word::before {
+    content: var(--hero-cue);
+  }
+  /* 1px and not the offer eyebrow's 1.25: a fractional declaration paints 1 or
+     2 depending on where the element lands, and this rule stands on a
+     photograph rather than on the floor. */
+  .hero-cue-rule {
+    flex: none;
+    width: 48px;
+    height: 1px;
+    background: var(--color-amber);
+  }
+  .hero-cue[data-hero-cue="out"] {
+    opacity: 0;
+    transition: opacity 320ms var(--ease-out-quart);
+  }
   .hero-ridge {
     -webkit-mask-image: var(--ridge-mask);
     mask-image: var(--ridge-mask);
