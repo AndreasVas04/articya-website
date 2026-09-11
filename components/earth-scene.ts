@@ -18,6 +18,7 @@ import {
   WebGLRenderer,
 } from "three";
 
+import { watchLiveness } from "@/lib/liveness";
 import { watchZoom } from "@/lib/viewport";
 
 // The Earth beside "What we do": the planet itself, lit once from the upper
@@ -97,6 +98,10 @@ const MAX_PITCH = 75 * DEG;
 const IDLE_BEFORE_SPIN = 4000;
 // How long a page scale has to hold before the drawing buffer is re-cut for it.
 const SCALE_SETTLE_MS = 250;
+// How long a turning globe may go without a frame before the loop is taken
+// to have been lost rather than paused: ten frames at 60Hz, and more than any
+// single frame on this page costs.
+const STALL_MS = 600;
 const SPIN_RETURN = 600;
 
 // Latitude and longitude onto the unit sphere in the geometry's own frame:
@@ -470,6 +475,10 @@ export function mountEarth(host: HTMLElement, canvas: HTMLCanvasElement, opts: E
   let visible = false;
   let raf = 0;
   let lastFrame = 0;
+  // When a frame last actually landed, for the liveness floor alone. `lastFrame`
+  // cannot answer it: it is the frame clock, zeroed on every wake so the first
+  // step after a pause is not given the whole pause as its `dt`.
+  let aliveAt = performance.now();
   let discPx = 1;
   let disposed = false;
   // Set by the page-scale watch below: true while the reader holds a pinch.
@@ -504,6 +513,7 @@ export function mountEarth(host: HTMLElement, canvas: HTMLCanvasElement, opts: E
     if (disposed || !ready || zoomed) return;
     const dt = lastFrame ? Math.min(now - lastFrame, 100) : 16.67;
     lastFrame = now;
+    aliveAt = now;
 
     if (!opts.reducedMotion) {
       // The auto-spin holds off while the hand is on the globe and for four
@@ -532,6 +542,7 @@ export function mountEarth(host: HTMLElement, canvas: HTMLCanvasElement, opts: E
   const wake = () => {
     if (!raf && ready && visible && !disposed && !zoomed) {
       lastFrame = 0;
+      aliveAt = performance.now();
       raf = requestAnimationFrame(frame);
     }
   };
@@ -626,6 +637,23 @@ export function mountEarth(host: HTMLElement, canvas: HTMLCanvasElement, opts: E
   };
   canvas.addEventListener("webglcontextlost", onContextLost);
   canvas.addEventListener("webglcontextrestored", onContextRestored);
+
+  // And the floor under all of it. Every reason this loop has to be stopped is
+  // asked for by name above; if none of them holds and no frame is booked, the
+  // loop has been lost by whatever last stood it down, and a lost loop is a
+  // planet that has simply stopped turning under the reader's thumb.
+  const offLiveness = watchLiveness(() => {
+    if (disposed || !ready || !visible || zoomed || opts.reducedMotion) return null;
+    if (performance.now() - aliveAt < STALL_MS) return null;
+    // A frame booked this long ago and still not delivered is not a frame on
+    // its way: the id is dropped so `wake` has something to book. Testing
+    // `raf` instead and standing down would make this floor blind to exactly
+    // the case it is here for - a loop holding a booking that will never run.
+    if (raf) cancelAnimationFrame(raf);
+    raf = 0;
+    wake();
+    return raf ? "globe loop" : null;
+  });
 
   // Rendering runs only while the globe is on screen.
   const intersection = new IntersectionObserver(([entry]) => {
@@ -854,6 +882,7 @@ export function mountEarth(host: HTMLElement, canvas: HTMLCanvasElement, opts: E
       if (raf) cancelAnimationFrame(raf);
       window.clearTimeout(scaleTimer);
       offZoom();
+      offLiveness();
       resizeObserver.disconnect();
       canvas.removeEventListener("webglcontextlost", onContextLost);
       canvas.removeEventListener("webglcontextrestored", onContextRestored);

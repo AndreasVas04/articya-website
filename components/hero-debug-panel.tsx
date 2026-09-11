@@ -112,6 +112,7 @@ export default function HeroDebugPanel() {
     `close: armed ${s ? (s.armed ? "yes" : "no") : "-"}  running ${s ? s.closing : "-"}  reentry ${s ? (s.reentry ? "yes" : "no") : "-"}  pinch ${s ? (s.pinch ? "yes" : "no") : "-"}  up ${s ? num(s.upward) : "-"}`,
     `pull-to-refresh guard: ${s ? (s.guard ? "on" : "off") : "-"}  preventDefault calls: ${s ? String(s.prevented) : "-"}`,
     `scrub ${s ? (s.scrub ? "RUNNING" : "no") : "-"}  stuck-watchdog fired: ${s ? String(s.stuck) : "-"}`,
+    `watchdog recovered: ${s ? String(s.watchdog) : "-"}`,
     `last: ${last.current || "-"}`,
     `touches: ${recent.current
       .map((r) => `${r.type} n${r.n}${r.dy !== null ? ` ${r.dy > 0 ? "+" : ""}${r.dy.toFixed(0)}` : ""} c${r.cancelable ? 1 : 0}`)

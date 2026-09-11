@@ -13,6 +13,7 @@ import { PhotoPlaceholder } from "@/components/photo-placeholder";
 import { ResponsiveImage } from "@/components/responsive-image";
 import { coverSizes, HERO_PUSH, HERO_VIEWPORT } from "@/lib/images";
 import { useGroundTurn } from "@/lib/page-load";
+import { watchLiveness, recoveries } from "@/lib/liveness";
 import { onLayoutResize, pageZoomed, watchZoom } from "@/lib/viewport";
 import { heroTrace } from "@/lib/hero-trace";
 import { cn, withBasePath } from "@/lib/utils";
@@ -442,6 +443,10 @@ const ScrollExpandMedia = ({
   // starts from the idle timer.
   const settle = useRef<Settle | null>(null);
   const idleTimer = useRef<number | null>(null);
+  // The opening's own settle, asked for from outside its effect. Null whenever
+  // the capture is not standing, which is the same as saying the opening is
+  // not the thing that would move the hero.
+  const settleNow = useRef<(() => boolean) | null>(null);
   const progressRef = useRef(0);
   // Where the finger was on the last move. A ref and not state: it changes on
   // every touchmove, and as state it put the driver's own dependency list in
@@ -765,6 +770,23 @@ const ScrollExpandMedia = ({
     // Start a settle from wherever progress is, if it is anywhere between the
     // two ends. Under reduced motion it would be one step rather than a
     // travel; the capture is off there, so it never runs at all.
+    // The same settle, asked for unconditionally. `startSettle` is the
+    // reader's - it respects the refractory and the idle cadence, and both can
+    // defer it again - which is right for a hand and wrong for a floor.
+    settleNow.current = () => {
+      clearIdle();
+      const p = progressRef.current;
+      if (p <= 0 || p >= 1 || settle.current) return false;
+      settle.current = {
+        from: p,
+        to: settleTarget(p, lastDir.current),
+        start: performance.now(),
+        duration: settleDuration(p, settleTarget(p, lastDir.current)),
+      };
+      setSettleRun((n) => n + 1);
+      return true;
+    };
+
     const startSettle = (byIdle = false) => {
       clearIdle();
       const p = progressRef.current;
@@ -968,6 +990,7 @@ const ScrollExpandMedia = ({
     window.addEventListener("touchcancel", handleTouchCancel);
 
     return () => {
+      settleNow.current = null;
       cancelAnimationFrame(settleFrame);
       // A frame in flight is finished here, not dropped. This effect re-runs
       // on its own release, and a value the input had already decided would
@@ -1504,6 +1527,57 @@ const ScrollExpandMedia = ({
     []
   );
 
+  // The hero's own floor. Two states it has no business holding:
+  //
+  //   - progress somewhere between the two ends with nothing moving it. Every
+  //     hand-off that leaves it there - a settle cancelled by a hand that then
+  //     lifted, a frame whose effect was torn down under it - is a hero the
+  //     reader can neither open nor close, and the poster half-grown is not a
+  //     state this design has.
+  //   - a close armed past its own lifetime. The arm is dropped inside the
+  //     scroll handler, so a page that stops scrolling stops dropping it, and
+  //     it then fires on the reader's next arrival at the top from a gesture
+  //     made a minute earlier.
+  //
+  // The wait is two sweeps, not one: a settle is 300-900ms and a sweep must
+  // never land inside one and call it stopped.
+  const heldMid = useRef(0);
+  useEffect(() => {
+    if (reducedMotion) return;
+    return watchLiveness(() => {
+      const done: string[] = [];
+      const f = fling.current;
+      if (f && performance.now() > f.until) {
+        fling.current = null;
+        done.push("stale close arm");
+      }
+      const p = progressRef.current;
+      const moving =
+        p <= 0 ||
+        p >= 1 ||
+        Boolean(gestureY.current) ||
+        scrubbing.current ||
+        Boolean(settle.current) ||
+        Boolean(closing.current) ||
+        idleTimer.current !== null;
+      if (moving) heldMid.current = 0;
+      else heldMid.current += 1;
+      if (heldMid.current >= 2) {
+        heldMid.current = 0;
+        // Whichever half of the hero owns the page right now: the opening's
+        // settle while the capture stands, the close once it has been let go.
+        if (settleNow.current?.()) done.push("hero settle");
+        else if (reentry) {
+          const to = p >= 0.5 ? 1 : 0;
+          closing.current = { from: p, to, start: performance.now(), duration: settleDuration(p, to) };
+          setCloseRun((n) => n + 1);
+          done.push("hero close");
+        }
+      }
+      return done.length ? done.join(" + ") : null;
+    });
+  }, [reducedMotion, reentry]);
+
   // What the on-device overlay reads. One assignment here; the getter runs
   // only while the overlay is polling it.
   useEffect(
@@ -1521,6 +1595,7 @@ const ScrollExpandMedia = ({
         settling: performance.now() < bounceUntil.current,
         guard: guardOn.current,
         prevented: prevented.current,
+        watchdog: recoveries(),
       })),
     [reentry]
   );
