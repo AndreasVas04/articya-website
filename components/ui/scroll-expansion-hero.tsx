@@ -179,38 +179,6 @@ const CLOSE_PULL_PX = 24;
 // after a lift at the top no scroll-derived signal arms, starts or pins
 // anything. A new finger ends it at once.
 const BOUNCE_MS = 400;
-
-// The opening's one affordance. This hero is a single screen with no scrollbar
-// under it and nothing on it that looks like a control, so a reader who has
-// not met a page like this waits for something to happen. The word is the
-// whole of the fix; the rule under it is the eyebrow mark this site already
-// carries twice - `REFERENCE-LANGUAGE` §A4's 48px of amber at one weight -
-// turned onto the vertical axis and drawn downward, so the title column reads
-// rule above, words, rule below.
-//
-// It arrives on a clock, once. The first-load choreography's last event lands
-// at 1400ms (the label, 400ms at a 1000ms delay), so this is the brief's 1.5s
-// after the opening has come to rest. Entered through the client router there
-// is no choreography to wait for and the same clock runs from mount.
-const CUE_AT_MS = 2900;
-// And it goes on the first input of any kind, for good - including after the
-// hero has been closed again. A cue standing on the glass while the reader is
-// already moving is worse than no cue at all.
-const CUE_OUT_MS = 320;
-// What stands between the headline's box and the word, in px, and it is the
-// label's own margin read backwards: `mb-[37.25px]` is what the label stands
-// off the headline above, so the cue stands the same off it below and the
-// column has one clearance on each side of the words.
-//
-// It is also the number the photograph will take. On the axis, at the rule's
-// own ink, this frame gives a 1x48 amber rule a usable run of exactly one
-// window - 375x553, where the block's `5rem` floor holds it lowest in the
-// frame - and that run ends at a gap of 43.1: past it the rule's foot reaches
-// the sunlit bracken and goes under 3.0. The other four heights allow 74.9,
-// 95.0, 162.6 and 138.6. See `design/refs/2026-09-11-run.md` §1.3.
-const CUE_GAP = 37.25;
-type Cue = "off" | "in" | "out";
-
 interface Close {
   from: number;
   to: number;
@@ -463,19 +431,6 @@ const ScrollExpandMedia = ({
   const posterRef = useRef<HTMLDivElement | null>(null);
   const ridgeRef = useRef<HTMLDivElement | null>(null);
   const titleRef = useRef<HTMLDivElement | null>(null);
-  const sectionRef = useRef<HTMLElement | null>(null);
-  // The scroll cue: which of its three states is on the glass, the same answer
-  // for the listeners that spend it (they are older than the render that would
-  // have told them), and whether it has been spent at all. Spent is one-way
-  // for the page view.
-  const [cue, setCue] = useState<Cue>("off");
-  const cueRef = useRef<Cue>("off");
-  const cueSpent = useRef(false);
-  // Where the cue stands, measured off the headline block rather than declared
-  // twice: the block's own height is the label, its margin and two lines of
-  // `clamp(3.4rem, 11vw, 10rem)`, and restating that in CSS is a second place
-  // for it to drift from.
-  const [cueTop, setCueTop] = useState(0);
   // How far the headline block goes down behind the land. Measured; see the
   // effect below.
   const [descent, setDescent] = useState(0);
@@ -619,82 +574,10 @@ const ScrollExpandMedia = ({
       const skyline = (height - mask) * anchor + RIDGE_SKYLINE * mask;
       descentRef.current = skyline - title.offsetTop;
       setDescent(skyline - title.offsetTop);
-      // The cue's row, out of the same read. The block's foot walked up to the
-      // section, which is the cue's containing block - `offsetTop` is layout,
-      // so the descent's transform on this same element cannot move it.
-      const section = sectionRef.current;
-      if (!section) return;
-      let y = title.offsetHeight + CUE_GAP;
-      for (
-        let el: HTMLElement | null = title;
-        el && el !== section;
-        el = el.offsetParent as HTMLElement | null
-      ) {
-        y += el.offsetTop;
-      }
-      setCueTop(y);
     };
     measure();
     return onLayoutResize(measure);
   }, []);
-
-  // The cue's clock, and its one-way exit. It stands in its own effect with
-  // four *passive* listeners: the set standing at `touchstart` is what WebKit
-  // reads a move's cancelability off, so nothing here may join the opening's
-  // capture - the re-entry effect already has a passive `touchmove` on the
-  // window and this is a second of the same kind, which changes nothing about
-  // what a move may prevent.
-  //
-  // It is `touchmove` and not `touchstart` on purpose: a tap on this section
-  // does nothing, and spending the one hint the reader has on a gesture that
-  // moved nothing is the worst answer to "I pressed it and nothing happened".
-  //
-  // Under reduced motion the hero renders expanded and its headline is at
-  // opacity 0 - there is no opening to explain and no column for the cue to
-  // end - so it never arms.
-  useEffect(() => {
-    if (reducedMotion) return;
-    const set = (next: Cue) => {
-      cueRef.current = next;
-      setCue(next);
-    };
-    let arrive: number | null = window.setTimeout(() => {
-      arrive = null;
-      if (!cueSpent.current) set("in");
-    }, CUE_AT_MS);
-    let leave: number | null = null;
-    const spend = () => {
-      if (cueSpent.current) return;
-      cueSpent.current = true;
-      if (arrive !== null) window.clearTimeout(arrive);
-      arrive = null;
-      detach();
-      if (cueRef.current !== "in") return set("off");
-      set("out");
-      leave = window.setTimeout(() => set("off"), CUE_OUT_MS);
-    };
-    // A pin to the top fires `scroll` with the page still at 0, and so does
-    // the inline script's own `scrollTo`. Only a page that has actually moved
-    // is the reader.
-    const onScroll = () => {
-      if (window.scrollY > 0) spend();
-    };
-    const detach = () => {
-      window.removeEventListener("wheel", spend);
-      window.removeEventListener("touchmove", spend);
-      window.removeEventListener("keydown", spend);
-      window.removeEventListener("scroll", onScroll);
-    };
-    window.addEventListener("wheel", spend, { passive: true });
-    window.addEventListener("touchmove", spend, { passive: true });
-    window.addEventListener("keydown", spend, { passive: true });
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => {
-      if (arrive !== null) window.clearTimeout(arrive);
-      if (leave !== null) window.clearTimeout(leave);
-      detach();
-    };
-  }, [reducedMotion]);
 
   // The frame the card becomes the window is the frame the block below it
   // exists, and the thread's mark has a block to have left only from there on.
@@ -1915,7 +1798,6 @@ const ScrollExpandMedia = ({
           becomes a fixed document row instead of one that moves by 86px
           whenever the bar does. */}
       <section
-        ref={sectionRef}
         className="gold-field gold-field-chrome-top gold-field-open-bottom hero-drop-scope hero-plate relative isolate flex min-h-svh flex-col items-center justify-start overflow-hidden"
       >
         {/* The push and the fade are written inline, on the same clock as the
@@ -2384,30 +2266,6 @@ const ScrollExpandMedia = ({
           )}
           {posterShowing && <HeroShade progress={progress} />}
         </div>
-
-        {/* The scroll cue, and it stands in *front* of the land rather than
-            behind it. The depth device belongs to the title: the headline is
-            part of the picture and goes into it. This is an instruction to the
-            reader, so it sits on the glass with the header and leaves the frame
-            alone - which is also what lets it go without anything in the
-            photograph noticing.
-
-            It is absolutely positioned over the section and carries no height
-            of its own into the flow, so the page below it is the page that was
-            there: both document heights and all twelve stage keys are the
-            numbers they were, and the row it stands on is the headline block's
-            foot plus `CUE_GAP`. */}
-        {cue !== "off" && (
-          <div
-            aria-hidden="true"
-            data-hero-cue={cue}
-            className="hero-cue pointer-events-none absolute inset-x-0 z-30 flex flex-col items-center"
-            style={{ top: cueTop }}
-          >
-            <span className="hero-cue-word" />
-            <span className="hero-cue-rule" />
-          </div>
-        )}
       </section>
     </div>
   );
