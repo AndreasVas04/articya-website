@@ -18,6 +18,8 @@ import {
   WebGLRenderer,
 } from "three";
 
+import { watchZoom } from "@/lib/viewport";
+
 // The Earth beside "What we do": the planet itself, lit once from the upper
 // left, turning slowly. Its skin is NASA's Blue Marble graded toward the
 // section (scripts/globe-texture.mjs); a second map carries the night lights,
@@ -576,7 +578,13 @@ export function mountEarth(host: HTMLElement, canvas: HTMLCanvasElement, opts: E
   // event and the buffer is only re-cut once the gesture has been still for
   // SCALE_SETTLE_MS - and back at scale 1, the same wait again before the full
   // ratio returns.
-  const vv = window.visualViewport;
+  //
+  // Whether a scale is being held is not this file's question to answer. It
+  // used to be - `scale > 1`, read off the visual viewport here - and it was
+  // wrong twice over: a ratio of two widths that lands a millionth above 1 is
+  // not a zoom, and a gesture that ends without a final event never came back
+  // at all. `watchZoom` answers it once for the page, on a clock as well as on
+  // an event, and this loop is one of the things it restarts.
   let scaleTimer = 0;
   const settleScale = () => {
     const want = zoomed ? 1 : Math.min(window.devicePixelRatio || 1, 2);
@@ -585,17 +593,16 @@ export function mountEarth(host: HTMLElement, canvas: HTMLCanvasElement, opts: E
     sized = "";
     resize();
   };
-  const onScale = () => {
-    const now = (vv?.scale ?? 1) > 1;
-    if (now !== zoomed) {
-      zoomed = now;
+  const offZoom = watchZoom((held) => {
+    if (held !== zoomed) {
+      zoomed = held;
       if (!zoomed) wake();
     }
+    // Pushed out by every further move of the scale, so the buffer is only
+    // re-cut once the gesture has been still for SCALE_SETTLE_MS.
     window.clearTimeout(scaleTimer);
     scaleTimer = window.setTimeout(settleScale, SCALE_SETTLE_MS);
-  };
-  vv?.addEventListener("resize", onScale);
-  vv?.addEventListener("scroll", onScale);
+  });
 
   // And if it is lost anyway - a background tab reclaimed, memory pressure on
   // a phone - the default is that the canvas stays black forever. Swallowing
@@ -846,8 +853,7 @@ export function mountEarth(host: HTMLElement, canvas: HTMLCanvasElement, opts: E
       disposed = true;
       if (raf) cancelAnimationFrame(raf);
       window.clearTimeout(scaleTimer);
-      vv?.removeEventListener("resize", onScale);
-      vv?.removeEventListener("scroll", onScale);
+      offZoom();
       resizeObserver.disconnect();
       canvas.removeEventListener("webglcontextlost", onContextLost);
       canvas.removeEventListener("webglcontextrestored", onContextRestored);

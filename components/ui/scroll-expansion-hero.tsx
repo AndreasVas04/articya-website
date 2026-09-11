@@ -13,7 +13,7 @@ import { PhotoPlaceholder } from "@/components/photo-placeholder";
 import { ResponsiveImage } from "@/components/responsive-image";
 import { coverSizes, HERO_PUSH, HERO_VIEWPORT } from "@/lib/images";
 import { useGroundTurn } from "@/lib/page-load";
-import { onLayoutResize, pageZoomed } from "@/lib/viewport";
+import { onLayoutResize, pageZoomed, watchZoom } from "@/lib/viewport";
 import { heroTrace } from "@/lib/hero-trace";
 import { cn, withBasePath } from "@/lib/utils";
 
@@ -1425,6 +1425,16 @@ const ScrollExpandMedia = ({
       syncGuard();
     };
 
+    // The guard is synced from the scroll handler, and a zoom takes it off:
+    // `zoomed()` is false in that check for the whole of a gesture whose own
+    // pan fires `scroll` on iOS. Nothing then put it back, because the reader
+    // who unzooms at the top has no reason to scroll - so the way back in was
+    // gone for the life of the page, which is the defect the owner met. The
+    // end of a zoom is now a sync of its own.
+    const offZoom = watchZoom((held) => {
+      if (!held) syncGuard();
+    });
+
     syncGuard();
     window.addEventListener("wheel", onWheel, { passive: false });
     window.addEventListener("touchstart", onTouchStart, { passive: true });
@@ -1433,6 +1443,7 @@ const ScrollExpandMedia = ({
     window.addEventListener("touchcancel", onTouchEnd);
     window.addEventListener("scroll", onScrollAll, { passive: true });
     return () => {
+      offZoom();
       disarmGuard();
       window.removeEventListener("wheel", onWheel);
       window.removeEventListener("touchstart", onTouchStart);
