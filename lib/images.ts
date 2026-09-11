@@ -221,7 +221,13 @@ function resolveSizes(sizes: string): number | null {
     if (!match) continue;
     const [, query, vw] = match;
     if (query && !window.matchMedia(`(${query})`).matches) continue;
-    return (parseFloat(vw) / 100) * window.innerWidth;
+    // The layout viewport, which is what `vw` resolves against and what the
+    // media query above was just answered from. `innerWidth` is the visual
+    // viewport on iOS, so a reader holding a zoom resolved this to a fraction
+    // of the width the page is actually laid out at and named a rung below the
+    // one the destination would ask for - and a prefetch of a different rung is
+    // not a faster page, it is a second download.
+    return (parseFloat(vw) / 100) * document.documentElement.clientWidth;
   }
   return null;
 }
