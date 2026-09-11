@@ -9,6 +9,7 @@ import {
   useTransform,
   type MotionStyle,
 } from "framer-motion";
+import { PHOTO_SIZES } from "@/components/panel-photo";
 import { ResponsiveImage } from "@/components/responsive-image";
 import { holdPipe, savingData, tooSlowToSpeculate } from "@/lib/connection";
 import { coverSizes, negotiatedExt, variantUrl, type SizeBox } from "@/lib/images";
@@ -126,10 +127,29 @@ const TILE_BOXES: { wide: SizeBox; compact: SizeBox }[] = [
 // fetched at 749 device px and painted at 2995 on a 1440x900 desktop. `100vw`
 // is not a declaration at the peak either - the peak is 104vw - it is the
 // widest rung the ladder carries, and it is what b256c30 declared here.
+//
+// One photograph on this wall was fetched twice for the page. Three of the
+// seven also stand at a story scene above, and two of those are asked for here
+// at a rung above the scene's, so the tile's declaration is the one that has to
+// stand. `AboutImage1` is the other way round: at 390x664 DPR 3 the slot took
+// the 640 rung beside the 1024 the first scene had already fetched, 46.1 KB for
+// a file the page held. Its slot is also the one where the scene's box is the
+// wider of the two at every window - below `md` the scene declares 0.3996H
+// against the slot's painted max(0.2W, 0.195H), and at `md+` 29vw against 19vw
+// - so the slot takes the scene's own string and the two resolve to one rung by
+// construction, rather than by arithmetic that holds at four heights and is
+// never checked at a fifth. `TILE_BOXES` is read by nothing else, so the slot's
+// geometry is untouched; what changes is the file it is painted from, and the
+// fan-out takes this tile to 6x, where the larger one is the better of the two.
+const SCENE_SIZES: Record<string, string | undefined> = {
+  "/images/AboutImage1.jpg": PHOTO_SIZES,
+};
+
 const tileSizes = (src: string, index: number) =>
   index === 0
     ? "100vw"
-    : coverSizes(src, TILE_BOXES[index].wide, TILE_BOXES[index].compact);
+    : (SCENE_SIZES[src] ??
+      coverSizes(src, TILE_BOXES[index].wide, TILE_BOXES[index].compact));
 
 // How far above the finale the seven files are asked for, in screens of the
 // reader's own window. The section's top crossing a line 1.5 screens below the
