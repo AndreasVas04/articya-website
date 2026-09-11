@@ -162,31 +162,39 @@ are the three numbers that place the words on the skyline and they are tuned
 together — move one and re-measure the other two.
 
 Since 2026-09-11 the opening carries a **scroll cue** and it stands from the
-first paint: a cream arrow low in the frame, falling about 13px and fading out
-once every 1.8s, with no word beside it. Two rounds of a small tracked word set
-as a label were rejected for reading as ornament rather than as an instruction
-— the first waited 2.9s and stood its rule on the vertical axis, the second put
-the rule beside the word as §A4's eyebrow row — and the owner's verdict on both
-was that the reader will not understand it. An arrow needs no reading.
+first paint: **three cream chevrons, low in the frame, and nothing else**. No
+word. Two rounds of a small tracked label were rejected for the same reason and
+the reason was never the placement — 11px caps at 0.22em read as ornament
+however they are set, and the owner's verdict on both was that the reader will
+not understand it. A chevron is read without being read.
+
+**The motion is a wave, not a travel.** Each chevron rests at 0.4 and brightens
+to 1 in turn, 200ms apart on a 1600ms loop, so what moves down the mark is
+brightness rather than the mark itself. That is the technique the sites that do
+this well use — staggered `animation-delay` across stacked chevrons, opacity
+only — and it buys the one thing a single falling arrow could not: **the mark is
+never absent**. One mark that falls has to get back to the top, which is either
+a bounce or a blink; three at a 0.4 floor are complete on every frame, and the
+direction is carried by which of them is lit. The lit one travels the stack in
+400ms and the mark then rests for 1.2s, which is what keeps a permanent loop
+from reading as a flashing light.
 
 **The row is measured and picked off a plateau.** Walked down the frame in 2%
-steps and read at its own ink at the worst frame of the fall: on a phone the
-ground brightens fast below a quarter of the window, and **26%** is the first
-row clearing 4.5 at all four heights — 5.58 / 5.49 / 5.45 / 5.93 at 553 / 664 /
-750 / 844. On a desktop the curve is not monotone, a lit patch of the path
-reading 3.39 at 18% with 8.62 at 14%, so **22%** is chosen for its neighbours:
-9.44 at 1440×900 and 8.56 at 1920×900. **Cream, not amber**, which inverts the
-mark this site would reach for — amber sits in the middle of this bracken's own
-luminance and does not clear 3.0 until 230 / 298 / 212px above the foot where
-cream clears 4.5 at 184 / 224 / 120.
+steps with all three held at full and read at its own ink: **28%** on a phone,
+the first row where all four heights clear 5.0 — 5.10 / 5.08 / 5.01 / 5.22 at
+553 / 664 / 750 / 844 against a 4.5 floor. On a desktop the curve is not
+monotone; a lit patch of the path reads **2.45 at 18%** with 9.44 immediately
+below at 20%, so **22%** is chosen for its neighbours — 10.02 at 1440×900 and
+8.83 at 1920×900. **Cream, not amber**, which inverts the mark this site would
+reach for: amber sits in the middle of this bracken's own luminance and does not
+clear 3.0 until 230 / 298 / 212px above the foot where cream clears 4.5 at
+184 / 224 / 120.
 
 **It is the page's second looping autoplay, and that is an owner decision.**
 `DESIGN-SYSTEM` Motion allowed exactly one, the Earth's rotation, and the
-earlier refusal of a travelling lit segment on the cue's rule was made on that
-rule. The owner asked for the motion by name after a still mark twice failed to
-be read. The loop has no return stroke — it fades out and resets at opacity 0,
-so nothing is ever seen jumping — and it stops on the frame the reader begins.
-`design/refs/2026-09-11-cue2/`.
+earlier refusal of a travelling mark on the cue was made on that rule. The owner
+asked for the motion by name after two still marks failed to be read. It stops
+on the frame the reader begins. `design/refs/2026-09-11-cue2/`.
 
 **The lede** — "A youth organization connecting young people in Cyprus…" is
 currently under-weighted. It needs more presence in the composition. It must not

@@ -186,21 +186,25 @@ const BOUNCE_MS = 400;
 // something to happen - and a hint that arrives after they have waited is one
 // that arrives after they have given up.
 //
-// It is an arrow and it falls. Two treatments carry this job on the sites that
-// win awards for it: a designed arrow at the foot of the hero, and a line with
-// a mark travelling down it and no arrowhead at all. The second is the better
-// fit for a page whose whole vocabulary is rules - and it is the one that has
-// to be explained, which is the thing this cue exists to stop. So: an arrow,
-// falling about 10px and fading out, once every 1.8s, on the page's own
-// easing. No bounce, no glow, no ring, no word beside it. Two rounds of a
-// small tracked word set as a label were rejected for reading as ornament
-// rather than as an instruction, and this one asks nothing of the reader.
+// It is three chevrons and nothing else. No word: two rounds of a small
+// tracked label were rejected for the same reason, and the reason was never
+// the placement - 11px caps at 0.22em read as ornament however they are set.
+// A chevron is read without being read.
 //
-// **It is the page's second looping autoplay and that is a decision, not an
-// oversight** - `DESIGN-SYSTEM` Motion allowed exactly one, the Earth's. The
-// owner asked for the motion by name after a still mark twice failed to be
-// read. It loops only while the reader has not moved, and stops the frame they
-// do.
+// **The motion is a wave, not a travel.** Each chevron rests at 0.4 and
+// brightens to 1 in turn, 200ms apart on a 1600ms loop, so what moves down the
+// mark is brightness rather than the mark itself. That is the technique the
+// sites that do this well use - staggered `animation-delay` across stacked
+// chevrons, opacity only, nothing on the layout or the compositor - and it
+// buys the one thing a single falling arrow could not: **the mark is never
+// absent.** A lone arrow that falls has to get back to the top, which is
+// either a bounce or a blink; three chevrons at a 0.4 floor are complete on
+// every frame, and the direction is carried by which of them is lit.
+//
+// It is the page's second looping autoplay and that is a decision, not an
+// oversight - `DESIGN-SYSTEM` Motion allowed exactly one, the Earth's. The
+// owner asked for the motion by name after two still marks failed to be read.
+// It loops only while the reader has not moved, and stops the frame they do.
 const CUE_OUT_MS = 320;
 type Cue = "on" | "out" | "off";
 interface Close {
@@ -2376,23 +2380,23 @@ const ScrollExpandMedia = ({
             photograph noticing.
 
             **The row is measured, and it is picked off a plateau rather than
-            off a cliff.** The arrow was walked down the frame in 2% steps and
-            read at its own ink at the worst frame of its fall, painted against
-            blanked. On a phone the ground brightens fast below a quarter of the
-            window - 2.89 at 20%, 3.78 at 22%, 4.15 at 24% on the tallest one -
-            and **26%** is the first row clearing 4.5 at all four heights:
-            5.58 / 5.49 / 5.45 / 5.93 at 553 / 664 / 750 / 844. On a desktop the
-            curve is not monotone at all; a lit patch of the path reads 3.39 at
-            18% with 8.62 immediately above it at 14%, so the number is chosen
-            for the neighbours it has rather than for itself. **22%** sits
-            between 20% and 24% with every one of the three clear: 9.44 at
-            1440x900 and 8.56 at 1920x900.
+            off a cliff.** The mark was walked down the frame in 2% steps with
+            all three chevrons held at full and read at its own ink, painted
+            against blanked. On a phone the ground brightens fast toward the
+            bracken - 4.36 / 4.73 / 4.87 / 4.59 at 24% - and **28%** is the
+            first row where all four heights clear 5.0: 5.10 / 5.08 / 5.01 /
+            5.22 at 553 / 664 / 750 / 844, against a 4.5 floor. On a desktop
+            the curve is not monotone at all; a lit patch of the path reads
+            **2.45 at 18%** with 9.44 immediately below it at 20%, so **22%** is
+            chosen for the neighbours it has rather than for itself - 10.02 at
+            1440x900 and 8.83 at 1920x900, with 20% and 24% clear on either
+            side and the cliff two steps away.
 
             Cream and not amber, which inverts the mark the site would reach
             for: amber's own luminance is the middle of this bracken, and a
-            56x14 amber mark does not clear 3.0 until 230 / 298 / 212px above
-            the foot where cream clears 4.5 at 184 / 224 / 120. The mark that
-            had to go lowest had to be the lighter one.
+            mark of this size does not clear 3.0 in amber until 230 / 298 /
+            212px above the foot where cream clears 4.5 at 184 / 224 / 120. The
+            mark that had to go lowest had to be the lighter one.
 
             It is absolutely positioned over the section and carries no height
             of its own into the flow, so the page below it is the page that was
@@ -2402,9 +2406,25 @@ const ScrollExpandMedia = ({
           <div
             aria-hidden="true"
             data-hero-cue={cue}
-            className="hero-cue pointer-events-none absolute inset-x-0 bottom-[26%] z-30 flex justify-center md:bottom-[22%]"
+            className="hero-cue pointer-events-none absolute inset-x-0 bottom-[28%] z-30 flex justify-center md:bottom-[22%]"
           >
-            <span className="hero-cue-arrow" />
+            {/* Drawn rather than built out of borders. A chevron made from two
+                edges of a rotated square is locked to a 90 degree apex; these
+                are 15 wide and 6 deep, which is 102, and that is the whole
+                difference between a mark that reads as drawn and one that
+                reads as a corner. Half-pixel coordinates so a 1px stroke lands
+                on one column of pixels where it runs straight. */}
+            <svg
+              className="hero-cue-arrow"
+              width="24"
+              height="32"
+              viewBox="0 0 24 32"
+              fill="none"
+            >
+              <polyline points="4.5,3.5 12,9.5 19.5,3.5" />
+              <polyline points="4.5,13.5 12,19.5 19.5,13.5" />
+              <polyline points="4.5,23.5 12,29.5 19.5,23.5" />
+            </svg>
           </div>
         )}
       </section>

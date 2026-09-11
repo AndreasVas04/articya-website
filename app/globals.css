@@ -1226,39 +1226,28 @@ body {
   }
 }
 
-/* The cue's fall, and the one number in it that matters is how much of the loop
-   the arrow is on the glass for. A mark that falls and fades has to get back to
-   the top somehow, and for a single element there are only two ways: return,
-   which is a bounce, or fade out and reset, which is a blink. This is the
-   second, with the blink cut to the smallest it can be - the reset from 92% to
-   100% happens at opacity 0, so nothing is ever seen jumping, and the arrow is
-   painted for 92% of every cycle and at full strength for 56% of it. 144ms of
-   1800 is the whole of the dark.
+/* The cue's wave. One chevron's worth: up to full over 240ms, back to the
+   floor over the next 400, then it waits while the other two take their turn
+   and the loop comes round. The three are 200ms apart, so the lit one travels
+   down the mark in 400ms and the mark then rests for 1.2s - which is what
+   keeps a permanent loop from reading as a flashing light.
 
-   `linear`, so the percentages mean what they say: the travel is monotone -
-   0, 0, 9, 13 - and quickens as it fades, which is what falling away looks
-   like. Shaped easing over the whole loop would move the opacity holds with
-   the travel and the two have different jobs. */
-@keyframes hero-cue-fall {
+   `linear`, so the percentages mean what they say. Nothing here moves, scales
+   or lays anything out; opacity is the only property in the keyframes, which
+   is the one channel this can be carried on without touching the compositor
+   work the opening below it is already doing. */
+@keyframes hero-cue-cascade {
   0% {
-    opacity: 0;
-    translate: 0 0;
+    opacity: 0.4;
   }
-  14% {
+  15% {
     opacity: 1;
-    translate: 0 0;
   }
-  70% {
-    opacity: 1;
-    translate: 0 9px;
-  }
-  92% {
-    opacity: 0;
-    translate: 0 13px;
+  40% {
+    opacity: 0.4;
   }
   100% {
-    opacity: 0;
-    translate: 0 0;
+    opacity: 0.4;
   }
 }
 
@@ -1321,54 +1310,45 @@ body {
     width: 100cqw;
     height: 100cqh;
   }
-  /* The opening's scroll cue: an arrow, falling. Built out of one column of
-     pixels and two 1px edges, both cream, so what paints is the same ink the
-     headline is set in and nothing is added to the page's palette.
+  /* The opening's scroll cue. Three chevrons, cream, 1px, and nothing else on
+     the page's palette - the same ink the headline is set in.
 
      Cream rather than amber, and the measurement is the argument: amber sits
      in the middle of this bracken's own luminance and does not clear 3.0 until
      230px above the frame's foot on a 664 phone, where cream clears 4.5 at
-     184. The mark that had to go lowest had to be the lighter one.
-
-     Whole pixels on both strokes. The head is a square turned 45 degrees, the
-     one diagonal on the page, 10px in a 12px box with a -5px pull so its
-     centre lands on the shaft's own column. */
+     184. The mark that had to go lowest had to be the lighter one. */
   .hero-cue-arrow {
-    position: relative;
     display: block;
-    width: 12px;
-    height: 32px;
-    animation: hero-cue-fall 1800ms linear infinite;
+    overflow: visible;
   }
-  .hero-cue-arrow::before {
-    content: "";
-    position: absolute;
-    left: 50%;
-    top: 0;
-    width: 1px;
-    height: 23px;
-    background: var(--color-ink);
+  .hero-cue-arrow polyline {
+    fill: none;
+    stroke: var(--color-ink);
+    stroke-width: 1;
+    stroke-linecap: square;
+    stroke-linejoin: miter;
+    /* The floor, and it is the whole design. At 0.4 all three chevrons are on
+       the glass on every frame, so the mark is complete whenever the reader
+       looks at it; what travels is which one is lit. A single arrow could not
+       have this - one mark that falls has to return, which is a bounce, or
+       fade out and reset, which is a blink. */
+    opacity: 0.4;
+    animation: hero-cue-cascade 1600ms linear infinite;
   }
-  .hero-cue-arrow::after {
-    content: "";
-    position: absolute;
-    left: 50%;
-    bottom: 3px;
-    margin-left: -5px;
-    width: 10px;
-    height: 10px;
-    border-right: 1px solid var(--color-ink);
-    border-bottom: 1px solid var(--color-ink);
-    rotate: 45deg;
+  .hero-cue-arrow polyline:nth-child(2) {
+    animation-delay: 200ms;
   }
-  /* The departure freezes it rather than fading a moving thing: the loop is
-     paused on the frame the reader begins, and what leaves is a still arrow.
+  .hero-cue-arrow polyline:nth-child(3) {
+    animation-delay: 400ms;
+  }
+  /* The departure freezes it rather than fading a moving thing: the wave is
+     paused on the frame the reader begins and what leaves is a still mark.
      Nothing on this page animates while the reader is moving. */
   .hero-cue[data-hero-cue="out"] {
     opacity: 0;
     transition: opacity 320ms var(--ease-out-quart);
   }
-  .hero-cue[data-hero-cue="out"] .hero-cue-arrow {
+  .hero-cue[data-hero-cue="out"] polyline {
     animation-play-state: paused;
   }
   .hero-ridge {
