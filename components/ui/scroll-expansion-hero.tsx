@@ -430,6 +430,7 @@ const ScrollExpandMedia = ({
   const cardRef = useRef<HTMLDivElement | null>(null);
   const posterRef = useRef<HTMLDivElement | null>(null);
   const ridgeRef = useRef<HTMLDivElement | null>(null);
+  const windowRef = useRef<HTMLDivElement | null>(null);
   const titleRef = useRef<HTMLDivElement | null>(null);
   // How far the headline block goes down behind the land. Measured; see the
   // effect below.
@@ -683,6 +684,16 @@ const ScrollExpandMedia = ({
       layer.style.opacity = alpha;
       layer.style.scale = push;
     }
+    // And the card's own copy, which used to take the push from the render
+    // instead of from here. A render is a task: measured at 1440x900, the
+    // window carried the *previous* frame's scale on 586 of 991 frames of a
+    // 40 px/s opening, so on those frames two copies of one photograph stood
+    // 0.43px apart inside the card and came back into register on the next.
+    // That is a beat on the picture's own detail, at the frame rate, and no
+    // timing instrument can see it - the frames all arrive on time. The three
+    // copies are written together now, which is what the comment on the poster
+    // below has always said they were.
+    if (windowRef.current) windowRef.current.style.scale = push;
     if (titleRef.current) {
       const exit = titleExitOf(p);
       titleRef.current.style.transform = `translateY(${exit * descentRef.current}px) scale(${1 - 0.15 * exit})`;
@@ -1939,6 +1950,7 @@ const ScrollExpandMedia = ({
                     It carries the section's push, so the window inside the
                     card and the poster outside it travel as one. */}
                 <div
+                  ref={windowRef}
                   className="hero-window"
                   style={{ scale: heroPush(progress) }}
                 >
