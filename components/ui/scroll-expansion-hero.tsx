@@ -1972,22 +1972,6 @@ const ScrollExpandMedia = ({
         </div>
         )}
 
-        {/* The poster's dither, and it stands here rather than inside the
-            layer it dithers. Every layer in this section carries the section's
-            push, and a scale is the one thing a one-device-pixel pattern
-            cannot survive: measured at 1440x900 on a ratio of 2, the same tile
-            inside the pushed layer perturbed 0-3% of the pixels where it
-            perturbs 46-52% outside one, and no cell size and no counter-scale
-            on the tile recovered it - the compositor scales the layer after it
-            has been rasterized. A flat 1/255 white in the same place reads
-            100%, so it is the tiling and not the blend.
-
-            `z-[1]` puts it over the poster and under the card, which is the
-            only place it can be: the card's photograph is opaque, so its own
-            copy below carries the card's box, and the two hand over exactly
-            where the card's foot dissolve hands over. */}
-        <div aria-hidden="true" className="ramp-dither z-[1]" />
-
         <div className="relative z-10 mx-auto flex w-full flex-col items-center">
           {/* The stage the card is centred in. A phone-only drop used to sink
               the whole stage as the card grew, spending the gold that the
@@ -2150,14 +2134,6 @@ const ScrollExpandMedia = ({
                     the intro was measured. */}
                   <HeroShade progress={progress} />
                 </div>
-                {/* The card's half of the same thing, in the frame rather than
-                    in the window: the window carries the push and the frame
-                    does not. It is inside the card's foot dissolve and its arc,
-                    which is right - they take it to nothing exactly where they
-                    take the picture to nothing, and the poster's copy under it
-                    comes up as they do. The poster title stands in
-                    `hero-window-scope` above this, so no glyph is over it. */}
-                <div aria-hidden="true" className="ramp-dither" />
               </div>
             </div>
 
@@ -2394,13 +2370,6 @@ const ScrollExpandMedia = ({
             />
           )}
           {posterShowing && <HeroShade progress={progress} />}
-          {/* The land copy's own dither. This layer paints over the section's
-              at `z-20`, so without one the ridge's darkening would be the one
-              ramp on the page with no dither on it. It is inside the ridge
-              mask, which is right: where the mask is partial the section's
-              copy underneath comes up by the same amount, and the two sum to
-              one step. */}
-          <div aria-hidden="true" className="ramp-dither" />
         </div>
 
         {/* The scroll cue, and it stands in *front* of the land rather than
