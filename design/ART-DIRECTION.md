@@ -161,6 +161,18 @@ mechanics stay frozen; the crop, the block's height in the frame and the mask
 are the three numbers that place the words on the skyline and they are tuned
 together — move one and re-measure the other two.
 
+Since 2026-09-11 the column has a **scroll cue** at its foot: a word in the
+eyebrow's register and, under it, the eyebrow rule turned onto the vertical
+axis at the reference's own 48px, drawn downward on the strike's own entrance.
+It arrives once on a clock and leaves on the first input of any kind, for the
+page view. It is not at the bottom of the frame and it cannot be: the foot of
+this photograph is the sunlit bracken, where cream reads 1.05–1.21 and only a
+hood over the foreground would fix it. Its row is the headline block's foot
+plus `mb-[37.25px]`, the label's own margin mirrored, which is also the largest
+gap 375×553 allows. A **travelling lit segment on the rule was refused** — it
+is a second looping autoplay beside the Earth's, and a mark seen travelling is
+gate 2's own verdict. `design/refs/2026-09-11-run.md`.
+
 **The lede** — "A youth organization connecting young people in Cyprus…" is
 currently under-weighted. It needs more presence in the composition. It must not
 get a box.

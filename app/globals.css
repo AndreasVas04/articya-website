@@ -1226,6 +1226,24 @@ body {
   }
 }
 
+/* The cue's two, and both are a rotation of a keyframe already above. The word
+   rises the label's own 18px at the label's own duration; the rule is drawn
+   from its top edge the way the strike is drawn from its left, `scale 0` on
+   the axis it runs along. Neither touches `transform`: the individual
+   properties are what the expansion writes on this section's elements, and the
+   two must compose rather than fight. */
+@keyframes hero-cue-word-in {
+  from {
+    opacity: 0;
+    translate: 0 18px;
+  }
+}
+@keyframes hero-cue-rule-in {
+  from {
+    scale: 1 0;
+  }
+}
+
 /* Type inside the depth. The hero's poster is drawn twice with the headline
    between the two, and the copy in front is masked to the frame's own land - 
    the traced skyline and everything under it - so the hills run across the
@@ -1284,6 +1302,71 @@ body {
     translate: -50% -50%;
     width: 100cqw;
     height: 100cqh;
+  }
+  /* The opening's scroll cue. The word is pseudo-content, so the page's frozen
+     visible text is untouched - `.offer-eyebrow-text`'s own route - and it is
+     set in that eyebrow's size and tracking, because it is the same register:
+     a small uppercase label standing beside a mark.
+
+     The mark is `REFERENCE-LANGUAGE` §A4's eyebrow rule at the reference's own
+     48px, turned onto the vertical axis. 1px and not 1.25: a fractional
+     declaration paints 1 or 2 depending on where the element lands, and this
+     rule is one column wide.
+
+     Cream on the word and amber on the rule, which is the site's own division
+     rather than a preference - amber is a mark, and the ceiling that lets the
+     offer eyebrow be amber text was measured on the dark floor. This one
+     stands on a photograph. */
+  .hero-cue {
+    --hero-cue: "SCROLL";
+  }
+  /* What the reader is holding decides the verb, not how wide their window is:
+     a touchscreen laptop is told to swipe because that is what works on it. */
+  @media (pointer: coarse) {
+    .hero-cue {
+      --hero-cue: "SWIPE UP";
+    }
+  }
+  .hero-cue-word {
+    font-size: 11px;
+    line-height: 1.2;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--color-ink);
+    /* Tracking is added after the last letter too, so the box is 0.22em wider
+       on the right than the ink is. Pulled back, the word's ink is centred on
+       the rule under it instead of standing 1.2px to its left. */
+    margin-right: -0.22em;
+  }
+  .hero-cue-word::before {
+    content: var(--hero-cue);
+  }
+  .hero-cue-rule {
+    margin-top: 12px;
+    width: 1px;
+    height: 48px;
+    background: var(--color-amber);
+    transform-origin: top;
+  }
+  /* The arrival is the site's own, twice over: the word on the label's
+     channels and the rule on the strike's, that one turned from the horizontal
+     axis to the vertical so it draws downward. It plays once and nothing
+     repeats - the page's only looping motion is the Earth, a screen below.
+
+     Both stay applied through the departure. Spent mid-draw, a rule whose
+     animation had been pulled would snap to full length and then fade; this
+     way the draw finishes underneath the fade. */
+  .hero-cue .hero-cue-word {
+    animation: hero-cue-word-in 400ms var(--ease-out-quart) both;
+  }
+  .hero-cue .hero-cue-rule {
+    animation: hero-cue-rule-in 700ms var(--ease-out-quart) 250ms both;
+  }
+  .hero-cue[data-hero-cue="out"] {
+    opacity: 0;
+    transition: opacity 320ms var(--ease-out-quart);
   }
   .hero-ridge {
     -webkit-mask-image: var(--ridge-mask);
