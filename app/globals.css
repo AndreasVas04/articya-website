@@ -169,6 +169,135 @@ body {
   }
 }
 
+/* Every darkening on this site is a long ramp through the dark end of the
+   scale, and 8 bits has no room down there: measured at 390x664 on a device
+   ratio of 3, the crossing's sky held one channel value for 37 device rows at
+   a stretch and a single one-step jump held its row across 69 of them, which
+   is a line drawn across the picture. The stage plates, the chrome's ramp and
+   the footer's dissolve all read the same way, and so does the graded
+   photograph under them - the sky in `home-hero` bands on its own over 12
+   channels before any darkening touches it. It is one defect with one cause
+   and it wants one answer.
+
+   There is no more precision to be had: the output is 8 bits and the ramp has
+   to cross the same values whatever paints it. What this layer does instead is
+   take the contour's *alignment* away. Half the device pixels, chosen by a
+   blue-noise pattern, take a single step up; the other half take nothing. The
+   staircase is still there in the average and the eye can no longer find its
+   edges - a step that used to hold one row for 69 pixels now holds it for 6,
+   which is the pattern's own statistics and not an edge at all.
+
+   **It is not film grain, which stays rejected.** Grain is a texture, put
+   there to be seen: 5% opacity, an amplitude of about 13 channels, over
+   photographs and grounds alike. This is one channel step - the smallest
+   quantity the screen can express - on the darkening layers only, and its
+   measured contribution is a mean absolute delta of 0.50 channels with a
+   maximum of 1. At 100% and at 250% it is under the threshold at which any
+   pattern is visible, and there is nothing in it to read as surface. See
+   DESIGN-SYSTEM, **The dither**, for the numbers.
+
+   The tile is 72 cells, not 64: it has to land on one *device* pixel per cell
+   or it is a 3x3 chequer rather than a dither, and 72 divides by 1, 2 and 3
+   into whole CSS pixels where 64 does not. At 21.333px Chromium resampled the
+   1-bit alpha and 94% of the cells stopped perturbing anything.
+
+   And `plus-lighter`, not normal compositing: an alpha of 1/255 is inside
+   WebKit's own rounding and it drops the layer entirely - measured, a mean
+   delta of exactly 0.0000 at both ratios. Through the additive operator both
+   engines read 0.5000. Where the operator is missing the layer blends
+   normally, which is the same nothing WebKit already did, so the fallback is
+   the state before this rule.
+
+   **The step is the layer's opacity, and the tile's own alpha is 0 or 255.**
+   The first build put the step in the tile - two white palette entries at
+   alpha 1 and 0 - and it worked only where the tile was blitted at exactly one
+   device pixel per cell on a whole pixel. An alpha of 1 times any filter
+   weight under 1 rounds to nothing, so every fractional transform in the
+   ancestor chain annihilated it: measured at 1440x900 on a ratio of 2, 46-54%
+   of the pixels outside the hero's transforms and 0-15% inside them, with
+   coarser cells *worse* rather than better (cell 2 read 0% everywhere, which
+   is a 2:1 upscale being filtered). Carrying the same step as `opacity` on the
+   layer instead leaves the tile a hard binary image: filtering it spreads the
+   perturbation instead of deleting it, and the compositor multiplies the
+   group's alpha in float. The same measurement reads 46-61% through the whole
+   hero, and it is indifferent to the cell size. */
+:root {
+  --dither: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEgAAABIAQMAAABvIyEEAAAABlBMVEX///////9VfPVsAAAAAnRSTlP/AOW3MEoAAALWSURBVHjaBcF7SBMBAAfgH5G9/CelMqwojajbtGg0y0pw1oqdW9R5N9hcK0Qr75rSyh7Ygyztqa3VCXM9pY2267JsN/JyRcSqVQq5oTRdYcwMLaKSih7Q98HZYqK96nxjEtYhjo71am+7MZhKn1PqYoXtyBzj7XLprEcGVJ2poB+TnM6MIqnAc5l1UBcgV2hyludWMywY9+Ho87BDzIQjUGcR71vvDqFaZ4uqlK1nFTgejKd3sZafLyA7tW8ZXckkGR9EOatCIv9kI83uCboMK9cOIHH6pT843ZtYA6PdQnjGpGwZ191ZCUsqGe9CZ+TdgjWfFUYKWoujsmCRIOThQTbn1i60OyK40d9MBeP6LathbA/EnIR6MBvS6WJeeiks/gIdp2cNirW+qXjI1JoYImTsg0ZfdKKmSsOw2Cdd2uP0HZLSMOl8iVFcv478gr7qGq3/vss3DwEixawkfiitaPT/oz41pfQT2E3XeZxfx04mETP3dpqdxctnwBBdofFYA/4RSDnP2jLLwiM8CHZ/YOjWlckMhudP1CpKNoXKsUj+FeLfBFsFdL86o7Ev1rEXoRDybBvC3kYb7JsqVI4Otd2H5iZdd5DvMoogDsgq5zYqUoZkQzE5ajLlb8ZcqbVzmli8nsI1duDJMBUI8KhWzM/L6VvnkpAmWFzUzIPeRoxU9oRHh4/Sd7BkCmPOTK81t6Hw92Xx6ZsG0okj494vVW3raBdx/E9ud8LvddOQ9HGq0GcqD4LXpkcfZRhECu0PbJa6ZLmghv5FhPrLC4owSuhS4zGzKxkCyXj32BbUTD+KnfeYBombwNlQeWpHRz1ReTEXGTYls9MvMq/xUUk2Nfd62FJk3KzdRQV4Mo6YcLKlpz7IabFM4rbPln03GZD1uo3fvY2Gz9gbWrVl/I5vQ2k4db2oLCFMmFMF1ppwlTUf2toKA63i56izroqwR59ybKR7o/I/eVk+l8dpdpEAAAAASUVORK5CYII=");
+  --dither-cell: 72px;
+}
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 2dppx) {
+  :root {
+    --dither-cell: 36px;
+  }
+}
+@media (-webkit-min-device-pixel-ratio: 3), (min-resolution: 3dppx) {
+  :root {
+    --dither-cell: 24px;
+  }
+}
+/* **The dither is a sibling of the ramp, never a child of it.** This is the
+   one thing about the layer that is not a preference, and it took a
+   measurement to find: `.plate-shade::after` reached 0.5149 of a channel on
+   the resting poster and *0.0000* through the whole of the crossing, at every
+   row, including rows where the mask over it stood at 1. A mask puts its
+   element in a buffer of its own, and inside that buffer the pseudo-element's
+   backdrop is the ramp's own semi-transparent gradient rather than the
+   photograph under it - so the additive step lands on an alpha of 0.08 to
+   0.92, is quantized with it, and is gone. As a sibling the same layer
+   composites against the photograph, which is opaque, and reads the full step.
+
+   Where a mask stands above the sibling - the card's foot, a stage plate's
+   wipe, the gains frame's ends - it attenuates the dither exactly as it
+   attenuates the ramp, and the layer behind carries the rest: two crossing
+   masks sum to one at every row, so the dither sums to one step and not two.
+
+   `.chrome-shade` and `.foot-shade` are the exception and may keep a
+   pseudo-element: neither carries a mask, so neither is buffered, and the
+   backdrop at that point in the paint is the finished page.
+
+   `.gold-field` is on no list at all. It paints no pixel on the built page -
+   the hero's photograph covers its top edge and its bottom edge is the `open`
+   variant, which paints nothing by design. Taking its gradient away changes
+   0.00% of the frame.
+
+   **And it may not stand inside a scaled layer.** This is the second rule and
+   it has the same shape as the first. A scale is the one thing a
+   one-device-pixel pattern cannot survive: inside the hero's pushed layers
+   (1.0065 to 1.0254) the tile perturbed 0-3% of the pixels where the same tile
+   outside one perturbs 46-52%, and neither a coarser cell - 2, 3, 4 and 6
+   device pixels were measured - nor a counter-scale on the tile itself
+   recovered any of it, because the compositor scales the layer after it has
+   been rasterized. A flat 1/255 white in the same place reads 100%, so what is
+   lost is the tiling and not the blend. So the hero's two copies stand in the
+   section and in the frame, which are the boxes the push does not reach. */
+@layer components {
+  /* `content` is on the two pseudo-elements alone. On a real element it is not
+     inert: it replaces the element's contents, and a replaced box with both
+     insets set takes its width from an intrinsic size it has none of - every
+     `.ramp-dither` measured 0x0 and painted nothing. */
+  .chrome-shade::after,
+  .foot-shade::after {
+    content: "";
+  }
+  .ramp-dither,
+  .chrome-shade::after,
+  .foot-shade::after {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: var(--dither);
+    background-size: var(--dither-cell) var(--dither-cell);
+    background-repeat: repeat;
+    /* One 8-bit step, and this is the whole amplitude: 1/255 of an opaque
+       white over the additive operator adds exactly 1 to every channel of the
+       cells that are on, and nothing to the cells that are off. Half the
+       device pixels are on, so the mean absolute contribution is 0.50 of a
+       channel and the maximum is 1. */
+    opacity: 0.00392157;
+    mix-blend-mode: plus-lighter;
+  }
+}
+
 /* The chrome carries no bar, so what keeps a cream nav label off the picture - 
    and off the page's own text scrolling up past it - is a darkening rather than
    a surface. One full-width top-to-bottom ramp pinned to the top of the window,

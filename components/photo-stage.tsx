@@ -566,6 +566,11 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
             className="plate-shade stage-plate-shade absolute inset-0"
             style={shadeStyle(plate.shade)}
           />
+          {/* The plate's dither, beside the darkening rather than inside it -
+              see globals.css. It rides in the plate, so it fades and wipes
+              with it, and two plates crossing sum their opacities to one and
+              their dithers with them. */}
+          <div aria-hidden="true" className="ramp-dither" />
         </div>
         );
       })}

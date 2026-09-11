@@ -47,7 +47,18 @@ const plates: StagePlate[] = [
   // worst heights, against 4.67/4.95 at 70/62/61. That is six points of mid
   // handed back out of the sixteen this frame won when it replaced the sunlit
   // track, and the frame keeps the rest.
-  { src: hero.image, position: "50% 50%", priority: true, shade: { top: 71, mid: 64, base: 63, color: "var(--color-sky-anchor)" } },
+  // The base is 66 and not the 63 it was tuned at, and the dither is why. A
+  // layer that lifts half the device pixels of the ground by one channel lifts
+  // the worst pixel every contrast measurement looks for, so every reading on
+  // the site fell by about a channel's worth - a median of 0.07 of a ratio
+  // point across 158 elements. One of them sat exactly on its floor and
+  // crossed it: the `Email:` label at 390x664, 4.50 -> 4.46. Its worst pixel
+  // is at 94-97% of the window with this plate at 0.65 of the crossfade, so it
+  // is this base and not the channels plate's mid - 68 there moved the number
+  // not at all. Three points of anchor put the ground back under it.
+  // Darkening can only raise a cream reading, so §2.8's ratchet is satisfied
+  // on every other element over this plate rather than traded against.
+  { src: hero.image, position: "50% 50%", priority: true, shade: { top: 71, mid: 64, base: 66, color: "var(--color-sky-anchor)" } },
   // The split: the same frame, defocused to the left of a hard seam at 48%
   // and sharp to its right, with the invitation and the three channels
   // standing on the soft side. One frame of the reference set's density, on

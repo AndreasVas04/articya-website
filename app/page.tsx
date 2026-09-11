@@ -753,6 +753,19 @@ export default function HomePage() {
                 3.0 floor. */}
             <div className="plate-shade pointer-events-none absolute inset-0 [--shade-bottom:84%] [--shade-color:var(--color-sky-anchor)] [--shade-mid:44%] [--shade-mid-from:20%] [--shade-mid-to:60%] [--shade-top:70%] md:[--shade-mid-from:25%] md:[--shade-mid-to:54.545%]" />
           </NearGround>
+          {/* The gains frame's dither, outside `.gain-ground` rather than in
+              it. Inside, the frame's own end mask takes it to nothing over the
+              same 140px it takes the picture to nothing - and what the picture
+              opens onto there is the page's flat floor, which carries no ramp
+              layer to hang a dither on. Measured at 390x664 on a ratio of 3,
+              the inner position left that band at 2% coverage and its
+              staircase untouched: 12-device-pixel treads with one step holding
+              its row across 37. Out here the layer is unmasked, so the whole
+              frame and the floor its ends dissolve into take the same step. */}
+          <div
+            aria-hidden="true"
+            className="ramp-dither -z-10 md:-bottom-[10svh]"
+          />
 
           {/* The column arrives as one event on the clock, the way the
               clearing does: the heading block lifts first, then each numeral
