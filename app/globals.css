@@ -1226,6 +1226,42 @@ body {
   }
 }
 
+/* The cue's fall, and the one number in it that matters is how much of the loop
+   the arrow is on the glass for. A mark that falls and fades has to get back to
+   the top somehow, and for a single element there are only two ways: return,
+   which is a bounce, or fade out and reset, which is a blink. This is the
+   second, with the blink cut to the smallest it can be - the reset from 92% to
+   100% happens at opacity 0, so nothing is ever seen jumping, and the arrow is
+   painted for 92% of every cycle and at full strength for 56% of it. 144ms of
+   1800 is the whole of the dark.
+
+   `linear`, so the percentages mean what they say: the travel is monotone -
+   0, 0, 9, 13 - and quickens as it fades, which is what falling away looks
+   like. Shaped easing over the whole loop would move the opacity holds with
+   the travel and the two have different jobs. */
+@keyframes hero-cue-fall {
+  0% {
+    opacity: 0;
+    translate: 0 0;
+  }
+  14% {
+    opacity: 1;
+    translate: 0 0;
+  }
+  70% {
+    opacity: 1;
+    translate: 0 9px;
+  }
+  92% {
+    opacity: 0;
+    translate: 0 13px;
+  }
+  100% {
+    opacity: 0;
+    translate: 0 0;
+  }
+}
+
 /* Type inside the depth. The hero's poster is drawn twice with the headline
    between the two, and the copy in front is masked to the frame's own land - 
    the traced skyline and everything under it - so the hills run across the
@@ -1285,59 +1321,55 @@ body {
     width: 100cqw;
     height: 100cqh;
   }
-  /* The opening's scroll cue: `REFERENCE-LANGUAGE` §A4's eyebrow row, on the
-     axis, under the headline. Reading order is the reference's own - the rule,
-     then the words it labels - and the numbers are `.offer-eyebrow`'s own:
-     48px of amber, a 14px gap, 11px caps at 0.22em. The word is pseudo-content,
-     so the page's frozen visible text is untouched, which is
-     `.offer-eyebrow-text`'s route.
+  /* The opening's scroll cue: an arrow, falling. Built out of one column of
+     pixels and two 1px edges, both cream, so what paints is the same ink the
+     headline is set in and nothing is added to the page's palette.
 
-     Cream on the word and amber on the rule, which is the site's own division
-     rather than a preference - amber is a mark, and the ceiling that lets the
-     offer eyebrow be amber *text* was measured on the dark floor. This one
-     stands on a photograph.
+     Cream rather than amber, and the measurement is the argument: amber sits
+     in the middle of this bracken's own luminance and does not clear 3.0 until
+     230px above the frame's foot on a 664 phone, where cream clears 4.5 at
+     184. The mark that had to go lowest had to be the lighter one.
 
-     Nothing here has an entrance. The cue is on the glass from the first paint
-     and the only thing that ever happens to it is that it leaves. */
-  .hero-cue {
-    --hero-cue: "SCROLL";
-    gap: 14px;
+     Whole pixels on both strokes. The head is a square turned 45 degrees, the
+     one diagonal on the page, 10px in a 12px box with a -5px pull so its
+     centre lands on the shaft's own column. */
+  .hero-cue-arrow {
+    position: relative;
+    display: block;
+    width: 12px;
+    height: 32px;
+    animation: hero-cue-fall 1800ms linear infinite;
   }
-  /* What the reader is holding decides the verb, not how wide their window is:
-     a touchscreen laptop is told to swipe because that is what works on it. */
-  @media (pointer: coarse) {
-    .hero-cue {
-      --hero-cue: "SWIPE UP";
-    }
+  .hero-cue-arrow::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 0;
+    width: 1px;
+    height: 23px;
+    background: var(--color-ink);
   }
-  .hero-cue-word {
-    font-size: 11px;
-    line-height: 1.2;
-    font-weight: 600;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    white-space: nowrap;
-    color: var(--color-ink);
-    /* Tracking is added after the last letter too, so the box is 0.22em wider
-       on the right than the ink is. Pulled back, the pair's ink is centred on
-       the axis instead of standing 1.2px to its left. */
-    margin-right: -0.22em;
+  .hero-cue-arrow::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 3px;
+    margin-left: -5px;
+    width: 10px;
+    height: 10px;
+    border-right: 1px solid var(--color-ink);
+    border-bottom: 1px solid var(--color-ink);
+    rotate: 45deg;
   }
-  .hero-cue-word::before {
-    content: var(--hero-cue);
-  }
-  /* 1px and not the offer eyebrow's 1.25: a fractional declaration paints 1 or
-     2 depending on where the element lands, and this rule stands on a
-     photograph rather than on the floor. */
-  .hero-cue-rule {
-    flex: none;
-    width: 48px;
-    height: 1px;
-    background: var(--color-amber);
-  }
+  /* The departure freezes it rather than fading a moving thing: the loop is
+     paused on the frame the reader begins, and what leaves is a still arrow.
+     Nothing on this page animates while the reader is moving. */
   .hero-cue[data-hero-cue="out"] {
     opacity: 0;
     transition: opacity 320ms var(--ease-out-quart);
+  }
+  .hero-cue[data-hero-cue="out"] .hero-cue-arrow {
+    animation-play-state: paused;
   }
   .hero-ridge {
     -webkit-mask-image: var(--ridge-mask);

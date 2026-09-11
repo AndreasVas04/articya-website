@@ -184,37 +184,24 @@ const BOUNCE_MS = 400;
 // is a single screen with no scrollbar under it and nothing on it that looks
 // like a control, so a reader who has not met a page like this waits for
 // something to happen - and a hint that arrives after they have waited is one
-// that arrives after they have given up. Not one of the five reference sites
-// animates its cue and not one delays it: MNTN sets `scroll down` under its
-// headline, Grand Canyon runs a numbered rail down the right margin and
-// Forest Excursions a dot index down the same one, and all three are simply
-// *there*, from the first frame, until the reader moves.
+// that arrives after they have given up.
 //
-// What is built is `REFERENCE-LANGUAGE` §A4's eyebrow row, used a third time:
-// a 48px amber rule, a 14px gap, and a word in the offer eyebrow's own
-// register, on one line, on the axis, under the headline. The column then
-// reads word-and-mark above the headline and mark-and-word below it, in the
-// same two marks at two weights. It is one row of about 13px and it is
-// horizontal, which is the whole difference from the row this replaces: that
-// one stood its rule on the *vertical* axis under the word, which made 80px
-// of thin furniture floating in the middle of a photograph with nothing
-// holding it, and it waited 2.9s before it did.
+// It is an arrow and it falls. Two treatments carry this job on the sites that
+// win awards for it: a designed arrow at the foot of the hero, and a line with
+// a mark travelling down it and no arrowhead at all. The second is the better
+// fit for a page whose whole vocabulary is rules - and it is the one that has
+// to be explained, which is the thing this cue exists to stop. So: an arrow,
+// falling about 10px and fading out, once every 1.8s, on the page's own
+// easing. No bounce, no glow, no ring, no word beside it. Two rounds of a
+// small tracked word set as a label were rejected for reading as ornament
+// rather than as an instruction, and this one asks nothing of the reader.
+//
+// **It is the page's second looping autoplay and that is a decision, not an
+// oversight** - `DESIGN-SYSTEM` Motion allowed exactly one, the Earth's. The
+// owner asked for the motion by name after a still mark twice failed to be
+// read. It loops only while the reader has not moved, and stops the frame they
+// do.
 const CUE_OUT_MS = 320;
-// What stands between the headline's box and the row, in px, and it is the
-// label's own margin read backwards: `mb-[37.25px]` is what the label stands
-// off the headline above, so the cue stands the same off it below and the
-// column has one clearance on each side of the words.
-//
-// How much lower it could go is measured and the answer is: not much. The
-// foot of this photograph is the sunlit bracken the hikers are standing in,
-// where cream reads 1.05-1.21 against the brightest pixel of the bottom row,
-// and reaching 4.5 there needs about 84% darkening held over the foreground -
-// a hood over the photograph's own subject, which is `ART-DIRECTION §3`'s
-// "no brightness filter to fix contrast" with a darkening in its place. Swept
-// in 4px steps, the lowest row on the axis that carries both floors leaves a
-// gap of 43.1px at 375x553 and 74.9 / 95.0 / 162.6 / 138.6 at the other four.
-// 37.25 is inside all five and is a number this column already owns.
-const CUE_GAP = 37.25;
 type Cue = "on" | "out" | "off";
 interface Close {
   from: number;
@@ -469,7 +456,6 @@ const ScrollExpandMedia = ({
   const ridgeRef = useRef<HTMLDivElement | null>(null);
   const windowRef = useRef<HTMLDivElement | null>(null);
   const titleRef = useRef<HTMLDivElement | null>(null);
-  const sectionRef = useRef<HTMLElement | null>(null);
   // The scroll cue: which of its three states is on the glass, the same answer
   // for the listeners that spend it (they are older than the render that would
   // have told them), and whether it has been spent at all. Spent is one-way
@@ -477,11 +463,6 @@ const ScrollExpandMedia = ({
   const [cue, setCue] = useState<Cue>("on");
   const cueRef = useRef<Cue>("on");
   const cueSpent = useRef(false);
-  // Where the cue stands, measured off the headline block rather than declared
-  // twice: the block's own height is the label, its margin and two lines of
-  // `clamp(3.4rem, 11vw, 10rem)`, and restating that in CSS is a second place
-  // for it to drift from.
-  const [cueTop, setCueTop] = useState(0);
   // How far the headline block goes down behind the land. Measured; see the
   // effect below.
   const [descent, setDescent] = useState(0);
@@ -625,20 +606,6 @@ const ScrollExpandMedia = ({
       const skyline = (height - mask) * anchor + RIDGE_SKYLINE * mask;
       descentRef.current = skyline - title.offsetTop;
       setDescent(skyline - title.offsetTop);
-      // The cue's row, out of the same read. The block's foot walked up to the
-      // section, which is the cue's containing block - `offsetTop` is layout,
-      // so the descent's transform on this same element cannot move it.
-      const section = sectionRef.current;
-      if (!section) return;
-      let y = title.offsetHeight + CUE_GAP;
-      for (
-        let el: HTMLElement | null = title;
-        el && el !== section;
-        el = el.offsetParent as HTMLElement | null
-      ) {
-        y += el.offsetTop;
-      }
-      setCueTop(y);
     };
     measure();
     return onLayoutResize(measure);
@@ -1931,7 +1898,6 @@ const ScrollExpandMedia = ({
           becomes a fixed document row instead of one that moves by 86px
           whenever the bar does. */}
       <section
-        ref={sectionRef}
         className="gold-field gold-field-chrome-top gold-field-open-bottom hero-drop-scope hero-plate relative isolate flex min-h-svh flex-col items-center justify-start overflow-hidden"
       >
         {/* The push and the fade are written inline, on the same clock as the
@@ -2409,20 +2375,36 @@ const ScrollExpandMedia = ({
             alone - which is also what lets it go without anything in the
             photograph noticing.
 
+            **The row is measured, and it is picked off a plateau rather than
+            off a cliff.** The arrow was walked down the frame in 2% steps and
+            read at its own ink at the worst frame of its fall, painted against
+            blanked. On a phone the ground brightens fast below a quarter of the
+            window - 2.89 at 20%, 3.78 at 22%, 4.15 at 24% on the tallest one -
+            and **26%** is the first row clearing 4.5 at all four heights:
+            5.58 / 5.49 / 5.45 / 5.93 at 553 / 664 / 750 / 844. On a desktop the
+            curve is not monotone at all; a lit patch of the path reads 3.39 at
+            18% with 8.62 immediately above it at 14%, so the number is chosen
+            for the neighbours it has rather than for itself. **22%** sits
+            between 20% and 24% with every one of the three clear: 9.44 at
+            1440x900 and 8.56 at 1920x900.
+
+            Cream and not amber, which inverts the mark the site would reach
+            for: amber's own luminance is the middle of this bracken, and a
+            56x14 amber mark does not clear 3.0 until 230 / 298 / 212px above
+            the foot where cream clears 4.5 at 184 / 224 / 120. The mark that
+            had to go lowest had to be the lighter one.
+
             It is absolutely positioned over the section and carries no height
             of its own into the flow, so the page below it is the page that was
             there: both document heights and all twelve stage keys are the
-            numbers they were, and the row it stands on is the headline block's
-            foot plus `CUE_GAP`. */}
+            numbers they were. */}
         {cue !== "off" && (
           <div
             aria-hidden="true"
             data-hero-cue={cue}
-            className="hero-cue pointer-events-none absolute inset-x-0 z-30 flex items-center justify-center"
-            style={{ top: cueTop }}
+            className="hero-cue pointer-events-none absolute inset-x-0 bottom-[26%] z-30 flex justify-center md:bottom-[22%]"
           >
-            <span className="hero-cue-rule" />
-            <span className="hero-cue-word" />
+            <span className="hero-cue-arrow" />
           </div>
         )}
       </section>
