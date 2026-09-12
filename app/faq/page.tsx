@@ -133,9 +133,14 @@ export default function FaqPage() {
                           <h3 className="type-body font-sans font-semibold leading-[1.45] text-ink">
                             {item.question}
                           </h3>
+                          {/* A ring on the bare photograph read as low as 3.33
+                              against the 4.5 text floor - the mark is 10px, so
+                              its own ink never reaches full coverage against a
+                              ground that keeps moving under it. `gold-card`
+                              gives the disc a fixed backing instead. */}
                           <span
                             aria-hidden="true"
-                            className="flex size-7 shrink-0 items-center justify-center rounded-full border border-amber/45 text-[0.625rem] text-ink-soft transition-transform duration-200 ease-out-quart group-open:rotate-180"
+                            className="flex size-7 shrink-0 items-center justify-center rounded-full border border-amber/45 bg-gold-card text-[0.625rem] text-ink-soft transition-transform duration-200 ease-out-quart group-open:rotate-180"
                           >
                             {arrow}
                           </span>
