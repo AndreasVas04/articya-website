@@ -381,8 +381,10 @@ const shadeLayers = (progress: number) => {
   // 140 -> -40, so the boundary starts a feather below the foot and ends a
   // feather above the head: both ends are a clean single state.
   const edge = 140 - 180 * t;
-  const solid = (edge - SHADE_FEATHER).toFixed(2);
-  const clear = edge.toFixed(2);
+  // Where the feather's top row sits, as a share of the window. It is the one
+  // number the travelling layers need: the mask is a fixed shape and this is
+  // how far down it has been carried. See `.shade-travel` in globals.css.
+  const travel = edge - SHADE_FEATHER;
   // Neither end carries a mask at all. A fully-opaque mask is not free - it
   // pushes the layer through its own compositing pass, and the rounding that
   // costs is visible in the measurement: the headline's worst glyph pixel went
@@ -396,14 +398,18 @@ const shadeLayers = (progress: number) => {
       // rather than lowering it - 43.6° of hue and half the chroma, against
       // 0.5° for the same stops on the sky's own dark.
       color: "var(--color-sky-anchor)",
-      mask: t > 0 ? `linear-gradient(to bottom, #000 ${solid}%, transparent ${clear}%)` : undefined,
+      keep: "top" as const,
+      // `null` is the end that carries no mask at all, and it is the same
+      // declaration it always was.
+      travel: t > 0 ? travel : null,
       show: t < 1,
     },
     {
       key: "card",
       shade: CARD_SHADE,
       color: "var(--color-gold-anchor)",
-      mask: t < 1 ? `linear-gradient(to bottom, transparent ${solid}%, #000 ${clear}%)` : undefined,
+      keep: "bottom" as const,
+      travel: t < 1 ? travel : null,
       show: t > 0,
     },
   ];
@@ -413,27 +419,49 @@ const shadeLayers = (progress: number) => {
 // lose to the class; inline style is the one declaration that beats it.
 const HeroShade = ({ progress }: { progress: number }) => (
   <>
-    {shadeLayers(progress).map(({ key, shade, color, mask, show }) =>
-      show ? (
+    {shadeLayers(progress).map(({ key, shade, color, keep, travel, show }) => {
+      if (!show) return null;
+      const vars = {
+        "--shade-color": color,
+        "--shade-top": `${shade.top}%`,
+        "--shade-mid": `${shade.mid}%`,
+        "--shade-bottom": `${shade.base}%`,
+        "--shade-mid-from": shade.from,
+        "--shade-mid-to": shade.to,
+      } as CSSProperties;
+      // The ends of the crossing: one ramp, no mask, exactly as before.
+      if (travel === null) {
+        return (
+          <div
+            key={key}
+            aria-hidden="true"
+            className="plate-shade pointer-events-none absolute inset-0"
+            style={vars}
+          />
+        );
+      }
+      // And the crossing itself: the mask is a fixed shape on a layer three
+      // windows tall that travels, and the ramp inside it is carried back by
+      // the same distance so it stays registered to the window. Two
+      // compositor transforms where there used to be two full-window repaints
+      // a frame - see `.shade-travel` in globals.css.
+      return (
         <div
           key={key}
           aria-hidden="true"
-          className="plate-shade pointer-events-none absolute inset-0"
-          style={
-            {
-              "--shade-color": color,
-              "--shade-top": `${shade.top}%`,
-              "--shade-mid": `${shade.mid}%`,
-              "--shade-bottom": `${shade.base}%`,
-              "--shade-mid-from": shade.from,
-              "--shade-mid-to": shade.to,
-              maskImage: mask,
-              WebkitMaskImage: mask,
-            } as CSSProperties
-          }
-        />
-      ) : null
-    )}
+          className={cn(
+            "shade-travel pointer-events-none",
+            keep === "top" ? "shade-travel-top" : "shade-travel-bottom"
+          )}
+          style={{ translate: `0 ${(travel / 3).toFixed(4)}%` }}
+        >
+          <div
+            className="plate-shade shade-travel-ramp"
+            style={{ ...vars, translate: `0 ${(-travel).toFixed(4)}%` }}
+          />
+        </div>
+      );
+    })}
   </>
 );
 
