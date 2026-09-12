@@ -786,11 +786,24 @@ export default function HomePage() {
               from the window's edge, which put the words 26px inside the
               clearing's column on a laptop and 256px outside it on a wide
               screen, and left the right two thirds of the screen to open
-              sky. Below `md` nothing changes: the block is the full width at
-              the same padding it had. */}
+              sky. Below `md` the block is still the full width. */}
+          {/* `py-24`/`md:py-32`, not the `py-20`/`md:py-24` this block had: the
+              second panel's last line was scrolling out from under the header
+              before this column's own top had risen to the observer's 40%
+              line, so the ground ran empty for 40px at 553 and 1440 and 100px
+              at 664 with nothing cued. The block is centred in a `min-h-svh`
+              screen with room to spare, so more padding moves its own top
+              higher without moving anything it holds - the fire point comes
+              earlier, the choreography after it is unchanged. At 1440 the
+              extra reach is enough to close the run outright. 553 and 664
+              share the one mobile value, `py-24`, and it narrows both without
+              closing either: past it the block's own height outgrows 553's
+              screen and breaks the one number every stage key on this page
+              depends on, that all four phone heights measure exactly 1.00 vp.
+              That line, not the choreography, is what holds the rest back. */}
           <StageScene
             fireMargin="-60%"
-            className="relative mx-auto w-full max-w-6xl px-6 py-20 md:px-4 md:py-24 xl:max-w-[min(84rem,92vw)]"
+            className="relative mx-auto w-full max-w-6xl px-6 py-24 md:px-4 md:py-32 xl:max-w-[min(84rem,92vw)]"
           >
             <div className="md:grid md:grid-cols-12 md:gap-x-12 xl:gap-x-20">
             <div className="md:col-span-6">
