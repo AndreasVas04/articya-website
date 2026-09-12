@@ -517,6 +517,14 @@ height unchanged. Every stage is still exactly 1.00 vp. The two sections over
 stages, and the FAQ's accordion list at 2.23 vp on a phone — and neither moved
 at 1440.
 
+**Home's two desktop figures above are stale, and only those two — the
+2026-09-12 sweep.** `7939384` ended the clearing's wrapper on its own content
+on a desktop instead of a fixed height, and that is a desktop-only change:
+home is **5070 at 1440** and **5972 at 1920** now, both down from the
+5244/6200 recorded above. Every phone height in this record — home's 3909 and
+FAQ's 2296/2508 — is unchanged to the pixel; the phone clearing already ended
+on its content before `7939384` touched anything.
+
 **Contrast, swept per element at 20px over each page's whole traversal and
 refined at 5px around every worst stop, judged at the glyph's own ink.** Both
 viewports, all four routes, 81 elements: nothing under its floor except the
@@ -2145,6 +2153,12 @@ the panels' prose used to spend part of every pin under AA.
 
 **Document height is unchanged to the pixel** — 7743 at 1440×900 and 5887 at
 390×844, before and after. Nothing here is in flow.
+
+**Both figures are struck, not superseded — the 2026-09-12 sweep.** They were
+never this page's whole document height, only what it stood at the moment
+this note was written, and the clearing has been rebuilt twice since
+(`3d7e263`, `7939384`, the second of them desktop-only — see the type pass
+above). Home measures **5070 at 1440×900** and **4812 at 390×844** now.
 
 **A ground is `dvh`; content is `svh`. A ground may never be left to inherit
 its height.** The stage used to be `fixed inset-0`, which is a fixed box with no
