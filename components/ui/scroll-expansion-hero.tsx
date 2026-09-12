@@ -239,6 +239,30 @@ interface Settle {
 // and the growth read as a mechanism working rather than as space opening.
 const heroPush = (progress: number) => 1 + HERO_PUSH * Math.sin(Math.PI * progress);
 
+// Each of the three layers this number scales must be a compositor layer of
+// its own, and that is what `will-change: transform` on them buys.
+//
+// A `scale` written from JS on a layer the compositor does not already hold is
+// not a transform, it is paint: the subtree is rasterized again, at the new
+// scale, every frame. Three full-bleed layers doing that is the whole of the
+// opening's stutter on Chromium, and it is why the stutter grew with the
+// window - the bill is the window's own raster area, three times over, sixty
+// times a second. Measured on an 8 s scrub of the opening at a page size of
+// 1920x1080 at ratio 2, held inside a small window so the display is not the
+// variable: 22-63 dropped frames as it shipped, 4-5 with the three layers
+// promoted. Removing any one of the three alone got most of it back (8-24),
+// which is the shape of a cost that is shared rather than owned.
+//
+// The area is the page's and not the globe's. Across the same scrub the
+// Earth's canvas moves 1008px to 1118px square while the dropped frames go 3
+// to 52, its section is never on screen during the opening at any size, and
+// refusing its three chunks outright moves nothing.
+//
+// The hint is not left standing. The two plates exist only while the poster
+// does, so theirs goes with them at full expansion; the card's window is
+// mounted for the life of the page and reads `posterShowing`, so the reading
+// page below is not holding a promoted full-window layer it has no scale on.
+
 // The poster holds at full strength until the card covers the window, and only
 // then leaves. It used to run `1 - progress`, which was right while the card
 // held a differently-framed picture and is wrong now that it holds the same
@@ -1913,7 +1937,7 @@ const ScrollExpandMedia = ({
         <div
           ref={posterRef}
           className="absolute inset-0 z-0"
-          style={{ opacity: poster, scale: heroPush(progress) }}
+          style={{ opacity: poster, scale: heroPush(progress), willChange: "transform" }}
         >
           {/* The backdrop is the collapsed opening's presence: the graded
               home-hero vista at full photographic strength - a place, not a
@@ -2061,7 +2085,11 @@ const ScrollExpandMedia = ({
                 <div
                   ref={windowRef}
                   className="hero-window"
-                  style={{ scale: heroPush(progress) }}
+                  style={{
+                    scale: heroPush(progress),
+                    // Only while the push is live - see heroPush.
+                    willChange: posterShowing ? "transform" : undefined,
+                  }}
                 >
                   {restingState ? (
                     <>
@@ -2373,6 +2401,7 @@ const ScrollExpandMedia = ({
               "--ridge-mask": `url(${withBasePath(POSTER_RIDGE)})`,
               opacity: poster,
               scale: heroPush(progress),
+              willChange: "transform",
               // The mask, the picture and its darkening are three composited
               // full-bleed layers, and past the release they are three the
               // reader pays for on every pinch to paint nothing. The plate
