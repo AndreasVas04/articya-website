@@ -2244,6 +2244,19 @@ const ScrollExpandMedia = ({
                   transform: `translateY(${titleShift}px) scale(${titleScale})`,
                   transformOrigin: "50% 0",
                   opacity: titleOpacity,
+                  // The block's own layer, held across its step to zero.
+                  //
+                  // The step at 0.60 is a change of paint, and paint is where
+                  // the compositor decides what to keep: an invisible subtree
+                  // is not painted, so without this the block's layer was
+                  // released on the frame the words go - the one frame of the
+                  // opening where the crossing also begins. Naming opacity is
+                  // what holds it, and it holds only this element: a
+                  // `will-change` on a child inside an opacity-0 parent keeps
+                  // nothing, measured. The hint goes with the poster, so the
+                  // reading page below carries no layer for a block it cannot
+                  // see.
+                  willChange: posterShowing ? "opacity" : undefined,
                 }}
               >
                 {/* The mark, under the label where an eyebrow's rule stands:

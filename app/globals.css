@@ -1313,17 +1313,31 @@ body {
   .hero-load .hero-frame {
     animation: hero-frame-in 1100ms var(--ease-out-quart) both;
   }
+  /* `backwards` and not `both` on the three that make up the headline block,
+     and the difference is a compositor layer rather than a pixel. Each of
+     these keyframes declares only a `from`, so the implicit `to` is the
+     element's own value and holding it forwards holds exactly what the
+     element would render anyway - the fill after the end was never visible.
+     What it did do was keep the animation in effect for the life of the page,
+     which keeps the element composited: measured at 1920x1080 at ratio 2, the
+     two words, the label and the strike held four layers of their own from
+     load. The opening then snaps the block to opacity 0 at progress 0.60 -
+     nothing is painted in an invisible subtree, so the compositor released
+     all four in the middle of the reader's gesture, and the layer set changed
+     under the scroll at exactly the moment the crossing begins.
+     `backwards` fills only the delay before the start, which is the whole of
+     what these need, and the layers go at the end of the entrance instead. */
   .hero-load .hero-word {
-    animation: hero-word-rise 900ms var(--ease-out-quart) 120ms both;
+    animation: hero-word-rise 900ms var(--ease-out-quart) 120ms backwards;
   }
   .hero-load .hero-word-late {
     animation-delay: 300ms;
   }
   .hero-load .hero-strike {
-    animation: hero-strike-in 400ms var(--ease-out-quart) 850ms both;
+    animation: hero-strike-in 400ms var(--ease-out-quart) 850ms backwards;
   }
   .hero-load .hero-pill {
-    animation: hero-pill-in 400ms var(--ease-out-quart) 1000ms both;
+    animation: hero-pill-in 400ms var(--ease-out-quart) 1000ms backwards;
   }
 }
 @keyframes hero-poster-in {
