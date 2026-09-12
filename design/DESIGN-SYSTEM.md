@@ -2680,10 +2680,109 @@ the one operation on this canvas that can cost the context (`a54c437`), and
 the middle of a live gesture is the worst moment on the page to ask for
 memory.
 
+**The scene runs in a worker — 2026-09-12.** Everything the Earth costs to
+*build* is now on a thread of its own. `earth-core.ts` is the scene and
+touches no document; `earth-worker.ts` is the thread; `earth-scene.ts` is the
+half that keeps the hand, the box, the pinch and the watchdog, and drives the
+other through a command surface narrow enough to cross a `postMessage`. The
+page sends the hand, the box, the page scale and the section's entrance; the
+scene sends a heartbeat four times a second, which is the one thing the
+watchdog cannot infer. Nothing crosses per frame.
+
+**What it cost before, and it was never the link.** Measured at 1440×900 with
+every WebGL call on the page timed by name, `compileShader` and `linkProgram`
+are **0.0 ms** — all four programs, both engines, ten runs each. The driver
+defers the whole of it, and the bill arrives at the first call that needs a
+result: one `getProgramInfoLog` (**12.1 ms** Chromium, **18.4 ms** WebKit)
+which drains all four links at once, and the skin upload,
+`texSubImage2D` (**14.6 ms** Chromium, 2 × 7.8 ms WebKit). **26.7 ms of held
+main thread per load**, back to back. So the cost cannot be attributed to the
+Fresnel or the atmosphere and cannot be spread across the programs: it is one
+barrier, which is also why `compileAsync` with `KHR_parallel_shader_compile`
+only reached 46 → 34 ms. On the worker path the same instrument counts
+**0.0 ms, and no WebGL context on the main thread at all**.
+
+**Why placement could not have worked.** `104588c` held the build for the
+hero's release and then 450 ms of a still page. The hero's opening moves the
+page by cancelling the wheel, so it fires **no scroll events** — and the quiet
+gate listens for scroll. A reader scrubbing the hero open and shut is
+therefore "still" throughout, and the 26.7 ms landed inside the gesture; a
+reader who never pauses got it in the middle of a flick instead. Any
+main-thread window the reader is not using is a window they are about to use.
+The gate is gone and the schedule is `afterGroundTurn` alone again — the wire
+order, which is about the connection and not the thread.
+
+Measured at 1440×900, headed, fresh profile and cache disabled, ten cold runs
+of the owner's own gesture: open the hero, then scroll up and down through it
+for 8 s. The third column is the same page with the globe's chunks refused,
+which is what "attributable to the Earth" means here:
+
+| 8 s of scrubbing the hero | before | after | globe refused |
+|---|---|---|---|
+| Chromium — dropped frames | 3 | **0** | 0 |
+| Chromium — lost | 51 ms | **0 ms** | 0 ms |
+| Chromium — clean runs | 7/10 | **10/10** | 10/10 |
+| Chromium — worst frame | 33.4 ms | **18.8 ms** | 18.7 ms |
+| WebKit — dropped frames | 76 | **44** | 52 |
+| WebKit — lost | 1189 ms | **424 ms** | 429 ms |
+| WebKit — worst frame | 74.0 ms | **35.0 ms** | 42.0 ms |
+
+WebKit has a floor of its own here that has nothing to do with the Earth — 52
+drops and a 42 ms worst frame with no globe on the page at all — so the
+reading that matters is that the worker build sits **at or under the
+globe-free control on every column**. At a 4× CPU throttle, paired in one
+batch: the old build drops **two frames in every one of ten runs**, at +209
+and +292 ms, which is exactly where its WebGL context opens; the worker build
+drops **one frame in ten runs** and the globe-free control none.
+
+The flick — the trade `104588c` took on knowingly — is repaid. Twenty-five
+notches from hydration carried on to the release, ten cold runs each:
+
+| | opening | tail, the release included |
+|---|---|---|
+| before `104588c` | 4 dropped, 68 ms | 0 |
+| `104588c` | 0 | 5 dropped, 85 ms |
+| the worker | **0** | **0** |
+
+A Chrome trace of one cold load says where it went rather than that it is
+gone: main-thread tasks of 8 ms or more fall **21 → 12** and **451 → 170 ms**,
+the longest **46.1 → 21.0 ms**, and a `DedicatedWorker thread` appears
+carrying **5 tasks and 164 ms**.
+
+**Where it does not run.** The transfer is one-way — a canvas given to a
+worker can never be drawn on by the page again — so the worker is asked to
+answer before it is handed anything, and it answers before it imports the
+scene. A worker that errors or does not answer inside 2 s leaves the canvas
+untouched and the scene is built on the main thread instead, from the same
+file. Verified by removing `transferControlToOffscreen` from the engine: no
+worker, a WebGL context on the main thread, and the globe turns. Both engines
+carry the whole path — the transfer, `OffscreenCanvas`, WebGL2,
+`createImageBitmap`, and `requestAnimationFrame` inside a worker — and
+`webglcontextlost` and `webglcontextrestored` both reach an OffscreenCanvas
+in a worker in both, which is what the restore handler rests on.
+
+**Every behaviour, after the split.** Measured against the disc's own pixels
+at a fixed page scroll, worker build against the build before it, and the two
+are the same to the noise: the box at 504 / 559 / 294 px, a mouse drag
+horizontal (22.5 vs a still control of 8.5) and vertical (20.1), a release
+that carries inertia and decays (18.9 → 0.6 over 2.4 s), the auto-spin back
+4 s after the hand (10.7 over 700 ms), a finger on the disc that turns it
+with the page held (23.4 vs 9.6), a press in the corner that is not a grab
+(8.9 vs 8.5), the parallax bound at ±33 px, the pinch stopping the loop and
+halving the buffer 1008 → 504 → 1008, reduced motion still and still
+turnable by hand, the watchdog recovering nothing across ten seconds of
+reading, and the globe rebuilt after a route away and back. One row fails in
+WebKit in both builds alike — a wheel over the box's corner does not scroll —
+and it is the harness's wheel, not the site.
+
 **Cost.** three.js loads on demand a viewport ahead of the section: two
-chunks, 83.1 + 50.7 KB gzip, none of it on first load (166 kB, +1 for the
-loader). Textures 660 KB on a desktop, 450 KB on a phone, on demand. On the
-machine's GPU under a 4× CPU throttle the entrance costs under **0.5 ms** of
-main thread per frame and no long task; headless Chromium's software rasterizer
-reads 9.7 ms, which is the swap stalling and is recorded as such. The loop
-runs only while the box is on screen and only while something moves.
+chunks, 83.1 + 50.7 KB gzip, none of it on first load, and they are shared
+rather than duplicated between the page and the worker. The split adds the
+worker's 1.1 KB bootstrap and moves the scene into its own 4.3 KB chunk:
+counted at the server over a whole load of home, everything the Earth costs
+goes **587 → 589 KB** gzip, skins included. Textures 660 KB on a desktop,
+450 KB on a phone, on demand, fetched and decoded by the worker. The loop
+runs only while the box is on screen and only while something moves. On the
+machine's GPU under a 4× CPU throttle the entrance costs under 0.5 ms of main
+thread per frame and no long task; headless Chromium's software rasterizer
+reads 9.7 ms, which is the swap stalling and is recorded as such.

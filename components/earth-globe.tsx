@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import type { EarthHandle } from "@/components/earth-scene";
-import { afterGroundTurn, afterHeroOpen, afterScrollQuiet } from "@/lib/page-load";
+import { afterGroundTurn } from "@/lib/page-load";
 import { onLayoutResize } from "@/lib/viewport";
 import { cn, withBasePath } from "@/lib/utils";
 
@@ -16,10 +16,6 @@ const PACK = "/globe/earth-pack.webp";
 // never travels further toward the ledger than the gaps around it allow.
 const PARALLAX = 0.06;
 const PARALLAX_BOUND = 33;
-// How still the page has to be before the renderer is built. Long enough that
-// a wheel's own tail has run out; short enough that the reader who pauses on
-// the intro block has already paid it by the time they move again.
-const QUIET_MS = 450;
 
 // The spinning Earth beside "What we do". Decorative (aria-hidden): the
 // marks carry no words, and the countries stat beside them carries the
@@ -74,25 +70,17 @@ export function EarthGlobe({ className }: { className?: string }) {
     // routes' heroes to have had the wire; the opening that follows is seconds
     // long, and a route reached through the router has loaded already.
     //
-    // And it waits for a still page. The renderer is the only thing on that
-    // wire that spends the main thread rather than the connection - three.js
-    // evaluated, then its shader program linked through a synchronous flush to
-    // the GPU process - and measured at 1440x900 on a cold load that is 24ms
-    // and 46ms of held renderer. It used to land 100-200ms after hydration,
-    // which is the reader's first notch, and the opening dropped a frame there.
-    // Waiting for the release alone only moved it onto the release, so it waits
-    // for the release and then for a gesture's worth of quiet. The box coming
-    // onto the screen gives up waiting: a reader who flicks from the release to
-    // "What we do" without pausing gets the frame rather than no Earth.
+    // It waits for nothing else. It used to wait for the release and then for
+    // 450ms of a still page, because building the scene cost the main thread
+    // and the reader could feel it - and that was a placement, not a fix: the
+    // reader who scrubs the hero open and shut makes still moments all the way
+    // through the gesture, so the cost simply moved into the gesture, and the
+    // reader who never pauses at all got it in the middle of a flick. The
+    // scene is built in a worker now (`earth-scene.ts`), so there is no main
+    // thread to protect and no moment to choose.
     let offLoad: (() => void) | null = null;
-    let offOpen: (() => void) | null = null;
-    let offQuiet: (() => void) | null = null;
-    let built = false;
     const build = () => {
-      if (built || disposed) return;
-      built = true;
-      offQuiet?.();
-      arrival.disconnect();
+      if (disposed) return;
       void import("@/components/earth-scene").then((m) => {
         if (disposed) return;
         const resin =
@@ -107,19 +95,11 @@ export function EarthGlobe({ className }: { className?: string }) {
         });
       });
     };
-    const arrival = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) build();
-    });
     const loader = new IntersectionObserver(
       ([entry]) => {
         if (!entry.isIntersecting) return;
         loader.disconnect();
-        offLoad = afterGroundTurn(() => {
-          offOpen = afterHeroOpen(() => {
-            offQuiet = afterScrollQuiet(build, QUIET_MS);
-            arrival.observe(host);
-          });
-        });
+        offLoad = afterGroundTurn(build);
       },
       { rootMargin: "100% 0px 100% 0px" }
     );
@@ -161,10 +141,7 @@ export function EarthGlobe({ className }: { className?: string }) {
     return () => {
       disposed = true;
       loader.disconnect();
-      arrival.disconnect();
       offLoad?.();
-      offOpen?.();
-      offQuiet?.();
       handle?.dispose();
       window.removeEventListener("scroll", onScroll);
       offResize?.();

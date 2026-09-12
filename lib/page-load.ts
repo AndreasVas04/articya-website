@@ -80,66 +80,6 @@ export function afterGroundTurn(fn: () => void): () => void {
   };
 }
 
-/** Run `fn` once the hero's opening is over - at once on a page whose hero is
- *  already open, and at once on a page that has no hero.
- *
- *  The Earth's renderer is the one thing the wire hands over that costs the
- *  main thread rather than the connection: evaluating three.js and linking its
- *  shader program are 24ms and 46ms of blocked renderer, and the second of
- *  them holds the thread through a synchronous flush to the GPU process. On a
- *  hard load of home both land 100-200ms after hydration, which is the reader's
- *  first notch, and the opening drops a frame there. Nothing is bought by
- *  spending them then: the Earth is a screen below a hero that holds the page
- *  at scroll 0 and answers End and PageDown with more opening, so until the
- *  release the reader cannot reach it.
- *
- *  `hero-open` is the hero's own flag, set on the frame the card becomes the
- *  window. It falls again if the reader closes the hero, so the wait latches on
- *  the first one. */
-export function afterHeroOpen(fn: () => void): () => void {
-  const root = document.documentElement;
-  const open = () => root.classList.contains("hero-open") || !document.querySelector(".hero-plate");
-  if (open()) {
-    fn();
-    return () => {};
-  }
-  let live = true;
-  const watch = new MutationObserver(() => {
-    if (!live || !open()) return;
-    live = false;
-    watch.disconnect();
-    fn();
-  });
-  watch.observe(root, { attributes: true, attributeFilter: ["class"] });
-  return () => {
-    live = false;
-    watch.disconnect();
-  };
-}
-
-/** Run `fn` once no scroll event has arrived for `ms`. */
-export function afterScrollQuiet(fn: () => void, ms: number): () => void {
-  let live = true;
-  let timer = 0;
-  const done = () => {
-    if (!live) return;
-    stop();
-    fn();
-  };
-  const restart = () => {
-    window.clearTimeout(timer);
-    timer = window.setTimeout(done, ms);
-  };
-  const stop = () => {
-    live = false;
-    window.clearTimeout(timer);
-    window.removeEventListener("scroll", restart);
-  };
-  window.addEventListener("scroll", restart, { passive: true });
-  restart();
-  return stop;
-}
-
 const useIsomorphicLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 /** True once the document has loaded. False on the server and on the first

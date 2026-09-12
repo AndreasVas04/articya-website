@@ -1,260 +1,32 @@
-import {
-  BackSide,
-  BufferGeometry,
-  Float32BufferAttribute,
-  Group,
-  LinearMipmapLinearFilter,
-  Mesh,
-  NormalBlending,
-  PerspectiveCamera,
-  Points,
-  Quaternion,
-  Scene,
-  ShaderMaterial,
-  SphereGeometry,
-  SRGBColorSpace,
-  Texture,
-  Vector3,
-  WebGLRenderer,
-} from "three";
-
+import type { EarthCore, EarthCoreOptions } from "@/components/earth-core";
 import { watchLiveness } from "@/lib/liveness";
 import { watchZoom } from "@/lib/viewport";
 
-// The Earth beside "What we do": the planet itself, lit once from the upper
-// left, turning slowly. Its skin is NASA's Blue Marble graded toward the
-// section (scripts/globe-texture.mjs); a second map carries the night lights,
-// the clouds and the water. The night side glows with its cities in the
-// site's own amber, the sun glints on the sea, a thin weather layer turns a
-// little faster than the ground, and the atmosphere is a soft blue limb. The
-// marks are points of amber light on the countries the projects reach.
+// The Earth's half that belongs to the page: the hand, the box, the pinch and
+// the watchdog. The scene itself is `earth-core.ts`, and on every engine that
+// will carry an OffscreenCanvas it runs in a Web Worker - `earth-worker.ts` -
+// because what the scene costs to build is main-thread time the reader is
+// using. Measured at 1440x900 the build is a 15ms skin upload and a 12ms wait
+// on the linked programs, back to back, and wherever it was placed it landed
+// in a gesture: the reader who scrubs the hero open and shut makes still
+// moments continuously, and a still moment is a moment they are about to use.
+// So it is not placed any more. It is moved.
+//
+// Nothing crosses the port per frame. The page sends the hand, the box, the
+// page scale and the section's entrance; the scene sends a heartbeat twice a
+// quarter-second, which is the one thing the watchdog below cannot infer.
+//
 // Everything here is loaded on demand a viewport ahead of the section and
 // thrown away with it; earth-globe.tsx owns that lifecycle.
 
-// Cyprus, and the countries the marks stand on, in the order they light.
-const HOME: [number, number] = [35.13, 33.43];
-const PLACES: [number, number][] = [
-  [38.7223, -9.1393], // Portugal
-  [40.4168, -3.7038], // Spain
-  [41.9028, 12.4964], // Italy
-  [37.9838, 23.7275], // Greece
-  [52.52, 13.405], // Germany
-  [52.2297, 21.0122], // Poland
-  [44.4268, 26.1025], // Romania
-  [42.6977, 23.3219], // Bulgaria
-  [47.4979, 19.0402], // Hungary
-  [50.0755, 14.4378], // Czechia
-  [48.1486, 17.1077], // Slovakia
-  [46.0569, 14.5058], // Slovenia
-  [45.815, 15.9819], // Croatia
-  [48.2082, 16.3738], // Austria
-  [52.3676, 4.9041], // Netherlands
-  [50.8503, 4.3517], // Belgium
-  [48.8566, 2.3522], // France
-  [54.6872, 25.2797], // Lithuania
-  [56.9496, 24.1052], // Latvia
-  [59.437, 24.7536], // Estonia
-];
-
-const DEG = Math.PI / 180;
-// One revolution in 90 s; the weather drifts a fifth faster.
-const SPIN_RATE = (2 * Math.PI) / 90;
-const CLOUD_DRIFT = 0.2;
-const AXIS_TILT = 23.4 * DEG;
-// The camera looks a little down onto the sphere, so the northern countries
-// sit inside the disc rather than foreshortened against its top edge.
-const CAMERA_ELEVATION = 18 * DEG;
-// The disc's diameter as a share of the canvas; the rest is the atmosphere's.
-const DISC = 0.9;
-const FOV = 26;
-// Key light: upper left, 35° above the view axis, 45° to the left of it.
-const LIGHT_ELEVATION = 24 * DEG;
-const LIGHT_AZIMUTH = 58 * DEG;
-// The terminator's softness, and how dark the night side's ground goes.
-const TERMINATOR_WRAP = 0.18;
-const NIGHT = 0.06;
-// The day side, brought down toward the ground the section stands on.
-const EXPOSURE = 0.7;
-// A little of the sky in the day side: the far things in the photograph
-// behind it are cooler and softer than the near ones.
-const HAZE = 0.08;
-// The atmosphere: sky blue on the limb, warmer where the sun catches it.
-const ATMOSPHERE = "#8fbce6";
-const ATMOSPHERE_SUN = "#f2d7a8";
-const HALO_THICKNESS = 0.1;
-// Marks: an amber point with a soft halo, the home point larger and breathing.
-const MARK_PX = 15;
-const HOME_MARK_PX = 22;
-const MARK_STAGGER = 70;
-const MARK_FADE = 260;
-const MARK_LEAD = 300;
-// Drag: inertia damped 0.92 per 60 Hz frame, the spin back 4 s after the hand.
-const DRAG_DAMPING = 0.92;
-// The globe turns in any direction the hand takes it, but it is a planet and
-// not a trackball: the two axes are its own poles and the screen's horizontal,
-// so a drag never rolls it. The pitch is clamped short of the pole - past this
-// the far pole comes over the top and the axis reads as broken.
-const MAX_PITCH = 75 * DEG;
-const IDLE_BEFORE_SPIN = 4000;
 // How long a page scale has to hold before the drawing buffer is re-cut for it.
 const SCALE_SETTLE_MS = 250;
-// How long a turning globe may go without a frame before the loop is taken
-// to have been lost rather than paused: ten frames at 60Hz, and more than any
-// single frame on this page costs.
+// How long the loop may go without a frame before it is taken to have been
+// lost rather than paused.
 const STALL_MS = 600;
-const SPIN_RETURN = 600;
-
-// Latitude and longitude onto the unit sphere in the geometry's own frame:
-// three's sphere puts texture u = 0 at (-1, 0, 0), which is the equirect's
-// left edge at 180° W, so longitude runs the other way round z.
-function toSphere(lat: number, lon: number, out = new Vector3()) {
-  const la = lat * DEG;
-  const lo = lon * DEG;
-  return out.set(Math.cos(la) * Math.cos(lo), Math.sin(la), -Math.cos(la) * Math.sin(lo));
-}
-
-function hexToLinear(hex: string): Vector3 {
-  const n = parseInt(hex.replace("#", ""), 16);
-  const lin = (c: number) => {
-    const s = c / 255;
-    return s <= 0.04045 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
-  };
-  return new Vector3(lin((n >> 16) & 255), lin((n >> 8) & 255), lin(n & 255));
-}
-
-const GLOBE_VERTEX = /* glsl */ `
-  varying vec2 vUv;
-  varying vec3 vWorldNormal;
-  varying vec3 vWorldPosition;
-  void main() {
-    vUv = uv;
-    vWorldNormal = normalize(mat3(modelMatrix) * normal);
-    vec4 wp = modelMatrix * vec4(position, 1.0);
-    vWorldPosition = wp.xyz;
-    gl_Position = projectionMatrix * viewMatrix * wp;
-  }
-`;
-const GLOBE_FRAGMENT = /* glsl */ `
-  uniform sampler2D map;
-  uniform sampler2D pack;
-  uniform vec3 lightDir;
-  uniform vec3 cameraPos;
-  uniform vec3 lightsColor;
-  uniform vec3 atmosphere;
-  uniform vec3 atmosphereSun;
-  uniform float wrap;
-  uniform float night;
-  uniform float exposure;
-  uniform float haze;
-  varying vec2 vUv;
-  varying vec3 vWorldNormal;
-  varying vec3 vWorldPosition;
-  void main() {
-    vec3 n = normalize(vWorldNormal);
-    vec3 v = normalize(cameraPos - vWorldPosition);
-    vec3 day = mix(texture2D(map, vUv).rgb, atmosphere * 0.6, haze) * exposure;
-    vec3 aux = texture2D(pack, vUv).rgb;
-    float ndl = dot(n, lightDir);
-    float lit = clamp((ndl + wrap) / (1.0 + wrap), 0.0, 1.0);
-    lit = lit * lit * (3.0 - 2.0 * lit);
-    // Sun on the water: a tight glint that only the sea returns.
-    vec3 h = normalize(lightDir + v);
-    float glint = pow(max(dot(n, h), 0.0), 110.0) * aux.b * lit * 0.22;
-    // The cities come up as the day goes; the ground under them stays.
-    float dark = 1.0 - smoothstep(0.0, 0.35, lit);
-    vec3 color = day * (night + (1.0 - night) * lit) + lightsColor * aux.r * dark * 1.35 + vec3(glint);
-    // The limb: sky blue, warmed where the light reaches it.
-    float f = pow(1.0 - max(dot(n, v), 0.0), 3.0);
-    vec3 limb = mix(atmosphere, atmosphereSun, clamp(ndl * 0.5 + 0.5, 0.0, 1.0));
-    color += limb * f * (0.12 + 0.5 * lit);
-    gl_FragColor = vec4(color, 1.0);
-    #include <colorspace_fragment>
-  }
-`;
-const CLOUD_FRAGMENT = /* glsl */ `
-  uniform sampler2D pack;
-  uniform vec3 lightDir;
-  uniform float wrap;
-  uniform float opacity;
-  varying vec2 vUv;
-  varying vec3 vWorldNormal;
-  varying vec3 vWorldPosition;
-  void main() {
-    vec3 n = normalize(vWorldNormal);
-    float cover = texture2D(pack, vUv).g;
-    float ndl = dot(n, lightDir);
-    float lit = clamp((ndl + wrap) / (1.0 + wrap), 0.0, 1.0);
-    lit = lit * lit * (3.0 - 2.0 * lit);
-    // Weather reads only in the light; at night it is a faint veil at most.
-    vec3 color = vec3(0.92, 0.94, 0.97) * (0.06 + 0.94 * lit);
-    gl_FragColor = vec4(color, cover * opacity * (0.15 + 0.85 * lit));
-    #include <colorspace_fragment>
-  }
-`;
-const HALO_VERTEX = /* glsl */ `
-  varying vec3 vNormal;
-  varying vec3 vView;
-  varying vec3 vWorldNormal;
-  void main() {
-    vec4 mv = modelViewMatrix * vec4(position, 1.0);
-    vNormal = normalize(normalMatrix * normal);
-    vWorldNormal = normalize(mat3(modelMatrix) * normal);
-    vView = normalize(-mv.xyz);
-    gl_Position = projectionMatrix * mv;
-  }
-`;
-const HALO_FRAGMENT = /* glsl */ `
-  uniform vec3 atmosphere;
-  uniform vec3 atmosphereSun;
-  uniform vec3 lightDir;
-  varying vec3 vNormal;
-  varying vec3 vView;
-  varying vec3 vWorldNormal;
-  void main() {
-    // Back faces of a shell just outside the globe: the ring between the
-    // two limbs, strongest against the planet and gone at the shell's edge.
-    float d = dot(normalize(vNormal), normalize(vView));
-    float ring = smoothstep(0.0, -0.42, d);
-    float ndl = dot(normalize(vWorldNormal), lightDir);
-    float sun = clamp(ndl * 0.5 + 0.5, 0.0, 1.0);
-    vec3 color = mix(atmosphere, atmosphereSun, sun * 0.5);
-    gl_FragColor = vec4(color, ring * ring * ring * (0.08 + 0.34 * sun));
-    #include <colorspace_fragment>
-  }
-`;
-const MARK_VERTEX = /* glsl */ `
-  attribute float aSize;
-  attribute float aOn;
-  uniform float pixelRatio;
-  uniform float breath;
-  varying float vAlpha;
-  varying float vHome;
-  void main() {
-    vec4 mv = modelViewMatrix * vec4(position, 1.0);
-    vec3 n = normalize(normalMatrix * normal);
-    vec3 v = normalize(-mv.xyz);
-    // The far side goes out as it turns away: nothing pops at the limb.
-    vAlpha = smoothstep(0.0, 0.3, dot(n, v)) * aOn;
-    vHome = step(20.0, aSize);
-    gl_PointSize = aSize * pixelRatio * (1.0 + vHome * breath);
-    gl_Position = projectionMatrix * mv;
-  }
-`;
-const MARK_FRAGMENT = /* glsl */ `
-  uniform vec3 color;
-  varying float vAlpha;
-  varying float vHome;
-  void main() {
-    float d = length(gl_PointCoord - 0.5) * 2.0;
-    // A bright core inside a soft halo.
-    float core = 1.0 - smoothstep(0.22, 0.34, d);
-    float halo = (1.0 - smoothstep(0.2, 1.0, d)) * 0.5;
-    float a = max(core, halo) * vAlpha;
-    vec3 c = mix(color, vec3(1.0, 0.93, 0.8), core * 0.45);
-    gl_FragColor = vec4(c, a);
-    #include <colorspace_fragment>
-  }
-`;
+// How long to wait for the worker to say it is there before giving up on it
+// and building the scene on this thread instead.
+const WORKER_READY_MS = 2000;
 
 export interface EarthOptions {
   /** The day map, by rung: `[phone, desktop]`. */
@@ -274,303 +46,168 @@ export interface EarthHandle {
   dispose: () => void;
 }
 
-export function mountEarth(host: HTMLElement, canvas: HTMLCanvasElement, opts: EarthOptions): EarthHandle {
-  const renderer = new WebGLRenderer({
-    canvas,
-    antialias: true,
-    alpha: true,
-    powerPreference: "low-power",
-  });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-  renderer.setClearColor(0x000000, 0);
+type Command =
+  | { t: "resize"; size: number; ratio: number }
+  | { t: "visible"; on: boolean }
+  | { t: "zoom"; held: boolean }
+  | { t: "enter" }
+  | { t: "dragStart" }
+  | { t: "drag"; dx: number; dy: number }
+  | { t: "dragEnd" }
+  | { t: "wake" }
+  | { t: "dispose" };
 
-  const scene = new Scene();
-  const camera = new PerspectiveCamera(FOV, 1, 0.1, 20);
-  // The sphere's silhouette fills DISC of the frame: its angular radius is
-  // asin(1 / d), and the frame's half-height subtends FOV / 2.
-  const distance = 1 / Math.sin(Math.atan(DISC * Math.tan((FOV / 2) * DEG)));
-  camera.position.set(0, distance * Math.sin(CAMERA_ELEVATION), distance * Math.cos(CAMERA_ELEVATION));
-  camera.lookAt(0, 0, 0);
-  camera.updateMatrixWorld();
-
-  const lightDir = new Vector3(
-    -Math.sin(LIGHT_AZIMUTH) * Math.cos(LIGHT_ELEVATION),
-    Math.sin(LIGHT_ELEVATION),
-    Math.cos(LIGHT_AZIMUTH) * Math.cos(LIGHT_ELEVATION)
-  ).applyQuaternion(camera.quaternion).normalize();
-
-  const resin = hexToLinear(opts.resin);
-  const atmosphere = hexToLinear(ATMOSPHERE);
-  const atmosphereSun = hexToLinear(ATMOSPHERE_SUN);
-
-  const tilt = new Group();
-  tilt.rotation.z = AXIS_TILT;
-  const spin = new Group();
-  const weather = new Group();
-  tilt.add(spin);
-  tilt.add(weather);
-  scene.add(tilt);
-
-  const makeTexture = () => {
-    const t = new Texture();
-    t.colorSpace = SRGBColorSpace;
-    t.minFilter = LinearMipmapLinearFilter;
-    t.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
-    t.flipY = false;
-    return t;
-  };
-  const dayTexture = makeTexture();
-  const packTexture = makeTexture();
-
-  const globeGeometry = new SphereGeometry(1, 128, 96);
-  const globeMaterial = new ShaderMaterial({
-    uniforms: {
-      map: { value: dayTexture },
-      pack: { value: packTexture },
-      lightDir: { value: lightDir },
-      cameraPos: { value: camera.position },
-      lightsColor: { value: resin },
-      atmosphere: { value: atmosphere },
-      atmosphereSun: { value: atmosphereSun },
-      wrap: { value: TERMINATOR_WRAP },
-      night: { value: NIGHT },
-      exposure: { value: EXPOSURE },
-      haze: { value: HAZE },
-    },
-    vertexShader: GLOBE_VERTEX,
-    fragmentShader: GLOBE_FRAGMENT,
-  });
-  const globe = new Mesh(globeGeometry, globeMaterial);
-  globe.visible = false;
-  spin.add(globe);
-
-  const cloudGeometry = new SphereGeometry(1.006, 96, 64);
-  const cloudMaterial = new ShaderMaterial({
-    uniforms: {
-      pack: { value: packTexture },
-      lightDir: { value: lightDir },
-      wrap: { value: TERMINATOR_WRAP },
-      opacity: { value: 0.45 },
-    },
-    vertexShader: GLOBE_VERTEX,
-    fragmentShader: CLOUD_FRAGMENT,
-    transparent: true,
-    depthWrite: false,
-  });
-  const clouds = new Mesh(cloudGeometry, cloudMaterial);
-  clouds.visible = false;
-  clouds.renderOrder = 1;
-  weather.add(clouds);
-
-  const haloGeometry = new SphereGeometry(1 + HALO_THICKNESS, 96, 64);
-  const haloMaterial = new ShaderMaterial({
-    uniforms: {
-      atmosphere: { value: atmosphere },
-      atmosphereSun: { value: atmosphereSun },
-      lightDir: { value: lightDir },
-    },
-    vertexShader: HALO_VERTEX,
-    fragmentShader: HALO_FRAGMENT,
-    transparent: true,
-    depthWrite: false,
-    side: BackSide,
-    blending: NormalBlending,
-  });
-  const halo = new Mesh(haloGeometry, haloMaterial);
-  halo.visible = false;
-  halo.renderOrder = 2;
-  scene.add(halo);
-
-  // The marks.
-  const markCount = PLACES.length + 1;
-  const positions = new Float32Array(markCount * 3);
-  const normals = new Float32Array(markCount * 3);
-  const sizes = new Float32Array(markCount);
-  // The attribute owns its array (three copies what it is given), so the
-  // per-mark switch is written straight into it.
-  const onAttribute = new Float32BufferAttribute(new Float32Array(markCount), 1);
-  const on = onAttribute.array as Float32Array;
-  const place = (i: number, lat: number, lon: number, px: number) => {
-    const p = toSphere(lat, lon);
-    normals.set([p.x, p.y, p.z], i * 3);
-    p.multiplyScalar(1.008);
-    positions.set([p.x, p.y, p.z], i * 3);
-    sizes[i] = px;
-  };
-  place(0, HOME[0], HOME[1], HOME_MARK_PX);
-  PLACES.forEach(([lat, lon], i) => place(i + 1, lat, lon, MARK_PX));
-  const markGeometry = new BufferGeometry();
-  markGeometry.setAttribute("position", new Float32BufferAttribute(positions, 3));
-  markGeometry.setAttribute("normal", new Float32BufferAttribute(normals, 3));
-  markGeometry.setAttribute("aSize", new Float32BufferAttribute(sizes, 1));
-  markGeometry.setAttribute("aOn", onAttribute);
-  const markMaterial = new ShaderMaterial({
-    uniforms: {
-      color: { value: resin },
-      pixelRatio: { value: renderer.getPixelRatio() },
-      breath: { value: 0 },
-    },
-    vertexShader: MARK_VERTEX,
-    fragmentShader: MARK_FRAGMENT,
-    transparent: true,
-    depthTest: false,
-    depthWrite: false,
-  });
-  const marks = new Points(markGeometry, markMaterial);
-  marks.renderOrder = 3;
-  marks.visible = false;
-  spin.add(marks);
-
-  const home = toSphere(HOME[0], HOME[1]);
-
-  // The spin that puts Cyprus under the camera: the angle that turns its
-  // surface normal, through the tilt, closest to the camera's direction.
-  const cameraDir = camera.position.clone().normalize();
-  const homeFacing = (() => {
-    const q = new Quaternion();
-    const tiltQ = new Quaternion().setFromAxisAngle(new Vector3(0, 0, 1), AXIS_TILT);
-    const yAxis = new Vector3(0, 1, 0);
-    const n = new Vector3();
-    let best = 0;
-    let bestDot = -Infinity;
-    for (let step = 0; step < 720; step += 1) {
-      const angle = (step / 720) * 2 * Math.PI;
-      q.setFromAxisAngle(yAxis, angle);
-      n.copy(home).applyQuaternion(q).applyQuaternion(tiltQ);
-      const d = n.dot(cameraDir);
-      if (d > bestDot) {
-        bestDot = d;
-        best = angle;
-      }
-    }
-    return best;
-  })();
-
-  // The globe's orientation, as two angles rather than a free quaternion. Yaw
-  // is about its own polar axis and is unbounded - it is the spin, and the
-  // auto-spin adds to it, so the turn always resumes about whatever up-axis the
-  // reader has left the planet on rather than snapping back to one. Pitch is
-  // about the screen's horizontal, expressed in the tilt group's frame, and is
-  // clamped. They compose pitch-after-yaw, so yaw stays the globe's own.
-  let angle = homeFacing;
-  let pitch = 0;
-  let cloudAngle = 0;
-  let dragVelocity = 0;
-  let pitchVelocity = 0;
-  let dragging = false;
-  const pitchAxis = new Vector3(1, 0, 0).applyQuaternion(
-    new Quaternion().setFromAxisAngle(new Vector3(0, 0, 1), AXIS_TILT).invert()
+/** A worker is used where the engine has both halves of the transfer. Safari
+ *  has carried them since 17 and every Chromium does; anything else runs the
+ *  same scene on this thread. */
+function canOffload(): boolean {
+  return (
+    typeof Worker !== "undefined" &&
+    typeof HTMLCanvasElement !== "undefined" &&
+    typeof HTMLCanvasElement.prototype.transferControlToOffscreen === "function"
   );
-  const yAxis = new Vector3(0, 1, 0);
-  const qYaw = new Quaternion();
-  const qPitch = new Quaternion();
-  const orient = (target: Group, yaw: number) => {
-    qYaw.setFromAxisAngle(yAxis, yaw);
-    qPitch.setFromAxisAngle(pitchAxis, pitch);
-    target.quaternion.copy(qPitch).multiply(qYaw);
-  };
-  let lastPointerAt = -Infinity;
-  let enteredAt: number | null = null;
-  let ready = false;
-  let visible = false;
-  let raf = 0;
-  let lastFrame = 0;
-  // When a frame last actually landed, for the liveness floor alone. `lastFrame`
-  // cannot answer it: it is the frame clock, zeroed on every wake so the first
-  // step after a pause is not given the whole pause as its `dt`.
-  let aliveAt = performance.now();
-  let discPx = 1;
+}
+
+export function mountEarth(host: HTMLElement, canvas: HTMLCanvasElement, opts: EarthOptions): EarthHandle {
   let disposed = false;
-  // Set by the page-scale watch below: true while the reader holds a pinch.
-  let zoomed = false;
-
-  const lightMarks = (now: number) => {
-    if (enteredAt === null) return;
-    const t = now - enteredAt - MARK_LEAD;
-    let changed = false;
-    for (let i = 0; i < markCount; i += 1) {
-      const local = (t - i * MARK_STAGGER) / MARK_FADE;
-      const v = local <= 0 ? 0 : local >= 1 ? 1 : local * local * (3 - 2 * local);
-      if (on[i] !== v) {
-        on[i] = v;
-        changed = true;
-      }
-    }
-    if (changed) onAttribute.needsUpdate = true;
-  };
-  const marksDone = () =>
-    enteredAt !== null && performance.now() - enteredAt > MARK_LEAD + MARK_STAGGER * (markCount - 1) + MARK_FADE;
-
-  const render = (now: number) => {
-    orient(spin, angle);
-    orient(weather, angle + cloudAngle);
-    markMaterial.uniforms.breath.value = opts.reducedMotion ? 0 : 0.12 * (0.5 + 0.5 * Math.sin(now / 900));
-    renderer.render(scene, camera);
-  };
-
-  const frame = (now: number) => {
-    raf = 0;
-    if (disposed || !ready || zoomed) return;
-    const dt = lastFrame ? Math.min(now - lastFrame, 100) : 16.67;
-    lastFrame = now;
-    aliveAt = now;
-
-    if (!opts.reducedMotion) {
-      // The auto-spin holds off while the hand is on the globe and for four
-      // seconds after it, then comes back over 600 ms rather than in a step.
-      const sinceHand = now - lastPointerAt;
-      const auto = dragging ? 0 : Math.min(1, Math.max(0, (sinceHand - IDLE_BEFORE_SPIN) / SPIN_RETURN));
-      angle += SPIN_RATE * (dt / 1000) * auto;
-      cloudAngle += SPIN_RATE * CLOUD_DRIFT * (dt / 1000);
-      if (!dragging && (Math.abs(dragVelocity) > 1e-5 || Math.abs(pitchVelocity) > 1e-5)) {
-        const decay = Math.pow(DRAG_DAMPING, dt / 16.67);
-        angle += dragVelocity * (dt / 16.67);
-        pitch = Math.min(MAX_PITCH, Math.max(-MAX_PITCH, pitch + pitchVelocity * (dt / 16.67)));
-        dragVelocity *= decay;
-        pitchVelocity *= decay;
-      } else if (!dragging) {
-        dragVelocity = 0;
-        pitchVelocity = 0;
-      }
-    }
-    lightMarks(now);
-    render(now);
-
-    const still = opts.reducedMotion && marksDone() && !dragging && Math.abs(dragVelocity) < 1e-5;
-    if (visible && !still) raf = requestAnimationFrame(frame);
-  };
-  const wake = () => {
-    if (!raf && ready && visible && !disposed && !zoomed) {
-      lastFrame = 0;
-      aliveAt = performance.now();
-      raf = requestAnimationFrame(frame);
-    }
-  };
-
-  // The observed box is the host's own laid-out width, which a pinch cannot
-  // move - the layout viewport does not change when the reader zooms - so
-  // this never runs on a gesture. What it must also not do is run on a tick
-  // that reports the size it already has: `setSize` reallocates the drawing
-  // buffer, and a reallocation is the one operation on this canvas that can
-  // cost the context. A lost context is a black disc for the rest of the
-  // page's life, so the cheapest guard is not to ask.
-  //
-  // The key is the size and the ratio together, because the ratio moves too:
-  // see the page-scale watch below.
-  let sized = "";
+  let built = false;
   let ratio = Math.min(window.devicePixelRatio || 1, 2);
-  const resize = () => {
-    const size = host.clientWidth;
-    const key = `${size}@${ratio}`;
-    if (!size || key === sized) return;
-    sized = key;
-    renderer.setPixelRatio(ratio);
-    renderer.setSize(size, size, false);
-    markMaterial.uniforms.pixelRatio.value = renderer.getPixelRatio();
-    discPx = size * DISC;
-    if (ready) render(performance.now());
+  let zoomed = false;
+  let visible = false;
+  // The main thread's own clock on the last heartbeat. The worker's
+  // `performance.now()` is measured from the worker's birth, not the
+  // document's, so its numbers are never compared with ours - only the
+  // arrival of the message is.
+  let lastAlive = performance.now();
+
+  const coreOptions: EarthCoreOptions = {
+    day: opts.day,
+    pack: opts.pack,
+    resin: opts.resin,
+    reducedMotion: opts.reducedMotion,
+    size: host.clientWidth,
+    ratio,
   };
-  const resizeObserver = new ResizeObserver(resize);
+
+  // Until the scene is live the commands are kept. A command that is only
+  // worth its latest value replaces the one it supersedes; the hand's steps
+  // are cumulative and all of them are kept.
+  let pending: Command[] = [];
+  let deliver: ((c: Command) => void) | null = null;
+  const send = (c: Command) => {
+    if (disposed && c.t !== "dispose") return;
+    if (deliver) {
+      deliver(c);
+      return;
+    }
+    if (c.t !== "drag") pending = pending.filter((p) => p.t !== c.t);
+    pending.push(c);
+  };
+  const open = (to: (c: Command) => void) => {
+    deliver = to;
+    const held = pending;
+    pending = [];
+    for (const c of held) to(c);
+  };
+
+  let worker: Worker | null = null;
+  const onScene = () => {
+    built = true;
+    lastAlive = performance.now();
+  };
+
+  // The main thread's own copy of the scene, for an engine without the
+  // transfer and for a worker that never answered.
+  const mountHere = () => {
+    if (disposed) return;
+    void import("@/components/earth-core")
+      .then((mod) => {
+        if (disposed) return;
+        const core: EarthCore = mod.createEarth(canvas, coreOptions, () => {
+          lastAlive = performance.now();
+        });
+        onScene();
+        open((c) => {
+          switch (c.t) {
+            case "resize": core.resize(c.size, c.ratio); break;
+            case "visible": core.visible(c.on); break;
+            case "zoom": core.zoom(c.held); break;
+            case "enter": core.enter(); break;
+            case "dragStart": core.dragStart(); break;
+            case "drag": core.drag(c.dx, c.dy); break;
+            case "dragEnd": core.dragEnd(); break;
+            case "wake": core.wake(); break;
+            case "dispose": core.dispose(); break;
+          }
+        });
+      })
+      .catch(() => {
+        // No scene: the canvas stays clear and the section is as it was.
+      });
+  };
+
+  if (canOffload()) {
+    // The handshake before the transfer, and it is not ceremony.
+    // `transferControlToOffscreen` cannot be undone: once the canvas is given
+    // away this thread can never draw on it, so a worker that fails to arrive
+    // would take the fallback down with it. The worker answers before it
+    // imports anything, so this costs one message and no work.
+    let answered = false;
+    try {
+      worker = new Worker(new URL("@/components/earth-worker", import.meta.url));
+    } catch {
+      worker = null;
+    }
+    if (worker) {
+      const w = worker;
+      const giveUp = window.setTimeout(() => {
+        if (answered || disposed) return;
+        answered = true;
+        w.terminate();
+        worker = null;
+        mountHere();
+      }, WORKER_READY_MS);
+      w.onerror = () => {
+        if (answered || disposed) return;
+        answered = true;
+        window.clearTimeout(giveUp);
+        w.terminate();
+        worker = null;
+        mountHere();
+      };
+      w.onmessage = (event: MessageEvent<{ t: string }>) => {
+        const t = event.data?.t;
+        if (t === "alive") {
+          lastAlive = performance.now();
+          return;
+        }
+        if (t === "built") {
+          onScene();
+          return;
+        }
+        if (t !== "ready" || answered) return;
+        answered = true;
+        window.clearTimeout(giveUp);
+        if (disposed) return;
+        const off = canvas.transferControlToOffscreen();
+        w.postMessage({ t: "init", canvas: off, opts: coreOptions }, [off]);
+        open((c) => w.postMessage(c));
+      };
+    } else {
+      mountHere();
+    }
+  } else {
+    mountHere();
+  }
+
+  void opts.entered.then(() => send({ t: "enter" }));
+
+  // The box's size is this side's to measure. What it must not do is report a
+  // size it has already reported: `setSize` reallocates the drawing buffer,
+  // and a reallocation is the one operation on this canvas that can cost the
+  // context. The observed box is the host's laid-out width, which a pinch
+  // cannot move, so this never runs on a gesture.
+  const resizeObserver = new ResizeObserver(() => send({ t: "resize", size: host.clientWidth, ratio }));
   resizeObserver.observe(host);
 
   // A pinch is not a frame to render.
@@ -583,84 +220,51 @@ export function mountEarth(host: HTMLElement, canvas: HTMLCanvasElement, opts: E
   // stays zoomed.
   //
   // The halving waits, and that is the point of the delay. `setPixelRatio`
-  // reallocates the drawing buffer, which is the one operation on this canvas
-  // that can cost the context, and the middle of a live gesture is the worst
-  // moment on the page to ask for memory. So the loop pauses on the first
-  // event and the buffer is only re-cut once the gesture has been still for
-  // SCALE_SETTLE_MS - and back at scale 1, the same wait again before the full
-  // ratio returns.
+  // reallocates the drawing buffer, and the middle of a live gesture is the
+  // worst moment on the page to ask for memory. So the loop pauses on the
+  // first event and the buffer is only re-cut once the gesture has been still
+  // for SCALE_SETTLE_MS - and back at scale 1, the same wait again.
   //
-  // Whether a scale is being held is not this file's question to answer. It
-  // used to be - `scale > 1`, read off the visual viewport here - and it was
-  // wrong twice over: a ratio of two widths that lands a millionth above 1 is
-  // not a zoom, and a gesture that ends without a final event never came back
-  // at all. `watchZoom` answers it once for the page, on a clock as well as on
-  // an event, and this loop is one of the things it restarts.
+  // Whether a scale is being held is not this file's question to answer.
+  // `watchZoom` answers it once for the page, on a clock as well as on an
+  // event, and this loop is one of the things it restarts.
   let scaleTimer = 0;
   const settleScale = () => {
     const want = zoomed ? 1 : Math.min(window.devicePixelRatio || 1, 2);
     if (want === ratio) return;
     ratio = want;
-    sized = "";
-    resize();
+    send({ t: "resize", size: host.clientWidth, ratio });
   };
   const offZoom = watchZoom((held) => {
     if (held !== zoomed) {
       zoomed = held;
-      if (!zoomed) wake();
+      send({ t: "zoom", held });
     }
-    // Pushed out by every further move of the scale, so the buffer is only
-    // re-cut once the gesture has been still for SCALE_SETTLE_MS.
     window.clearTimeout(scaleTimer);
     scaleTimer = window.setTimeout(settleScale, SCALE_SETTLE_MS);
-  });
-
-  // And if it is lost anyway - a background tab reclaimed, memory pressure on
-  // a phone - the default is that the canvas stays black forever. Swallowing
-  // the loss event is what lets the browser restore it; the restore then
-  // re-uploads what the GPU dropped and the disc comes back on its own.
-  const onContextLost = (event: Event) => {
-    event.preventDefault();
-    ready = false;
-    if (raf) cancelAnimationFrame(raf);
-    raf = 0;
-  };
-  const onContextRestored = () => {
-    sized = "";
-    resize();
-    dayTexture.needsUpdate = true;
-    packTexture.needsUpdate = true;
-    renderer.compile(scene, camera);
-    ready = true;
-    render(performance.now());
-    if (!opts.reducedMotion) wake();
-  };
-  canvas.addEventListener("webglcontextlost", onContextLost);
-  canvas.addEventListener("webglcontextrestored", onContextRestored);
-
-  // And the floor under all of it. Every reason this loop has to be stopped is
-  // asked for by name above; if none of them holds and no frame is booked, the
-  // loop has been lost by whatever last stood it down, and a lost loop is a
-  // planet that has simply stopped turning under the reader's thumb.
-  const offLiveness = watchLiveness(() => {
-    if (disposed || !ready || !visible || zoomed || opts.reducedMotion) return null;
-    if (performance.now() - aliveAt < STALL_MS) return null;
-    // A frame booked this long ago and still not delivered is not a frame on
-    // its way: the id is dropped so `wake` has something to book. Testing
-    // `raf` instead and standing down would make this floor blind to exactly
-    // the case it is here for - a loop holding a booking that will never run.
-    if (raf) cancelAnimationFrame(raf);
-    raf = 0;
-    wake();
-    return raf ? "globe loop" : null;
   });
 
   // Rendering runs only while the globe is on screen.
   const intersection = new IntersectionObserver(([entry]) => {
     visible = entry.isIntersecting;
-    if (visible) wake();
+    send({ t: "visible", on: visible });
   });
   intersection.observe(host);
+
+  // And the floor under all of it. Every reason the loop has to be stopped is
+  // known on this side - the scene is not built, the box is off screen, the
+  // reader is pinching, reduced motion has retired it - so a loop that has
+  // gone quiet for none of them has been lost by whatever last stood it down,
+  // and a lost loop is a planet that has simply stopped turning under the
+  // reader's thumb. The heartbeat is the only thing this side cannot infer,
+  // and it is why the scene sends one.
+  const offLiveness = watchLiveness(() => {
+    if (disposed || !built || !visible || zoomed || opts.reducedMotion) return null;
+    if (performance.now() - lastAlive < STALL_MS) return null;
+    lastAlive = performance.now();
+    send({ t: "wake" });
+    return "globe loop";
+  });
 
   // The hand, and how it is divided with the page.
   //
@@ -691,6 +295,7 @@ export function mountEarth(host: HTMLElement, canvas: HTMLCanvasElement, opts: E
   let touchId: number | null = null;
   let lastX = 0;
   let lastY = 0;
+  let dragging = false;
   let turned = false;
 
   // The disc's own hit target. Its absence is not an error: the scene is
@@ -699,12 +304,13 @@ export function mountEarth(host: HTMLElement, canvas: HTMLCanvasElement, opts: E
   const grabTarget = host.querySelector<HTMLElement>(".earth-grab");
   const onDisc = (event: Event) => grabTarget !== null && event.target === grabTarget;
 
-  const beginDrag = () => {
+  const beginDrag = (x: number, y: number) => {
     dragging = true;
     turned = false;
-    dragVelocity = 0;
-    pitchVelocity = 0;
+    lastX = x;
+    lastY = y;
     canvas.dataset.grab = "";
+    send({ t: "dragStart" });
   };
   const letGo = () => {
     if (pointerId !== null && grabTarget?.hasPointerCapture(pointerId)) {
@@ -712,32 +318,17 @@ export function mountEarth(host: HTMLElement, canvas: HTMLCanvasElement, opts: E
     }
     pointerId = null;
     touchId = null;
+    if (!dragging) return;
     dragging = false;
     delete canvas.dataset.grab;
-    lastPointerAt = performance.now();
-    if (opts.reducedMotion) {
-      dragVelocity = 0;
-      pitchVelocity = 0;
-    }
+    send({ t: "dragEnd" });
   };
-
-  // A pixel of finger is the same angle on both axes: the disc's own radius
-  // subtends a quarter turn, so the surface follows the hand.
   const turn = (x: number, y: number) => {
-    const stepX = ((x - lastX) * Math.PI) / discPx;
-    const stepY = ((y - lastY) * Math.PI) / discPx;
+    const dx = x - lastX;
+    const dy = y - lastY;
     lastX = x;
     lastY = y;
-    angle += stepX;
-    const held = Math.min(MAX_PITCH, Math.max(-MAX_PITCH, pitch + stepY));
-    // At the clamp the hand stops carrying pitch, and it must not leave a
-    // velocity behind either, or the release would push into the stop.
-    pitchVelocity = held - pitch;
-    pitch = held;
-    dragVelocity = stepX;
-    lastPointerAt = performance.now();
-    if (opts.reducedMotion) render(performance.now());
-    else wake();
+    send({ t: "drag", dx, dy });
   };
 
   const onPointerDown = (event: PointerEvent) => {
@@ -745,10 +336,7 @@ export function mountEarth(host: HTMLElement, canvas: HTMLCanvasElement, opts: E
     if (!event.isPrimary || pointerId !== null) return;
     if (!onDisc(event)) return;
     pointerId = event.pointerId;
-    lastX = event.clientX;
-    lastY = event.clientY;
-    lastPointerAt = performance.now();
-    beginDrag();
+    beginDrag(event.clientX, event.clientY);
     grabTarget?.setPointerCapture(event.pointerId);
   };
   const onPointerMove = (event: PointerEvent) => {
@@ -760,7 +348,6 @@ export function mountEarth(host: HTMLElement, canvas: HTMLCanvasElement, opts: E
     if (event.pointerType === "touch") return;
     if (event.pointerId !== pointerId) return;
     letGo();
-    wake();
   };
 
   const onTouchStart = (event: TouchEvent) => {
@@ -771,10 +358,7 @@ export function mountEarth(host: HTMLElement, canvas: HTMLCanvasElement, opts: E
     if (!onDisc(event)) return;
     const touch = event.touches[0];
     touchId = touch.identifier;
-    lastX = touch.clientX;
-    lastY = touch.clientY;
-    lastPointerAt = performance.now();
-    beginDrag();
+    beginDrag(touch.clientX, touch.clientY);
   };
   const onTouchMove = (event: TouchEvent) => {
     if (event.touches.length > 1) {
@@ -798,10 +382,7 @@ export function mountEarth(host: HTMLElement, canvas: HTMLCanvasElement, opts: E
     if (event.cancelable) event.preventDefault();
     turn(touch.clientX, touch.clientY);
   };
-  const onTouchEnd = () => {
-    letGo();
-    wake();
-  };
+  const onTouchEnd = () => letGo();
 
   host.addEventListener("touchstart", onTouchStart, { passive: true });
   host.addEventListener("touchmove", onTouchMove, { passive: false });
@@ -812,80 +393,14 @@ export function mountEarth(host: HTMLElement, canvas: HTMLCanvasElement, opts: E
   host.addEventListener("pointerup", onPointerUp);
   host.addEventListener("pointercancel", onPointerUp);
 
-  // Decode off the main thread where the browser allows it.
-  const load = async (texture: Texture, src: string) => {
-    const response = await fetch(src);
-    const blob = await response.blob();
-    if (typeof createImageBitmap === "function") {
-      texture.image = await createImageBitmap(blob, {
-        imageOrientation: "flipY",
-        premultiplyAlpha: "none",
-        colorSpaceConversion: "none",
-      });
-    } else {
-      const url = URL.createObjectURL(blob);
-      const image = new Image();
-      await new Promise<void>((resolve, reject) => {
-        image.onload = () => resolve();
-        image.onerror = () => reject(new Error("earth texture"));
-        image.src = url;
-      });
-      URL.revokeObjectURL(url);
-      texture.image = image;
-      texture.flipY = true;
-    }
-    texture.needsUpdate = true;
-  };
-
-  // The day map's rung follows the disc's backing size: a phone's 600px
-  // canvas sees one hemisphere across ~1000 texels of the 2k map.
-  const backing = host.clientWidth * renderer.getPixelRatio();
-  const dayRung = backing > 800 ? opts.day[1] : opts.day[0];
-
-  Promise.all([load(dayTexture, dayRung), load(packTexture, opts.pack)])
-    .then(() => {
-      if (disposed) return;
-      globe.visible = true;
-      clouds.visible = true;
-      halo.visible = true;
-      marks.visible = true;
-      // Shaders compile and the textures upload here, a viewport ahead of
-      // the section, so the entrance's first frame costs a draw and nothing else.
-      renderer.compile(scene, camera);
-      ready = true;
-      resize();
-      if (opts.reducedMotion) {
-        // The Cyprus-facing frame with every mark lit.
-        enteredAt = -Infinity;
-        on.fill(1);
-        onAttribute.needsUpdate = true;
-        render(performance.now());
-      } else {
-        render(performance.now());
-        wake();
-      }
-      return opts.entered;
-    })
-    .then(() => {
-      if (disposed || opts.reducedMotion) return;
-      angle = homeFacing;
-      enteredAt = performance.now();
-      wake();
-    })
-    .catch(() => {
-      // A failed texture leaves the canvas clear: the section as it was.
-    });
-
   return {
     dispose: () => {
+      send({ t: "dispose" });
       disposed = true;
-      if (raf) cancelAnimationFrame(raf);
       window.clearTimeout(scaleTimer);
       offZoom();
       offLiveness();
       resizeObserver.disconnect();
-      canvas.removeEventListener("webglcontextlost", onContextLost);
-      canvas.removeEventListener("webglcontextrestored", onContextRestored);
       intersection.disconnect();
       host.removeEventListener("touchstart", onTouchStart);
       host.removeEventListener("touchmove", onTouchMove);
@@ -895,18 +410,12 @@ export function mountEarth(host: HTMLElement, canvas: HTMLCanvasElement, opts: E
       host.removeEventListener("pointermove", onPointerMove);
       host.removeEventListener("pointerup", onPointerUp);
       host.removeEventListener("pointercancel", onPointerUp);
-      globeGeometry.dispose();
-      cloudGeometry.dispose();
-      haloGeometry.dispose();
-      markGeometry.dispose();
-      globeMaterial.dispose();
-      cloudMaterial.dispose();
-      haloMaterial.dispose();
-      markMaterial.dispose();
-      dayTexture.dispose();
-      packTexture.dispose();
-      renderer.dispose();
-      renderer.forceContextLoss();
+      if (worker) {
+        const w = worker;
+        worker = null;
+        // A beat for the scene to give the context back before the thread goes.
+        window.setTimeout(() => w.terminate(), 0);
+      }
     },
   };
 }
