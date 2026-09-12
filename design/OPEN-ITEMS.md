@@ -196,6 +196,21 @@ where the scene's box is the wider of the two at every window. These two close
 only by raising the **scene's** declaration to the wall's, which buys the tile's
 rung for the scene as well — a trade, not a fix, and it is not taken here.
 
+### 13 · The FAQ's accordion chevron is under the text floor
+
+Found by the 2026-09-12 sweep, and it is the only element on the site measured
+below its floor over a photograph. The `▼` in each question's ring reads
+**3.33** at 375×553 and 3.56–4.38 at 390×664 and 1440×900, in both engines, at
+the glyph's own ink over 93–231 scored pixels, against a 4.5 text floor. As a
+**mark**, judged against the 3.0 floor this site gives its rules and numerals,
+it clears everywhere with 0.33 to spare. The decorative-glyph exemption is not
+available: it takes all four conditions and this fails two — 231 px of
+population against the 200 allowed, and visible for the whole of its zone's
+travel against the 5% allowed. So it is a repair, and what closes it is the
+glyph's own weight or colour, not the ground: `9d9bc09` already moved it off the
+light-ground amber token and it sits at 10px in `ink-soft` inside an `amber/45`
+ring.
+
 ---
 
 ## Closed
