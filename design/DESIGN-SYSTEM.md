@@ -2786,3 +2786,190 @@ runs only while the box is on screen and only while something moves. On the
 machine's GPU under a 4× CPU throttle the entrance costs under 0.5 ms of main
 thread per frame and no long task; headless Chromium's software rasterizer
 reads 9.7 ms, which is the swap stalling and is recorded as such.
+
+## What the crossing costs, and it is not the compositor — 2026-09-13
+
+A closed investigation. **Nothing in the page changed.** Three fixes in one day
+measured clean here and failed on the owner's machine, so this one begins with
+the instrument and ends with no change to the page.
+
+**The symptom, all of it from the owner and none of it reproducible here.**
+Safari is smooth at every window size, macOS and iOS both. Chromium — Brave,
+hardware accelerated, ANGLE Metal, Apple M5 — lags, the lag scales with window
+size, it is gone at 390 wide, it is worst on a very slow scroll, and it is
+worst inside the crossing, where the headline is behind the land and only the
+background moves. `f14ba53` made it much better. `1ef7eb3` held. `71960b7`
+made it much worse.
+
+### The instrument, and the two ways it was wrong first
+
+**A pause is not a pause.** 120 ms of silence is the driver's idle floor and
+the settle then carries the opening to the release, so a harness that reaches
+p 0.58 and waits before it starts tracing photographs a released hero. The
+first matrix read 100 drawn frames against 673 driven and said the crossing
+cost nothing. Any run whose drawn frames fall under 90% of its driven frames
+is now void.
+
+**Emulated device metrics invert the answer.** This display is 2880×1864 behind
+a 1710×1107 desktop, so 1920×1080 at ratio 2 cannot be presented: the frame is
+composited at 3840×2160 and resampled twice on its way to the glass. Under
+that emulation `1ef7eb3` is the worst build of the four and `71960b7` the best,
+which is the owner's ordering backwards. Every number below is **Brave, a real
+window, the display's own backing scale, no emulation** — and the largest
+window this desktop can hold is 1710×992, not the 1920 this wanted.
+
+The GPU is hardware accelerated and says so: `chrome://gpu` reads Compositing,
+Rasterization, Canvas and WebGL all *Hardware accelerated* with Skia Graphite
+enabled, the renderer string is `ANGLE (Apple, ANGLE Metal Renderer: Apple
+M5)`, and the blank-page rAF median is 16.70 ms, which is the display-awake
+gate — a slept display presents at 30 Hz and voids the run.
+
+**What the GPU process will and will not answer.** `Display::DrawAndSwap`,
+`DirectRenderer::DrawFrame`, `SkiaRenderer::SwapBuffers` and the graphics
+pipeline's `STEP_SURFACE_AGGREGATION` / `STEP_SEND_BUFFER_SWAP` /
+`STEP_BUFFER_SWAP_POST_SUBMIT` all exist and are timed. **There is no
+TextureUpload event on this backend** — Skia Graphite over Metal carries
+textures as IOSurface-backed shared images, and `disabled-by-default-gpu.device`
+emits nothing at all, so there are no device-timeline timestamps to be had. The
+CPU-side slices are submission, not execution.
+
+**And `SubmitCompositorFrameToPresentationCompositorFrame` cannot rank
+anything.** It is over 16.7 ms on 100% of frames in all four builds, because it
+is the pipeline's depth — the wait for a vsync — and not work. A "GPU frame
+time over 16.7 ms" count reads 670 of 670 everywhere.
+
+Two quantities are left, and both are deterministic rather than timed:
+
+- **Composited surface per frame** — the sum of the compositor frame's
+  render-pass output rects, in device px, read off cc's own
+  `LayerTreeHostImpl:snapshot` under `disabled-by-default-viz.quads`.
+- **Raster tasks across the crossing** — the count of cc `RasterTask` events.
+  Reproducible to ±1% across runs (9169 / 9169 / 9170).
+
+The crossing is driven at 15 px/s by one synthetic wheel event a frame of
+constant size: constant so the momentum-tail detector never fires, one a frame
+so the idle clock never does. p 0.58 → 0.999, about 670 frames over 11.2 s.
+
+### The four builds, at 1710×992 (3420×1984 device px)
+
+| build | raster tasks | render passes | composited surface a frame | at 60 Hz | tile memory |
+|---|---|---|---|---|---|
+| `c600465` | 48,186 | 7 | 64.8 Mpx — **9.55 windows** | 15.55 GB/s | 612 MB |
+| `f14ba53` | 22,813 | 8 | 51.0 Mpx — **7.51 windows** | 12.24 GB/s | 438 MB |
+| `1ef7eb3` | 22,749 | 8 | 51.0 Mpx — **7.51 windows** | 12.24 GB/s | 439 MB |
+| `71960b7` | 8,586 | **14** | 89.5 Mpx — **13.20 windows** | 21.49 GB/s | 823 MB |
+
+Per-frame GPU-process work, p50 over three reps: `Display::DrawAndSwap` 0.269 /
+0.265 / 0.257 / **0.618** ms, `DirectRenderer::DrawFrame` 0.181 / 0.180 / 0.172
+/ **0.486**, surface aggregation 0.045 / 0.042 / 0.041 / **0.069**.
+
+**This ranks all four the way the device does, and it is the first instrument
+that has.** `c600465` → `f14ba53` halves the raster and takes a fifth off the
+surface; `f14ba53` → `1ef7eb3` is identical on both axes; `1ef7eb3` →
+`71960b7` cuts the raster by 62% and buys **six more render passes, 76% more
+composited surface and 88% more tile memory**. The two axes are not
+interchangeable on this machine: paint is the cheap currency and composite is
+the dear one, and `71960b7` sold twelve thousand raster tasks for 5.7 windows
+of composited surface a frame.
+
+**The frame-drop metrics still do not reproduce it, and they are the ones that
+were wrong three times.** `71960b7` presents cleanly — zero late frames at
+every window size — while `1ef7eb3` runs 0 to 465 late frames at 1710. Skipped
+vsyncs, dropped frames and cc's own frame states rank the rejected build best.
+Do not take a decision on them.
+
+**At the two sizes this display can only emulate.** The
+emulation cannot be trusted for timing — it inverts the ordering, above — but
+the render-pass geometry it produces is the geometry the page asks for, and it
+is the only way to read 1920×1080 at ratio 2 and 390×664 at ratio 3 here:
+
+| build | window | device px | passes | composited surface a frame | at 60 Hz |
+|---|---|---|---|---|---|
+| `c600465` | 1920×1080 | 3840×2160 | 7 | 79.1 Mpx — 9.54 W | 18.99 GB/s |
+| `f14ba53` | 1920×1080 | 3840×2160 | 8 | 62.1 Mpx — 7.48 W | 14.90 GB/s |
+| `1ef7eb3` | 1920×1080 | 3840×2160 | 8 | 62.1 Mpx — 7.49 W | 14.91 GB/s |
+| `71960b7` | 1920×1080 | 3840×2160 | **14** | 109.0 Mpx — 13.15 W | **26.17 GB/s** |
+| `c600465` | 390×664 | 1170×1992 | 8 | 11.2 Mpx — 10.77 W | 2.68 GB/s |
+| `f14ba53` | 390×664 | 1170×1992 | 9 | 9.3 Mpx — 8.95 W | 2.22 GB/s |
+| `1ef7eb3` | 390×664 | 1170×1992 | 9 | 9.3 Mpx — 8.95 W | 2.22 GB/s |
+| `71960b7` | 390×664 | 1170×1992 | **15** | 15.5 Mpx — 14.92 W | **3.71 GB/s** |
+
+**It scales with the window because the surface does.** The gap `71960b7` opens
+over `1ef7eb3` is 9.25 GB/s at 1710, 7.09 at 1440, 4.35 at 1024 and 1.90 at the
+narrowest window this desktop will make (500×663) — 4.9× larger at the top of
+the range than at the bottom. At those two sizes the same gap is 11.26
+GB/s at 1920×1080 against 1.49 at 390×664, **7.6× larger**, which is the shape
+the owner describes: it scales with the window and at 390 it is gone.
+
+### The crossing adds no composited surface at all
+
+Both `.plate-shade` elements deleted outright, against `1ef7eb3`, same window,
+five samples through the crossing:
+
+| | render passes | composited surface a frame | raster tasks |
+|---|---|---|---|
+| shades deleted | 8 | 6.88 / 7.18 / 7.52 / 7.88 / 9.00 W | **9,169** |
+| `1ef7eb3` | 8 | 6.88 / 7.18 / 7.51 / 7.87 / 9.00 W | **21,128** |
+
+**The two shades add zero render passes and zero composited surface.** A
+gradient mask on an element that is already inside a promoted layer is folded
+into that layer's display list as a `saveLayer`/`dstIn` pair; it is paint, and
+it never becomes a compositor render surface. So the crossing's composite
+bandwidth is **0.00 GB/s**, and there is nothing in it for fewer surfaces, a
+smaller surface or a surface-free expression to remove. The hypothesis this
+investigation was opened on is refuted by its own floor.
+
+What the shades are is **57% of all the raster in the crossing** — 11,959 of
+21,128 tasks, two full-window ramps re-rastered on every frame.
+
+**The band is small and it stops early.** The feather is 40% of the window
+deep, but what stands inside the window is less, and after p ≈ 0.856 the
+boundary is entirely above the top and nothing moves for the last third of the
+declared range:
+
+| p | 0.600 | 0.644 | 0.689 | 0.733 | 0.778 | 0.822 | 0.867 | 0.911 | 0.956 | 1.000 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| edge, % of H | 140.0 | 138.0 | 130.4 | 113.2 | 77.2 | 22.8 | −13.2 | −30.4 | −38.0 | −40.0 |
+| band in the window | — | 0.020 | 0.096 | 0.268 | **0.400** | 0.228 | — | — | — | — |
+
+### Two candidates, both built, both worse
+
+- **The poster's plate not rendered once its mask has left the window**
+  (`edge ≤ 0`, the third of the range where it paints nothing): **23,192 raster
+  tasks against 21,128.** Changing the rendered layer set in the middle of the
+  gesture costs more than the element it removes — which is the same thing
+  `1ef7eb3` exists to stop.
+- **The poster's mask folded into its own ramp**, as one 28-stop gradient with
+  the product of ramp and mask baked in and no mask at all: **26,573 raster
+  tasks, 26% worse than HEAD**, and it removed no surface because there was
+  none to remove. A 28-stop gradient costs more to raster than four stops plus
+  a two-stop mask.
+
+### What would pay, and what it costs in channels
+
+The only cost the crossing actually has is paint, and the only way to pay it
+less often without moving it onto the compositor is to stop the boundary
+moving on every frame. Measured, against HEAD, across 40 progress values from
+0.60 to 0.99 at 1710×991 ratio 2:
+
+| boundary | raster tasks | vs HEAD | of the crossing's own | worst | mean | widest frame share |
+|---|---|---|---|---|---|---|
+| shades deleted (the floor) | 9,169 | −57% | 100% | — | — | — |
+| HEAD, continuous | 21,128 | — | — | — | — | — |
+| steps of 0.5% of H | 15,258 | −28% | 49% | **4 ch** | 1.03 | 32.1% |
+| steps of 1.0% of H | 13,235 | −37% | **66%** | **4 ch** | 1.12 | 36.2% |
+
+Outside the band's visible travel the stepped builds and HEAD are byte-identical
+or differ on tens of pixels at one channel, which is this harness's own floor.
+
+**So: a boundary that steps in whole per cent of the window height takes two
+thirds of the crossing's paint away and costs at most four channels over about
+a third of the frame, on the frame it steps.** It is not pixel-identical, so it
+is not taken here; it is the owner's to decide.
+
+**And the honest limit of all of it.** `71960b7` took the crossing's paint down
+to the floor and the owner felt it as worse, so paint alone does not explain
+the device either — what it bought with that paint cost more. The remaining
+cost inside the crossing is two full-window darkenings rastered every frame, it
+is not a compositor cost, and the stepped boundary above is the one lever on it
+that adds no composited surface.
