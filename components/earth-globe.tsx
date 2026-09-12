@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import type { EarthHandle } from "@/components/earth-scene";
-import { afterGroundTurn } from "@/lib/page-load";
+import { afterGroundTurn, afterHeroOpen, afterScrollQuiet } from "@/lib/page-load";
 import { onLayoutResize } from "@/lib/viewport";
 import { cn, withBasePath } from "@/lib/utils";
 
@@ -16,6 +16,10 @@ const PACK = "/globe/earth-pack.webp";
 // never travels further toward the ledger than the gaps around it allow.
 const PARALLAX = 0.06;
 const PARALLAX_BOUND = 33;
+// How still the page has to be before the renderer is built. Long enough that
+// a wheel's own tail has run out; short enough that the reader who pauses on
+// the intro block has already paid it by the time they move again.
+const QUIET_MS = 450;
 
 // The spinning Earth beside "What we do". Decorative (aria-hidden): the
 // marks carry no words, and the countries stat beside them carries the
@@ -69,24 +73,53 @@ export function EarthGlobe({ className }: { className?: string }) {
     // headline waits on. It waits for the document's load and for the other
     // routes' heroes to have had the wire; the opening that follows is seconds
     // long, and a route reached through the router has loaded already.
+    //
+    // And it waits for a still page. The renderer is the only thing on that
+    // wire that spends the main thread rather than the connection - three.js
+    // evaluated, then its shader program linked through a synchronous flush to
+    // the GPU process - and measured at 1440x900 on a cold load that is 24ms
+    // and 46ms of held renderer. It used to land 100-200ms after hydration,
+    // which is the reader's first notch, and the opening dropped a frame there.
+    // Waiting for the release alone only moved it onto the release, so it waits
+    // for the release and then for a gesture's worth of quiet. The box coming
+    // onto the screen gives up waiting: a reader who flicks from the release to
+    // "What we do" without pausing gets the frame rather than no Earth.
     let offLoad: (() => void) | null = null;
+    let offOpen: (() => void) | null = null;
+    let offQuiet: (() => void) | null = null;
+    let built = false;
+    const build = () => {
+      if (built || disposed) return;
+      built = true;
+      offQuiet?.();
+      arrival.disconnect();
+      void import("@/components/earth-scene").then((m) => {
+        if (disposed) return;
+        const resin =
+          getComputedStyle(document.documentElement).getPropertyValue("--color-resin").trim() ||
+          "#e19a3c";
+        handle = m.mountEarth(host, canvas, {
+          day: [withBasePath(DAY[0]), withBasePath(DAY[1])],
+          pack: withBasePath(PACK),
+          resin,
+          reducedMotion,
+          entered,
+        });
+      });
+    };
+    const arrival = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) build();
+    });
     const loader = new IntersectionObserver(
       ([entry]) => {
         if (!entry.isIntersecting) return;
         loader.disconnect();
-        offLoad = afterGroundTurn(() => import("@/components/earth-scene").then((m) => {
-          if (disposed) return;
-          const resin =
-            getComputedStyle(document.documentElement).getPropertyValue("--color-resin").trim() ||
-            "#e19a3c";
-          handle = m.mountEarth(host, canvas, {
-            day: [withBasePath(DAY[0]), withBasePath(DAY[1])],
-            pack: withBasePath(PACK),
-            resin,
-            reducedMotion,
-            entered,
+        offLoad = afterGroundTurn(() => {
+          offOpen = afterHeroOpen(() => {
+            offQuiet = afterScrollQuiet(build, QUIET_MS);
+            arrival.observe(host);
           });
-        }));
+        });
       },
       { rootMargin: "100% 0px 100% 0px" }
     );
@@ -128,7 +161,10 @@ export function EarthGlobe({ className }: { className?: string }) {
     return () => {
       disposed = true;
       loader.disconnect();
+      arrival.disconnect();
       offLoad?.();
+      offOpen?.();
+      offQuiet?.();
       handle?.dispose();
       window.removeEventListener("scroll", onScroll);
       offResize?.();
