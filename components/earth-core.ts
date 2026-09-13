@@ -130,6 +130,55 @@ function hexToLinear(hex: string): Vector3 {
   return new Vector3(lin((n >> 16) & 255), lin((n >> 8) & 255), lin(n & 255));
 }
 
+// The disc's own dither, and it is the same argument as `.ramp-dither` in
+// globals.css with none of its cost. The terminator, the haze and the limb are
+// long shallow ramps through the dark end of 8 bits, and the framebuffer this
+// shader writes into is 8 bits: measured at 390x664 on a ratio of 3, the canvas
+// alone carried 17-25 points of the window's banded rows on WebKit and 24-30 on
+// a real GPU, on the blue channel, steps holding 30-87 device px across a row.
+// A CSS layer over the canvas would have closed it and cost a composited
+// surface; this costs nothing, because the GPU is already drawing the disc.
+//
+// It is added *after* `colorspace_fragment` and nowhere else. That include is
+// the linear-to-sRGB transform, and the quantisation the bands come from
+// happens on its output - a perturbation applied before it is compressed by
+// the transform's own slope, which in the dark end is where the whole defect
+// lives.
+//
+// Two hashes summed, so the perturbation is triangular over +/-1 of a code
+// value rather than flat over +/-0.5. Both were built and measured against the
+// disc: flat +/-0.5 took the banded rows from 27.0% to 13.5% at 1440x900 on a
+// ratio of 2, the triangle took them to 9.5% against a 5.2% floor, and the
+// triangle is the better of the two at five of the six stops measured. It
+// costs a second `sin`. The mean absolute contribution is 0.27 of a channel on
+// a phone and 0.31 at 1440, maximum 1 - the target is 0.6.
+//
+// A 64x64 void-and-cluster tile sampled in screen space was built and measured
+// as the third arm. It is no better - 8.7 / 14.0 / 11.3% against the hash
+// triangle's 9.5 / 12.3 / 10.7 at the same three stops - and it costs 5.4 kB
+// in the worker's chunk, a texture unit and a bind, so it is not what shipped.
+// The reason it cannot win is in the note below: on the phone every one of
+// these is low-pass filtered before it is seen, and blue noise is the arm with
+// the least energy left under that filter.
+//
+// `gl_FragCoord` is in framebuffer pixels, so one cell is one pixel of the
+// buffer - the same requirement `.ramp-dither` meets with `background-size`.
+// **It is not one pixel of the screen on a phone.** `earth-scene.ts` caps the
+// canvas at a ratio of 2, so at 390x664 on a ratio of 3 the disc is drawn 588
+// square and presented 880.64 square: a 1.4977x bilinear upscale, on a
+// fractional origin. A one-pixel pattern does not survive that - it is the
+// scale rule the CSS dither already records, arriving from the canvas's own
+// backing store. It is why this layer closes the desktop to within 4 points of
+// the floor and takes a third off the phone rather than closing it, and why no
+// amplitude under a visible one does better there: +/-4 reaches the floor on a
+// phone and contributes 1.42 of a channel, which is texture.
+const DITHER = /* glsl */ `
+  void ditherOutput() {
+    float a = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453);
+    float b = fract(sin(dot(gl_FragCoord.xy, vec2(39.3468, 11.135))) * 24634.6345);
+    gl_FragColor.rgb += (a + b - 1.0) / 255.0;
+  }
+`;
 const GLOBE_VERTEX = /* glsl */ `
   varying vec2 vUv;
   varying vec3 vWorldNormal;
@@ -143,6 +192,7 @@ const GLOBE_VERTEX = /* glsl */ `
   }
 `;
 const GLOBE_FRAGMENT = /* glsl */ `
+  ${DITHER}
   uniform sampler2D map;
   uniform sampler2D pack;
   uniform vec3 lightDir;
@@ -177,6 +227,7 @@ const GLOBE_FRAGMENT = /* glsl */ `
     color += limb * f * (0.12 + 0.5 * lit);
     gl_FragColor = vec4(color, 1.0);
     #include <colorspace_fragment>
+    ditherOutput();
   }
 `;
 const CLOUD_FRAGMENT = /* glsl */ `
@@ -212,6 +263,7 @@ const HALO_VERTEX = /* glsl */ `
   }
 `;
 const HALO_FRAGMENT = /* glsl */ `
+  ${DITHER}
   uniform vec3 atmosphere;
   uniform vec3 atmosphereSun;
   uniform vec3 lightDir;
@@ -228,6 +280,7 @@ const HALO_FRAGMENT = /* glsl */ `
     vec3 color = mix(atmosphere, atmosphereSun, sun * 0.5);
     gl_FragColor = vec4(color, ring * ring * ring * (0.08 + 0.34 * sun));
     #include <colorspace_fragment>
+    ditherOutput();
   }
 `;
 const MARK_VERTEX = /* glsl */ `

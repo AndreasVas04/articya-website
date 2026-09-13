@@ -1674,29 +1674,70 @@ two layers land on one pixel and the step is two rather than one: mean 0.72,
 layers cannot sum to ±1, and the alternative is leaving a real contour under
 the nav and the footer.
 
-**And it is not on the Earth, which is the one ramp left on the site without
-it.** Every region above measures a CSS ramp; the globe's disc is a WebGL
-surface, it was never on the list, and the sweep that set these numbers never
-read it. It bands, and it bands in blue — the terminator and the haze are a
-long shallow gradient through the dark end of exactly the same 8 bits, and the
-tile that covers the ramps beside it stops at the canvas's edge. Measured at
-390×664 on a ratio of 3, home scrolled through "What we do", counting rows that
-carry a single step held past 8px across the window:
+**And on the Earth it is not a layer, it is the shader.** The globe's disc is a
+WebGL surface, so the tile above could never reach it and a CSS layer over the
+canvas would have cost a composited surface. It dithers itself instead: two
+hashes of `gl_FragCoord` summed to a triangle over ±1 of a code value, added to
+`gl_FragColor` **after** `colorspace_fragment` — after the linear-to-sRGB
+transform, because the quantisation the bands come from happens on its output.
+It runs on the GPU that is already drawing the disc, in `earth-core.ts`, so the
+worker and the main-thread fallback have it alike.
 
-| | window as built | with the canvas hidden | the Earth's share |
-|---|---|---|---|
-| WebKit, scroll 600/800/900 | 23.9% / 31.6% / 32.3% | 6.5% / 8.8% / 7.6% | 17–25 points |
-| Chromium on the GPU, same stops | 34.9% / 44.1% / 41.9% | 10.4% / 12.3% / 12.0% | 24–30 points |
+Rows carrying a step held past 8px across the window, the globe frozen under
+`prefers-reduced-motion` so the two builds are the same frame, before → after
+against the floor the same window reads with the canvas hidden:
 
-The steps hold 30–87 device px across a row and sit on the blue channel. With
-every dither switched off the same window reads 70%, and with the dither
-standing and the canvas hidden it reads 5–9% — the pattern's own floor — so
-what is left in the middle is the canvas and nothing else. A `.ramp-dither`
-injected over `.earth` closes it to that floor on WebKit (23.0 → 6.7 against a
-6.5 floor) and takes two thirds of it on Chromium (34.9 → 19.9 against 10.4).
-It is **not** built: the globe is frozen, the layer would be a new composited
-surface over a canvas, and neither is spendable without the owner's call. It is
-item **14** in `OPEN-ITEMS.md`.
+| engine, viewport | three scroll stops | before | after | floor |
+|---|---|---|---|---|
+| Chromium 1440×900 ×2, real GPU | 800 / 1000 / 1200 | 32.5 / 30.4 / 25.7% | **16.0 / 16.8 / 17.9%** | 13.7 / 14.7 / 14.3% |
+| Chromium 1440×900 ×2 | same | 23.5 / 21.3 / 12.7% | **5.1 / 5.7 / 4.4%** | 1.1 / 2.0 / 1.3% |
+| WebKit 1440×900 ×2 | same | 26.8 / 26.8 / 20.0% | **9.4 / 12.0 / 10.8%** | 5.9 / 8.7 / 7.1% |
+| Chromium 390×664 ×3, real GPU | 600 / 800 / 900 | 32.6 / 41.7 / 40.8% | 30.6 / 39.4 / 38.9% | 10.5 / 12.3 / 12.0% |
+| Chromium 390×664 ×3 | same | 23.5 / 30.5 / 30.1% | 20.8 / 27.7 / 27.0% | 2.0 / 1.9 / 1.5% |
+| WebKit 390×664 ×3 | same | 27.7 / 37.4 / 35.9% | 24.7 / 33.1 / 31.7% | 7.1 / 9.3 / 8.1% |
+
+**The desktop closes and the phone does not, and the reason is one number.**
+`earth-scene.ts` caps the canvas at a device ratio of 2. At 1440×900 on a ratio
+of 2 that is the screen's own, and the disc is drawn 1008 square and presented
+1008 square: the dither lands one cell to one pixel and takes the Earth's share
+of the banded rows from 18.8 / 15.7 / 11.4 points to **2.3 / 2.1 / 3.6**. At
+390×664 on a ratio of 3 it is not — the disc is drawn **588** square and
+presented **880.64** square, a 1.4977× bilinear upscale on a fractional origin,
+and a one-pixel pattern cannot survive a scale. It is the second rule of the
+dither above, arriving from the canvas's own backing store rather than from a
+CSS transform. Nothing inside the shader can answer it: ±4 of a code value does
+reach the floor on a phone — 7.0 / 9.5 / 8.1% against 6.5 / 8.8 / 7.6 — and
+contributes 1.42 channels, which is texture and not a dither. The cap is item
+**14** in `OPEN-ITEMS.md`.
+
+**Amplitude and pattern were both built and measured, not chosen.** Three arms
+shipped to a real browser: a flat ±0.5 hash, the same hash summed to a ±1
+triangle, and a 64×64 void-and-cluster tile sampled in screen space at ±0.5.
+At 1440 the triangle reads 9.5 / 12.3 / 10.7% against the tile's 8.7 / 14.0 /
+11.3 and the flat hash's 13.5 / 14.4 / 12.2, and on a phone the triangle is the
+best of the three at all three stops. The tile costs 5.4 kB in the worker's
+chunk, a texture unit and a bind for no gain — and it cannot win on a phone by
+construction, because blue noise puts its energy exactly where the 1.4977×
+filter takes it away. The triangle costs a second `sin`.
+
+**Contribution.** 0.27 of a channel on a phone and 0.31 at 1440, maximum 1,
+against the 0.6 target every dither on this site is held to — 21–31% of the
+disc's pixels move by exactly one code value and none moves by two. At natural
+contrast a 3× crop of the disc is indistinguishable before and after; at 14×
+the same crop shows flat plateaus with hard boundaries before and broken grain
+after, which is the layer doing its work. The text ledger does not move: 31
+elements on home at both viewports, largest change **0.04** of a ratio point,
+and the below-floor set is the same one element at the same reading.
+
+**Cost: none, and it was measured on both axes.** Through the crossing at
+15 px/s in a real Brave window at the display's own backing scale, three runs an
+arm, the two builds are identical to the count — 670 frames presented, one
+skipped vsync, **5244 raster tasks on every single run of both arms**, two
+render passes, 2.000 windows of composited surface, 14 quads, 49.1 MB of tiles.
+With the disc on screen and turning, six runs an arm over 6 s: 360 frames, no
+late frame on either, `Display::DrawAndSwap` 0.259 ms before and 0.246 after,
+and GPU device utilisation 34.98% (34.0–35.7) before against 35.45% (34.3–36.2)
+after — two ranges that overlap over four fifths of their width.
 
 **Environment photographs.** A dark stretch may sink one of our own
 photographs into its ground as atmosphere: blurred (≥ 14px), desaturated,

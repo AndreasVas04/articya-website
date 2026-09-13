@@ -211,32 +211,31 @@ glyph's own weight or colour, not the ground: `9d9bc09` already moved it off the
 light-ground amber token and it sits at 10px in `ink-soft` inside an `amber/45`
 ring.
 
-### 14 · The Earth is the one ramp on the site with no dither on it
+### 14 · The globe's canvas is drawn at a ratio of 2 and presented at 3
 
-Reported from a phone as faint horizontal blue bands in the fade above "What
-we do", and read first as a regression from `4d6a02b`. It is not one — see
-below — and it is not the fade either. The globe's disc is a WebGL surface, so
-`40a9389`'s sweep never covered it, and its terminator and haze are a long
-shallow gradient through the dark end of the same 8 bits every CSS ramp on the
-page had dithered.
+`earth-scene.ts` caps the canvas at `Math.min(devicePixelRatio, 2)`. On a phone
+that is a **1.4977× bilinear upscale on a fractional origin**: at 390×664 on a
+ratio of 3 the disc is drawn **588** square and presented **880.64** square,
+measured off `canvas.width` against the box's rect times the ratio. The cap was
+taken on 2026-07-24 as invisible, and for the picture it is; for a
+one-device-pixel pattern it is not, because a scale is the one thing such a
+pattern cannot survive.
 
-Measured at 390×664 on a ratio of 3, home driven past the release and scrolled
-through the section, counting rows that carry a single step held past 8px
-across the window. WebKit at scroll 600/800/900: **23.9% / 31.6% / 32.3%** as
-built against **6.5% / 8.8% / 7.6%** with the canvas hidden. Chromium in a real
-window on the GPU (ANGLE Metal, Apple M5): **34.9% / 44.1% / 41.9%** against
-**10.4% / 12.3% / 12.0%**. The steps hold 30–87 device px across a row and sit
-on the blue channel. With every dither off the same window reads **70%**, so
-the ramps beside the canvas are at the pattern's floor and the canvas is the
-whole of what is left.
+What it costs is the phone half of the disc's dither. With the canvas presented
+1:1 at 1440×900×2 the shader dither takes the Earth's share of the banded rows
+from 18.8 / 15.7 / 11.4 points to **2.3 / 2.1 / 3.6** on a real GPU; at
+390×664×3 the same shader takes 22.1 / 29.4 / 28.8 to 20.1 / 27.1 / 26.9, which
+is a twelfth of it. No amplitude under a visible one closes the gap: ±4 of a
+code value reaches the floor on a phone and contributes 1.42 channels against
+the site's 0.6 target, and blue noise is the *worst* arm there because a
+low-pass filter takes exactly the energy blue noise is made of.
 
-What closes it is the site's own layer over `.earth`: injected into the live
-page it reads 23.0 → **6.7** on WebKit against a 6.5 floor, and 34.9 → **19.9**
-on Chromium against 10.4. It is not built, and the two reasons are the item.
-The globe is frozen at the composition the owner approved, and a
-`mix-blend-mode` layer over a canvas is a composited surface `4d6a02b` has just
-finished buying back — unmeasured, and not spendable on this side of the
-owner's call. Measured against `4d6a02b`.
+**What would close it** is drawing the disc at the screen's own ratio, and the
+price is 2.25× the fragments — 588² to 882² — on the phone GPU this cap was put
+there to spare. It is not a code change, it is a budget: it needs the disc
+measured on a real phone at ratio 3 against the `EXPOSURE`/`HAZE` levers in
+`earth-scene.ts`, which is item **8**'s unfinished business and closes with it.
+Measured against `ca87b51`.
 
 ---
 
@@ -312,6 +311,18 @@ owner's call. Measured against `4d6a02b`.
   dithered, so an 8-bit contour has no line in it. Mean absolute contribution
   0.18–0.59 of a code value on every single-layer region, both engines agreeing
   within 0.01. The one region over target is item **1** above.
+- **The disc dithers itself, `ca87b51`→ this commit.** Two hashes of
+  `gl_FragCoord` summed to a triangle over ±1 of a code value, added after
+  `colorspace_fragment` in `earth-core.ts`, so the worker and the fallback have
+  it alike. On a real GPU at 1440×900×2 the Earth's share of the banded rows
+  falls from 18.8 / 15.7 / 11.4 points to 2.3 / 2.1 / 3.6; at 390×664×3 it
+  barely moves, and item **14** above is why. Contribution 0.27–0.31 of a
+  channel against a 0.6 target, and the text ledger moves by 0.04 at worst.
+  Cost measured on both axes in a real Brave window: 5244 raster tasks on every
+  run of both arms, two render passes, 2.000 windows of surface, 49.1 MB of
+  tiles, 360 frames with the disc turning and no late frame either way. A flat
+  ±0.5 hash and a 64×64 void-and-cluster tile were built and measured as the
+  other two arms and are in `DESIGN-SYSTEM.md`.
 - **`4d6a02b` did not regress it, and that was checked rather than assumed.**
   Un-promoting the hero's three layers moved nothing the dither reads. Both
   builds were stood up side by side and every dithered region re-measured with
