@@ -98,38 +98,18 @@ const KNOWN = {
   ),
   // Full-bleed frames on a window wider than the cap.
   ...ownedBy(
-    "2.7's `BLEED_WIDTH` of 2880 — 1440 CSS at DPR 2 — plus the hero's own " +
-      "`HERO_PUSH`, which makes the declaration 103vw. A 1920 window is " +
-      "outside the envelope 2880 was chosen for. A 3072 rung closes it and " +
-      "7.6 priced it: +1815 KB on home, because 2880 hands q50 back to q62.",
-    {
-      "IMG_4585|1920x900@2": 1.374,
-      "hero-2|1920x900@2": 1.374,
-    }
-  ),
-  ...ownedBy(
     "2.7's `BLEED_WIDTH` of 2880, by decision: 3200 was declined on an LCP " +
       "argument with the bytes measured. A 1920 window at DPR 2 asks 3840 of " +
       "a 100vw frame. The same 3072 rung closes it at the same price.",
     {
+      "IMG_4585|1920x900@2": 1.334,
+      "hero-2|1920x900@2": 1.334,
       "IMG_4721-oaks|1920x900@2": 1.334,
       "IMG_4735-road|1920x900@2": 1.334,
       "hero-1|1920x900@2": 1.334,
       "IMG_4582-road|1920x900@2": 1.334,
       "IMG_4619-valley|1920x900@2": 1.334,
       "IMG_3004-reservoir|1920x900@2": 1.334,
-    }
-  ),
-  // The one pair on this list that is paint rather than declaration.
-  ...ownedBy(
-    "`HERO_PUSH = 0.03` over-*paints*: the card is scaled past the window and " +
-      "back as it opens, so at the middle of the opening a 1440x900 DPR 2 " +
-      "window paints 2966 device px out of a 2880 file. Against source " +
-      "nothing is wrong. 7.6 owns it; every lever that reaches it — the push, " +
-      "the ladder, the encoder — is frozen.",
-    {
-      "IMG_4585|1440x900@2": 1.031,
-      "hero-2|1440x900@2": 1.031,
     }
   ),
   // Landscape frames cover-fitted into a phone's tall box.

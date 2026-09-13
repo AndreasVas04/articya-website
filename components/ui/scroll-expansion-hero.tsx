@@ -11,7 +11,7 @@ import {
 import { cubicBezier, motion, useReducedMotion } from "framer-motion";
 import { PhotoPlaceholder } from "@/components/photo-placeholder";
 import { ResponsiveImage } from "@/components/responsive-image";
-import { coverSizes, HERO_PUSH, HERO_VIEWPORT } from "@/lib/images";
+import { coverSizes, HERO_VIEWPORT } from "@/lib/images";
 import { useGroundTurn } from "@/lib/page-load";
 import { watchLiveness, recoveries } from "@/lib/liveness";
 import { onLayoutResize, pageZoomed, watchZoom } from "@/lib/viewport";
@@ -229,39 +229,16 @@ interface Settle {
   duration: number;
 }
 
-// The whole section breathes forward and settles back as the card opens: one
-// number, read by the poster, by the copy masked to the land and by the window
-// inside the card, so the three can never fall out of register at any frame.
-// It is 1.000 at both ends, so neither the collapsed opening nor the resting
-// hero is moved by it, and 1.030 at the middle - 43px of width at 1440, which
-// is the shared vector the two plates cross on. The poster used to carry no
-// transform at any frame of the expansion, so the eye had nothing to follow
-// and the growth read as a mechanism working rather than as space opening.
-const heroPush = (progress: number) => 1 + HERO_PUSH * Math.sin(Math.PI * progress);
-
-// Each of the three layers this number scales must be a compositor layer of
-// its own, and that is what `will-change: transform` on them buys.
+// The section does not breathe. The poster, the copy of it masked to the land
+// and the window inside the card were scaled together by 1 + 0.03·sin(pi·p) -
+// 1.000 at both ends, 1.030 at the middle - so the eye had a vector to follow
+// while the card grew. It is gone, and the three layers stand at scale 1 for
+// the whole opening.
 //
-// A `scale` written from JS on a layer the compositor does not already hold is
-// not a transform, it is paint: the subtree is rasterized again, at the new
-// scale, every frame. Three full-bleed layers doing that is the whole of the
-// opening's stutter on Chromium, and it is why the stutter grew with the
-// window - the bill is the window's own raster area, three times over, sixty
-// times a second. Measured on an 8 s scrub of the opening at a page size of
-// 1920x1080 at ratio 2, held inside a small window so the display is not the
-// variable: 22-63 dropped frames as it shipped, 4-5 with the three layers
-// promoted. Removing any one of the three alone got most of it back (8-24),
-// which is the shape of a cost that is shared rather than owned.
-//
-// The area is the page's and not the globe's. Across the same scrub the
-// Earth's canvas moves 1008px to 1118px square while the dropped frames go 3
-// to 52, its section is never on screen during the opening at any size, and
-// refusing its three chunks outright moves nothing.
-//
-// The hint is not left standing. The two plates exist only while the poster
-// does, so theirs goes with them at full expansion; the card's window is
-// mounted for the life of the page and reads `posterShowing`, so the reading
-// page below is not holding a promoted full-window layer it has no scale on.
+// Their `will-change: transform` went with it, and had to: the hint existed
+// only to keep that scale off the raster path, and a full-bleed layer promoted
+// against a transform that is not coming is a backing store the reader pays
+// for and never sees.
 
 // The poster holds at full strength until the card covers the window, and only
 // then leaves. It used to run `1 - progress`, which was right while the card
@@ -791,26 +768,12 @@ const ScrollExpandMedia = ({
     }
     if (cardRef.current) cardRef.current.style.opacity = String(cardAlpha(p));
     const alpha = String(posterOpacity(p));
-    const push = String(heroPush(p));
     // The poster and the copy of it masked to the land are one picture, and
-    // the frame that moves one moves the other. Writing only the poster here
-    // left the ridge on the render behind it, which is the two skylines a
-    // fifth of a second apart that the inline styles were introduced to end.
+    // the frame that moves one moves the other.
     for (const layer of [posterRef.current, ridgeRef.current]) {
       if (!layer) continue;
       layer.style.opacity = alpha;
-      layer.style.scale = push;
     }
-    // And the card's own copy, which used to take the push from the render
-    // instead of from here. A render is a task: measured at 1440x900, the
-    // window carried the *previous* frame's scale on 586 of 991 frames of a
-    // 40 px/s opening, so on those frames two copies of one photograph stood
-    // 0.43px apart inside the card and came back into register on the next.
-    // That is a beat on the picture's own detail, at the frame rate, and no
-    // timing instrument can see it - the frames all arrive on time. The three
-    // copies are written together now, which is what the comment on the poster
-    // below has always said they were.
-    if (windowRef.current) windowRef.current.style.scale = push;
     if (titleRef.current) {
       const exit = titleExitOf(p);
       titleRef.current.style.transform = `translateY(${exit * descentRef.current}px) scale(${1 - 0.15 * exit})`;
@@ -1928,16 +1891,15 @@ const ScrollExpandMedia = ({
       <section
         className="gold-field gold-field-chrome-top gold-field-open-bottom hero-drop-scope hero-plate relative isolate flex min-h-svh flex-col items-center justify-start overflow-hidden"
       >
-        {/* The push and the fade are written inline, on the same clock as the
-            card's window below: one wheel event, one frame, all three copies
-            of the picture at the same scale. They used to ride a 200ms tween
-            while the window did not, and after a fast burst the two copies of
-            the skyline stood up to 5px apart for a fifth of a second. */}
+        {/* The fade is written inline, on the same clock as the card below:
+            one wheel event, one frame. It used to ride a 200ms tween while the
+            card did not, and after a fast burst the poster and the card's copy
+            of it stood a fifth of a second apart. */}
         {posterShowing && (
         <div
           ref={posterRef}
           className="absolute inset-0 z-0"
-          style={{ opacity: poster, scale: heroPush(progress), willChange: "transform" }}
+          style={{ opacity: poster }}
         >
           {/* The backdrop is the collapsed opening's presence: the graded
               home-hero vista at full photographic strength - a place, not a
@@ -1953,8 +1915,8 @@ const ScrollExpandMedia = ({
               first visible rows washing the picture out against the bar. */}
           {/* The photograph at 24px, inline in the document, under the rung
               the page is waiting for - see components/photo-placeholder.tsx.
-              It rides inside this layer, so it carries the section's push and
-              stays registered with the poster over it; the poster's own
+              It rides inside this layer, so it stays registered with the
+              poster over it; the poster's own
               first-load entrance is on the picture and not on this, which is
               the point of it - the frame is there from the first paint. */}
           <PhotoPlaceholder src={bgImageSrc} position="50% var(--hero-poster-y)" />
@@ -1997,14 +1959,13 @@ const ScrollExpandMedia = ({
         )}
 
         {/* The poster's dither, and it stands here rather than inside the
-            layer it dithers. Every layer in this section carries the section's
-            push, and a scale is the one thing a one-device-pixel pattern
-            cannot survive: measured at 1440x900 on a ratio of 2, the same tile
-            inside the pushed layer perturbed 0-3% of the pixels where it
-            perturbs 46-52% outside one, and no cell size and no counter-scale
-            on the tile recovered it - the compositor scales the layer after it
-            has been rasterized. A flat 1/255 white in the same place reads
-            100%, so it is the tiling and not the blend.
+            layer it dithers. It was put outside because every layer in this
+            section carried the section's push and a scale is the one thing a
+            one-device-pixel pattern cannot survive - measured at 1440x900 on a
+            ratio of 2, the same tile inside a pushed layer perturbed 0-3% of
+            the pixels where it perturbs 46-52% outside one. The push is gone,
+            so the reason is; the placement is not, because `z-[1]` is also
+            where the two copies of the tile have to hand over.
 
             `z-[1]` puts it over the poster and under the card, which is the
             only place it can be: the card's photograph is opaque, so its own
@@ -2082,15 +2043,7 @@ const ScrollExpandMedia = ({
 
                     It carries the section's push, so the window inside the
                     card and the poster outside it travel as one. */}
-                <div
-                  ref={windowRef}
-                  className="hero-window"
-                  style={{
-                    scale: heroPush(progress),
-                    // Only while the push is live - see heroPush.
-                    willChange: posterShowing ? "transform" : undefined,
-                  }}
-                >
+                <div ref={windowRef} className="hero-window">
                   {restingState ? (
                     <>
                     {/* Reduced motion rests with the poster layer unrendered -
@@ -2413,8 +2366,6 @@ const ScrollExpandMedia = ({
             {
               "--ridge-mask": `url(${withBasePath(POSTER_RIDGE)})`,
               opacity: poster,
-              scale: heroPush(progress),
-              willChange: "transform",
               // The mask, the picture and its darkening are three composited
               // full-bleed layers, and past the release they are three the
               // reader pays for on every pinch to paint nothing. The plate

@@ -106,14 +106,13 @@ export interface SizeBox {
 
 export const FULL_VIEWPORT: SizeBox = { vw: 1, vh: 1 };
 
-/** The home hero's frame. Every layer in that section - the poster, the copy
- *  of it masked to the land, the card's slides and the LCP preload - is pushed
- *  past the window and back as the card opens, so the widest each of them is
- *  ever painted is the window plus that push. They all declare this one box:
- *  two declarations of the same photograph that resolve to different rungs
- *  cost a second download of it. */
-export const HERO_PUSH = 0.03;
-export const HERO_VIEWPORT: SizeBox = { vw: 1 + HERO_PUSH, vh: 1 + HERO_PUSH };
+/** The home hero's frame. No layer in that section is painted past the window
+ *  any more - the 3% push that used to carry them past it and back is gone -
+ *  so the box is the window. It stays one exported constant because the
+ *  poster, the copy of it masked to the land, the card's slides and the LCP
+ *  preload all have to declare the same one: two declarations of the same
+ *  photograph that resolve to different rungs cost a second download of it. */
+export const HERO_VIEWPORT: SizeBox = { vw: 1, vh: 1 };
 
 // How wide a cover-fitted photograph is actually *painted*, which is not how
 // wide its box is. `object-fit: cover` scales the frame until it covers both
