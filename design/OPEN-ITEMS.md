@@ -29,12 +29,25 @@ box shows. These four are the whole of the photography list.
 across the frame's width, at least **2880px** on the painted axis. The frame
 standing there now is sky: 6.5% photographic content whole-window at 1440 and
 0% under the lines, by the defocus ramp's own construction. This is the item
-`E` below is about, and the two close together.
+`E` below is about, and the two close together. The 2026-09-13 delivery holds
+no such frame (`PHOTO-MANIFEST.md`, 2026-09-13), and the box narrows the spec:
+60% at 553, 664, 1440×900 and 1920×1080 is A **0.970–0.978**, and 750 is out
+of reach for every A a desktop accepts.
 
 **P2 · An activity frame for the offer panels.** People at **≥ 0.4 of the
 frame's height**. Every candidate in the set puts them at 56–295 px at 1440
 and 8–46 px at 664, which is a landscape with figures in it rather than a
 photograph of people. This is the item `IA` below is about.
+
+`IMG_1818` (2026-09-13) meets the number — people at **0.51**, 325 px at the
+1440 panel and 206 px at 664 — and is not placed: a post-and-rail timber fence
+crosses cols 0–96 at rows 36–50 behind four of the five heads, which is
+`ART-DIRECTION.md §2`'s fencing and cannot be cropped. **What reopens it is an
+owner decision, not a measurement**: whether a timber path rail is fencing under
+§2. If it is not, the frame goes beside Youth Exchanges in place of
+`AboutImage1` — it is the same exchange, and beside Training Courses it would be
+misattributed — and `AboutImage1` falls to its two About placements. `IMG_2865`
+re-measured at 0.14 of the frame, 9–10 px wide at 664, and stays refused.
 
 **P3 · `hero-3`, re-shot.** Its master is **2316px** and was corrected down
 from a declared 2560 — 244 of those columns were interpolation. It is the
@@ -48,6 +61,15 @@ cable crosses `hero-2`'s sky, which is the home hero's second slide; the
 chain-link fence is in `IMG_4582-road` at the offer panels' join, and every pan
 that reaches the landscape reaches the fence. Both placements are the whole
 frame full-bleed, so neither can be cropped clear the way About's tile is.
+Nothing in the 2026-09-13 delivery closes either: `IMG_4599` carries a figure
+cut by the frame's left edge as its largest element, and `IMG_2865` is refused.
+
+**Not on this list, and why.** `PHOTO-MANIFEST.md`'s 2026-09-08 list still names
+two wide frames for the finale. They were for the seven-tile wall's 3.2:1 slots,
+which are gone; the mosaic's two wide boxes hold `AboutImage2` and
+`home-training` as the story's own scenes coming back, so a new frame there is
+a change to an approved composition rather than a slot waiting for a picture.
+Their `KNOWN` rows (1.163 at 1920×900) stand as they are.
 
 ### E · "What you gain" needs a photograph, not code
 

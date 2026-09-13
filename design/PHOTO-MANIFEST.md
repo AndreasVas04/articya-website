@@ -684,3 +684,67 @@ heights the measurement budget names and fails at 750 by arithmetic.
 4. A road between stone walls with no fence, for the panels' join — carried.
 5. A shaded forest road with no cable, or the home hero's second slide keeps
    `hero-2`'s — carried.
+
+---
+
+## What was measured, 2026-09-13
+
+Seven files, measured against `20b4c31`. **Nothing was placed**, and no master,
+crop, grade or ladder changed.
+
+**Six of the seven were already here.** `IMG_9087`, `IMG_4599`, `IMG_4564`,
+`IMG_8739`, `IMG_3005` and `IMG_2865` are the 2026-08-29 files re-delivered —
+same sizes, same capture seconds, and both DNGs byte-identical to their `" 2"`
+siblings. **`IMG_1818` is new**: iPhone 16 Pro Max, 3739×5706 (an edited crop,
+no GPS), 2025-07-27. It is the same event as `AboutImage1`, four hours earlier:
+the lime-green chairs at `AboutImage1`'s left edge are the chairs in this frame,
+and the participant on the right of both frames wears the same clothes.
+
+**The DNGs' development.** Core Image's RAW filter at its defaults (exposure 0,
+boost 1.0, local tone map 1.0) reproduces the shipped `pt/IMG_4599` strip:
+aligned at its published cols 39–100%, the transfer curve is straight to within
+2.2 codes through 232 (248 → 249.3), mean RGB agrees within 0.2, and L ≥ 251 is
+0.190% against 0.176%. So the Portugal masters are that rendering, and a future
+DNG ingest should use it rather than re-develop — any other exposure or boost
+moves the frame off its own set. Neither DNG adds pixels: both are 6048×8064.
+
+| frame | px | aspect | register L\* | tallest whole figure | content, lower 40% (1440×900 / 390×664 / frame) | subject | ≥ 2880 | placements |
+|---|---|---|---|---|---|---|---|---|
+| IMG_9087 | 3024×4032 | 0.750 | 37.0 | 0.025 | 98.8 / 98.6 / 97.0 | park canal, rustic footbridge, a rowing boat; vehicle cols 7–10 rows 58–60 | yes | 0 |
+| IMG_4599 | 6048×8064 | 0.750 | 42.3 | 0.26; a woman cut by the left edge, cols 0–22 rows 38–100 | 94.2 / 99.6 / 97.2 | hikers on a mossy stone path, hard early-afternoon light | yes | 0 (off the site) |
+| IMG_4564 | 6048×8064 | 0.750 | 51.1 | 0.02 | 98.9 / 99.9 / 99.7 | village and mountains from above | yes | 0 (excluded) |
+| IMG_8739 | 3024×4032 | 0.750 | 41.4 | 0.31, cut by the right edge | 81.3 / 97.7 / 92.7 | lakeshore boulders, a seated man | yes | 0 |
+| IMG_1818 | 3739×5706 | 0.655 | 50.0 | **0.51** | 84.8 / 96.5 / 95.1 | five participants at an outdoor table, pines behind | yes | 0 |
+| IMG_3005 | 3024×4032 | 0.750 | 55.7 | none | 95.2 / 99.3 / 95.4 | `IMG_3004` four seconds later | yes, cut from the foot | 0 |
+| IMG_2865 | 3024×4032 | 0.750 | 27.9 | 0.14 | 98.9 / 100.0 / 99.8 | two walkers down a shaded track | yes | 0 |
+
+Defects, re-measured at full resolution: `IMG_4564` — cables from the left edge
+at rows 13–28 to col 55 at rows 52–56 and across the right half at rows
+58.5–61, a pylon, chain-link fence cols 0–80 rows 65–100, a gate, a festival
+banner with legible words; `IMG_8739` — flare cols 49.3–51.5 rows 0–42;
+`IMG_3005` — finger rows 83.5–100 cols 0–11.7; `IMG_2865` — timber rail cols
+30–36 rows 52–56; `IMG_1818` — a post-and-rail timber fence across cols 0–96 at
+rows 36–50, behind four of the five heads.
+
+**Against the needs:**
+
+- **"What you gain."** The box's crop floor admits A 0.970–0.978 at 553, 664,
+  1440×900 and 1920×1080, and nothing at 750 (≤ 0.867 against ≥ 0.873 on a
+  desktop). `IMG_4564`'s largest rectangle clear of cable and fence at A ≥ 0.87
+  is 2600 px wide and 16% of the frame, and it is sky; `IMG_4599`'s group cannot
+  be cut away from the figure at the edge; `IMG_8739`'s flare is in any 0.975
+  cut; `IMG_9087` is a park; `IMG_3005` fits the band and is the FAQ's picture.
+  **Not closed.**
+- **The offer panels.** `IMG_1818` is the first frame in any delivery to meet
+  the number — 0.51, 325 px tall at the 1440 panel and 206 px at 664 — and it
+  stops on `ART-DIRECTION §2`'s fencing, which is behind the subject and cannot
+  be cropped. It would belong beside Youth Exchanges only: it is that exchange,
+  and beside Training Courses it would be misattributed. `IMG_2865` re-measured
+  at 0.14 — 49 px tall and 9–10 px wide at 664 — and is **rejected again** on
+  the test it failed on 2026-08-30. **Not closed.**
+- **Two wide frames for the finale.** No frame holds a subject in a 2.5:1 cut
+  without a cut person, a cable or a duplicate; and the mosaic's two wide boxes
+  are the story's own scenes coming back, so the slot is not open.
+- **A forest road without the cable.** `IMG_4599` has the subject and a figure
+  cut by the frame's edge as its largest element; `IMG_2865` is rejected.
+  **Not closed.**
