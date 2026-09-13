@@ -1674,6 +1674,30 @@ two layers land on one pixel and the step is two rather than one: mean 0.72,
 layers cannot sum to ±1, and the alternative is leaving a real contour under
 the nav and the footer.
 
+**And it is not on the Earth, which is the one ramp left on the site without
+it.** Every region above measures a CSS ramp; the globe's disc is a WebGL
+surface, it was never on the list, and the sweep that set these numbers never
+read it. It bands, and it bands in blue — the terminator and the haze are a
+long shallow gradient through the dark end of exactly the same 8 bits, and the
+tile that covers the ramps beside it stops at the canvas's edge. Measured at
+390×664 on a ratio of 3, home scrolled through "What we do", counting rows that
+carry a single step held past 8px across the window:
+
+| | window as built | with the canvas hidden | the Earth's share |
+|---|---|---|---|
+| WebKit, scroll 600/800/900 | 23.9% / 31.6% / 32.3% | 6.5% / 8.8% / 7.6% | 17–25 points |
+| Chromium on the GPU, same stops | 34.9% / 44.1% / 41.9% | 10.4% / 12.3% / 12.0% | 24–30 points |
+
+The steps hold 30–87 device px across a row and sit on the blue channel. With
+every dither switched off the same window reads 70%, and with the dither
+standing and the canvas hidden it reads 5–9% — the pattern's own floor — so
+what is left in the middle is the canvas and nothing else. A `.ramp-dither`
+injected over `.earth` closes it to that floor on WebKit (23.0 → 6.7 against a
+6.5 floor) and takes two thirds of it on Chromium (34.9 → 19.9 against 10.4).
+It is **not** built: the globe is frozen, the layer would be a new composited
+surface over a canvas, and neither is spendable without the owner's call. It is
+item **14** in `OPEN-ITEMS.md`.
+
 **Environment photographs.** A dark stretch may sink one of our own
 photographs into its ground as atmosphere: blurred (≥ 14px), desaturated,
 darkened, at ≤ 20% opacity — the home hero's backdrop is the one sanctioned

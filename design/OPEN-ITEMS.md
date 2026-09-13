@@ -211,6 +211,33 @@ glyph's own weight or colour, not the ground: `9d9bc09` already moved it off the
 light-ground amber token and it sits at 10px in `ink-soft` inside an `amber/45`
 ring.
 
+### 14 · The Earth is the one ramp on the site with no dither on it
+
+Reported from a phone as faint horizontal blue bands in the fade above "What
+we do", and read first as a regression from `4d6a02b`. It is not one — see
+below — and it is not the fade either. The globe's disc is a WebGL surface, so
+`40a9389`'s sweep never covered it, and its terminator and haze are a long
+shallow gradient through the dark end of the same 8 bits every CSS ramp on the
+page had dithered.
+
+Measured at 390×664 on a ratio of 3, home driven past the release and scrolled
+through the section, counting rows that carry a single step held past 8px
+across the window. WebKit at scroll 600/800/900: **23.9% / 31.6% / 32.3%** as
+built against **6.5% / 8.8% / 7.6%** with the canvas hidden. Chromium in a real
+window on the GPU (ANGLE Metal, Apple M5): **34.9% / 44.1% / 41.9%** against
+**10.4% / 12.3% / 12.0%**. The steps hold 30–87 device px across a row and sit
+on the blue channel. With every dither off the same window reads **70%**, so
+the ramps beside the canvas are at the pattern's floor and the canvas is the
+whole of what is left.
+
+What closes it is the site's own layer over `.earth`: injected into the live
+page it reads 23.0 → **6.7** on WebKit against a 6.5 floor, and 34.9 → **19.9**
+on Chromium against 10.4. It is not built, and the two reasons are the item.
+The globe is frozen at the composition the owner approved, and a
+`mix-blend-mode` layer over a canvas is a composited surface `4d6a02b` has just
+finished buying back — unmeasured, and not spendable on this side of the
+owner's call. Measured against `4d6a02b`.
+
 ---
 
 ## Closed
@@ -285,6 +312,25 @@ ring.
   dithered, so an 8-bit contour has no line in it. Mean absolute contribution
   0.18–0.59 of a code value on every single-layer region, both engines agreeing
   within 0.01. The one region over target is item **1** above.
+- **`4d6a02b` did not regress it, and that was checked rather than assumed.**
+  Un-promoting the hero's three layers moved nothing the dither reads. Both
+  builds were stood up side by side and every dithered region re-measured with
+  `40a9389`'s own instrument — the crossing, the poster's six stops, the card's
+  foot, the chrome ramp, the stage plates and their wipe, the gains ramp and its
+  end masks, both footer dissolves, the inner-page heroes and the About finale
+  — in both engines at 390×664×3 and 1440×900×2. Every row is equal within noise:
+  the crossing's worst alignment through twelve points of the boundary's travel
+  reads 14px against 14 on WebKit at 390, 12 against 13 on Chromium at 390, 14
+  against 19 on WebKit at 1440 and 21 against 21 on Chromium at 1440. The fade
+  above "What we do" walked down nine scroll stops is identical row for row, and
+  the layer's own contribution — the page shot with the dither and again without
+  it, in the same page and the same state — is 0.50 of a channel with 45% of the
+  pixels at exactly 1 on both builds, at every state on all four routes. The one
+  pixel-level change `4d6a02b` makes at rest is the hero's rung: `HERO_VIEWPORT`
+  from 1.03 to 1.00 takes `IMG_4585` from the 1984 file to the 1920 one, 47% of
+  the frame differing by at most 19 channels. That file is not the worse encode
+  — at the width it is painted, max flat run 19 against 28 and worst alignment
+  78 against 81 — so it is not the bands either. What is, is item **14**.
 
 ### The paragraph ramp
 
