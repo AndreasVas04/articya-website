@@ -120,7 +120,7 @@ export default function FaqPage() {
                         key={item.question}
                         className={cn(
                           "group",
-                          j > 0 && "border-t-[1.25px] border-amber/34"
+                          j > 0 && "border-t border-amber/34"
                         )}
                       >
                         {/* The question sits a step above its answer on weight

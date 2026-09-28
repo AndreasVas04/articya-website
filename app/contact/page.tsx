@@ -182,7 +182,7 @@ export default function ContactPage() {
           </Reveal>
           {/* No fills, and one hairline between the rows: the three channels
               stack down the soft column rather than sitting in three cells. */}
-          <div className="mt-4 grid grid-cols-1 divide-y-[1.25px] divide-amber/34 md:mt-6">
+          <div className="mt-4 grid grid-cols-1 divide-y divide-amber/34 md:mt-6">
             <Reveal delayMs={100}>
               <ChannelCard
                 icon={<Mail className="size-5" strokeWidth={1.5} />}
