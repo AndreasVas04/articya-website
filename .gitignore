@@ -4,6 +4,8 @@
 # next.js
 /.next/
 /out/
+# the GitHub Pages redirects, written by scripts/pages-redirect.mjs
+/out-redirect/
 
 # generated responsive image variants (rebuilt at build time from the
 # committed originals + grade; deterministic, so never committed), and the

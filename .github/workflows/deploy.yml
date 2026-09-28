@@ -1,8 +1,14 @@
-name: Deploy
+name: Pages redirect
 
+# The site is built and served by Vercel, from this repository, on every push.
+# GitHub Pages keeps the project's old address alive as redirects to it (see
+# scripts/pages-redirect.mjs), so this deploys only when those change.
 on:
   push:
     branches: [main]
+    paths:
+      - scripts/pages-redirect.mjs
+      - .github/workflows/deploy.yml
   workflow_dispatch:
 
 permissions:
@@ -22,26 +28,11 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version-file: package.json
-          cache: npm
-      - run: npm ci
-      # The responsive variants are pure build artefacts, and a cold encode of
-      # them is most of a build. The key is the pipeline's own signature - the
-      # frames the pages name, the originals they come from, the grade, the two
-      # scripts and their config - which is exactly what the script's freshness
-      # check compares a restored tree against. So a hit is a tree the build
-      # accepts as up to date, and anything that would re-encode misses the key
-      # and is saved under the new one.
-      - id: variants
-        run: echo "key=variants-$(node scripts/responsive-images.mjs --signature)" >> "$GITHUB_OUTPUT"
-      - uses: actions/cache@v6
-        with:
-          path: public/images/variants
-          key: ${{ steps.variants.outputs.key }}
-      - run: npm run build:pages
+      - run: node scripts/pages-redirect.mjs
       - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v5
         with:
-          path: out
+          path: out-redirect
 
   deploy:
     needs: build
