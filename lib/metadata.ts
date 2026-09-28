@@ -3,12 +3,11 @@ import type { Metadata } from "next";
 // The site's public home; canonical and social URLs, the sitemap, robots.txt
 // and llms.txt all resolve against it. On Vercel it is the project's production
 // domain - Vercel sets it at build time on every deployment, previews included,
-// so a preview's canonicals and social card still name production. A GitHub
-// Pages build carries the repository path the deployment adds.
+// so a preview's canonicals and social card still name production. A build
+// anywhere else names the same production address; the old GitHub Pages one
+// only redirects to it now (scripts/pages-redirect.mjs).
 const vercelHost = process.env.VERCEL_PROJECT_PRODUCTION_URL;
-export const siteUrl = vercelHost
-  ? `https://${vercelHost}`
-  : "https://andreasvas04.github.io/articya-website";
+export const siteUrl = vercelHost ? `https://${vercelHost}` : "https://articya.vercel.app";
 
 // The social card: the group walking the track above the reservoir, through
 // the site's own grade, with the wordmark over it. One card for every page.
