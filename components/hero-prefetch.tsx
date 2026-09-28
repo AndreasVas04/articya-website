@@ -13,7 +13,7 @@ import {
   stopHero,
   type HeroLoad,
 } from "@/lib/hero-prefetch";
-import { pageZoomed, watchZoom } from "@/lib/viewport";
+import { pageZoomed, watchZoom, zoomTest } from "@/lib/viewport";
 
 // The route this document is showing, in the map's own keys.
 function currentRoute(pathname: string): string {
@@ -54,6 +54,7 @@ export function HeroPrefetch() {
   // A pinch lets go of the decoded photographs held for other routes; see
   // `releaseHeldHeroes`. Read on mount as well, since a page can arrive zoomed.
   useEffect(() => {
+    if (zoomTest("noflag")) return;
     if (pageZoomed()) releaseHeldHeroes();
     return watchZoom((zoomed) => {
       if (zoomed) releaseHeldHeroes();

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { pageZoomed, watchZoom } from "@/lib/viewport";
+import { pageZoomed, watchZoom, zoomTest } from "@/lib/viewport";
 
 // `data-zoomed` on the document while the reader holds a page scale, so a
 // stylesheet can stand down what a zoom makes expensive. Under a pinch iOS
@@ -17,6 +17,8 @@ export function ZoomFlag() {
     // cannot afford. A diagnostic: nothing reads it without the parameter.
     const tests = new URLSearchParams(location.search).get("zoomtest");
     if (tests) root.dataset.zoomtest = tests.split(",").join(" ");
+    // `noflag`: the page as it was before the flag, for comparison.
+    if (zoomTest("noflag")) return;
     const flag = (held: boolean) => root.toggleAttribute("data-zoomed", held);
     // `watchZoom` tells a new subscriber only about a change, and a page can
     // arrive already zoomed, so the first state is read here.
