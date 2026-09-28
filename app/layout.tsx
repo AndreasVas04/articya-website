@@ -6,6 +6,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { RouteWipe } from "@/components/route-wipe";
 import { HeroPrefetch } from "@/components/hero-prefetch";
 import { PrefetchDebug } from "@/components/prefetch-debug";
+import { ZoomFlag } from "@/components/zoom-flag";
 import { pageMetadata, siteUrl } from "@/lib/metadata";
 import { meta } from "@/content/home";
 import { footer } from "@/content/shared";
@@ -63,6 +64,8 @@ export default function RootLayout({
         <HeroPrefetch />
         {/* That queue's readout, behind `?debug=prefetch` only. */}
         <PrefetchDebug />
+        {/* `data-zoomed` on <html> while a pinch is held. */}
+        <ZoomFlag />
       </body>
     </html>
   );

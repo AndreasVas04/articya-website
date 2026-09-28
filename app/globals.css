@@ -285,6 +285,19 @@ body {
     opacity: 0.00392157;
     mix-blend-mode: plus-lighter;
   }
+
+  /* Not while a zoom is held. Each of these is a full-bleed layer of its own,
+     and under a pinch iOS re-rasters every layer at the square of the scale:
+     at the top of home the five of them are 32.5 MB at rest and about 200 MB
+     at 2.5x, a fifth of everything the page asks the compositor to hold
+     there. What they carry is one channel step against banding, so for the
+     length of a zoom the ramps go without it, and it is back when the scale
+     returns to 1. */
+  :root[data-zoomed] .ramp-dither,
+  :root[data-zoomed] .chrome-shade::after,
+  :root[data-zoomed] .foot-shade::after {
+    display: none;
+  }
 }
 
 /* The chrome carries no bar, so what keeps a cream nav label off the picture - 
