@@ -18,6 +18,10 @@ const root = process.cwd();
 // (→ /contact/), as already used on the home hero. The snapshots below still
 // carry the original "Opportunities" nav item, so it is normalized away on
 // the original side — see normalizeRemovedOpportunities.
+//
+// The FAQ's "How do I apply?" answer still sent readers to that page. By owner
+// decision (Andreas, 2026-09-28) its second sentence becomes "Contact us for
+// details." - normalized the same way, on the FAQ only.
 const pages = [
   { name: "home", original: "scripts/parity/home.html", exported: "out/index.html" },
   { name: "about", original: "scripts/parity/about.html", exported: "out/about/index.html" },
@@ -99,12 +103,19 @@ function stripHeaderWordmark(text) {
 // Third exception — opportunities page removed by owner decision (see the
 // note above the pages list). The original side is normalized to the
 // sanctioned removal: exactly one nav occurrence of "Opportunities" between
-// "Home" and "FAQ" (present on every legacy page), and on home exactly one
-// closing-CTA label swap. Every other character stays guarded.
+// "Home" and "FAQ" (present on every legacy page), one closing-CTA label swap
+// on home, and one answer sentence on the FAQ. Every other character stays
+// guarded.
 function normalizeRemovedOpportunities(text, pageName) {
   let out = text.replace("Home Opportunities FAQ", "Home FAQ");
   if (pageName === "home") {
     out = out.replace("Explore Opportunities", "Contact Us");
+  }
+  if (pageName === "faq") {
+    out = out.replace(
+      "You can find details on the Opportunities page or contact us directly.",
+      "Contact us for details."
+    );
   }
   return out;
 }

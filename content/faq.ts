@@ -88,7 +88,7 @@ export const sections: FaqSection[] = [
       {
         question: "How do I apply?",
         answer:
-          "Each opportunity has its own application process. You can find details on the Opportunities page or contact us directly.",
+          "Each opportunity has its own application process. Contact us for details.",
       },
       {
         question: "What happens if I am selected?",
