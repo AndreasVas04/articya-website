@@ -1,11 +1,9 @@
 # ArtiCYa
 
 Website for ArtiCYa, a Cyprus-based Erasmus+ youth organisation. Static site,
-built and deployed with GitHub Actions.
+built and deployed on Vercel.
 
-**Live:** https://andreasvas04.github.io/articya-website/
-
-[![Deploy](https://github.com/AndreasVas04/articya-website/actions/workflows/deploy.yml/badge.svg)](https://github.com/AndreasVas04/articya-website/actions/workflows/deploy.yml)
+**Live:** https://articya.vercel.app/
 
 <p align="center">
   <img src="docs/screenshots/desktop-hero.webp" width="100%" alt="Home page hero at 1440x900" />
@@ -37,7 +35,8 @@ built and deployed with GitHub Actions.
 - **TypeScript 5.9**
 - **Tailwind CSS 4.3** — CSS-first config, no `tailwind.config.js`
 - **three.js 0.185** — loaded on demand for the WebGL globe only
-- **GitHub Actions → GitHub Pages** — build and deploy on push to `main`
+- **Vercel** — a production build from `main` and a preview for every other
+  branch; the old GitHub Pages address redirects to the same page here
 
 ## Engineering notes
 
@@ -60,11 +59,10 @@ built and deployed with GitHub Actions.
 - **Encode once.** The responsive-image variants are keyed on a signature
   of everything that can change them: the frames the pages name, their
   originals, the grade, and the pipeline with its config. A build whose
-  signature matches restores the finished tree instead of encoding it —
-  from the Actions cache on GitHub, and from `.next/cache` on a host that
-  keeps a Next.js build cache between deploys, such as Vercel. A cold
-  encode runs frames in parallel, about 13 minutes on two cores; a warm
-  build takes under a minute.
+  signature matches restores the finished tree from `.next/cache`, which
+  Vercel keeps between deploys, instead of encoding it. A cold encode runs
+  frames in parallel, about 13 minutes on two cores; a warm build takes
+  under a minute.
 - **Text-parity check.** `verify:text` diffs the rendered visible text of
   all four pages and the 404 against frozen HTML snapshots, character for
   character, so a refactor can't silently drop or reorder copy.
@@ -80,7 +78,7 @@ built and deployed with GitHub Actions.
 npm install
 npm run dev          # http://localhost:3000
 npm run build        # static export at the site root (Vercel, any static host), out/
-npm run build:pages  # the same export under /articya-website/ for GitHub Pages, out/
+npm run build:pages  # the same export under /articya-website/, the old Pages path, out/
 ```
 
 Verification scripts (both run at the end of every build):
