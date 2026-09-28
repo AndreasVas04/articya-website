@@ -3,18 +3,11 @@
 @theme {
   /* Resin & Pine palette - see /design/DESIGN-SYSTEM.md for roles and contrast rules */
   --color-pine-950: #22301c;
-  --color-pine-900: #2d4024;
-  --color-pine-800: #3e5433;
-  --color-lichen: #566350;
   --color-resin: #e19a3c;
   /* Lifted to read on the dark ground: #845110 was the text-safe accent when
      the ground was cream and measures 1.9 on it now. */
   --color-resin-deep: #d69a47;
   --color-resin-light: #f2c177;
-  --color-sage: #a9b39a;
-  --color-plaster: #f2efe6;
-  --color-plaster-bright: #faf8f2;
-  --color-plaster-muted: #e0e4cd;
 
   /* The site's own palette - the living-atmosphere world, now a dark one.
      Roles in /design/DESIGN-SYSTEM.md. One rule: ink carries every piece of
@@ -24,7 +17,6 @@
   --color-ink: #ede2c8;
   --color-ink-soft: #b9b4a2;
   --color-amber: #c88a3a;
-  --color-amber-soft: #e2ab52;
   /* Lifted out of the near-black green it was on the light ground: at #285c3c
      the icon strokes measured 2.2 on the floor, under the 3.0 a graphical
      mark answers to. Same green, raised until it reads (6.58 on the floor). */
@@ -40,7 +32,6 @@
      a photograph is darkened toward; `gold-card` is the floor lifted a
      half-step for containers. The amber fills are the accent lightened just
      far enough that the button's own label clears AA on them. */
-  --color-bark: #c9bb9e;
   --color-gold-wash: #141c16;
   --color-gold-anchor: #0e1510;
   --color-gold-chrome: #101811;
@@ -49,7 +40,6 @@
      gradient through grey. */
   --color-gold-anchor-0: rgb(14 21 16 / 0);
   --color-gold-chrome-0: rgb(16 24 17 / 0);
-  --color-gold-wash-0: rgb(20 28 22 / 0);
   /* `gold-anchor` turned onto the hue of the sky it darkens, at the same
      lightness and the same chroma (L* 6.07 against 6.03, C* 4.11 against
      4.21) - one hue rotation and nothing else. A darkening only darkens what
@@ -422,38 +412,6 @@ body {
   }
 }
 
-/* Inner-page hero photograph - a slow scale-from-in on load, so the frame
-   arrives by settling rather than snapping on. The parent clips the overscan,
-   so the picture eases from 6% in to flush; opacity is untouched, so the LCP
-   paint is never held back. Under reduced motion the global reduce block
-   collapses the duration and the frame rests flush. The gentle continuous
-   breath keeps the largest still image on the page alive while it is read - 
-   scale only, compositor-cheap, and it too stops under reduced motion. */
-.page-hero-photo-rise {
-  animation:
-    page-hero-photo-in 1600ms var(--ease-out-quart) both,
-    page-hero-photo-breathe 26s var(--ease-in-out-cubic) 1600ms infinite alternate;
-  transform-origin: 50% 42%;
-}
-@keyframes page-hero-photo-in {
-  from {
-    scale: 1.07;
-  }
-}
-@keyframes page-hero-photo-breathe {
-  from {
-    scale: 1;
-  }
-  to {
-    scale: 1.045;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .page-hero-photo-rise {
-    animation: none;
-  }
-}
-
 /* The gold a section stands in. Its top and bottom edges are `gold-anchor`,
    falling to that gold at zero alpha toward the middle, where the page's
    `gold-wash` floor carries the colour instead - so the section is gold end to
@@ -494,29 +452,15 @@ body {
     --gold-hold: 80px;
   }
 }
-.gold-field-chrome-bottom {
-  --gold-bottom: var(--color-gold-chrome);
-  --gold-bottom-0: var(--color-gold-chrome-0);
-}
 /* An edge that opens onto its own section's floor rather than onto another
    field edge paints nothing at all. The anchor exists so two edges can meet on
    one value; where there is no second edge it lands a step deeper than the
-   ground beside it and draws a full-width line across the page. */
-.gold-field-open-top {
-  --gold-top: transparent;
-  --gold-top-0: transparent;
-}
-/* The same, downward: below the hero the page has no section grounds left for
-   an edge to meet - the photographic stage runs behind all of it, unbroken. */
+   ground beside it and draws a full-width line across the page. Below the hero
+   the page has no section grounds left for an edge to meet - the photographic
+   stage runs behind all of it, unbroken. */
 .gold-field-open-bottom {
   --gold-bottom: transparent;
   --gold-bottom-0: transparent;
-}
-/* The floor under a gold field on the inner pages. Declared after .gold-field
-   because the field's background shorthand resets background-color - a utility
-   would lose the same fight. */
-.gold-floor {
-  background-color: var(--color-gold-wash);
 }
 
 /* The photographic stage - one fixed layer behind the whole page below the
@@ -1273,12 +1217,6 @@ body {
   .finale-words[data-on] .finale-rule {
     transition: scale var(--enter-ms) var(--ease-enter);
   }
-}
-/* Evening shadow: under framed prints, and as the raised state of
-   interactive cards (open accordion, hovered contact card) - defined as a
-   utility so hover/open variants reuse the same shadow. */
-@utility print-shadow {
-  box-shadow: 0 24px 48px -24px rgb(4 8 5 / 0.55);
 }
 
 /* The home hero's static HTML carries its intro in the visible resting
