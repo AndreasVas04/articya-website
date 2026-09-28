@@ -1,6 +1,7 @@
-// Post-processes the static export in out/ for GitHub Pages:
-//   1. Writes .nojekyll so paths beginning with an underscore (_next, and
-//      anything else) are served instead of being run through Jekyll.
+// Post-processes the static export in out/, for any host - every build runs it:
+//   1. Writes .nojekyll so GitHub Pages serves paths beginning with an
+//      underscore (_next, and anything else) instead of running them through
+//      Jekyll. Any other host ignores the file.
 //   2. Drops every image file no exported page references. The responsive
 //      pipeline serves each photograph from public/images/variants/, so the
 //      full-resolution graded masters, the ungraded _originals and the legacy

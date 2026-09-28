@@ -14,7 +14,7 @@
   },
   "scripts": {
     "dev": "npm run images && next dev",
-    "build": "npm run images && next build && npm run verify:placements && npm run verify:text",
+    "build": "npm run images && next build && node scripts/postexport.mjs && npm run verify:placements && npm run verify:text",
     "build:pages": "npm run images && GITHUB_PAGES=true next build && node scripts/postexport.mjs && npm run verify:placements && npm run verify:text",
     "images": "node scripts/responsive-images.mjs",
     "grade:photos": "node scripts/grade-photos.mjs",
