@@ -17,9 +17,9 @@ built and deployed with GitHub Actions.
 - A hero that opens on the wheel or a finger drag: the scene's progress
   tracks the input pixel for pixel, not a fixed-time animation, and it plays
   once per page load.
-- Each section pins a full-bleed photograph while its text and numbers
-  settle over it, so a page reads as one continuous scene rather than
-  stacked blocks.
+- The page scrolls over one fixed, full-bleed layer of photographs that
+  turns at the reader's own scroll rate. Sections paint no ground of their
+  own, so a page reads as one continuous scene rather than stacked blocks.
 - A rotating Earth in WebGL sits beside "What we do." three.js loads only
   when the section is about to be seen; it never touches the first page
   load, aside from about 1 kB for the loader itself.
@@ -43,7 +43,7 @@ built and deployed with GitHub Actions.
 
 - **Responsive image ratio gate.** Every photograph is built at a ladder of
   widths in AVIF/WebP/JPEG at build time. `verify:placements` then asserts,
-  across 132 placements and 7 viewports, that painted width × device pixel
+  across 142 placements and 7 viewports, that painted width × device pixel
   ratio never exceeds the fetched image's own width — no browser is ever
   asked to upscale a photograph.
 - **Contrast gate.** Every text/ground pairing is measured at the glyph's
@@ -57,26 +57,33 @@ built and deployed with GitHub Actions.
 - **Composited-layer budget.** The home page's paint layers were cut from
   23 to 13, its backing store from 186.7MB to 95.2MB, and the memory a 2.5×
   pinch-zoom would decode from 1299MB to 728MB.
-- **Content-hash CI cache.** The responsive-image variants are cached in
-  Actions, keyed on a hash of the source photographs and the two pipeline
-  scripts. The encode step is 96% of a cold build, so a run that touches
-  neither turns a projected ~27-minute build into about one minute.
+- **Encode once.** The responsive-image variants are keyed on a signature
+  of everything that can change them: the frames the pages name, their
+  originals, the grade, and the pipeline with its config. A build whose
+  signature matches restores the finished tree instead of encoding it —
+  from the Actions cache on GitHub, and from `.next/cache` on a host that
+  keeps a Next.js build cache between deploys, such as Vercel. A cold
+  encode runs frames in parallel, about 13 minutes on two cores; a warm
+  build takes under a minute.
 - **Text-parity check.** `verify:text` diffs the rendered visible text of
-  all four pages against frozen HTML snapshots, character for character,
-  so a refactor can't silently drop or reorder copy.
-- **Post-export asset pruning.** A script scans the exported HTML for the
-  images each route actually references and drops the rest from the deploy
-  — 259 unreferenced files, 170MB, off the last build.
+  all four pages and the 404 against frozen HTML snapshots, character for
+  character, so a refactor can't silently drop or reorder copy.
+- **Only what a page shows.** The pipeline reads the pages' own source for
+  the photographs they name and encodes only those — 13 frames and 336
+  files — and a path it can't produce stops the build. After the export, a
+  script scans the HTML for the images each route actually requests and
+  drops the rest from the deploy: the originals and graded masters, 81.5MB.
 
 ## Run locally
 
 ```bash
 npm install
 npm run dev          # http://localhost:3000
-npm run build:pages  # static export for GitHub Pages, out/
+npm run build        # static export at the site root (Vercel, any static host), out/
+npm run build:pages  # the same export under /articya-website/ for GitHub Pages, out/
 ```
 
-Verification scripts (also run as part of `build:pages`):
+Verification scripts (both run at the end of every build):
 
 ```bash
 npm run verify:text        # visible-text parity against frozen snapshots
