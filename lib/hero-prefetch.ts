@@ -10,6 +10,7 @@ import {
   type SizeBox,
 } from "@/lib/images";
 import { releasePipe, savingData } from "@/lib/connection";
+import { pageZoomed } from "@/lib/viewport";
 
 // A route change to an inner page paints the page and then waits for its
 // photograph. Measured from home at 390x664 DPR 3, the hero arrived 500-1100 ms
@@ -133,6 +134,9 @@ export function prefetchReport(): PrefetchRow[] {
 // route.
 const asked = new Set<string>();
 const live = new Map<string, HeroLoad>();
+// The loads that have landed and are decoded and kept - the part of `live`
+// that is bitmaps rather than requests.
+const held = new Set<HeroLoad>();
 
 /** Reserve a route, so two paths cannot ask for the same file. Returns the
  *  candidates to load, or null when there is nothing to do. */
@@ -204,24 +208,47 @@ export function loadHero(
       if (records.get(href)?.state === "flight") mark(href, "flight", `${priority} priority`, img.currentSrc || null);
     });
   }
-  const settle = (ok: boolean) => {
-    if (!ok) drop(load);
-    if (href) mark(href, ok ? "warm" : "miss", ok ? "loaded and decoded" : "load failed", img.currentSrc || null);
+  const settle = (ok: boolean, decoded: boolean) => {
+    if (ok && decoded) held.add(load);
+    else drop(load);
+    const note = !ok ? "load failed" : decoded ? "loaded and decoded" : "loaded; not held during a zoom";
+    if (href) mark(href, ok ? "warm" : "miss", note, img.currentSrc || null);
     done?.(ok);
   };
   img.onload = () => {
+    // Under a zoom the file is the part worth having. The bitmap would be one
+    // more photograph held in memory while the compositor re-rasters every
+    // layer at the new scale, and the press on arrival decodes it anyway.
+    if (pageZoomed()) return settle(true, false);
     img.decode().then(
-      () => settle(true),
-      () => settle(true)
+      () => settle(true, true),
+      () => settle(true, true)
     );
   };
-  img.onerror = () => settle(false);
+  img.onerror = () => settle(false, false);
   return load;
 }
 
 function drop(load: HeroLoad): void {
   if (live.get(load.src) === load) live.delete(load.src);
+  held.delete(load);
   load.picture.remove();
+}
+
+/** A zoom has begun: let go of every decoded photograph held for another
+ *  route. The files stay in the HTTP cache, and a press for one of those
+ *  routes asks again - a cache hit and a decode ahead of the route, the same
+ *  as for a hold released by its plate. What stays in flight is a request,
+ *  not a bitmap, and it lands without holding one while the zoom lasts. */
+export function releaseHeldHeroes(): void {
+  for (const load of [...held]) {
+    drop(load);
+    for (const [href, route] of Object.entries(ROUTE_HEROES)) {
+      if (route.src === load.src && records.get(href)?.state === "warm") {
+        mark(href, "warm", "loaded; hold released for a zoom");
+      }
+    }
+  }
 }
 
 /** Stop a load that is no longer wanted. The picture leaves the document

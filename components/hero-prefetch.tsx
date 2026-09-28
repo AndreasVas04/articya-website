@@ -9,9 +9,11 @@ import {
   loadHero,
   PREFETCH_ORDER,
   queueHero,
+  releaseHeldHeroes,
   stopHero,
   type HeroLoad,
 } from "@/lib/hero-prefetch";
+import { pageZoomed, watchZoom } from "@/lib/viewport";
 
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
@@ -51,6 +53,15 @@ function currentRoute(pathname: string): string {
 // why the bitmap matters.
 export function HeroPrefetch() {
   const pathname = usePathname();
+
+  // A pinch lets go of the decoded photographs held for other routes; see
+  // `releaseHeldHeroes`. Read on mount as well, since a page can arrive zoomed.
+  useEffect(() => {
+    if (pageZoomed()) releaseHeldHeroes();
+    return watchZoom((zoomed) => {
+      if (zoomed) releaseHeldHeroes();
+    });
+  }, []);
 
   useEffect(() => {
     if (savingData() || tooSlowToSpeculate()) return;
