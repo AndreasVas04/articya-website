@@ -2,7 +2,7 @@
 
 import { useEffect, useState, type CSSProperties } from "react";
 import { resolveImage } from "@/lib/images";
-import { cn, withBasePath } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 interface ResponsiveImageProps {
   /** Content image path, e.g. "/images/hero-1.jpg". */
@@ -82,7 +82,7 @@ export function ResponsiveImage({
   if (!resolved) {
     return (
       <img
-        src={withBasePath(src)}
+        src={src}
         alt={alt}
         sizes={sizes}
         loading={loading}

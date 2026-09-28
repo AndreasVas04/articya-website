@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import type { EarthHandle } from "@/components/earth-scene";
 import { afterGroundTurn } from "@/lib/page-load";
 import { onLayoutResize } from "@/lib/viewport";
-import { cn, withBasePath } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 // The skins (scripts/globe-texture.mjs): the day map at two rungs, and the
 // packed lights / clouds / water map.
@@ -87,8 +87,8 @@ export function EarthGlobe({ className }: { className?: string }) {
           getComputedStyle(document.documentElement).getPropertyValue("--color-resin").trim() ||
           "#e19a3c";
         handle = m.mountEarth(host, canvas, {
-          day: [withBasePath(DAY[0]), withBasePath(DAY[1])],
-          pack: withBasePath(PACK),
+          day: DAY,
+          pack: PACK,
           resin,
           reducedMotion,
           entered,

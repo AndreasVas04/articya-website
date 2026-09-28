@@ -18,8 +18,6 @@ const GROUND_WAIT_MS = 100;
 // prefetched on intent, so this is a guard and not a budget.
 const ARRIVE_WAIT_MS = 1500;
 
-const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
-
 const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 
 // The app-relative path of an internal link, or null for anything the router
@@ -31,9 +29,7 @@ function routeOf(a: HTMLAnchorElement): string | null {
   if (a.target && a.target !== "_self") return null;
   if (a.hasAttribute("download")) return null;
   if (url.pathname === location.pathname) return null;
-  let path = url.pathname;
-  if (BASE && path.startsWith(BASE)) path = path.slice(BASE.length) || "/";
-  return path + url.search + url.hash;
+  return url.pathname + url.search + url.hash;
 }
 
 // The destination's own ground: the photograph at 24px that every route paints

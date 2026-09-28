@@ -15,12 +15,9 @@ import {
 } from "@/lib/hero-prefetch";
 import { pageZoomed, watchZoom } from "@/lib/viewport";
 
-const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
-
 // The route this document is showing, in the map's own keys.
 function currentRoute(pathname: string): string {
-  let p = pathname || "/";
-  if (BASE && p.startsWith(BASE)) p = p.slice(BASE.length) || "/";
+  const p = pathname || "/";
   return p.endsWith("/") ? p : `${p}/`;
 }
 

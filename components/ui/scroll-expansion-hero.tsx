@@ -16,7 +16,7 @@ import { useGroundTurn } from "@/lib/page-load";
 import { watchLiveness, recoveries } from "@/lib/liveness";
 import { onLayoutResize, pageZoomed, watchZoom } from "@/lib/viewport";
 import { heroTrace } from "@/lib/hero-trace";
-import { cn, withBasePath } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 // useLayoutEffect on the client, useEffect on the server: the effect it runs
 // only ever touches the DOM, so it is a no-op during server rendering, and
@@ -52,8 +52,7 @@ const loadedAtHome = () => {
     | PerformanceNavigationTiming
     | undefined;
   const loaded = new URL(entry?.name ?? location.href, location.href).pathname;
-  const home = withBasePath("/");
-  return loaded.replace(/\/(index\.html)?$/, "") === home.replace(/\/$/, "");
+  return /^\/(index\.html)?$/.test(loaded);
 };
 
 // The opening completes itself. Once it has started and the input stops, the
@@ -2359,7 +2358,7 @@ const ScrollExpandMedia = ({
           className="hero-ridge pointer-events-none absolute inset-0 z-20"
           style={
             {
-              "--ridge-mask": `url(${withBasePath(POSTER_RIDGE)})`,
+              "--ridge-mask": `url(${POSTER_RIDGE})`,
               opacity: poster,
               // The mask, the picture and its darkening are three composited
               // full-bleed layers, and past the release they are three the

@@ -54,9 +54,7 @@ export default function PrefetchDebugPanel() {
   }, []);
 
   const rows = prefetchReport();
-  const base = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
   let here = pathname || "/";
-  if (base && here.startsWith(base)) here = here.slice(base.length) || "/";
   if (!here.endsWith("/")) here = `${here}/`;
 
   const hero = document.querySelector<HTMLImageElement>('main img[fetchpriority="high"]');

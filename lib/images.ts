@@ -1,5 +1,4 @@
 import manifest from "@/public/images/variants/manifest.json";
-import { withBasePath } from "@/lib/utils";
 
 // The responsive-variant manifest is generated at build time by
 // scripts/responsive-images.mjs (git-ignored). It maps each content image
@@ -66,7 +65,7 @@ function widthsFor(entry: ManifestEntry, ext: string): number[] {
 
 function srcSetFor(entry: ManifestEntry, ext: string): string {
   return widthsFor(entry, ext)
-    .map((w) => `${withBasePath(`${data.dir}/${entry.base}-${w}.${ext}`)} ${w}w`)
+    .map((w) => `${data.dir}/${entry.base}-${w}.${ext} ${w}w`)
     .join(", ");
 }
 
@@ -83,7 +82,7 @@ export function resolveImage(src: string): ResolvedImage | null {
       mime: MIME[ext] ?? `image/${ext}`,
       srcSet: srcSetFor(entry, ext),
     })),
-    fallback: withBasePath(`${data.dir}/${entry.base}-${largestJpeg}.jpeg`),
+    fallback: `${data.dir}/${entry.base}-${largestJpeg}.jpeg`,
     jpegSrcSet: srcSetFor(entry, "jpeg"),
     width: entry.width,
     height: entry.height,
@@ -193,7 +192,7 @@ export function imagePreload(
   const rungs = widthsFor(entry, ext);
   const largest = rungs[rungs.length - 1];
   return {
-    href: withBasePath(`${data.dir}/${entry.base}-${largest}.${ext}`),
+    href: `${data.dir}/${entry.base}-${largest}.${ext}`,
     imageSrcSet: srcSetFor(entry, ext),
     imageSizes: sizes,
     type: MIME[ext] ?? `image/${ext}`,
@@ -256,5 +255,5 @@ export function variantUrl(src: string, sizes: string, ext: string): string | nu
   const asked = css * (window.devicePixelRatio || 1);
   const rungs = widthsFor(entry, ext);
   const rung = rungs.find((w) => w >= asked) ?? rungs[rungs.length - 1];
-  return withBasePath(`${data.dir}/${entry.base}-${rung}.${ext}`);
+  return `${data.dir}/${entry.base}-${rung}.${ext}`;
 }

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { nav } from "@/content/shared";
 import { prefetchHero } from "@/lib/hero-prefetch";
-import { cn, withBasePath } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 function isActive(pathname: string, href: string) {
   const normalize = (p: string) => (p === "/" ? p : p.replace(/\/$/, ""));
@@ -123,11 +123,11 @@ export function SiteHeader() {
               63; the box and the rendered size are unchanged. */}
           <picture>
             <source
-              srcSet={withBasePath(nav.logo.src.replace(/\.png$/, ".webp"))}
+              srcSet={nav.logo.src.replace(/\.png$/, ".webp")}
               type="image/webp"
             />
             <img
-              src={withBasePath(nav.logo.src)}
+              src={nav.logo.src}
               alt={nav.logo.alt}
               width={358}
               height={309}

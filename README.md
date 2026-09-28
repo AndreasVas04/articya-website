@@ -78,7 +78,6 @@ built and deployed on Vercel.
 npm install
 npm run dev          # http://localhost:3000
 npm run build        # static export at the site root (Vercel, any static host), out/
-npm run build:pages  # the same export under /articya-website/, the old Pages path, out/
 ```
 
 Verification scripts (both run at the end of every build):
