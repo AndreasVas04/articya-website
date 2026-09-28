@@ -303,8 +303,12 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
           continue;
         }
         const rise = stageHeight * ARRIVE_RISE * (1 - settled);
+        // The hint is the promotion and the transform is 2D, so the two can
+        // be parted: under a zoom `:root[data-zoomed]` takes the hint away and
+        // WebKit paints the same settle in place, with no layer of its own. A
+        // `translate3d` would promote the frame on its own account.
         if (!images[i].style.willChange) images[i].style.willChange = "transform";
-        images[i].style.transform = `translate3d(0, ${rise.toFixed(2)}px, 0) scale(${(
+        images[i].style.transform = `translate(0, ${rise.toFixed(2)}px) scale(${(
           1 + ARRIVE_SCALE * (1 - settled)
         ).toFixed(4)})`;
       }
