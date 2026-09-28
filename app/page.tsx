@@ -226,7 +226,12 @@ export default function HomePage() {
               flick the block was still arriving while the same gesture was
               already carrying it off at 1.5x, and the statement completed 180px
               up the screen. Faster in, the words are standing while the
-              crossing's last rows finish, and the release reads as one move. */}
+              crossing's last rows finish, and the release reads as one move.
+
+              The transitions name `translate`, not `transform`: Tailwind 4's
+              `translate-y-*` sets the individual property, and while they
+              named `transform` the 56px landed in one frame and only the
+              opacity eased. */}
           {/* The band's own rule. It arrives with the statement on the
               band's clock and leaves with the band at its exit rate: it is
               part of this block and belongs to nothing below it. The hero
@@ -235,7 +240,7 @@ export default function HomePage() {
           <span
             aria-hidden="true"
             data-hero-rule=""
-            className="block h-0.5 w-24 translate-y-14 bg-amber opacity-0 duration-[400ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] motion-reduce:translate-y-0"
+            className="block h-0.5 w-24 translate-y-14 bg-amber opacity-0 duration-[400ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,translate] motion-reduce:translate-y-0"
           />
           {/* The statement is body copy now, on the body step and in the body
               face: the display-face "hero statement" was its own size, its own
@@ -246,10 +251,10 @@ export default function HomePage() {
               window, so the pixel would have moved the rule's own row rather
               than the statement's. Given back here, the row stands exactly
               where it stood. */}
-          <p className="type-body mt-[19px] translate-y-14 text-balance text-center text-ink opacity-0 duration-[400ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] group-data-[expanded]:delay-[60ms] motion-reduce:translate-y-0">
+          <p className="type-body mt-[19px] translate-y-14 text-balance text-center text-ink opacity-0 duration-[400ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,translate] group-data-[expanded]:delay-[60ms] motion-reduce:translate-y-0">
             {hero.text}
           </p>
-          <div className="mt-5 translate-y-14 opacity-0 duration-[400ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] group-data-[expanded]:delay-150 motion-reduce:translate-y-0">
+          <div className="mt-5 translate-y-14 opacity-0 duration-[400ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,translate] group-data-[expanded]:delay-150 motion-reduce:translate-y-0">
             <ButtonLink href={hero.cta.href}>
               {hero.cta.label}
             </ButtonLink>
