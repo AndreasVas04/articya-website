@@ -251,7 +251,7 @@ export default function HomePage() {
             {hero.text}
           </p>
           <div className="mt-5 translate-y-14 opacity-0 duration-[400ms] ease-out-quart group-data-[expanded]:translate-y-0 group-data-[expanded]:opacity-100 group-data-[expanded]:transition-[opacity,transform] group-data-[expanded]:delay-150 motion-reduce:translate-y-0">
-            <ButtonLink href={hero.cta.href} variant="gold">
+            <ButtonLink href={hero.cta.href}>
               {hero.cta.label}
             </ButtonLink>
           </div>
@@ -890,7 +890,7 @@ export default function HomePage() {
               {gain.highlight}
             </p>
             <div className="mt-10">
-              <ButtonLink href={gain.cta.href} variant="gold">
+              <ButtonLink href={gain.cta.href}>
                 {gain.cta.label}
               </ButtonLink>
             </div>

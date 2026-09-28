@@ -42,7 +42,7 @@ export default function NotFound() {
           </h1>
           <p className="type-body mx-auto mt-8 text-pretty text-ink">{notFound.text}</p>
           <div className="mt-10">
-            <ButtonLink href={notFound.cta.href} variant="gold">
+            <ButtonLink href={notFound.cta.href}>
               {notFound.cta.label}
             </ButtonLink>
           </div>
