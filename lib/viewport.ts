@@ -23,11 +23,6 @@ const ZOOM_TOLERANCE = 0.01;
 const scale = (): number => window.visualViewport?.scale ?? 1;
 export const pageZoomed = (): boolean => Math.abs(scale() - 1) > ZOOM_TOLERANCE;
 
-/** Whether the address carries a `?zoomtest=` diagnostic switch by this name
- *  (see the switches in globals.css). */
-export const zoomTest = (name: string): boolean =>
-  new URLSearchParams(location.search).get("zoomtest")?.split(",").includes(name) ?? false;
-
 // A zoom always ends.
 //
 // Three machines on this page stand down while the reader holds a page scale:

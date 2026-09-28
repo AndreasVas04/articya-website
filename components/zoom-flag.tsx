@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { watchZoom, zoomTest } from "@/lib/viewport";
+import { watchZoom } from "@/lib/viewport";
 
 // Above this page scale the reader is zoomed in. Below 1 is not a zoom: it is
 // the rubber band a fast pinch-out swings through on its way back to 1.
@@ -69,14 +69,6 @@ function containerTop(stage: HTMLElement): number {
 export function ZoomFlag() {
   useEffect(() => {
     const root = document.documentElement;
-    // `?zoomtest=masks,filters` - the switches in globals.css that take one
-    // kind of layer off the page at a time, to find which of them a deep zoom
-    // cannot afford. A diagnostic: nothing reads it without the parameter.
-    const tests = new URLSearchParams(location.search).get("zoomtest");
-    if (tests) root.dataset.zoomtest = tests.split(",").join(" ");
-    // `noflag`: the page as it was before the flag, for comparison.
-    if (zoomTest("noflag")) return;
-
     const vv = window.visualViewport;
     const scale = () => vv?.scale ?? 1;
     let fingers = 0;

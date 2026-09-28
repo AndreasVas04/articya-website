@@ -317,11 +317,10 @@ body {
      darkening with it, and the hero section and the land copy are composited
      only because they overlap those, or the title block that `will-change:
      opacity` holds for the opening. Under these two rules the same window
-     holds the root and the header, which is what `?zoomtest=all` leaves, and
-     nothing the reader can see has gone. Further down home the window's
-     full-size layers fall from 5-9 to 2-3; on the inner pages from 5-7 to 3,
-     where the stage is the photograph being looked at and whatever overlaps it
-     has to stay composited.
+     holds the root and the header - what is left with every kind of layer
+     taken off the page - and nothing the reader can see has gone. Below the
+     hero the fixed stage holds on to more of them, and that is the next
+     rule's.
 
      So while a zoom is held nothing is promoted on a hint and a plate at
      strength 0 is not displayed. A plate on its way in keeps its settle: the
@@ -354,36 +353,6 @@ body {
   :root[data-zoomed] .photo-stage {
     position: absolute !important;
     top: var(--zoom-stage-top, 0px) !important;
-  }
-
-  /* Diagnostic switches for a deep zoom, off unless the address carries
-     `?zoomtest=` (see ZoomFlag). Each takes one kind of layer off the whole
-     page; `all` takes every one of them. At the scale where Safari's page
-     process dies, the switch that keeps it alive names the layers to fix. */
-  :root:is([data-zoomtest~="masks"], [data-zoomtest~="all"]) *,
-  :root:is([data-zoomtest~="masks"], [data-zoomtest~="all"]) *::before,
-  :root:is([data-zoomtest~="masks"], [data-zoomtest~="all"]) *::after {
-    mask: none !important;
-    -webkit-mask: none !important;
-  }
-  :root:is([data-zoomtest~="filters"], [data-zoomtest~="all"]) *,
-  :root:is([data-zoomtest~="filters"], [data-zoomtest~="all"]) *::before,
-  :root:is([data-zoomtest~="filters"], [data-zoomtest~="all"]) *::after {
-    filter: none !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-  }
-  :root:is([data-zoomtest~="promote"], [data-zoomtest~="all"]) *,
-  :root:is([data-zoomtest~="promote"], [data-zoomtest~="all"]) *::before,
-  :root:is([data-zoomtest~="promote"], [data-zoomtest~="all"]) *::after {
-    will-change: auto !important;
-    mix-blend-mode: normal !important;
-  }
-  :root:is([data-zoomtest~="stage"], [data-zoomtest~="all"]) .photo-stage {
-    display: none !important;
-  }
-  :root:is([data-zoomtest~="hero"], [data-zoomtest~="all"]) .hero-plate > * {
-    display: none !important;
   }
 }
 
