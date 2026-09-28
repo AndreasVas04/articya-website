@@ -10,8 +10,7 @@ import { cn } from "@/lib/utils";
 // a real flick collapses the whole entrance into a couple of frames and the
 // words are gone before they can be read; on a fixed duration a visitor who
 // blasts past still finds them settled where they belong. The travel is the
-// individual `translate`/`scale` properties, never `transform`, so it
-// composes with the inline transforms the pinned layers write alongside it.
+// individual `translate`/`scale` properties, never `transform`.
 const ENTER_EASE = "cubic-bezier(0.16, 1, 0.3, 1)";
 const LIFT: CSSProperties = { opacity: 0, translate: "0 40px" };
 const RISE: CSSProperties = { translate: "0 40px" };

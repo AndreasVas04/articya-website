@@ -140,9 +140,8 @@ const plates: StagePlate[] = [
 // The first hero slide is the LCP; the backdrop reuses the same variant, so
 // this one preload covers both - which only holds while the preload and the
 // markup declare the same `sizes`, so both read it from the same box. That box
-// is the window plus the hero's own push, not the window: the section breathes
-// 3% forward and back as the card opens, and a declaration made at the window
-// would land under the width the frame is painted at through the middle of it.
+// is the window: the 3% push that used to carry the section past it went with
+// `4d6a02b`, and `HERO_VIEWPORT` in lib/images.ts is where that is declared.
 const heroSizes = coverSizes(hero.slides[0], HERO_VIEWPORT);
 const heroPreload = imagePreload(hero.slides[0], heroSizes);
 

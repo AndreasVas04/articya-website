@@ -22,9 +22,8 @@ const icons: Record<string, React.ReactNode> = {
 
 // The lower half of the site's chrome, and like the header it is no longer a
 // bar: no fill, no rule on the edge it shares with the body. The page simply
-// runs out under it. On home the stage plates hold flat gold for the footer's
-// height at the bottom of the window, so the cream type here always closes on
-// one value; on the inner pages the body's own dark floor does the same job.
+// runs out under it, and `.foot-shade` below carries the line - the header's
+// construction at the other end.
 //
 // `relative` is not layout - it is paint order. The home page's photographic
 // stage is a fixed layer, and a fixed layer paints after every static block on

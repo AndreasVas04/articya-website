@@ -43,12 +43,11 @@ function intentPrefetch(href: string) {
 }
 
 // The chrome is not a bar. There is no fill behind it, no blur, no rule under
-// it: the nav sits directly on the photograph, in cream, with amber on the
-// item you are on. What carries the labels is the picture's own darkening - 
-// the stage plates and the hero plate each hold flat gold for the bar's height
-// at the top of the window, so a label never lands on open picture whatever
-// the scroll position. A bar would have been a panel behind text, which is the
-// one thing this page no longer has anywhere.
+// it: the nav sits directly on the photograph, in cream, with the accent on
+// the item you are on. What carries the labels is `.chrome-shade` below - one
+// full-width darkening pinned to the top of the window - so a label never
+// lands on open picture whatever the scroll position. A bar would have been a
+// panel behind text, which is the one thing this page no longer has anywhere.
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();

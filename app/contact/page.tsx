@@ -178,9 +178,6 @@ export default function ContactPage() {
                 mark the gains carry, from the same reference frame. */}
             <span aria-hidden="true" className="mt-6 block h-px w-[62%] bg-hairline" />
           </Reveal>
-          {/* No fills: the three channels are separated by one amber
-              hairline - horizontal between the stacked rows on mobile,
-              vertical between the columns on desktop. */}
           {/* No fills, and one hairline between the rows: the three channels
               stack down the soft column rather than sitting in three cells. */}
           <div className="mt-4 grid grid-cols-1 divide-y-[1.25px] divide-amber/34 md:mt-6">

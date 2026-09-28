@@ -39,8 +39,8 @@ import { releasePipe, savingData } from "@/lib/connection";
 //
 // The hero of each page is the first plate of its `PhotoStage`, which is the
 // page's own `hero.image` - the same constant the route renders from, so the
-// two cannot drift. Home's is the poster, whose box is the window plus the
-// hero's own push and not the window: two declarations of one photograph that
+// two cannot drift. Home's is the poster, and it declares `HERO_VIEWPORT` like
+// every copy of that frame in the hero: two declarations of one photograph that
 // resolve to different rungs cost a second download of it.
 interface RouteHero {
   src: string;

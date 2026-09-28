@@ -61,8 +61,9 @@ const faqJsonLd = JSON.stringify({
 
 // Native details/summary keeps every answer in the exported markup and
 // working without JS; the open animation lives in globals.css. The whole
-// page sits on one gold ground - hierarchy between question groups
-// comes from the header rail, hairlines and spacing, not painted zones.
+// page stands on its one photograph, sharp under the hero and defocused below
+// it - hierarchy between question groups comes from the header rail,
+// hairlines and spacing, not painted zones.
 export default function FaqPage() {
   return (
     <>

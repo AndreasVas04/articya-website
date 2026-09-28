@@ -70,9 +70,8 @@
      so the one control that carries a filled accent keeps a dark label: the
      fill is a light object whatever the ground behind it is. */
   --color-button-ink: #221a0c;
-  /* Card and box containers on the dark ground (FAQ accordions, contact
-     channel cards): the floor lifted a half-step, framed by an amber
-     hairline rather than a grey or green border. */
+  /* The floor lifted a half-step: the fixed backing of the FAQ chevron's
+     disc, which a ring on the bare photograph could not carry. */
   --color-gold-card: #1a2419;
 
   --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
@@ -1607,7 +1606,7 @@ details[open] .accordion-answer {
     }
   }
   /* The grab is the sphere's own silhouette - `DISC` in
-     components/earth-scene.ts, 0.9 of the frame, so 45% of the box in radius.
+     components/earth-core.ts, 0.9 of the frame, so 45% of the box in radius.
      `clip-path` is what hit-tests, so a finger in the corners never lands on
      this element at all and the page scrolls under it exactly as it does
      beside the box.

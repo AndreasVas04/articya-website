@@ -2038,10 +2038,7 @@ const ScrollExpandMedia = ({
                     slice of it, which is why one frame read as two pictures.
                     Matching `object-position` alone could not close that - 
                     the field of view is set by the box's aspect, and the box
-                    is what changes.
-
-                    It carries the section's push, so the window inside the
-                    card and the poster outside it travel as one. */}
+                    is what changes. */}
                 <div className="hero-window">
                   {restingState ? (
                     <>
@@ -2131,12 +2128,11 @@ const ScrollExpandMedia = ({
                   <HeroShade progress={progress} />
                 </div>
                 {/* The card's half of the same thing, in the frame rather than
-                    in the window: the window carries the push and the frame
-                    does not. It is inside the card's foot dissolve and its arc,
-                    which is right - they take it to nothing exactly where they
-                    take the picture to nothing, and the poster's copy under it
-                    comes up as they do. The poster title stands in
-                    `hero-window-scope` above this, so no glyph is over it. */}
+                    in the window. It is inside the card's foot dissolve and
+                    its arc, which is right - they take it to nothing exactly
+                    where they take the picture to nothing, and the poster's
+                    copy under it comes up as they do. The poster title stands
+                    in `hero-window-scope` above this, so no glyph is over it. */}
                 <div aria-hidden="true" className="ramp-dither" />
               </div>
             </div>
