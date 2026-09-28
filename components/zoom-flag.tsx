@@ -9,9 +9,28 @@ const ZOOMED_IN = 1.01;
 // How long the page has to be completely still before the flag comes off: no
 // finger on the glass, no scroll, no change of scale.
 const SETTLE_OUT_MS = 800;
+// How long the page has to have been still for a new one-finger touch to be
+// taken as an ordinary scroll on a page at rest, rather than as the same
+// gesture going on.
+const REST_MS = 500;
 // A count of fingers this old is not believed. A touch whose end never
 // arrived must not hold the flag for the life of the page.
 const STALE_TOUCH_MS = 10_000;
+
+// The top of the box the stage is laid out in, in the document: its nearest
+// positioned ancestor, or the page itself.
+function containerTop(stage: HTMLElement): number {
+  let box = stage.parentElement;
+  while (box && box !== document.body && getComputedStyle(box).position === "static") {
+    box = box.parentElement;
+  }
+  if (!box || box === document.body) return 0;
+  let top = 0;
+  for (let el: HTMLElement | null = box; el; el = el.offsetParent as HTMLElement | null) {
+    top += el.offsetTop;
+  }
+  return top;
+}
 
 // `data-zoomed` on the document for the whole of a pinch, so a stylesheet can
 // stand down what a zoom makes expensive. On a phone a page that asks the
@@ -39,6 +58,12 @@ const STALE_TOUCH_MS = 10_000;
 //   at 5x when the flag came off - and then every layer the flag had taken
 //   away came back at 5x at once.
 //
+// One thing takes it off sooner: a single finger landing on a page that has
+// been still for half a second at 1. That is an ordinary scroll starting on a
+// page at rest, and it gets the fixed stage back - the stage the flag lays out
+// in the page scrolls with it until it is placed again, which reads as a
+// picture swimming under the words.
+//
 // `watchZoom` stays subscribed for the one case no event covers: the scale
 // coming back to 1 with nothing behind it, which its clock catches.
 export function ZoomFlag() {
@@ -56,36 +81,81 @@ export function ZoomFlag() {
     const scale = () => vv?.scale ?? 1;
     let fingers = 0;
     let touchedAt = 0;
+    let lastSign = 0;
     let on = false;
     let settle = 0;
+    let frame = 0;
+    let base = 0;
+    let baseOf: HTMLElement | null = null;
+
+    // Where the stage stands while it is out of the fixed layer: the top of the
+    // layout viewport, which is what a fixed box is laid out against, measured
+    // in the box the stage is placed in. A route can change under a zoom, so
+    // the stage is looked up each time and its box measured once per stage.
+    const place = () => {
+      frame = 0;
+      if (!on) return;
+      const stage = document.querySelector<HTMLElement>(".photo-stage");
+      if (!stage) return;
+      if (stage !== baseOf) {
+        base = containerTop(stage);
+        baseOf = stage;
+      }
+      const layoutTop = vv ? vv.pageTop - vv.offsetTop : window.scrollY;
+      root.style.setProperty("--zoom-stage-top", `${(layoutTop - base).toFixed(2)}px`);
+    };
 
     // Whether a gesture still holds the page: a finger down, or a scale.
     const holding = () =>
       scale() > ZOOMED_IN || (fingers > 0 && performance.now() - touchedAt < STALE_TOUCH_MS);
 
     const release = () => {
-      settle = 0;
-      // Still held: the next sign of the gesture ending sets the clock again.
-      if (holding()) return;
       on = false;
+      window.clearTimeout(settle);
+      settle = 0;
       root.removeAttribute("data-zoomed");
+      root.style.removeProperty("--zoom-stage-top");
+      baseOf = null;
     };
 
     // Every sign of a gesture. Off, it is a read of two numbers and nothing
-    // else; on, it puts the end of the rest back by the whole of it.
+    // else; on, it places the stage again and puts the end of the rest back by
+    // the whole of it.
     const stir = () => {
+      lastSign = performance.now();
       if (!on) {
         if (fingers < 2 && scale() <= ZOOMED_IN) return;
         on = true;
+        // Placed before the flag, so the first frame of it is already right.
+        place();
         root.setAttribute("data-zoomed", "");
+      } else if (!frame) {
+        frame = requestAnimationFrame(place);
       }
       window.clearTimeout(settle);
-      settle = window.setTimeout(release, SETTLE_OUT_MS);
+      settle = window.setTimeout(() => {
+        settle = 0;
+        // Still held: the next sign of the gesture ending sets the clock again.
+        if (!holding()) release();
+      }, SETTLE_OUT_MS);
     };
 
     const onTouch = (event: TouchEvent) => {
+      const before = fingers;
       fingers = event.touches.length;
       touchedAt = performance.now();
+      if (
+        on &&
+        event.type === "touchstart" &&
+        before === 0 &&
+        fingers === 1 &&
+        scale() <= ZOOMED_IN &&
+        touchedAt - lastSign >= REST_MS
+      ) {
+        lastSign = touchedAt;
+        release();
+        return;
+      }
       stir();
     };
 
@@ -110,8 +180,8 @@ export function ZoomFlag() {
       window.removeEventListener("scroll", stir);
       vv?.removeEventListener("resize", stir);
       vv?.removeEventListener("scroll", stir);
-      window.clearTimeout(settle);
-      root.removeAttribute("data-zoomed");
+      if (frame) cancelAnimationFrame(frame);
+      release();
     };
   }, []);
 

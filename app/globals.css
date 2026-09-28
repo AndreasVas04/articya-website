@@ -336,6 +336,26 @@ body {
     display: none !important;
   }
 
+  /* And the stage stops being fixed, which is the most of it below the hero.
+     A fixed layer is composited on iOS whatever it shows, and for overlap
+     WebKit takes a fixed layer to cover every row the page can scroll it to -
+     so every positioned section in the document, painted over it, is a layer
+     of its own. Counted in the same layer tree, mid-arrival on home: 1590 and
+     2460 held the stage and three or four sections the size of the window
+     with every rule above in force; with the stage out of the fixed layer
+     they hold the header, and the page is one layer.
+
+     It stands where the fixed layer stood, and it is placed from the visual
+     viewport rather than from `scrollY`: the layout viewport's top in the
+     document, `pageTop - offsetTop`, is the box a fixed element is laid out
+     against at any scale (ZoomFlag writes it). What it gives up is the
+     compositor moving it: when the reader pans past the edge of the layout
+     viewport while zoomed, the picture is placed again on the next frame. */
+  :root[data-zoomed] .photo-stage {
+    position: absolute !important;
+    top: var(--zoom-stage-top, 0px) !important;
+  }
+
   /* Diagnostic switches for a deep zoom, off unless the address carries
      `?zoomtest=` (see ZoomFlag). Each takes one kind of layer off the whole
      page; `all` takes every one of them. At the scale where Safari's page
