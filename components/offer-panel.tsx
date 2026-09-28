@@ -65,7 +65,6 @@ export function OfferPanel({
   index,
   flip = false,
 }: OfferPanelProps) {
-  const ref = useRef<HTMLElement | null>(null);
   const textRef = useRef<HTMLDivElement | null>(null);
   const reducedMotion = useReducedMotion();
   const [mounted, setMounted] = useState(false);
@@ -91,8 +90,6 @@ export function OfferPanel({
     return () => observer.disconnect();
   }, [entered]);
 
-  const active = mounted && !reducedMotion;
-
   // The hidden half of a text entrance exists only between mount and the
   // trigger, so the exported HTML carries the words in place; from the
   // trigger they run to their end states on a fixed duration, staggered in
@@ -116,7 +113,7 @@ export function OfferPanel({
   const groups = text.split(/(?<=\.) /);
 
   return (
-    <section ref={ref} data-index-section="" className="relative">
+    <section data-index-section="" className="relative">
       {/* The panel carries no stage key of its own. It used to carry two - the
           section itself, which keys at its own middle, and a marker at 60% of
           it - and both of those are the panel's height, which on a phone is a

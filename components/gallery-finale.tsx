@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   cubicBezier,
   motion,
@@ -247,7 +247,6 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
   // here rather than in the pinned frame because the frame remounts at the
   // breakpoint, and an entrance plays once per load, not once per width.
   const words = useRef<HTMLDivElement | null>(null);
-  const frame = useRef<HTMLDivElement | null>(null);
   const [wordsIn, setWordsIn] = useState(false);
 
   // One travel-based timeline (section top at viewport bottom → section
@@ -452,7 +451,6 @@ export function GalleryFinale({ groups, images }: GalleryFinaleProps) {
           section, so it sets no document height and moves no key. */}
       <motion.div
         key={compact ? "compact" : "wide"}
-        ref={frame}
         data-on={wordsIn ? "" : undefined}
         className="finale-foot hero-foot-fade sticky top-0 h-[100dvh] overflow-hidden"
         style={{ "--foot-in": footIn, "--finale-rise": `${WORDS_RISE_PX}px` } as MotionStyle}

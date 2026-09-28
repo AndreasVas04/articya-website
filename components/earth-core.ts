@@ -101,8 +101,6 @@ const DRAG_DAMPING = 0.92;
 // the far pole comes over the top and the axis reads as broken.
 const MAX_PITCH = 75 * DEG;
 const IDLE_BEFORE_SPIN = 4000;
-// How long a page scale has to hold before the drawing buffer is re-cut for it.
-const SCALE_SETTLE_MS = 250;
 // How long a turning globe may go without a frame before the loop is taken
 // to have been lost rather than paused: ten frames at 60Hz, and more than any
 // single frame on this page costs.

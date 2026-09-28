@@ -134,11 +134,6 @@ export function prefetchReport(): PrefetchRow[] {
 const asked = new Set<string>();
 const live = new Map<string, HeroLoad>();
 
-/** True when this route's hero has already been asked for. */
-export function alreadyAsked(href: string): boolean {
-  return asked.has(href);
-}
-
 /** Reserve a route, so two paths cannot ask for the same file. Returns the
  *  candidates to load, or null when there is nothing to do. */
 export function claimHero(href: string, press = false): HeroCandidates | null {

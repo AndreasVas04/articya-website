@@ -459,7 +459,6 @@ const ScrollExpandMedia = ({
   const cardRef = useRef<HTMLDivElement | null>(null);
   const posterRef = useRef<HTMLDivElement | null>(null);
   const ridgeRef = useRef<HTMLDivElement | null>(null);
-  const windowRef = useRef<HTMLDivElement | null>(null);
   const titleRef = useRef<HTMLDivElement | null>(null);
   // The scroll cue: which of its three states is on the glass, the same answer
   // for the listeners that spend it (they are older than the render that would
@@ -2043,7 +2042,7 @@ const ScrollExpandMedia = ({
 
                     It carries the section's push, so the window inside the
                     card and the poster outside it travel as one. */}
-                <div ref={windowRef} className="hero-window">
+                <div className="hero-window">
                   {restingState ? (
                     <>
                     {/* Reduced motion rests with the poster layer unrendered -

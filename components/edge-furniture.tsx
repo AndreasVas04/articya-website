@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 
 import { onLayoutResize } from "@/lib/viewport";
 
@@ -23,7 +23,6 @@ import { onLayoutResize } from "@/lib/viewport";
 const SECTIONS = ["01", "02", "03", "04", "05", "06"];
 
 export function SectionIndex() {
-  const ref = useRef<HTMLUListElement | null>(null);
   const [active, setActive] = useState(0);
 
   useEffect(() => {
@@ -103,7 +102,7 @@ export function SectionIndex() {
   }, []);
 
   return (
-    <ul ref={ref} aria-hidden="true" className="edge-furniture edge-index">
+    <ul aria-hidden="true" className="edge-furniture edge-index">
       {SECTIONS.map((n, i) => (
         <li
           key={n}
