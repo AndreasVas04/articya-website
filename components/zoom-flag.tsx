@@ -12,6 +12,11 @@ import { pageZoomed, watchZoom } from "@/lib/viewport";
 export function ZoomFlag() {
   useEffect(() => {
     const root = document.documentElement;
+    // `?zoomtest=masks,filters` - the switches in globals.css that take one
+    // kind of layer off the page at a time, to find which of them a deep zoom
+    // cannot afford. A diagnostic: nothing reads it without the parameter.
+    const tests = new URLSearchParams(location.search).get("zoomtest");
+    if (tests) root.dataset.zoomtest = tests.split(",").join(" ");
     const flag = (held: boolean) => root.toggleAttribute("data-zoomed", held);
     // `watchZoom` tells a new subscriber only about a change, and a page can
     // arrive already zoomed, so the first state is read here.
