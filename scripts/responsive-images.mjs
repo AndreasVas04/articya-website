@@ -42,7 +42,12 @@ const SRC = path.join(ROOT, "public/images/_originals");
 const OUT = path.join(ROOT, "public/images/variants");
 const MANIFEST = path.join(OUT, "manifest.json");
 const STORE = path.join(ROOT, ".next/cache/articya-variants");
-const STORE_MANIFEST = path.join(STORE, "manifest.json");
+
+// The signature a tree was encoded under, in a file beside the manifest rather
+// than inside it. The manifest is imported by the client, so everything in it
+// is in every visitor's JavaScript, and a build key 2 KB long is of no use to
+// any of them.
+const SIGNATURE = "signature.txt";
 
 // Where the pages name their photographs. A content image path is a .jpg under
 // /images/; the logo, the social card and the ridge mask are files served as
@@ -493,9 +498,9 @@ function plan(referenced) {
   return jobs;
 }
 
-const isFresh = (manifest, sig) => {
+const isFresh = (dir, sig) => {
   try {
-    return JSON.parse(fs.readFileSync(manifest, "utf8")).signature === sig;
+    return fs.readFileSync(path.join(dir, SIGNATURE), "utf8") === sig;
   } catch {
     return false;
   }
@@ -504,7 +509,7 @@ const isFresh = (manifest, sig) => {
 // One directory tree onto another, replacing it whole. The copy is made beside
 // the target and renamed into place, so a build stopped halfway through it
 // leaves the old tree or the new one, never a part of the new one under a
-// manifest that vouches for all of it.
+// signature that vouches for all of it.
 function mirror(from, to) {
   const staging = `${to}.partial`;
   fs.rmSync(staging, { recursive: true, force: true });
@@ -613,14 +618,14 @@ async function run() {
   }
 
   assertLadder(await bleedWidths());
-  if (!force && isFresh(MANIFEST, sig)) {
+  if (!force && isFresh(OUT, sig)) {
     // Keep the store warm from a tree that arrived some other way (a local
     // build, or CI's own cache), so the next cold checkout can use it.
-    if (!isFresh(STORE_MANIFEST, sig)) mirror(OUT, STORE);
+    if (!isFresh(STORE, sig)) mirror(OUT, STORE);
     console.log("responsive-images: variants up to date, skipping.");
     return;
   }
-  if (!force && isFresh(STORE_MANIFEST, sig)) {
+  if (!force && isFresh(STORE, sig)) {
     mirror(STORE, OUT);
     console.log("responsive-images: variants restored from the build cache.");
     return;
@@ -727,12 +732,13 @@ async function run() {
     for (const { key } of frames) images[key] = entries.get(key);
   }
   const manifest = {
-    signature: sig,
     dir: "/images/variants",
     formats: FORMATS.map((f) => ({ ext: f.ext, mime: f.mime, ...(f.cap ? { cap: f.cap } : {}) })),
     images,
   };
   fs.writeFileSync(MANIFEST, JSON.stringify(manifest, null, 2));
+  // Last, so a tree without it is a tree that did not finish.
+  fs.writeFileSync(path.join(OUT, SIGNATURE), sig);
   mirror(OUT, STORE);
   console.log(
     `responsive-images: ${count} files, ${(bytes / 1e6).toFixed(1)}MB across ` +

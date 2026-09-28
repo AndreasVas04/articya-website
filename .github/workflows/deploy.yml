@@ -28,7 +28,7 @@ jobs:
       # them is most of a build. The key is the pipeline's own signature - the
       # frames the pages name, the originals they come from, the grade, the two
       # scripts and their config - which is exactly what the script's freshness
-      # check compares against the manifest. So a hit is a tree the build
+      # check compares a restored tree against. So a hit is a tree the build
       # accepts as up to date, and anything that would re-encode misses the key
       # and is saved under the new one.
       - id: variants
