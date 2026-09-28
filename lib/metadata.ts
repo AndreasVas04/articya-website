@@ -1,8 +1,14 @@
 import type { Metadata } from "next";
 
-// The site's public home on GitHub Pages; canonical and social URLs resolve
-// against it. The base path the deployment adds is already part of this value.
-export const siteUrl = "https://andreasvas04.github.io/articya-website";
+// The site's public home; canonical and social URLs, the sitemap, robots.txt
+// and llms.txt all resolve against it. On Vercel it is the project's production
+// domain - Vercel sets it at build time on every deployment, previews included,
+// so a preview's canonicals and social card still name production. A GitHub
+// Pages build carries the repository path the deployment adds.
+const vercelHost = process.env.VERCEL_PROJECT_PRODUCTION_URL;
+export const siteUrl = vercelHost
+  ? `https://${vercelHost}`
+  : "https://andreasvas04.github.io/articya-website";
 
 // The social card: the group walking the track above the reservoir, through
 // the site's own grade, with the wordmark over it. One card for every page.

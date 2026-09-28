@@ -3,7 +3,7 @@ import { PhotoStage, type StagePlate } from "@/components/photo-stage";
 import { ButtonLink } from "@/components/ui/button";
 import { meta, notFound } from "@/content/not-found";
 
-// No canonical: a missing address is not a page of the site, and GitHub Pages
+// No canonical: a missing address is not a page of the site, and the host
 // serves this file for every one of them - inherited from the layout it would
 // point at home. Next marks the page noindex on its own.
 export const metadata: Metadata = {
@@ -24,8 +24,8 @@ const plates: StagePlate[] = [
 ];
 
 // The page a wrong address lands on: the photograph, the wordmark, one line
-// and the way home. Static export writes it as 404.html, which is the file
-// GitHub Pages serves for a path it does not have.
+// and the way home. Static export writes it as 404.html, which is the file a
+// static host serves for a path it does not have.
 export default function NotFound() {
   return (
     <>
