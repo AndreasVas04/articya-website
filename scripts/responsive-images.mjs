@@ -21,8 +21,16 @@
 // for "/images/….jpg" paths (`referencedFrames`), so a photograph no page
 // shows costs no encode, and a path a page shows that this pipeline cannot
 // produce stops the build rather than shipping as a plain, unsized <img>.
+//
+// A finished tree is also kept in `.next/cache/articya-variants`. That is the
+// one directory besides node_modules a Next.js build cache carries from one
+// deploy to the next - Vercel restores it before the build, and `next build`
+// empties `.next` but keeps `cache` - so a fresh checkout with a matching store
+// copies it back instead of encoding. A cold encode is 13 minutes on two
+// cores, against a host's forty-five-minute build limit.
 
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
@@ -33,11 +41,27 @@ const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 const SRC = path.join(ROOT, "public/images/_originals");
 const OUT = path.join(ROOT, "public/images/variants");
 const MANIFEST = path.join(OUT, "manifest.json");
+const STORE = path.join(ROOT, ".next/cache/articya-variants");
+const STORE_MANIFEST = path.join(STORE, "manifest.json");
 
 // Where the pages name their photographs. A content image path is a .jpg under
 // /images/; the logo, the social card and the ridge mask are files served as
 // they are and carry no variants.
 const SOURCE_DIRS = ["app", "components", "content", "lib"];
+
+// Frames are independent, so they encode side by side. One AVIF encode keeps
+// one core busy, and the machines this runs on have two to four. A job holds a
+// full-resolution graded frame and its encodes in memory - two jobs peaked at
+// 1.95 GB between them, on the 49 MP originals - so the count is bounded by
+// memory as well, and by the container's limit rather than the host's where
+// the two differ. Four at most either way, so a large machine cannot turn this
+// into a memory spike. `VARIANT_JOBS` overrides it.
+const memory = Math.min(os.totalmem(), process.constrainedMemory?.() || Infinity);
+const JOBS = Math.max(
+  1,
+  Number(process.env.VARIANT_JOBS) ||
+    Math.min(4, os.availableParallelism?.() ?? os.cpus().length, Math.floor(memory / 1.5e9))
+);
 
 // Width ladder in device pixels. Each image emits the rungs at or below the
 // largest size it is ever displayed (never upscaled); the cap keeps a 6000px
@@ -477,6 +501,28 @@ const isFresh = (manifest, sig) => {
   }
 };
 
+// One directory tree onto another, replacing it whole. The copy is made beside
+// the target and renamed into place, so a build stopped halfway through it
+// leaves the old tree or the new one, never a part of the new one under a
+// manifest that vouches for all of it.
+function mirror(from, to) {
+  const staging = `${to}.partial`;
+  fs.rmSync(staging, { recursive: true, force: true });
+  fs.mkdirSync(path.dirname(to), { recursive: true });
+  fs.cpSync(from, staging, { recursive: true });
+  fs.rmSync(to, { recursive: true, force: true });
+  fs.renameSync(staging, to);
+}
+
+// Run `worker` over `items`, at most `size` at a time.
+async function pool(items, size, worker) {
+  let next = 0;
+  const lane = async () => {
+    while (next < items.length) await worker(items[next++]);
+  };
+  await Promise.all(Array.from({ length: Math.min(size, items.length) }, lane));
+}
+
 // The ground a plate stands on while its photograph is still on the wire.
 //
 // An inner page paints and then waits: measured at 390x664 DPR 3, the hero
@@ -568,18 +614,36 @@ async function run() {
 
   assertLadder(await bleedWidths());
   if (!force && isFresh(MANIFEST, sig)) {
+    // Keep the store warm from a tree that arrived some other way (a local
+    // build, or CI's own cache), so the next cold checkout can use it.
+    if (!isFresh(STORE_MANIFEST, sig)) mirror(OUT, STORE);
     console.log("responsive-images: variants up to date, skipping.");
+    return;
+  }
+  if (!force && isFresh(STORE_MANIFEST, sig)) {
+    mirror(STORE, OUT);
+    console.log("responsive-images: variants restored from the build cache.");
     return;
   }
 
   fs.rmSync(OUT, { recursive: true, force: true });
   fs.mkdirSync(OUT, { recursive: true });
 
-  const images = {};
+  const entries = new Map();
   let count = 0;
   let bytes = 0;
+  const started = Date.now();
 
-  for (const [file, frames] of jobs) {
+  // The largest originals first, so the last job to finish is a short one.
+  const pixels = new Map();
+  for (const file of jobs.keys()) {
+    const { width = 0, height = 0 } = await sharp(path.join(SRC, file)).metadata();
+    pixels.set(file, width * height);
+  }
+  const order = [...jobs.keys()].sort((a, b) => pixels.get(b) - pixels.get(a));
+
+  await pool(order, JOBS, async (file) => {
+    const frames = jobs.get(file);
     const { out8, width, height, orientation } = await gradeToRaw(file, productionStrength);
 
     // Bake orientation once, then resize every variant from the display-
@@ -637,7 +701,7 @@ async function run() {
         ? await placeholders(oriented.data, { width: fullW, height: fullH, channels: 3 }, region)
         : null;
 
-      images[key] = {
+      entries.set(key, {
         base,
         width: dispW,
         height: dispH,
@@ -645,7 +709,7 @@ async function run() {
         formats: FORMATS.map((f) => f.ext),
         ground: ground.hex,
         ...(placeholder ? { placeholder } : null),
-      };
+      });
       console.log(
         `  ${base.padEnd(22)} ${dispW}x${dispH}  ${widths.length} widths` +
           `  ground ${ground.hex} L${ground.luma.toFixed(1)} (${ground.name}, from ${ground.mean})` +
@@ -654,8 +718,14 @@ async function run() {
             : "")
       );
     }
-  }
+  });
 
+  // The originals' order, not the order the jobs happened to finish in, so the
+  // same inputs always write the same manifest.
+  const images = {};
+  for (const frames of jobs.values()) {
+    for (const { key } of frames) images[key] = entries.get(key);
+  }
   const manifest = {
     signature: sig,
     dir: "/images/variants",
@@ -663,9 +733,11 @@ async function run() {
     images,
   };
   fs.writeFileSync(MANIFEST, JSON.stringify(manifest, null, 2));
+  mirror(OUT, STORE);
   console.log(
     `responsive-images: ${count} files, ${(bytes / 1e6).toFixed(1)}MB across ` +
-      `${Object.keys(images).length} frames.`
+      `${Object.keys(images).length} frames, ${JOBS} at a time, ` +
+      `${((Date.now() - started) / 60000).toFixed(1)} min.`
   );
 }
 

@@ -6,8 +6,10 @@
 /out/
 
 # generated responsive image variants (rebuilt at build time from the
-# committed originals + grade; deterministic, so never committed)
+# committed originals + grade; deterministic, so never committed), and the
+# copy a restore from the build cache stages beside them
 /public/images/variants/
+/public/images/variants.partial/
 
 # misc
 .DS_Store
