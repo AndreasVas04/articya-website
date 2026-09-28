@@ -9,13 +9,12 @@
 // JPEG, plus a manifest the shared <ResponsiveImage> component reads to build
 // its srcset/sizes markup.
 //
-//   node scripts/responsive-images.mjs              # generate (cached; no-op if fresh)
-//   node scripts/responsive-images.mjs --force      # rebuild every variant
-//   node scripts/responsive-images.mjs --signature  # print the cache key and exit
+//   node scripts/responsive-images.mjs          # generate (cached; no-op if fresh)
+//   node scripts/responsive-images.mjs --force  # rebuild every variant
 //
 // Output lives in public/images/variants/ (git-ignored — these are pure build
-// artefacts, regenerated in CI). It is deterministic from committed inputs
-// (the originals and the grade), so it is never committed.
+// artefacts, regenerated at build time). It is deterministic from committed
+// inputs (the originals and the grade), so it is never committed.
 //
 // Only the frames the site names are emitted. The pages' own source is read
 // for "/images/….jpg" paths (`referencedFrames`), so a photograph no page
@@ -607,20 +606,10 @@ async function run() {
   const jobs = plan(referencedFrames());
   const sig = signature(jobs);
 
-  // The key a CI cache stores the tree under. It is this signature and not a
-  // hash of some files next to it, because the signature is what decides
-  // freshness: a key built from fewer inputs than this restores a tree the
-  // check below rejects, and a hit is never saved again, so every later build
-  // would encode in full.
-  if (process.argv.includes("--signature")) {
-    console.log(createHash("sha256").update(sig).digest("hex").slice(0, 24));
-    return;
-  }
-
   assertLadder(await bleedWidths());
   if (!force && isFresh(OUT, sig)) {
-    // Keep the store warm from a tree that arrived some other way (a local
-    // build, or CI's own cache), so the next cold checkout can use it.
+    // Keep the store warm from a tree that was never mirrored into it (one
+    // encoded before the store existed), so the next cold checkout can use it.
     if (!isFresh(STORE, sig)) mirror(OUT, STORE);
     console.log("responsive-images: variants up to date, skipping.");
     return;
