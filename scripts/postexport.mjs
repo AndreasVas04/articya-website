@@ -1,23 +1,17 @@
-// Post-processes the static export in out/, for any host - every build runs it:
-//   1. Writes .nojekyll so GitHub Pages serves paths beginning with an
-//      underscore (_next, and anything else) instead of running them through
-//      Jekyll. Any other host ignores the file.
-//   2. Drops every image file no exported page references. The responsive
-//      pipeline serves each photograph from public/images/variants/, so the
-//      full-resolution graded masters, the ungraded _originals and the legacy
-//      background masters are all unreferenced — no visitor requests them, so
-//      they are removed from the published output, the same reasoning that
-//      always excluded _originals. SVG counts as an image here: the hero's
-//      land mask lives beside the frame it was traced from and is referenced
-//      from markup like any other.
+// Post-processes the static export in out/ - every build runs it. It drops
+// every image file no exported page references. The responsive pipeline
+// serves each photograph from public/images/variants/, so the full-resolution
+// graded masters, the ungraded _originals and the legacy background masters
+// are all unreferenced — no visitor requests them, so they are removed from
+// the published output, the same reasoning that always excluded _originals.
+// SVG counts as an image here: the hero's land mask lives beside the frame it
+// was traced from and is referenced from markup like any other.
 
-import { readFileSync, writeFileSync, readdirSync, statSync, rmSync } from "node:fs";
+import { readFileSync, readdirSync, statSync, rmSync } from "node:fs";
 import path from "node:path";
 import process from "node:process";
 
 const out = path.join(process.cwd(), "out");
-
-writeFileSync(path.join(out, ".nojekyll"), "");
 
 function walk(dir, onFile) {
   for (const name of readdirSync(dir)) {
@@ -32,7 +26,6 @@ function walk(dir, onFile) {
 // first — the RSC hydration payload serialises the content image props (the
 // masters' own paths) as data strings, but nothing fetches them; only the
 // <picture>/<img>/<link> markup, which points at variants, is a real request.
-// basePath prefixes are normalised away by keying on the "/images/…" tail.
 const referenced = new Set();
 const IMG_URL = /\/images\/[^"'\s,)]+?\.(?:jpe?g|png|webp|avif|svg)/gi;
 walk(out, (file) => {
@@ -42,7 +35,7 @@ walk(out, (file) => {
     " "
   );
   for (const m of html.matchAll(IMG_URL)) {
-    referenced.add(m[0].slice(m[0].indexOf("/images/")));
+    referenced.add(m[0]);
   }
 });
 
