@@ -13,6 +13,10 @@ interface RevealProps {
 // Rises 24px into place the first time it scrolls into view. The hidden
 // state is only applied after mount so the exported HTML stays visible,
 // and reduced motion skips the effect entirely.
+//
+// The transition names `translate`, not `transform`: Tailwind 4's
+// `translate-y-*` sets the individual `translate` property, so a transition on
+// `transform` eased the opacity and left the 24px to land in a single frame.
 export function Reveal({ children, className, delayMs = 0 }: RevealProps) {
   const ref = useRef<HTMLDivElement | null>(null);
   const [shown, setShown] = useState(false);
@@ -52,7 +56,7 @@ export function Reveal({ children, className, delayMs = 0 }: RevealProps) {
       style={delayMs ? { transitionDelay: `${delayMs}ms` } : undefined}
       className={cn(
         "duration-[400ms] ease-out-quart",
-        shown && "transition-[opacity,transform]",
+        shown && "transition-[opacity,translate]",
         mounted && !shown && "translate-y-6 opacity-0",
         className
       )}
