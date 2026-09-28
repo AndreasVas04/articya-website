@@ -299,6 +299,44 @@ body {
     display: none;
   }
 
+  /* And every layer a zoom does not need. The iPhone loses the page on the
+     way *out* of a full zoom, and only on a fast one. Why, as WebKit tiles
+     rather than as anything measured here: until the pinch comes to rest the
+     page is drawn at the scale it started from - 5x, 15 device pixels to the
+     CSS pixel - while the window it has to cover grows back to the whole
+     screen, so each composited layer in view comes to the full window at 15x,
+     about 230 MB. The price is set by how many layers are in view, not by what
+     they show.
+
+     Counted in WebKit's own compositor - the inspector's layer tree, in
+     WebKitGTK 2.52 - at the top of home at 390x664: nine layers drawing in
+     the window, six of them the size of it. The root; the stage's first plate,
+     its frame and its darkening; the hero section; the land copy. The plate
+     stands at strength 0 there, inside the lead it keeps for its decode. Its
+     arrival transform is 3D and promotes the frame, the frame takes the plate
+     and its darkening with it, and the hero section and the land copy are
+     composited only because they overlap those, or the title block that
+     `will-change: opacity` holds for the opening. Under these three rules the
+     same window holds the root and the header, which is what `?zoomtest=all`
+     leaves, and nothing the reader can see has gone. Further down home the
+     window's full-size layers fall from 5-9 to 2-3; on the inner pages from
+     5-7 to 3, where the stage is the photograph being looked at and whatever
+     overlaps it has to stay composited.
+
+     So while a zoom is held nothing is promoted on a hint, a plate at
+     strength 0 is not displayed, and a plate on its way in arrives without its
+     settle. The defocused copies under `.stage-plate-soft` and `.gain-defocus`
+     are rasterized in their parent for the length of the zoom. */
+  :root[data-zoomed] * {
+    will-change: auto !important;
+  }
+  :root[data-zoomed] [data-plate-layer][data-idle] {
+    display: none !important;
+  }
+  :root[data-zoomed] [data-plate-image] {
+    transform: none !important;
+  }
+
   /* Diagnostic switches for a deep zoom, off unless the address carries
      `?zoomtest=` (see ZoomFlag). Each takes one kind of layer off the whole
      page; `all` takes every one of them. At the scale where Safari's page

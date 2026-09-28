@@ -254,6 +254,15 @@ export function PhotoStage({ plates }: { plates: StagePlate[] }) {
         const hidden = layers[i].style.display === "none";
         if (live === hidden) layers[i].style.display = live ? "" : "none";
         if (!live) continue;
+        // Inside its lead a plate is displayed at nothing, so the decode is done
+        // before the plate has any strength to show it at. Under a zoom that
+        // lead is the dearest thing on the page and buys nothing, so the plate
+        // says when it is idle and `:root[data-zoomed]` takes it out - see
+        // globals.css.
+        const idle = value <= 0.0001;
+        if (layers[i].hasAttribute("data-idle") !== idle) {
+          layers[i].toggleAttribute("data-idle", idle);
+        }
 
         // Under reduced motion the wipe gives way to the fade it replaced. The
         // crossfade stays because it carries no travel to be sensitive to; a
