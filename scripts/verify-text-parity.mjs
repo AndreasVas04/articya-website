@@ -70,9 +70,9 @@ function visibleText(html) {
     .trim();
 }
 
-// The home page renders the two card badges (globe and graduation cap) as
-// SVG icons instead of the original emoji, so strip exactly those two
-// characters on that pair. Every other character stays guarded.
+// The original home page carried two card badges as emoji (globe and
+// graduation cap); the exported page renders no badge at all, so strip exactly
+// those two characters on that pair. Every other character stays guarded.
 const homeBadgeEmoji = /[\u{1F30D}\u{1F393}]/gu;
 
 function stripHomeBadges(text) {

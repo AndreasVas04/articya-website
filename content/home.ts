@@ -35,7 +35,6 @@ export const whatWeDo = {
   ],
   cards: [
     {
-      badge: "\u{1F30D}",
       // The intercultural evening: young people behind a table of Cypriot
       // food, the Cyprus and Portugal flags on the wall. A photograph beside
       // a panel is an illustration of it, so it has to be of the thing —
@@ -45,7 +44,6 @@ export const whatWeDo = {
       text: "International group experiences for young people aged 13–30 lasting 5 to 21 days. Participate through workshops, cultural activities and shared living experiences. No prior experience needed. Travel, accommodation and meals are fully covered. Receive a Youthpass certificate recognizing your learning.",
     },
     {
-      badge: "\u{1F393}",
       // Twenty young people seated in a circle outside a mountain cabin —
       // a session, which is what a training course is.
       image: "/images/AboutImage2.jpg",
