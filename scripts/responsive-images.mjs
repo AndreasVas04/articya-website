@@ -9,12 +9,18 @@
 // JPEG, plus a manifest the shared <ResponsiveImage> component reads to build
 // its srcset/sizes markup.
 //
-//   node scripts/responsive-images.mjs          # generate (cached; no-op if fresh)
-//   node scripts/responsive-images.mjs --force  # rebuild every variant
+//   node scripts/responsive-images.mjs              # generate (cached; no-op if fresh)
+//   node scripts/responsive-images.mjs --force      # rebuild every variant
+//   node scripts/responsive-images.mjs --signature  # print the cache key and exit
 //
 // Output lives in public/images/variants/ (git-ignored — these are pure build
 // artefacts, regenerated in CI). It is deterministic from committed inputs
 // (the originals and the grade), so it is never committed.
+//
+// Only the frames the site names are emitted. The pages' own source is read
+// for "/images/….jpg" paths (`referencedFrames`), so a photograph no page
+// shows costs no encode, and a path a page shows that this pipeline cannot
+// produce stops the build rather than shipping as a plain, unsized <img>.
 
 import fs from "node:fs";
 import path from "node:path";
@@ -27,6 +33,11 @@ const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 const SRC = path.join(ROOT, "public/images/_originals");
 const OUT = path.join(ROOT, "public/images/variants");
 const MANIFEST = path.join(OUT, "manifest.json");
+
+// Where the pages name their photographs. A content image path is a .jpg under
+// /images/; the logo, the social card and the ridge mask are files served as
+// they are and carry no variants.
+const SOURCE_DIRS = ["app", "components", "content", "lib"];
 
 // Width ladder in device pixels. Each image emits the rungs at or below the
 // largest size it is ever displayed (never upscaled); the cap keeps a 6000px
@@ -63,9 +74,8 @@ const MAX_WIDTH = 2560;
 // in Section 1 on an LCP argument and the argument still holds at the measured
 // bytes: the home hero's AVIF is 1120KB at 2560, 1367KB at 2880 and 1629KB at
 // 3200, so the rung that closes the defect costs 247KB and the one that
-// overshoots it by 320px costs 509KB. The hero declares 103vw for its own push
-// and therefore asks for 2966 — 1.030 over this rung at the peak of a
-// transient, and 1.000 at rest, which is what the table measures.
+// overshoots it by 320px costs 509KB. The hero declares the window, and at
+// 1440x900 DPR 2 that asks for exactly this rung.
 //
 // What keeps the rung off everything else is the emit filter below, not
 // `sizes`. An earlier note here claimed that nothing on the site resolves
@@ -77,14 +87,12 @@ const MAX_WIDTH = 2560;
 // painted wider than the window. So these placements resolve well past 2048 by
 // design: 2880 at 1440×900 DPR 2 for all of them, and on a phone at 390×844
 // DPR 3 they run 1900 (the About ground) to 5588 (hero slide 3, an ultra-wide
-// frame in a portrait window). Of the placements that are *not* full-bleed,
-// six of the seven About wall tiles peak at 1928 and every panel and scene
-// object at 835 — but the wall's centre tile reaches 3744, which is why SCALED
-// exists directly below. The 2048 sentence skipped over it.
+// frame in a portrait window). The About wall's centre tile declares the
+// window as well, and its frame, `hero-1`, is in this set.
 //
 // The true guarantee is narrower and the code enforces it: BLEED_WIDTH is
-// emitted only for frames in this set, and a width above it only under a
-// SCALED key of its own. A frame in this set that also appears somewhere small
+// emitted only for frames in this set, and nothing is emitted above it. A frame
+// in this set that also appears somewhere small
 // — hero-2 is a hero slide and an About finale tile — is safe because the
 // tile's `sizes` asks for 768 and the browser takes the rung it asks for.
 //
@@ -136,11 +144,6 @@ function assertLadder(dims) {
   if (LADDER[LADDER.length - 1] !== BLEED_WIDTH || !LADDER.includes(MAX_WIDTH)) {
     throw new Error(`LADDER must end at BLEED_WIDTH (${BLEED_WIDTH}) and carry MAX_WIDTH (${MAX_WIDTH})`);
   }
-  for (const [key, { width }] of Object.entries(SCALED)) {
-    if (width <= BLEED_WIDTH) {
-      throw new Error(`SCALED "${key}" at ${width} is not above BLEED_WIDTH; it belongs on the ladder`);
-    }
-  }
   const short = [...FULL_BLEED].filter((k) => dims.get(k) < BLEED_WIDTH);
   if (short.length) {
     console.log(
@@ -149,24 +152,6 @@ function assertLadder(dims) {
     );
   }
 }
-
-// One placement on the site is scaled past the window — the About wall's centre
-// tile, which reaches 130vw at full coverage and is therefore painted 1872 CSS
-// px wide at 1440×900, 3744 device px at DPR 2. That is 864 above the bleed
-// cap, and the rung cannot simply be added to the photograph's own ladder: a
-// browser takes the first rung at or above what `sizes` asks for, and the home
-// hero asks 2966 of this same frame, so a 3840 rung in that srcset would land
-// on the home LCP and take it from 1367KB to 2169KB.
-//
-// So the rung is published under a key of its own. Same graded pixels and the
-// same file basename, so only the extra width is written — one file per format,
-// 2169/3449/4473KB — and only the srcset built from this key lists it. The page
-// that fetches it is /about/, the tile is the last thing on it and is not the
-// LCP, and it lazy-loads: 802KB of AVIF over the 2880 rung, spent below three
-// scene photographs, against a home LCP that does not move at all.
-const SCALED = {
-  "/images/pt/IMG_4585.jpg": { key: "/images/pt/IMG_4585.jpg#wall", width: 3840 },
-};
 
 // Frames published as a crop of an original rather than as the whole picture.
 // A power line crossing a sky cannot be masked out of a photograph and cannot
@@ -290,13 +275,6 @@ const CROPS = {
 // from the graded reference goes 7.33 -> 9.92 and 10.99 -> 11.76 mean codes
 // and neither is visible in a canopy or on a stone wall. It returns a third of
 // the bytes on the largest file every full-bleed page downloads.
-//
-// The 3840 SCALED rung does NOT take it, and that is the measurement rather
-// than caution. It is the one placement on the site scaled past the window —
-// the About wall's centre tile at 2.60x — so an artifact is magnified with the
-// frame, and at 150 device pixels drawn 2x the dark canopy visibly flattens at
-// q50 where q62 still holds its leaf structure. Its departure from the
-// reference goes 5.95 -> 8.34 on the same test the other two pass.
 //
 // One honest limit on the q50 rung, recorded rather than argued away: the
 // density figures above are the two reference viewports. Resolved across a
@@ -433,21 +411,71 @@ const displayDims = (w, h, o) => (o >= 5 && o <= 8 ? { w: h, h: w } : { w, h });
 // checkout writes every file afresh, so an mtime key could never match on CI
 // and a restored cache would have been deleted and re-encoded in full.
 const fileHash = (file) => createHash("sha256").update(fs.readFileSync(file)).digest("hex").slice(0, 16);
-function signature() {
+function signature(jobs) {
+  const frames = [...jobs.values()].flat().map((f) => f.key).sort();
   const parts = [`v${CONFIG_VERSION}`, `strength${productionStrength}`, `ladder${LADDER.join(",")}`,
     `cap${MAX_WIDTH}/${BLEED_WIDTH}`, `bleed${[...FULL_BLEED].sort().join(",")}`,
     `fmt${FORMATS.map((f) => `${f.ext}${f.cap ?? ""}`).join(",")}`, `crops${JSON.stringify(CROPS)}`,
-    `avifq${LADDER.concat(Object.values(SCALED).map((s) => s.width)).map(AVIF_QUALITY).join(",")}`,
-    `scaled${JSON.stringify(SCALED)}`,
+    `avifq${LADDER.map(AVIF_QUALITY).join(",")}`, `frames${frames.join(",")}`,
     `ph${PLACEHOLDER_WIDTH}/${PLACEHOLDER_BYTES}/${PLACEHOLDER_QUALITIES.join(",")}/${[...PLACEHOLDER_FRAMES].sort().join(",")}`];
   for (const f of ["scripts/responsive-images.mjs", "scripts/grade-photos.mjs"]) {
     parts.push(`${f}:${fileHash(path.join(ROOT, f))}`);
   }
-  for (const file of gradedFiles.slice().sort()) {
+  for (const file of [...jobs.keys()].sort()) {
     parts.push(`${file}:${fileHash(path.join(SRC, file))}`);
   }
   return parts.join("|");
 }
+
+// Every content image path the pages name.
+function referencedFrames() {
+  const found = new Set();
+  const walk = (dir) => {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) walk(full);
+      else if (/\.tsx?$/.test(entry.name)) {
+        for (const m of fs.readFileSync(full, "utf8").matchAll(/\/images\/[\w\-/]+\.jpg/g)) found.add(m[0]);
+      }
+    }
+  };
+  for (const dir of SOURCE_DIRS) walk(path.join(ROOT, dir));
+  return found;
+}
+
+// The work, grouped by the original each frame is graded from - so a file that
+// ships both whole and cropped is decoded and graded once - and holding only
+// the frames the pages name. The order is the originals' own, and the manifest
+// is written in it whatever order the jobs finish in.
+function plan(referenced) {
+  const jobs = new Map();
+  for (const file of gradedFiles) {
+    const frames = [];
+    if (referenced.has(`/images/${file}`)) frames.push({ key: `/images/${file}`, crop: null });
+    for (const [key, crop] of Object.entries(CROPS)) {
+      if (!gradedFiles.includes(crop.file)) throw new Error(`Crop "${key}" names an ungraded source "${crop.file}"`);
+      if (crop.file === file && referenced.has(key)) frames.push({ key, crop });
+    }
+    if (frames.length) jobs.set(file, frames);
+  }
+  // A path the pages name that is neither a frame here nor a file served as it
+  // is would render as a broken image; it stops the build instead.
+  const produced = new Set([...jobs.values()].flat().map((f) => f.key));
+  for (const key of referenced) {
+    if (!produced.has(key) && !fs.existsSync(path.join(ROOT, "public", key))) {
+      throw new Error(`"${key}" is named by the site but is not a graded file, a crop or a file in public/`);
+    }
+  }
+  return jobs;
+}
+
+const isFresh = (manifest, sig) => {
+  try {
+    return JSON.parse(fs.readFileSync(manifest, "utf8")).signature === sig;
+  } catch {
+    return false;
+  }
+};
 
 // The ground a plate stands on while its photograph is still on the wire.
 //
@@ -525,17 +553,23 @@ function pullToPlate(meanLinear) {
 }
 
 async function run() {
-  assertLadder(await bleedWidths());
+  const jobs = plan(referencedFrames());
+  const sig = signature(jobs);
 
-  const sig = signature();
-  if (!force && fs.existsSync(MANIFEST)) {
-    try {
-      const prev = JSON.parse(fs.readFileSync(MANIFEST, "utf8"));
-      if (prev.signature === sig) {
-        console.log("responsive-images: variants up to date, skipping.");
-        return;
-      }
-    } catch { /* fall through and rebuild */ }
+  // The key a CI cache stores the tree under. It is this signature and not a
+  // hash of some files next to it, because the signature is what decides
+  // freshness: a key built from fewer inputs than this restores a tree the
+  // check below rejects, and a hit is never saved again, so every later build
+  // would encode in full.
+  if (process.argv.includes("--signature")) {
+    console.log(createHash("sha256").update(sig).digest("hex").slice(0, 24));
+    return;
+  }
+
+  assertLadder(await bleedWidths());
+  if (!force && isFresh(MANIFEST, sig)) {
+    console.log("responsive-images: variants up to date, skipping.");
+    return;
   }
 
   fs.rmSync(OUT, { recursive: true, force: true });
@@ -544,18 +578,6 @@ async function run() {
   const images = {};
   let count = 0;
   let bytes = 0;
-
-  // Every frame to emit, keyed by the source it is graded from, so a file that
-  // ships both whole and cropped is decoded and graded once.
-  const jobs = new Map();
-  for (const file of gradedFiles) {
-    jobs.set(file, [{ key: `/images/${file}`, crop: null }]);
-  }
-  for (const [key, crop] of Object.entries(CROPS)) {
-    const list = jobs.get(crop.file);
-    if (!list) throw new Error(`Crop "${key}" names an ungraded source "${crop.file}"`);
-    list.push({ key, crop });
-  }
 
   for (const [file, frames] of jobs) {
     const { out8, width, height, orientation } = await gradeToRaw(file, productionStrength);
@@ -587,14 +609,8 @@ async function run() {
         widths.push(cap);
       }
 
-      const scaled = SCALED[key];
-      if (scaled && scaled.width > dispW) {
-        throw new Error(`Scaled rung ${scaled.width} exceeds "${key}"'s ${dispW}px source`);
-      }
-      const emitted = scaled ? [...widths, scaled.width] : widths;
-
       for (const fmt of FORMATS) {
-        for (const w of widthsFor(emitted, fmt)) {
+        for (const w of widthsFor(widths, fmt)) {
           let pipe = sharp(oriented.data, {
             raw: { width: fullW, height: fullH, channels: 3 },
           });
@@ -630,11 +646,9 @@ async function run() {
         ground: ground.hex,
         ...(placeholder ? { placeholder } : null),
       };
-      if (scaled) images[scaled.key] = { ...images[key], widths: emitted };
       console.log(
         `  ${base.padEnd(22)} ${dispW}x${dispH}  ${widths.length} widths` +
           `  ground ${ground.hex} L${ground.luma.toFixed(1)} (${ground.name}, from ${ground.mean})` +
-          (scaled ? ` (+${scaled.width} for ${scaled.key})` : "") +
           (placeholder
             ? `  placeholder ${PLACEHOLDER_FORMATS.map((f) => `${f.ext} q${placeholder[`${f.ext}Quality`]} ${placeholder[f.ext].length}B`).join(" / ")}`
             : "")
@@ -651,7 +665,7 @@ async function run() {
   fs.writeFileSync(MANIFEST, JSON.stringify(manifest, null, 2));
   console.log(
     `responsive-images: ${count} files, ${(bytes / 1e6).toFixed(1)}MB across ` +
-      `${gradedFiles.length + Object.keys(CROPS).length} frames.`
+      `${Object.keys(images).length} frames.`
   );
 }
 
