@@ -170,8 +170,10 @@ export default function ContactPage() {
             the sharp half is left to be a photograph. */}
         <div className="contact-split w-full">
           <Reveal>
-            <span aria-hidden="true" className="block h-[1.25px] w-16 bg-amber" />
-            <h2 className="mt-4 type-heading font-display font-semibold tracking-[-0.025em] text-ink">
+            {/* 2px, not 1.25: a whole pixel paints what it says. The
+                heading's `mt-[15.25px]` gives back the difference. */}
+            <span aria-hidden="true" className="block h-0.5 w-16 bg-amber" />
+            <h2 className="mt-[15.25px] type-heading font-display font-semibold tracking-[-0.025em] text-ink">
               {details.heading}
             </h2>
             {/* The rule under the heading at 62% of the text column - the same

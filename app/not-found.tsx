@@ -36,8 +36,10 @@ export default function NotFound() {
         className="relative flex min-h-svh items-center"
       >
         <div className="relative mx-auto flex w-full max-w-6xl flex-col items-center px-4 pb-16 pt-28 text-center md:pb-20 md:pt-36">
-          <span aria-hidden="true" className="mx-auto block h-[1.25px] w-16 bg-amber" />
-          <h1 className="type-title mx-auto mt-6 max-w-[11ch] text-balance font-display font-semibold tracking-[-0.025em] text-ink">
+          {/* The page heroes' rule: 2px, with the three quarters of a pixel
+              it grew by from 1.25 given back in the heading's margin. */}
+          <span aria-hidden="true" className="mx-auto block h-0.5 w-16 bg-amber" />
+          <h1 className="type-title mx-auto mt-[23.25px] max-w-[11ch] text-balance font-display font-semibold tracking-[-0.025em] text-ink">
             {notFound.heading}
           </h1>
           <p className="type-body mx-auto mt-8 text-pretty text-ink">{notFound.text}</p>
