@@ -48,13 +48,17 @@ export function PageHero({ heading, text, longHeading, compactTitle }: PageHeroP
     >
       <div className="relative mx-auto flex w-full max-w-6xl flex-col items-center px-4 pb-16 pt-28 text-center md:pb-20 md:pt-36">
         <div>
-          <span aria-hidden="true" className="mx-auto block h-[1.25px] w-16 bg-amber" />
+          {/* 2px, a whole number of pixels so the rule paints two rows
+              wherever the block lands; 1.25px drew a fraction of a row on
+              every screen. The heading's `mt-[23.25px]` gives back the
+              three quarters of a pixel it grew by, so nothing below moves. */}
+          <span aria-hidden="true" className="mx-auto block h-0.5 w-16 bg-amber" />
           {/* 11ch of the display face, so the break travels with the size
               across viewports - at register A the measure has to be much
               narrower or the longest heading runs the width of the window. */}
           <h1
             className={cn(
-              "type-title mx-auto mt-6 text-balance font-display font-semibold tracking-[-0.025em] text-ink",
+              "type-title mx-auto mt-[23.25px] text-balance font-display font-semibold tracking-[-0.025em] text-ink",
               longHeading ? "type-title-long max-w-none" : "max-w-[11ch]",
               compactTitle && "type-title-compact"
             )}

@@ -828,7 +828,9 @@ body {
   .offer-eyebrow-rule {
     flex: none;
     width: 48px;
-    height: 1.25px;
+    /* A whole pixel, so it paints the two rows it says. The row's height is
+       the label's, so the rule centres in it and nothing around it moves. */
+    height: 2px;
     background: var(--color-amber);
     transform-origin: left;
   }

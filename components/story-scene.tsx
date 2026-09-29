@@ -107,10 +107,12 @@ export function StoryScene({ groups, image, flip = false }: StorySceneProps) {
           <div ref={textRef} className="offer-panel-text relative w-full">
             {/* The rule alone, no numeral: the numeral is sized at 2.6× a
                 heading's cap height and these scenes carry no heading, so
-                there is nothing for it to be in proportion to. */}
+                there is nothing for it to be in proportion to. 2px, a whole
+                pixel, and the paragraph's margin gives back the three
+                quarters it grew by from 1.25, so the words stay put. */}
             <span
               aria-hidden="true"
-              className="block h-[1.25px] w-12 origin-left bg-amber"
+              className="block h-0.5 w-12 origin-left bg-amber"
               style={enter(0, DRAW)}
             />
             {/* The paragraph lifts as one block and its groups light up inside
@@ -118,7 +120,7 @@ export function StoryScene({ groups, image, flip = false }: StorySceneProps) {
                 making the spans inline-block to earn one would stop them
                 wrapping across lines. */}
             <p
-              className="type-body mt-6 text-ink md:mt-8"
+              className="type-body mt-[23.25px] text-ink md:mt-[31.25px]"
               style={enter(2, RISE)}
             >
               {groups.map((group, i) => (
